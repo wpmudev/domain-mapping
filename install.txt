@@ -1,0 +1,14 @@
+Plugin Name: Domain Mapping
+Author: Barry Getty (Incsub)
+
+Files:
+----------------------------------------------------------------------
+domain-mapping.php - goes in /wp-content/mu-plugins
+sunrise.php - goes in /wp-content
+
+Instructions:
+----------------------------------------------------------------------
+1) Place the files in the specified directories
+2) Edit wp-config.php and uncomment (remove the //) the following:
+
+//define( 'SUNRISE', 'on' );
