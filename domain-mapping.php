@@ -3,7 +3,7 @@
 Plugin Name: VHOST and directory enabled Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 2.1.1
+Version: 3.0
 Author: Barry Getty (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -31,7 +31,7 @@ WDP ID: 99
 
 class domain_map {
 
-	var $build = 4;
+	var $build = 5;
 
 	var $db;
 
