@@ -30,9 +30,9 @@ if( $mapped_id ) {
 
 	define( 'COOKIE_DOMAIN', $_SERVER[ 'HTTP_HOST' ] );
 
-	$current_site = $wpdb->get_row( "SELECT * from {$wpdb->site} WHERE id = '{$current_blog->site_id}' LIMIT 0,1 /* domain mapping */" );
+	$this_site = $wpdb->get_row( "SELECT * from {$wpdb->site} WHERE id = '{$current_blog->site_id}' LIMIT 0,1 /* domain mapping */" );
 
-	$current_blog->path = $current_site->path;
+	$current_blog->path = $this_site->path;
 
 	define( 'DOMAIN_MAPPING', 1 );
 
