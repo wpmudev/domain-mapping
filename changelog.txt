@@ -5,7 +5,15 @@ Change Log:
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-3.0.1 = 10/09/2010
+3.0.2 = 11/14/2010
+----------------------------------------------------------------------
+- Bug fix: php and deprecated notices
+- Bug fix: $current_site->blog_id not set
+- Enhancement: compatibility with Multi-Domains plugin: ability to set
+a multi-domain as mapping for subdomains installs
+
+
+3.0.1 = 11/09/2010
 ----------------------------------------------------------------------
 - Bug fix: sunrise.php overwrites the global $current_site
 
