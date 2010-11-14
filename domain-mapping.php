@@ -257,7 +257,7 @@ class domain_map {
 
 
 	function add_page() {
-		add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 8, 'domainmapping', array(&$this, 'handle_domain_page') );
+		add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 'manage_options', 'domainmapping', array(&$this, 'handle_domain_page') );
 
 	}
 
@@ -344,7 +344,7 @@ class domain_map {
 
 		$this->db->dmtable = $this->db->base_prefix . 'domain_map';
 
-		if ( is_site_admin() ) {
+		if ( is_super_admin() ) {
 			if($this->db->get_var("SHOW TABLES LIKE '{$this->dmt}'") != $this->dmt) {
 				$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmt}` (
 					`id` bigint(20) NOT NULL auto_increment,
@@ -363,7 +363,7 @@ class domain_map {
 			check_admin_referer( 'domain_mapping' );
 			switch( $_POST[ 'action' ] ) {
 				case "add":
-					if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
+					if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
 						$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmt} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
 					}
 				break;
@@ -493,7 +493,7 @@ class domain_map {
 			}
 
 			$this->db->suppress_errors( $s );
-			$protocol = ( 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
+			$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
 			if ( $domain ) {
 
 				$innerurl = trailingslashit( $protocol . $domain . $current_site->path );
@@ -529,7 +529,7 @@ class domain_map {
 			}
 
 			$this->db->suppress_errors( $s );
-			$protocol = ( 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
+			$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
 			if ( $domain ) {
 				$return_url[ $this->db->blogid ] = untrailingslashit( $protocol . $domain . $current_site->path );
 				$setting = $return_url[ $this->db->blogid ];
@@ -593,7 +593,7 @@ class domain_map {
 	function redirect_to_mapped_domain() {
 		global $current_blog, $current_site;
 
-		$protocol = ( 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
+		$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
 		$url = $this->domain_mapping_siteurl( false );
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
