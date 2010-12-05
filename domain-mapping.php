@@ -462,6 +462,7 @@ class domain_map {
 		?>
 		</tbody>
 		</table>
+		</div>
 		<?php
 
 	}
