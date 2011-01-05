@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Domain Mapping 3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-01-05 21:44+0100\n"
+"PO-Revision-Date: 2011-01-05 21:44+0100\n"
+"Last-Translator: Barry <barry@mapinated.com>\n"
+"Language-Team: Incsub <barry@incsub.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: /Users/barrygetty/Work/wordpress/plugins/domain-mapping\n"
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:34
+msgid "The domain mapping plugin is only compatible with WordPress Multisite."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:266
+msgid "Please install the latest version of <a href=\"http://premium.wpmudev.org/project/update-notifications/\" title=\"Download Now &raquo;\">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href=\"http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/\">More information &raquo;</a>"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:279
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:397
+msgid "Domain Mapping"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:293
+msgid "Domain mapping Configuration"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:296
+msgid "Please copy the sunrise.php to "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:296
+msgid "/wp-content/sunrise.php and uncomment the SUNRISE setting in the "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:296
+msgid "wp-config.php file"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:300
+msgid "Please uncomment the line <em>//define( 'SUNRISE', 'on' );</em> in the "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:300
+msgid "wp-config.php file."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:303
+msgid "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:304
+msgid "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:305
+msgid "Server IP Address: "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:310
+msgid "Make this functionality only available to Supporters"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:311
+msgid "Supporters Only: "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:315
+msgid "No"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:318
+msgid "Yes"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:322
+msgid "Administration mapping"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:324
+msgid "The settings below allow you to control how the domain mapping plugin operates with the administration area."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:328
+msgid "The domain used for the administration area should be the"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:332
+msgid "domain entered by the user"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:335
+msgid "mapped domain"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:338
+msgid "original domain"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:399
+msgid "If your domain name includes a sub-domain such as \"blog\" then you can add a CNAME for that hostname in your DNS pointing at this blog URL."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:400
+msgid "IP not set by admin yet."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:402
+msgid "If you want to redirect a domain you will need to add multiple DNS \"A\" records pointing at the IP addresses of this server: "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:404
+msgid "If you want to redirect a domain you will need to add a DNS \"A\" record pointing at the IP address of this server: "
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:412
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:656
+msgid "Custom Domain"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:413
+msgid "Original Blog Address"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:414
+msgid "Actions"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:442
+msgid "Delete"
+msgstr ""
+

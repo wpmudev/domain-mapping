@@ -7,6 +7,7 @@ Version: 3.0.2
 Author: Barry Getty (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
+Network: true
 */
 /*  Copyright Incsub (http://incsub.com/)
     Based on an original by Donncha (http://ocaoimh.ie/)
@@ -28,6 +29,9 @@ WDP ID: 99
 
 // UnComment out the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
+
+if ( !is_multisite() )
+     exit( __('The domain mapping plugin is only compatible with WordPress Multisite.', 'domainmap') );
 
 class domain_map {
 
@@ -52,6 +56,10 @@ class domain_map {
 		}
 		// Set up the plugin
 		add_action('init', array(&$this, 'setup_plugin'));
+		add_action('load-tools_page_domainmapping', array(&$this, 'add_admin_header'));
+
+		add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
+
 		// Add in the cross domain logins
 		add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
 
@@ -80,6 +88,16 @@ class domain_map {
 
 	function domain_map() {
 		$this->__construct();
+	}
+
+	function load_textdomain() {
+
+		$locale = apply_filters( 'domainmap_locale', get_locale() );
+		$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
+
+		if ( file_exists( $mofile ) )
+			load_textdomain( 'domainmap', $mofile );
+
 	}
 
 	function setup_plugin() {
@@ -255,6 +273,19 @@ class domain_map {
 		}
 	}
 
+	function wdp_un_check() {
+	    if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
+	      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
+	  }
+
+	function add_admin_header() {
+		/* -------------------- Update Notifications Notice -------------------- */
+		if ( method_exists( $this, 'wdp_un_check' ) ) {
+		  add_action( 'admin_notices', array(&$this, 'wdp_un_check'), 5 );
+		  add_action( 'network_admin_notices', array(&$this, 'wdp_un_check'), 5 );
+		}
+		/* --------------------------------------------------------------------- */
+	}
 
 	function add_page() {
 		add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 'manage_options', 'domainmapping', array(&$this, 'handle_domain_page') );
@@ -668,6 +699,33 @@ class domain_map {
 
 
 }
+
+function set_domainmap_dir($base) {
+
+	global $domainmap_dir;
+
+	if(defined('WPMU_PLUGIN_DIR') && file_exists(WPMU_PLUGIN_DIR . '/' . basename($base))) {
+		$domainmap_dir = trailingslashit(WPMU_PLUGIN_URL);
+	} elseif(defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/domain-mapping/' . basename($base))) {
+		$domainmap_dir = trailingslashit(WP_PLUGIN_DIR . '/domain-mapping');
+	} else {
+		$domainmap_dir = trailingslashit(WP_PLUGIN_DIR . '/domain-mapping');
+	}
+
+
+}
+
+function domainmap_dir($extended) {
+
+	global $domainmap_dir;
+
+	return $domainmap_dir . $extended;
+
+
+}
+
+// Set up my location
+set_domainmap_dir(__FILE__);
 
 $dm_map =& new domain_map();
 
