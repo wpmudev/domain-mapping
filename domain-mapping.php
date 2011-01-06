@@ -273,18 +273,8 @@ class domain_map {
 		}
 	}
 
-	function wdp_un_check() {
-	    if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
-	      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
-	  }
-
 	function add_admin_header() {
-		/* -------------------- Update Notifications Notice -------------------- */
-		if ( method_exists( $this, 'wdp_un_check' ) ) {
-		  add_action( 'admin_notices', array(&$this, 'wdp_un_check'), 5 );
-		  add_action( 'network_admin_notices', array(&$this, 'wdp_un_check'), 5 );
-		}
-		/* --------------------------------------------------------------------- */
+
 	}
 
 	function add_page() {
@@ -723,6 +713,17 @@ function domainmap_dir($extended) {
 
 
 }
+
+/* -------------------- Update Notifications Notice -------------------- */
+if ( !function_exists( 'wdp_un_check' ) ) {
+  add_action( 'admin_notices', 'wdp_un_check', 5 );
+  add_action( 'network_admin_notices', 'wdp_un_check', 5 );
+  function wdp_un_check() {
+    if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
+      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
+  }
+}
+/* --------------------------------------------------------------------- */
 
 // Set up my location
 set_domainmap_dir(__FILE__);
