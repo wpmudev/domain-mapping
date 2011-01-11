@@ -3,7 +3,9 @@ Author: Barry Getty (Incsub)
 
 Change Log:
 ----------------------------------------------------------------------
+3.0.4 = 11/01/2011
 ----------------------------------------------------------------------
+- Ready for WP3.1
 
 3.0.3
 - Bug fix: Fixed missing closing <div> on admin page
@@ -14,7 +16,6 @@ Change Log:
 - Bug fix: $current_site->blog_id not set
 - Enhancement: compatibility with Multi-Domains plugin: ability to set
 a multi-domain as mapping for subdomains installs
-
 
 3.0.1 = 11/09/2010
 ----------------------------------------------------------------------
