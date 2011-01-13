@@ -151,6 +151,7 @@ class domain_map {
 				add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
 				add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
 				add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
+				add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
 
 				// Jump in just before header output to change base_url - until a neater method can be found
 				add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
