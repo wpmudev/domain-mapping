@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: VHOST and directory enabled Domain Mapping plugin
+Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
 Version: 3.0.4
@@ -35,7 +35,7 @@ if ( !is_multisite() )
 
 class domain_map {
 
-	var $build = 5;
+	var $build = 6;
 
 	var $db;
 
@@ -96,7 +96,7 @@ class domain_map {
 		$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
 
 		if ( file_exists( $mofile ) )
-			load_textdomain( 'domainmap', $mofile );
+			load_plugin_textdomain( 'domainmap', $mofile );
 
 	}
 
@@ -104,8 +104,10 @@ class domain_map {
 
 		$this->handle_translation();
 		// Add the options page
-		add_action( 'wpmu_options', array(&$this, 'handle_domain_options'));
-		add_action( 'update_wpmu_options', array(&$this, 'update_domain_options'));
+		//add_action( 'wpmu_options', array(&$this, 'handle_domain_options'));
+		//add_action( 'update_wpmu_options', array(&$this, 'update_domain_options'));
+
+		add_action( 'network_admin_menu', array(&$this, 'add_admin_pages') );
 
 		$sup = get_site_option( 'map_supporteronly', '0' );
 
@@ -278,8 +280,22 @@ class domain_map {
 
 	}
 
+	function add_admin_pages() {
+		add_menu_page(__('Domain Map','domainmap'), __('Domain Map','domainmap'), 'manage_options',  'domainmapping', array(&$this,'handle_dash_page'), plugins_url('domain-mapping/images/domain.png'));
+		add_submenu_page('domainmapping', __('Edit Options','domainmap'), __('Edit Options','domainmap'), 'manage_options', "domainmapping_options", array(&$this,'handle_options_page'));
+
+	}
+
 	function add_page() {
 		add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 'manage_options', 'domainmapping', array(&$this, 'handle_domain_page') );
+
+	}
+
+	function handle_dash_page() {
+
+	}
+
+	function handle_options_page() {
 
 	}
 
