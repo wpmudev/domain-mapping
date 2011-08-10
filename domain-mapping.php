@@ -100,6 +100,34 @@ class domain_map {
 
 	}
 
+	function setup_filters() {
+
+		add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+		add_filter( 'pre_option_home', array(&$this, 'domain_mapping_home') );
+		add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
+
+		add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
+		add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
+		add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
+		add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
+
+
+		add_filter( 'plugins_url', 'domain_mapping_plugins_uri', 1 );
+		add_filter( 'theme_root_uri', 'domain_mapping_themes_uri', 1 );
+
+		add_action( 'wp_head', 'remote_login_js_loader' );
+		add_action( 'login_head', 'redirect_login_to_orig' );
+		add_action( 'wp_logout', 'remote_logout_loader', 9999 );
+
+		add_filter( 'stylesheet_uri', array(&$this, 'domain_mapping_post_content') );
+		add_filter( 'stylesheet_directory', array(&$this, 'domain_mapping_post_content') );
+		add_filter( 'stylesheet_directory_uri', array(&$this, 'domain_mapping_post_content') );
+		add_filter( 'template_directory', array(&$this, 'domain_mapping_post_content') );
+		add_filter( 'template_directory_uri', array(&$this, 'domain_mapping_post_content') );
+		add_filter( 'plugins_url', array(&$this, 'domain_mapping_post_content') );
+
+	}
+
 	function setup_plugin() {
 
 		$this->handle_translation();
@@ -281,22 +309,102 @@ class domain_map {
 	}
 
 	function add_admin_pages() {
-		add_menu_page(__('Domain Map','domainmap'), __('Domain Map','domainmap'), 'manage_options',  'domainmapping', array(&$this,'handle_dash_page'), plugins_url('domain-mapping/images/domain.png'));
-		add_submenu_page('domainmapping', __('Edit Options','domainmap'), __('Edit Options','domainmap'), 'manage_options', "domainmapping_options", array(&$this,'handle_options_page'));
-
+		add_submenu_page('settings.php', __('Domain Mapping','domainmap'), __('Domain Mapping','domainmap'), 'manage_options', "domainmapping_options", array(&$this,'handle_options_page'));
 	}
 
 	function add_page() {
 		add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 'manage_options', 'domainmapping', array(&$this, 'handle_domain_page') );
-
 	}
 
 	function handle_dash_page() {
 
+		require_once('classes/class.domains.php');
+		$wp_domains_table = new WP_MS_Domains_List_Table();
+
+		?>
+			<div class="wrap">
+			<?php screen_icon('ms-admin'); ?>
+			<h2><?php _e('Domain Mapping', 'domainmap') ?>
+			<?php echo $msg; ?>
+			</h2>
+
+			<form action="" method="get" id="ms-search">
+			<?php $wp_domains_table->search_box( __( 'Search Sites' ), 'site' ); ?>
+			<input type="hidden" name="action" value="blogs" />
+			</form>
+
+			<form id="form-site-list" action="edit.php?action=allblogs" method="post">
+				<?php $wp_domains_table->display(); ?>
+			</form>
+			</div>
+		<?php
 	}
 
 	function handle_options_page() {
 
+		?>
+		<div class="wrap">
+		<?php screen_icon('ms-admin'); ?>
+		<h2><?php _e('Domain mapping Options', 'domainmap') ?>
+		<?php echo $msg; ?>
+		</h2>
+
+		<form action="" method="get" id="ms-search">
+		<?
+
+		echo '<h3>' . __( 'Domain mapping Configuration' ) . '</h3>';
+
+		if ( !file_exists( ABSPATH . '/wp-content/sunrise.php' ) ) {
+			echo "<p><strong>" . __("Please copy the sunrise.php to ", 'domainmap') . ABSPATH . __("/wp-content/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap') . ABSPATH . __("wp-config.php file", 'domainmap') . "</strong></p>";
+		}
+
+		if ( !defined( 'SUNRISE' ) ) {
+			echo "<p><strong>" . __("Please uncomment the line <em>//define( 'SUNRISE', 'on' );</em> in the ", 'domainmap') . ABSPATH . __("wp-config.php file.", 'domainmap') . "</strong></p>";
+		}
+
+		echo "<p>" . __( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) . "</p>";
+		echo "<p>" . __( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) . "</p>";
+		_e( "Server IP Address: ", 'domainmap' );
+		echo "<input type='text' name='map_ipaddress' value='" . get_site_option( 'map_ipaddress' ) . "' />";
+
+		if(function_exists('is_supporter')) {
+			$sup = get_site_option( 'map_supporteronly', '0' );
+			echo '<p>' . __('Make this functionality only available to Supporters', 'domainmap') . '</p>';
+			_e("Supporters Only: ", 'domainmap');
+			echo "<select name='map_supporteronly'>";
+			echo "<option value='0'";
+			if($sup == 0) echo " selected='selected'";
+			echo ">" . __('No', 'domainmap') . "</option>";
+			echo "<option value='1'";
+			if($sup == 1) echo " selected='selected'";
+			echo ">" . __('Yes', 'domainmap') . "</option>";
+			echo "</select>";
+		}
+
+		echo '<h4>' . __( 'Administration mapping', 'domainmap' ) . '</h4>';
+
+		echo "<p>" . __( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) . "</p>";
+
+		$addom = get_site_option( 'map_admindomain', 'user' );
+		echo '<p>';
+		echo __('The domain used for the administration area should be the', 'domainmap') . '&nbsp;';
+		echo "<select name='map_admindomain'>";
+		echo "<option value='user'";
+		if($addom == 'user') echo " selected='selected'";
+		echo ">" . __('domain entered by the user', 'domainmap') . "</option>";
+		echo "<option value='mapped'";
+		if($addom == 'mapped') echo " selected='selected'";
+		echo ">" . __('mapped domain', 'domainmap') . "</option>";
+		echo "<option value='original'";
+		if($addom == 'original') echo " selected='selected'";
+		echo ">" . __('original domain', 'domainmap') . "</option>";
+		echo "</select>";
+		echo '</p>';
+
+		?>
+			</form>
+			</div>
+		<?php
 	}
 
 	function update_domain_options() {
@@ -618,6 +726,11 @@ class domain_map {
 		if ( ! isset( $orig_urls[ $this->db->blogid ] ) ) {
 			remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 			$orig_url = get_option( 'siteurl' );
+			if ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) {
+				$orig_url = str_replace( "http://", "https://", $orig_url );
+			} else {
+				$orig_url = str_replace( "https://", "http://", $orig_url );
+			}
 			$orig_urls[ $this->db->blogid ] = $orig_url;
 			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 		} else {
