@@ -7,9 +7,17 @@ global $wpdb;
 
 // No if statement needed as the code was the same for both VHOST and non VHOST installations
 if(defined('DM_COMPATIBILITY')) {
-	$wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
+	if(!empty($wpdb->base_prefix)) {
+		$wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
+	} else {
+		$wpdb->dmtable = $wpdb->prefix . 'domain_mapping';
+	}
 } else {
-	$wpdb->dmtable = $wpdb->base_prefix . 'domain_map';
+	if(!empty($wpdb->base_prefix)) {
+		$wpdb->dmtable = $wpdb->base_prefix . 'domain_map';
+	} else {
+		$wpdb->dmtable = $wpdb->prefix . 'domain_map';
+	}
 }
 
 if(defined('COOKIE_DOMAIN')) {

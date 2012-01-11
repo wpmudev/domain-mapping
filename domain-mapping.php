@@ -3,8 +3,8 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.4
-Author: Barry Getty (Incsub)
+Version: 3.0.6
+Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
 Network: true
@@ -52,7 +52,19 @@ class domain_map {
 		if(!empty($this->db->dmtable)) {
 			$this->dmt = $this->db->dmtable;
 		} else {
-			$this->dmt = $this->db->base_prefix . 'domain_map';
+			if(defined('DM_COMPATIBILITY')) {
+				if(!empty($this->db->base_prefix)) {
+					$this->db->dmtable = $this->db->base_prefix . 'domain_mapping';
+				} else {
+					$this->db->dmtable = $this->db->prefix . 'domain_mapping';
+				}
+			} else {
+				if(!empty($this->db->base_prefix)) {
+					$this->db->dmtable = $this->db->base_prefix . 'domain_map';
+				} else {
+					$this->db->dmtable = $this->db->prefix . 'domain_map';
+				}
+			}
 		}
 		// Set up the plugin
 		add_action('init', array(&$this, 'setup_plugin'));
@@ -83,6 +95,10 @@ class domain_map {
 
 		}
 
+		// Add in menus
+		add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
+		add_action( 'manage_sites_custom_column', array(&$this, 'add_domain_mapping_field'), 1, 2 );
+
 	}
 
 
@@ -96,7 +112,7 @@ class domain_map {
 		$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
 
 		if ( file_exists( $mofile ) )
-			load_plugin_textdomain( 'domainmap', $mofile );
+			load_textdomain( 'domainmap', $mofile );
 
 	}
 
@@ -110,7 +126,6 @@ class domain_map {
 		add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
 		add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
 		add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
-
 
 		add_filter( 'plugins_url', 'domain_mapping_plugins_uri', 1 );
 		add_filter( 'theme_root_uri', 'domain_mapping_themes_uri', 1 );
@@ -166,8 +181,7 @@ class domain_map {
 			}
 
 			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
-			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
-			add_action( 'manage_blogs_custom_column', array(&$this, 'add_domain_mapping_field'), 1, 3 );
+
 
 		} else {
 			// Add the management page
@@ -194,10 +208,6 @@ class domain_map {
 			add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
 
 			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
-
-			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
-
-			add_action( 'manage_blogs_custom_column', array(&$this, 'add_domain_mapping_field'), 1, 3 );
 
 		}
 
@@ -799,7 +809,11 @@ class domain_map {
 
 			$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmt} /* domain mapping */" );
 			foreach($mappings as $map) {
-				$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . $current_site->path . "</a>";
+				if($current_site->path == '/') {
+					$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . "</a>";
+				} else {
+					$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . $current_site->path . "</a>";
+				}
 			}
 
 		}
