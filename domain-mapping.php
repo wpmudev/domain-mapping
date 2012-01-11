@@ -352,16 +352,39 @@ class domain_map {
 
 	function handle_options_page() {
 
+
+		if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
+
+			check_admin_referer('update-dmoptions');
+
+			update_site_option('map_ipaddress', $_POST['map_ipaddress']);
+			update_site_option('map_supporteronly', $_POST['map_supporteronly']);
+
+			update_site_option('map_admindomain', $_POST['map_admindomain']);
+
+			$msg = 1;
+		}
+
+		$messages = array();
+		$messages[1] = __('Options updated.','domainmap');
+
 		?>
 		<div class="wrap">
 		<?php screen_icon('ms-admin'); ?>
 		<h2><?php _e('Domain mapping Options', 'domainmap') ?>
-		<?php echo $msg; ?>
 		</h2>
 
-		<form action="" method="get" id="ms-search">
-		<?
+			<?php
+			if ( !empty($msg) ) {
+				echo '<div id="message" class="updated fade"><p>' . $messages[(int) $msg] . '</p></div>';
+				$_SERVER['REQUEST_URI'] = remove_query_arg(array('message'), $_SERVER['REQUEST_URI']);
+			}
+			?>
 
+		<form action="" method="post" id="">
+
+		<?
+		wp_nonce_field('update-dmoptions');
 		echo '<h3>' . __( 'Domain mapping Configuration' ) . '</h3>';
 
 		if ( !file_exists( ABSPATH . '/wp-content/sunrise.php' ) ) {
@@ -411,7 +434,11 @@ class domain_map {
 		echo "</select>";
 		echo '</p>';
 
+
+
 		?>
+			<input type='hidden' name='action' value='updateoptions' />
+			<p class="submit"><input type="submit" value="Save Changes" class="button-primary" id="submit" name="submit"></p>
 			</form>
 			</div>
 		<?php
