@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.6
+Version: 3.0.6.1
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -383,7 +383,7 @@ class domain_map {
 
 		<form action="" method="post" id="">
 
-		<?
+		<?php
 		wp_nonce_field('update-dmoptions');
 		echo '<h3>' . __( 'Domain mapping Configuration' ) . '</h3>';
 
