@@ -1,9 +1,9 @@
-=== CustomPress ===
-
+=== Domain MappingBarry (Incsub)
 Author: Barry (Incsub)
 Author URI: http://premium.wpmudev.org
 
 == Changelog ==
 
 =3.0.8=
-* Mods to prevent problems with Theme customizer.
+* Mods to prevent problems with 3.4 theme customizer and domain mapping.
+
