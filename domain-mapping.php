@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.7
+Version: 3.0.8
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -171,6 +171,9 @@ class domain_map {
 
 					// Jump in just before header output to change base_url - until a neater method can be found
 					add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
+					add_action('admin_enqueue_scripts', array(&$this, 'reset_script_url'), 1, 1);
+					add_action('admin_footer', array(&$this, 'load_tb_fix'));
+
 				}
 
 				// Cross domain cookies
@@ -182,8 +185,8 @@ class domain_map {
 
 			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
 
-
 		} else {
+
 			// Add the management page
 			add_action( 'admin_menu', array(&$this, 'add_page') );
 
@@ -199,6 +202,8 @@ class domain_map {
 
 				// Jump in just before header output to change base_url - until a neater method can be found
 				add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
+				add_action('admin_enqueue_scripts', array(&$this, 'reset_script_url'), 1, 1);
+				add_action('admin_footer', array(&$this, 'load_tb_fix'));
 			}
 
 			// Cross domain cookies
@@ -351,7 +356,6 @@ class domain_map {
 	}
 
 	function handle_options_page() {
-
 
 		if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
 
@@ -583,7 +587,8 @@ class domain_map {
 		<?php
 		$domains = $this->db->get_results( $this->db->prepare("SELECT * FROM {$this->dmt} WHERE blog_id = %d",$this->db->blogid) );
 		if ( is_array( $domains ) && !empty( $domains ) ) {
-			foreach( $domains as $details ) { ?>
+					foreach( $domains as $details ) {
+						?>
 
 				<tr  class=''>
 					<th scope="row" class="check-column">&nbsp;
@@ -640,9 +645,7 @@ class domain_map {
 			</td>
 		</tr>
 		</form>
-		<?php
-		}
-		?>
+					<?php } ?>
 		</tbody>
 		</table>
 		</div>
@@ -652,13 +655,13 @@ class domain_map {
 
 	function reset_script_url($return) {
 
-		global $wp_scripts;
+		global $wp_scripts, $wp_styles;
 
 		$wp_scripts->base_url = site_url();
+		$wp_styles->base_url = site_url();
 
 		return $return;
 	}
-
 
 	function swap_mapped_url($url, $path, $plugin = false) {
 		global $current_blog, $current_site, $mapped_id;
@@ -693,8 +696,6 @@ class domain_map {
 		}
 
 		return $url;
-
-
 	}
 
 	function domain_mapping_siteurl( $setting ) {
@@ -782,6 +783,14 @@ class domain_map {
 	function redirect_to_mapped_domain() {
 		global $current_blog, $current_site;
 
+		// don't redirect post previews
+		if ( isset( $_GET['preview'] ) && $_GET['preview'] == 'true' )
+		return;
+
+		// don't redirect theme customizer (WP 3.4)
+		if ( isset( $_POST['customize'] ) && isset( $_POST['theme'] ) && $_POST['customize'] == 'on' )
+		return;
+
 		$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
 		$url = $this->domain_mapping_siteurl( false );
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
@@ -858,8 +867,20 @@ class domain_map {
 		}
 	}
 
+	//// New function added to handle mapping the domain for the thickbox plugin in the admin section
+	function load_tb_fix()
+	{
+		?>
+		<script type="text/javascript">
+			'tb_pathToImage = "<?php echo includes_url('js/thickbox/loadingAnimation.gif'); ?>";
+			'tb_closeImage = "<?php echo includes_url('js/thickbox/tb-close.png'); ?>";
+		</script>
 
+		<?php
 }
+
+} //end class domain_map
+
 
 function set_domainmap_dir($base) {
 
