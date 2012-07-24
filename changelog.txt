@@ -1,0 +1,9 @@
+=== CustomPress ===
+
+Author: Barry (Incsub)
+Author URI: http://premium.wpmudev.org
+
+== Changelog ==
+
+=3.0.8=
+* Mods to prevent problems with Theme customizer.
