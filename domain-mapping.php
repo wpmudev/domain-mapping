@@ -914,7 +914,7 @@ function domainmap_dir($extended) {
 
 }
 
-include_once 'wpmudev-dash-notification.php';
+include_once('dash-notice/wpmudev-dash-notification.php');
 
 
 // Set up my location
