@@ -31,7 +31,7 @@ Network: true
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 
 if ( !is_multisite() )
-     exit( __('The domain mapping plugin is only compatible with WordPress Multisite.', 'domainmap') );
+  exit( __('The domain mapping plugin is only compatible with WordPress Multisite.', 'domainmap') );
 
 class domain_map {
 
@@ -154,10 +154,10 @@ class domain_map {
 
 		$sup = get_site_option( 'map_supporteronly', '0' );
 
-		if(function_exists('is_supporter') && $sup == '1') {
+		if(function_exists('is_pro_site') && $sup == '1') {
 			// The supporter function exists and we are limiting domain mapping to supporters
 
-			if(is_supporter()) {
+			if(is_pro_site()) {
 				// Add the management page
 				add_action( 'admin_menu', array(&$this, 'add_page') );
 				if ( defined( 'DOMAIN_MAPPING' ) ) {
@@ -404,10 +404,10 @@ class domain_map {
 		_e( "Server IP Address: ", 'domainmap' );
 		echo "<input type='text' name='map_ipaddress' value='" . get_site_option( 'map_ipaddress' ) . "' />";
 
-		if(function_exists('is_supporter')) {
+		if(function_exists('is_pro_site')) {
 			$sup = get_site_option( 'map_supporteronly', '0' );
-			echo '<p>' . __('Make this functionality only available to Supporters', 'domainmap') . '</p>';
-			_e("Supporters Only: ", 'domainmap');
+			echo '<p>' . __('Make this functionality only available to Pro Sites', 'domainmap') . '</p>';
+			_e("Pro Sites Only: ", 'domainmap');
 			echo "<select name='map_supporteronly'>";
 			echo "<option value='0'";
 			if($sup == 0) echo " selected='selected'";
@@ -782,14 +782,18 @@ class domain_map {
 
 	function redirect_to_mapped_domain() {
 		global $current_blog, $current_site;
-
+		
+		// don't redirect AJAX requests
+		if ( defined( 'DOING_AJAX' ) )
+			return;
+	
 		// don't redirect post previews
 		if ( isset( $_GET['preview'] ) && $_GET['preview'] == 'true' )
-		return;
+			return;
 
 		// don't redirect theme customizer (WP 3.4)
 		if ( isset( $_POST['customize'] ) && isset( $_POST['theme'] ) && $_POST['customize'] == 'on' )
-		return;
+			return;
 
 		$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
 		$url = $this->domain_mapping_siteurl( false );
@@ -807,7 +811,11 @@ class domain_map {
 
 	function redirect_to_orig_domain() {
 		global $current_blog, $current_site;
-
+		
+		// don't redirect AJAX requests
+		if ( defined( 'DOING_AJAX' ) )
+			return;
+		
 		$protocol = ( 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
 		$url = get_option( 'siteurl' );
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {

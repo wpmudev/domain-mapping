@@ -6,4 +6,6 @@ Author URI: http://premium.wpmudev.org
 
 =3.0.8=
 * Mods to prevent problems with 3.4 theme customizer and domain mapping.
+* Update for Pro Sites
+* Do not redirect ajax requests
 
