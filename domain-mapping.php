@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.8
+Version: 3.0.8.1
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -31,7 +31,7 @@ Network: true
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 
 if ( !is_multisite() )
-  exit( __('The domain mapping plugin is only compatible with WordPress Multisite.', 'domainmap') );
+     exit( __('The domain mapping plugin is only compatible with WordPress Multisite.', 'domainmap') );
 
 class domain_map {
 
@@ -45,8 +45,12 @@ class domain_map {
 
 	function __construct() {
 
-		global $wpdb;
-
+		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
+		
+		$dm_cookie_style_printed = false;
+		$dm_logout = false;
+		$dm_authenticated = false;
+		
 		$this->db =& $wpdb;
 
 		if(!empty($this->db->dmtable)) {
@@ -74,84 +78,139 @@ class domain_map {
 
 		// Add in the cross domain logins
 		add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
-
-		if(is_admin() || strpos(addslashes($_SERVER["SCRIPT_NAME"]),'/wp-login.php') !== false) {
-			// We are in the admin area, so check for the redirects here
-			$addom = get_site_option( 'map_admindomain', 'user' );
-
-			switch($addom) {
-
-				case 'user':		break;
-				case 'mapped':		$this->redirect_to_mapped_domain();
-									break;
-				case 'original':	if ( defined( 'DOMAIN_MAPPING' ) ) {
-										// put in the code to send me to the original domain
-										$this->redirect_to_orig_domain();
-									}
-									break;
-
-
-			}
-
-		}
-
+		
 		// Add in menus
-		add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
 		add_action( 'manage_sites_custom_column', array(&$this, 'add_domain_mapping_field'), 1, 2 );
-
+		
+		add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
+		
+                add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
+                add_filter( 'logout_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
+                add_filter( 'admin_url', array(&$this, 'domain_mapping_admin_url'), 3, 100 );
+		
+		add_filter( 'allowed_redirect_hosts' , array(&$this, 'allowed_redirect_hosts'), 10);
+		
+		add_action( 'login_head', array(&$this, 'build_logout_cookie') );
 	}
-
-
+	
 	function domain_map() {
 		$this->__construct();
 	}
 
 	function load_textdomain() {
-
 		$locale = apply_filters( 'domainmap_locale', get_locale() );
 		$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
-
 		if ( file_exists( $mofile ) )
 			load_textdomain( 'domainmap', $mofile );
-
+	}
+	
+	function shibboleth_session_initiator_url($initiator_url) {
+		return $initiator_url;
 	}
 
-	function setup_filters() {
-
-		add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
-		add_filter( 'pre_option_home', array(&$this, 'domain_mapping_home') );
-		add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-
-		add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
-		add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
-		add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
-		add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
-
-		add_filter( 'plugins_url', 'domain_mapping_plugins_uri', 1 );
-		add_filter( 'theme_root_uri', 'domain_mapping_themes_uri', 1 );
-
-		add_action( 'wp_head', 'remote_login_js_loader' );
-		add_action( 'login_head', 'redirect_login_to_orig' );
-		add_action( 'wp_logout', 'remote_logout_loader', 9999 );
-
-		add_filter( 'stylesheet_uri', array(&$this, 'domain_mapping_post_content') );
-		add_filter( 'stylesheet_directory', array(&$this, 'domain_mapping_post_content') );
-		add_filter( 'stylesheet_directory_uri', array(&$this, 'domain_mapping_post_content') );
-		add_filter( 'template_directory', array(&$this, 'domain_mapping_post_content') );
-		add_filter( 'template_directory_uri', array(&$this, 'domain_mapping_post_content') );
-		add_filter( 'plugins_url', array(&$this, 'domain_mapping_post_content') );
-
+	function domain_mapping_login_url($login_url, $redirect='') {
+		$logdom = get_site_option( 'map_logindomain', 'user' );
+		
+		switch($logdom) {
+			case 'user':
+				break;
+			case 'mapped':
+				break;
+			case 'original':
+				$mapped_url = site_url('/');
+				$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
+				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				$url = trailingslashit(get_option('siteurl'));
+				$url = str_replace(array('https://', 'http://'), '', $url);
+				$login_url = str_replace($mapped_url, $url, $login_url);
+				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				break;
+		}
+		
+		return $login_url;
+	}
+	
+	function domain_mapping_admin_url($admin_url, $path = '/', $_blog_id = false) {
+		global $blog_id;
+		
+		$logdom = get_site_option( 'map_admindomain', 'user' );
+		
+		if (!$_blog_id) {
+			$_blog_id = $blog_id;
+		}
+		
+		switch($logdom) {
+			case 'user':
+				break;
+			case 'mapped':
+				break;
+			case 'original':
+				$mapped_url = site_url('/');
+				$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
+				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				$url = trailingslashit(get_option('siteurl'));
+				$url = str_replace(array('https://', 'http://'), '', $url);
+				$admin_url = str_replace($mapped_url, $url, $admin_url);
+				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				break;
+		}
+		
+		return $admin_url;
 	}
 
 	function setup_plugin() {
-
 		$this->handle_translation();
+		
+		if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
+			check_admin_referer('update-dmoptions');
+			update_site_option('map_ipaddress', $_POST['map_ipaddress']);
+			update_site_option('map_supporteronly', $_POST['map_supporteronly']);
+			update_site_option('map_admindomain', $_POST['map_admindomain']);
+			update_site_option('map_logindomain', $_POST['map_logindomain']);
+		}
+		
+		if (is_admin()) {
+			// We are in the admin area, so check for the redirects here
+			$addom = get_site_option( 'map_admindomain', 'user' );
+				
+			switch($addom) {
+				case 'user':
+					break;
+				case 'mapped':
+					$this->redirect_to_mapped_domain();
+					break;
+				case 'original':
+					if ( defined( 'DOMAIN_MAPPING' ) ) {
+						// put in the code to send me to the original domain
+						$this->redirect_to_orig_domain();
+					}
+					break;
+			}
+		} else {
+			if (strpos(addslashes($_SERVER["SCRIPT_NAME"]),'/wp-login.php') !== false) {
+				// We are in the login area, so check for the redirects here
+				$logdom = get_site_option( 'map_logindomain', 'user' );
+				
+				switch($logdom) {
+					case 'user':
+						break;
+					case 'mapped':
+						$this->redirect_to_mapped_domain();
+						break;
+					case 'original':
+						if ( defined( 'DOMAIN_MAPPING' ) ) {
+							// put in the code to send me to the original domain
+							$this->redirect_to_orig_domain();
+						}
+						break;
+				}
+			}
+		}
+		
 		// Add the options page
 		//add_action( 'wpmu_options', array(&$this, 'handle_domain_options'));
 		//add_action( 'update_wpmu_options', array(&$this, 'update_domain_options'));
-
 		add_action( 'network_admin_menu', array(&$this, 'add_admin_pages') );
-
 		$sup = get_site_option( 'map_supporteronly', '0' );
 
 		if(function_exists('is_pro_site') && $sup == '1') {
@@ -164,158 +223,398 @@ class domain_map {
 					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 					add_filter( 'pre_option_home', array(&$this, 'domain_mapping_home') );
 					add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-
-					add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
-					add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
-					add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
-
 					// Jump in just before header output to change base_url - until a neater method can be found
 					add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
-					add_action('admin_enqueue_scripts', array(&$this, 'reset_script_url'), 1, 1);
-					add_action('admin_footer', array(&$this, 'load_tb_fix'));
-
 				}
-
+				
+				add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
+                                add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
+				add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
+				add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
+				
+				add_filter( 'includes_url', array(&$this, 'unswap_mapped_url'), 10, 2);
+				
 				// Cross domain cookies
+				//if ( defined('SHIBBOLETH_PLUGIN_REVISION') ) {
+					//add_action( 'wp_login', array(&$this, 'build_cookie'), 100, 2 );
+					add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+				//}
 				add_action( 'admin_head', array(&$this, 'build_cookie') );
-				add_action( 'login_head', array(&$this, 'build_logout_cookie') );
-
 				add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
 			}
-
 			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
-
 		} else {
-
 			// Add the management page
 			add_action( 'admin_menu', array(&$this, 'add_page') );
-
 			if ( defined( 'DOMAIN_MAPPING' ) ) {
 				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 				add_filter( 'pre_option_home', array(&$this, 'domain_mapping_home') );
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-
-				add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
-				add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
-				add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 3);
-				add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
-
 				// Jump in just before header output to change base_url - until a neater method can be found
 				add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
-				add_action('admin_enqueue_scripts', array(&$this, 'reset_script_url'), 1, 1);
-				add_action('admin_footer', array(&$this, 'load_tb_fix'));
 			}
-
+			
+			add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
+                        add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
+                        add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
+			add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 3);
+			
+			add_filter( 'includes_url', array(&$this, 'unswap_mapped_url'), 10, 2);
 			// Cross domain cookies
+			//if ( defined('SHIBBOLETH_PLUGIN_REVISION') ) {
+				// add_action( 'wp_login', array(&$this, 'build_cookie'), 100, 2 );
+				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+				add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
+				add_action('wp_logout', array(&$this, 'wp_logout'), 10);
+			//}
 			add_action( 'admin_head', array(&$this, 'build_cookie') );
-			add_action( 'login_head', array(&$this, 'build_logout_cookie') );
-
 			add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
-
 			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
-
 		}
-
+	}
+	
+	function authenticate($user) {
+		global $dm_authenticated;
+		
+		if (!empty($user)) {
+			$dm_authenticated = $user;
+		}
+		
+		return $user;
+	}
+	
+	function wp_logout() {
+		global $dm_logout;
+		
+		$dm_logout = true;
+	}
+	
+	function wp_redirect($location) {
+		global $dm_authenticated, $dm_logout, $dm_csc_building_urls;
+		
+		if ($dm_authenticated) {
+			?>
+			<!DOCTYPE html>
+			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+				<head>
+					<meta name="robots" content="noindex,nofollow" />
+					<title><?php _e('Authenticating...', 'domainmap'); ?></title>
+					<?php
+					if (!empty($dm_authenticated) && !empty($dm_authenticated->ID)) {
+						$this->build_cookie('loging', $dm_authenticated, $location);
+					} else {
+						$this->build_cookie('logout');
+					}
+					
+					if (count($dm_csc_building_urls) > 0) {
+						$dm_csc_building_urls[] = rawurlencode($location);
+						
+						$location = rawurldecode(array_shift($dm_csc_building_urls));
+						$location .= '&follow_through='.join(',', $dm_csc_building_urls);
+					}
+					?>
+					<meta http-equiv="refresh" content="3;url=<?php echo $location; ?>" />
+				</head>
+				<body>
+					<h1><?php _e('Please wait...', 'domainmap'); ?></h1>
+					<p><?php echo sprintf(__('If it doesn\'t redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap'), $location); ?></p>
+					<!-- Hej -->
+				</body>
+			</html>
+			<?php
+			header("HTTP/1.1 302 Found", true, 302);
+			header("Location: {$location}", true, 302);
+			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			// @ob_flush();
+			exit();
+		}
+		
+		if ($dm_logout) {
+			?>
+			<!DOCTYPE html>
+			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+				<head>
+					<meta name="robots" content="noindex,nofollow" />
+					<title><?php _e('Authenticating...', 'domainmap'); ?></title>
+					<?php
+					$this->build_cookie('logout');
+					
+					if (count($dm_csc_building_urls) > 0) {
+						$dm_csc_building_urls[] = rawurlencode($location);
+						
+						$location = rawurldecode(array_shift($dm_csc_building_urls));
+						$location .= '&follow_through='.join(',', $dm_csc_building_urls);
+					}
+					?>
+					<meta http-equiv="refresh" content="3;url=<?php echo $location; ?>" />
+				</head>
+				<body>
+					<h1><?php _e('Please wait...', 'domainmap'); ?></h1>
+					<p><?php echo sprintf(__('If it doesn\'t redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap'), $location); ?></p>
+					<!-- Hej dŒ -->
+				</body>
+			</html>
+			<?php
+			header("HTTP/1.1 302 Found", true, 302);
+			header("Location: {$location}", true, 302);
+			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			// @ob_flush();
+			exit();
+		}
+		
+		return $location;
 	}
 
 	function handle_translation() {
-
 		$locale = get_locale();
-
 		if(empty($locale)) $locale = "en_US";
-
 		$mofile = WP_LANG_DIR . "/domainmap-$locale.mo";
 		load_textdomain('domainmap', $mofile);
-
 	}
 
 	// Cookie functions
 	function build_logout_cookie() {
-
 		if(isset($_GET['loggedout'])) {
 			// Log out CSS
 			$this->build_cookie('logout');
 		}
-
 	}
 
-	function build_cookie($action = 'login') {
+	function build_cookie($action = 'login', $user = false, $redirect_to = false) {
+		global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls;
+		
+		/**
+		 * Cookie building order:
+		 * - Main site url
+		 * - Main site admin url
+		 * - Unmapped site
+		 * - Mapped site
+		 * - Redirect to unampped site
+		 * - Redirect to mapped site
+		 */
+		
+		if (!is_array($dm_csc_building_urls)) {
+			$dm_csc_building_urls = array();
+		}
+		if($action == '' || $action != 'logout') $action = 'login';
 
-		global $blog_id, $current_site;
-
-		if($action == '') $action = 'login';
-
-		$url = false;
-		if ( defined( 'DOMAIN_MAPPING' ) ) {
-			$domains = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$blog_id}' LIMIT 1 /* domain mapping */");
-			$url = 'http://' . $domains->domain . $domains->path;
-		} else {
-			$domain = $this->db->get_var( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$blog_id}' ORDER BY id LIMIT 1 /* domain mapping */");
-			if($domain) {
-				$url = 'http://' . $domain . '/';
+		$urls = array();
+		
+		// Main site url
+		$network_url = parse_url(network_site_url());
+		if (!isset($urls[$network_url['host']]))
+			$urls[$network_url['host']] = 'http://' . $network_url['host'] . '/';
+		
+		// Main site admin url
+		$network_admin_url = parse_url(network_admin_url());
+		if (!isset($urls[$network_admin_url['host']]))
+			$urls[$network_admin_url['host']] = 'http://' . $network_admin_url['host'] . $network_url['path'];
+		
+		// Unmapped site
+		$domain = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$blog_id}' LIMIT 1 /* domain mapping */", ARRAY_A);
+		if (!isset($urls[$domain['domain']]))
+			$urls[$domain['domain']] = 'http://' . $domain['domain'] . $domain['path'];
+		
+		// Mapped site
+		$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+		if($domains && is_array($domains)) {
+			foreach ($domains as $domain) {
+				if (!isset($urls[$domain['domain']]))
+					$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
 			}
 		}
-
-		if($url) {
-			$key = get_option('cross_domain', 'none');
-			if($key == 'none') $key = array();
-
-			$hash = md5( AUTH_KEY . time() . 'COOKIEMONSTER');
-
-			$user = wp_get_current_user();
-
-			$key[$hash] = array ( 	"domain" 	=> $url,
-									"hash"		=> $hash,
-									"user_id"	=> $user->ID,
-									"action"	=> $action
-									);
-
-			update_option('cross_domain', $key);
-
-			echo '<link rel="stylesheet" href="' . $url . $hash . '.css?build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+		
+		// We are redirecting, lets pack some cookies for the journey. Nom Nom Nom
+		if ($redirect_to) {
+			$redirect_url = parse_url($redirect_to);
+			
+			$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmt} WHERE domain = '{$redirect_url['host']}' OR domain LIKE '{$redirect_url['host']}/%' ORDER BY id LIMIT 1 /* domain mapping */", ARRAY_A);
+			if ($domain) {
+				// redirect to unmapped site
+				$addom = get_site_option( 'map_admindomain', 'user' );
+				if (!isset($urls[$domain['domain']]))
+					$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
+				
+				// Other mapped sites
+				$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+				if($domains && is_array($domains)) {
+					foreach ($domains as $domain) {
+						if (!isset($urls[$domain['domain']]))
+							$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
+					}
+				}
+				
+				// redirect to mapped site
+				$domain = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$domain->blog_id}' LIMIT 1 /* domain mapping */", ARRAY_A);
+				if ($domain) {
+					if (!isset($urls[$domain['domain']]))
+						$urls[$domain['domain']] = 'http://' . $domain['domain'] . $domain['path'];
+				}
+			} else {
+				// redirect to unmapped site
+				$domain = $this->db->get_row( "SELECT blog_id, domain, path FROM {$this->db->blogs} WHERE domain = '{$redirect_url['host']}' LIMIT 1 /* domain mapping */", ARRAY_A);
+				if ($domains) {
+					if (!isset($urls[$domain['domain']]))
+						$urls[$domain['domain']] = 'http://' . $domain['domain'] . $domain['path'];
+					
+					// Other mapped sites
+					$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+					if($domains && is_array($domains)) {
+						foreach ($domains as $domain) {
+							if (!isset($urls[$domain['domain']]))
+								$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
+						}
+					}
+				
+					// redirect to mapped site
+					$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmt} WHERE blog_id = '{$domains->blog_id}' LIMIT 1 /* domain mapping */", ARRAY_A);
+					if ($domain) {
+						if (!isset($urls[$domain['domain']]))
+							$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
+					}
+				}
+			}
 		}
-
-
+		
+		$_ssl = false;
+		if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
+			$_ssl = true;
+		}
+		
+		if(count($urls) > 0) {
+			$key = get_user_meta($user->ID, 'cross_domain', true);
+			if($key == 'none') $key = array();
+			foreach ($urls as $url) {
+				$parsed_url = parse_url($url);
+				
+				if (!isset($parsed_url['host']) || empty($parsed_url['host'])) {
+					continue;
+				}
+				
+				$hash = md5( AUTH_KEY . microtime() . 'COOKIEMONSTER' . $url );
+				
+				if (!$user) {
+					$user = wp_get_current_user();
+				}
+				$key[$hash] = array ( 	"domain" 	=> $url,
+										"hash"		=> $hash,
+										"user_id"	=> $user->ID,
+										"action"	=> $action
+										);
+				
+				if ( is_admin() ) {
+					if ( ( ($_ssl && preg_match('/https:\/\//', $url) > 0) || (!$_ssl && preg_match('/http:\/\//', $url) > 0) ) ) {
+						$dm_cookie_style_printed = true;
+						echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+					} else if ($_ssl) {
+						$url = preg_replace( '/http:\/\//', 'https://', $url );
+						echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+					} else {
+						$url = preg_replace( '/https:\/\//', 'http://', $url );
+						echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+					}
+				}
+				
+				$dm_csc_building_urls[] = rawurlencode( $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) );
+			}
+			update_user_meta($user->ID, 'cross_domain', $key);
+		}
+	}
+	
+	function allowed_redirect_hosts($allowed_hosts) {
+		global $blog_id;
+		
+		if (empty($_REQUEST['redirect_to'])) {
+			return $allowed_hosts;
+		}
+		
+		$redirect_url = parse_url($_REQUEST['redirect_to']);
+		$network_home_url = parse_url(network_home_url());
+		if ($redirect_url['host'] === $network_home_url['host']) {
+			return $allowed_hosts;
+		}
+		
+		$pos = strpos($redirect_url['host'], '.');
+		if (($pos !== false) && (substr($redirect_url['host'], $pos + 1) === $network_home_url['host'])) {
+			$allowed_hosts[] = $redirect_url['host'];
+		}
+		
+		$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmt} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */");
+		if ($bid) {
+			$allowed_hosts[] = $redirect_url['host'];
+		}
+		
+		return $allowed_hosts;
 	}
 
 	function build_stylesheet_for_cookie() {
-
-		if( isset($_GET['build']) && addslashes($_GET['build']) == date("Ymd", strtotime('-24 days') ) ) {
-			// We have a stylesheet with a build and a matching date - so grab the hash
-			$url = parse_url($_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH);
-			$hash = str_replace('.css','', basename($url));
-
-			$key = get_option('cross_domain');
-
-			if(array_key_exists($hash, (array) $key)) {
-				if(!is_user_logged_in() ) {
-					// Set the cookies
-					switch($key[$hash]['action']) {
-
-						case 'login':	wp_set_auth_cookie($key[$hash]['user_id']);
-										break;
-						default:
-										break;
+		if( isset($_GET['build']) && isset($_GET['uid']) ) {
+			if ( addslashes($_GET['build']) == date("Ymd", strtotime('-24 days') ) ) {
+				// We have a stylesheet with a build and a matching date - so grab the hash
+				$url = parse_url($_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH);
+				$hash = str_replace('','', basename($url));
+				$key = get_user_meta($_GET['uid'], 'cross_domain', true);
+				
+				if (array_key_exists($hash, (array) $key)) {
+					if(!is_user_logged_in() ) {
+						// Set the cookies
+						switch($key[$hash]['action']) {
+							case 'login':	wp_set_auth_cookie($key[$hash]['user_id']);
+											break;
+							default:
+											break;
+						}
+					} else {
+						// Set the cookies
+						switch($key[$hash]['action']) {
+							case 'logout':
+								wp_clear_auth_cookie();
+								break;
+							default:
+								break;
+						}
 					}
-
-				} else {
-					// Set the cookies
-					switch($key[$hash]['action']) {
-
-						case 'logout':	wp_clear_auth_cookie();
-										break;
-						default:
-										break;
-					}
+					unset($key[$hash]);
+					update_user_meta($_GET['uid'], 'cross_domain', (array) $key);
 				}
-
-		        header("Content-type: text/css");
-				echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
-				define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-				unset($key[$hash]);
-				update_option('cross_domain', (array) $key);
-				die();
 			}
+			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			if (!isset($_REQUEST['follow_through'])) {
+				header("Content-type: text/css");
+				echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
+			} else {
+			?>
+				<!DOCTYPE html>
+				<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+					<head>
+						<meta name="robots" content="noindex,nofollow" />
+						<title><?php _e('Authenticating...', 'domainmap'); ?></title>
+						<?php
+						$follow_through = preg_split('/,/', $_REQUEST['follow_through']);
+						if (count($follow_through) > 0) {
+							$location = rawurldecode(array_pop($follow_through));
+						} else {
+							$location = site_url();
+						}
+						if (count($follow_through) > 0) {
+							foreach ($follow_through as $dm_csc_style_location) {
+								echo '<link rel="stylesheet" href="' . rawurldecode($dm_csc_style_location) . '" type="text/css" media="screen" />';
+							}
+						}
+						?>
+					</head>
+					<body>
+						<h1><?php _e('Please wait...', 'domainmap'); ?></h1>
+						<p><?php echo sprintf(__('If it doesn\'t redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap'), $location); ?></p>
+						<script type="text/javascript">
+							window.location = '<?php echo $location; ?>';
+						</script>
+						<!-- Flytta pŒ -->
+					</body>
+				</html>
+				<?php
+			}
+			exit();
 		}
 	}
 
@@ -357,6 +656,7 @@ class domain_map {
 
 	function handle_options_page() {
 
+
 		if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
 
 			check_admin_referer('update-dmoptions');
@@ -365,7 +665,8 @@ class domain_map {
 			update_site_option('map_supporteronly', $_POST['map_supporteronly']);
 
 			update_site_option('map_admindomain', $_POST['map_admindomain']);
-
+			update_site_option('map_logindomain', $_POST['map_logindomain']);
+			
 			$msg = 1;
 		}
 
@@ -437,8 +738,26 @@ class domain_map {
 		echo ">" . __('original domain', 'domainmap') . "</option>";
 		echo "</select>";
 		echo '</p>';
+		
+		echo '<h4>' . __( 'Login mapping', 'domainmap' ) . '</h4>';
 
+		echo "<p>" . __( "The settings below allow you to control how the domain mapping plugin operates with the login area.", 'domainmap' ) . "</p>";
 
+		$logdom = get_site_option( 'map_logindomain', 'user' );
+		echo '<p>';
+		echo __('The domain used for the login area should be the', 'domainmap') . '&nbsp;';
+		echo "<select name='map_logindomain'>";
+		echo "<option value='user'";
+		if($logdom == 'user') echo " selected='selected'";
+		echo ">" . __('domain entered by the user', 'domainmap') . "</option>";
+		echo "<option value='mapped'";
+		if($logdom == 'mapped') echo " selected='selected'";
+		echo ">" . __('mapped domain', 'domainmap') . "</option>";
+		echo "<option value='original'";
+		if($logdom == 'original') echo " selected='selected'";
+		echo ">" . __('original domain', 'domainmap') . "</option>";
+		echo "</select>";
+		echo '</p>';
 
 		?>
 			<input type='hidden' name='action' value='updateoptions' />
@@ -454,7 +773,7 @@ class domain_map {
 		update_site_option('map_supporteronly', $_POST['map_supporteronly']);
 
 		update_site_option('map_admindomain', $_POST['map_admindomain']);
-
+		update_site_option('map_logindomain', $_POST['map_logindomain']);
 	}
 
 	function handle_domain_options() {
@@ -473,7 +792,7 @@ class domain_map {
 		_e( "Server IP Address: ", 'domainmap' );
 		echo "<input type='text' name='map_ipaddress' value='" . get_site_option( 'map_ipaddress' ) . "' />";
 
-		if(function_exists('is_supporter')) {
+		if(function_exists('is_pro_site')) {
 			$sup = get_site_option( 'map_supporteronly', '0' );
 			echo '<p>' . __('Make this functionality only available to Supporters', 'domainmap') . '</p>';
 			_e("Supporters Only: ", 'domainmap');
@@ -587,8 +906,7 @@ class domain_map {
 		<?php
 		$domains = $this->db->get_results( $this->db->prepare("SELECT * FROM {$this->dmt} WHERE blog_id = %d",$this->db->blogid) );
 		if ( is_array( $domains ) && !empty( $domains ) ) {
-					foreach( $domains as $details ) {
-						?>
+			foreach( $domains as $details ) { ?>
 
 				<tr  class=''>
 					<th scope="row" class="check-column">&nbsp;
@@ -650,39 +968,44 @@ class domain_map {
 		</table>
 		</div>
 		<?php
-
 	}
 
 	function reset_script_url($return) {
 
-		global $wp_scripts, $wp_styles;
+		global $wp_scripts;
 
 		$wp_scripts->base_url = site_url();
-		$wp_styles->base_url = site_url();
 
 		return $return;
 	}
 
-	function swap_mapped_url($url, $path, $plugin = false) {
-		global $current_blog, $current_site, $mapped_id;
-
+	function swap_mapped_url($url, $path, $plugin = false, $bid = null) {
+		global $current_blog, $current_site, $mapped_id, $current_blog;
 		// To reduce the number of database queries, save the results the first time we encounter each blog ID.
 		static $swapped_url = array();
-
+		
+		if ($plugin == 'relative') {
+			return "{$current_blog->path}{$path}";
+		}
+		
+		if ($plugin == 'login_post' || $plugin == 'login') {
+			return $this->domain_mapping_login_url($url);
+		}
+		
+		if ($plugin == 'admin') {
+			return $this->domain_mapping_admin_url($url);
+		}
 		if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
 			$s = $this->db->suppress_errors();
 			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
 			//$olddomain = str_replace($path, '', $url);
 			$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
-
 			if ( empty( $domain ) ) {
 				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 			}
-
 			$this->db->suppress_errors( $s );
-			$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
+			$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
 			if ( $domain ) {
-
 				$innerurl = trailingslashit( $protocol . $domain . $current_site->path );
 				$newurl = str_replace($olddomain, $innerurl, $url);
 				$swapped_url[ $this->db->blogid ] = array($olddomain, $innerurl);
@@ -694,7 +1017,39 @@ class domain_map {
 			$olddomain = $swapped_url[ $this->db->blogid ][0];
 			$url = str_replace($olddomain, $swapped_url[ $this->db->blogid ][1], $url);
 		}
-
+		return $url;
+	}
+	
+	function unswap_mapped_url($url, $path) {
+		global $current_blog, $current_site, $mapped_id;
+		// To reduce the number of database queries, save the results the first time we encounter each blog ID.
+		static $swapped_url = array();
+		
+		if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
+			$s = $this->db->suppress_errors();
+			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+			//$olddomain = str_replace($path, '', $url);
+			$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
+			if ( empty( $domain ) ) {
+				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+			}
+			$this->db->suppress_errors( $s );
+			$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+			if ( $domain ) {
+				$innerurl = trailingslashit( $protocol . $domain . $current_site->path );
+				$newurl = str_replace($innerurl, $olddomain, $url);
+				$swapped_url[ $this->db->blogid ] = array($olddomain, $innerurl);
+				$url = $newurl;
+			} else {
+				$swapped_url[ $this->db->blogid ] = false;
+			}
+		} elseif ( $swapped_url[ $this->db->blogid ] !== FALSE) {
+			$olddomain = $swapped_url[ $this->db->blogid ][0];
+			$url = str_replace($swapped_url[ $this->db->blogid ][1], $olddomain, $url);
+		}
+		if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
+			$url = str_replace('http://', 'https://', $url);
+		}
 		return $url;
 	}
 
@@ -714,7 +1069,7 @@ class domain_map {
 			}
 
 			$this->db->suppress_errors( $s );
-			$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
+			$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
 			if ( $domain ) {
 				$return_url[ $this->db->blogid ] = untrailingslashit( $protocol . $domain . $current_site->path );
 				$setting = $return_url[ $this->db->blogid ];
@@ -744,7 +1099,7 @@ class domain_map {
 			}
 
 			$this->db->suppress_errors( $s );
-			$protocol = ( 'on' == strtolower( $_SERVER['HTTPS' ] ) ) ? 'https://' : 'http://';
+			$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
 			if ( $domain ) {
 				$return_home[ $this->db->blogid ] = untrailingslashit( $protocol . $domain . $current_site->path );
 				$setting = $return_home[ $this->db->blogid ];
@@ -764,7 +1119,7 @@ class domain_map {
 		if ( ! isset( $orig_urls[ $this->db->blogid ] ) ) {
 			remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 			$orig_url = get_option( 'siteurl' );
-			if ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) {
+			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
 				$orig_url = str_replace( "http://", "https://", $orig_url );
 			} else {
 				$orig_url = str_replace( "https://", "http://", $orig_url );
@@ -777,25 +1132,13 @@ class domain_map {
 		$url = $this->domain_mapping_siteurl( 'NA' );
 		if ( $url == 'NA' )
 			return $post_content;
-		return str_replace( $orig_url, $url, $post_content );
+		return str_replace( trailingslashit($orig_url), trailingslashit($url), $post_content );
 	}
 
 	function redirect_to_mapped_domain() {
 		global $current_blog, $current_site;
-		
-		// don't redirect AJAX requests
-		if ( defined( 'DOING_AJAX' ) )
-			return;
-	
-		// don't redirect post previews
-		if ( isset( $_GET['preview'] ) && $_GET['preview'] == 'true' )
-			return;
 
-		// don't redirect theme customizer (WP 3.4)
-		if ( isset( $_POST['customize'] ) && isset( $_POST['theme'] ) && $_POST['customize'] == 'on' )
-			return;
-
-		$protocol = ( isset( $_SERVER['HTTPS' ] ) && 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
+		$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) )  ? 'https://' : 'http://';
 		$url = $this->domain_mapping_siteurl( false );
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
@@ -811,12 +1154,13 @@ class domain_map {
 
 	function redirect_to_orig_domain() {
 		global $current_blog, $current_site;
-		
+
 		// don't redirect AJAX requests
 		if ( defined( 'DOING_AJAX' ) )
 			return;
 		
-		$protocol = ( 'on' == strtolower($_SERVER['HTTPS']) ) ? 'https://' : 'http://';
+		$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) )  ? 'https://' : 'http://';
+		remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 		$url = get_option( 'siteurl' );
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
@@ -828,6 +1172,7 @@ class domain_map {
 			}
 			exit;
 		}
+		add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
 	}
 
 	function delete_blog_domain_mapping( $blog_id, $drop ) {
@@ -920,7 +1265,8 @@ include_once('dash-notice/wpmudev-dash-notification.php');
 // Set up my location
 set_domainmap_dir(__FILE__);
 
+global $dm_map;
+
 $dm_map =& new domain_map();
 
 
-?>
