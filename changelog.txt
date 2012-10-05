@@ -4,7 +4,11 @@ Author URI: http://premium.wpmudev.org
 
 == Changelog ==
 
-=3.0.8=
+= 3.0.8.1 =
+* FORCE_SSL_LOGIN compatibility
+* FORCE_SSL_ADMIN compatibility
+
+= 3.0.8 =
 * Mods to prevent problems with 3.4 theme customizer and domain mapping.
 * Update for Pro Sites
 * Do not redirect ajax requests
