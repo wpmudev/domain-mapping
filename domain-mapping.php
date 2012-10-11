@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.8.1
+Version: 3.0.8.2
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
