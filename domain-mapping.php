@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.0.8.2
+Version: 3.0.8.3
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -294,6 +294,8 @@ class domain_map {
 		
 		if ($dm_authenticated) {
 			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			header("HTTP/1.1 302 Found", true, 302);
+			header("Location: {$location}", true, 302);
 			?>
 			<!DOCTYPE html>
 			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -323,14 +325,14 @@ class domain_map {
 				</body>
 			</html>
 			<?php
-			@header("HTTP/1.1 302 Found", true, 302);
-			@header("Location: {$location}", true, 302);
 			// @ob_flush();
 			exit();
 		}
 		
 		if ($dm_logout) {
 			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			header("HTTP/1.1 302 Found", true, 302);
+			header("Location: {$location}", true, 302);
 			?>
 			<!DOCTYPE html>
 			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -356,8 +358,6 @@ class domain_map {
 				</body>
 			</html>
 			<?php
-			@header("HTTP/1.1 302 Found", true, 302);
-			@header("Location: {$location}", true, 302);
 			// @ob_flush();
 			exit();
 		}
