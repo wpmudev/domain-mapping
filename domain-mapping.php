@@ -293,6 +293,7 @@ class domain_map {
 		global $dm_authenticated, $dm_logout, $dm_csc_building_urls;
 		
 		if ($dm_authenticated) {
+			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
 			?>
 			<!DOCTYPE html>
 			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -322,14 +323,14 @@ class domain_map {
 				</body>
 			</html>
 			<?php
-			header("HTTP/1.1 302 Found", true, 302);
-			header("Location: {$location}", true, 302);
-			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			@header("HTTP/1.1 302 Found", true, 302);
+			@header("Location: {$location}", true, 302);
 			// @ob_flush();
 			exit();
 		}
 		
 		if ($dm_logout) {
+			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
 			?>
 			<!DOCTYPE html>
 			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -355,9 +356,8 @@ class domain_map {
 				</body>
 			</html>
 			<?php
-			header("HTTP/1.1 302 Found", true, 302);
-			header("Location: {$location}", true, 302);
-			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			@header("HTTP/1.1 302 Found", true, 302);
+			@header("Location: {$location}", true, 302);
 			// @ob_flush();
 			exit();
 		}
