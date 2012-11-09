@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-12 00:15+0100\n"
-"PO-Revision-Date: 2012-01-12 00:15+0100\n"
+"POT-Creation-Date: 2012-11-09 16:36+0100\n"
+"PO-Revision-Date: 2012-11-09 16:36+0100\n"
 "Last-Translator: Barry <barry@mapinated.com>\n"
 "Language-Team: Incsub <barry@incsub.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,154 +17,184 @@ msgstr ""
 msgid "The domain mapping plugin is only compatible with WordPress Multisite."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:322
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:326
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:337
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:561
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:86
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:90
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:692
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:853
 msgid "Domain Mapping"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:342
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:98
+msgid "Mapped Domain"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:374
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:411
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:654
+msgid "Authenticating..."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:392
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:425
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:670
+msgid "Please wait..."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:393
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:426
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:671
+#, php-format
+msgid "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:697
 msgid "Search Sites"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:369
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:732
 msgid "Options updated."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:374
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:737
 msgid "Domain mapping Options"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:388
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:457
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:751
 msgid "Domain mapping Configuration"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:391
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:460
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:754
 msgid "Please copy the sunrise.php to "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:391
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:460
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:754
 msgid "/wp-content/sunrise.php and uncomment the SUNRISE setting in the "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:391
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:460
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:754
 msgid "wp-config.php file"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:395
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:464
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:758
 msgid "Please uncomment the line <em>//define( 'SUNRISE', 'on' );</em> in the "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:395
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:464
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:758
 msgid "wp-config.php file."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:398
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:467
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:761
 msgid "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:399
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:468
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:762
 msgid "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:400
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:469
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:763
 msgid "Server IP Address: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:405
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:474
-msgid "Make this functionality only available to Supporters"
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:767
+msgid "Make this functionality only available to Pro Sites"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:406
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:475
-msgid "Supporters Only: "
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:768
+msgid "Pro Sites Only: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:410
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:479
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:771
 msgid "No"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:413
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:482
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:772
 msgid "Yes"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:417
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:486
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:777
 msgid "Administration mapping"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:419
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:488
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:779
 msgid "The settings below allow you to control how the domain mapping plugin operates with the administration area."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:423
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:492
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:782
 msgid "The domain used for the administration area should be the"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:427
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:496
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:785
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:801
 msgid "domain entered by the user"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:430
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:499
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:786
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:802
 msgid "mapped domain"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:433
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:502
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:787
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:803
 msgid "original domain"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:563
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:792
+msgid "Login mapping"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:794
+msgid "The settings below allow you to control how the domain mapping plugin operates with the login area."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:798
+msgid "The domain used for the login area should be the"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:810
+msgid "Save Changes"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:855
 msgid "If your domain name includes a sub-domain such as \"blog\" then you can add a CNAME for that hostname in your DNS pointing at this blog URL."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:564
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:856
 msgid "IP not set by admin yet."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:566
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:858
 msgid "If you want to redirect a domain you will need to add multiple DNS \"A\" records pointing at the IP addresses of this server: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:568
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:860
 msgid "If you want to redirect a domain you will need to add a DNS \"A\" record pointing at the IP address of this server: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:576
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:826
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:868
 msgid "Custom Domain"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:577
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:869
 msgid "Original Blog Address"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:578
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:870
 msgid "Actions"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:606
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:898
 msgid "Delete"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/domain-mapping.php:894
-msgid "Please install the latest version of <a href=\"http://premium.wpmudev.org/project/update-notifications/\" title=\"Download Now &raquo;\">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href=\"http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/\">More information &raquo;</a>"
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/dash-notice/wpmudev-dash-notification.php:57
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/external/wpmudev-dash-notification.php:57
+#, php-format
+msgid "Easily get updates, support, and one-click WPMU DEV plugin/theme installations right from in your dashboard - <strong><a href=\"%s\" title=\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/\">(find out more)</a></small>"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/dash-notice/wpmudev-dash-notification.php:61
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/external/wpmudev-dash-notification.php:61
+#, php-format
+msgid "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title=\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></strong>."
 msgstr ""
 
