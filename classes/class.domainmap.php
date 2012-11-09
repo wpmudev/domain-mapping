@@ -7,9 +7,18 @@ if( !class_exists('domain_map')) {
 
 		var $db;
 
+		// The tables we need to map - empty for now as we will move to this later
+		var $tables = array();
+
+		// The main domain mapping tables
+		var $dmtable;
+
 		var $dmt = '';
 
 		var $mappings = array();
+
+		// The domain mapping options
+		var $options;
 
 		function __construct() {
 
@@ -21,27 +30,28 @@ if( !class_exists('domain_map')) {
 
 			$this->db =& $wpdb;
 
-			if(!empty($this->db->dmtable)) {
-				$this->dmt = $this->db->dmtable;
+			if(!empty($this->dmtable)) {
+				$this->dmt = $this->dmtable;
 			} else {
 				if(defined('DM_COMPATIBILITY')) {
 					if(!empty($this->db->base_prefix)) {
-						$this->db->dmtable = $this->db->base_prefix . 'domain_mapping';
+						$this->dmtable = $this->db->base_prefix . 'domain_mapping';
 					} else {
-						$this->db->dmtable = $this->db->prefix . 'domain_mapping';
+						$this->dmtable = $this->db->prefix . 'domain_mapping';
 					}
 				} else {
 					if(!empty($this->db->base_prefix)) {
-						$this->db->dmtable = $this->db->base_prefix . 'domain_map';
+						$this->dmtable = $this->db->base_prefix . 'domain_map';
 					} else {
-						$this->db->dmtable = $this->db->prefix . 'domain_map';
+						$this->dmtable = $this->db->prefix . 'domain_map';
 					}
 				}
 			}
 			// Set up the plugin
 			add_action('init', array(&$this, 'setup_plugin'));
+			// Add any header css or js that we need for the admin page
 			add_action('load-tools_page_domainmapping', array(&$this, 'add_admin_header'));
-
+			// Translate the plugin
 			add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
 
 			// Add in the cross domain logins
@@ -77,9 +87,8 @@ if( !class_exists('domain_map')) {
 		}
 
 		function domain_mapping_login_url($login_url, $redirect='') {
-			$logdom = get_site_option( 'map_logindomain', 'user' );
 
-			switch($logdom) {
+			switch($this->options['map_logindomain']) {
 				case 'user':
 					break;
 				case 'mapped':
@@ -101,13 +110,11 @@ if( !class_exists('domain_map')) {
 		function domain_mapping_admin_url($admin_url, $path = '/', $_blog_id = false) {
 			global $blog_id;
 
-			$logdom = get_site_option( 'map_admindomain', 'user' );
-
 			if (!$_blog_id) {
 				$_blog_id = $blog_id;
 			}
 
-			switch($logdom) {
+			switch($this->options['map_admindomain']) {
 				case 'user':
 					break;
 				case 'mapped':
@@ -127,21 +134,35 @@ if( !class_exists('domain_map')) {
 		}
 
 		function setup_plugin() {
-			$this->handle_translation();
+
+			$this->options = get_site_option('domain_mapping', array());
+			if(empty($this->options)) {
+				$this->options['map_ipaddress'] = get_site_option('map_ipaddress');
+				$this->options['map_supporteronly'] = get_site_option('map_supporteronly', '0');
+				$this->options['map_admindomain'] = get_site_option('map_admindomain', 'user');
+				$this->options['map_logindomain'] = get_site_option('map_logindomain', 'user');
+
+				update_site_option('domain_mapping', $this->options);
+			}
 
 			if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
 				check_admin_referer('update-dmoptions');
-				update_site_option('map_ipaddress', $_POST['map_ipaddress']);
-				update_site_option('map_supporteronly', $_POST['map_supporteronly']);
-				update_site_option('map_admindomain', $_POST['map_admindomain']);
-				update_site_option('map_logindomain', $_POST['map_logindomain']);
+
+				// Update the domain mapping settings
+				$this->options = get_site_option('domain_mapping', array());
+
+				$this->options['map_ipaddress'] = $_POST['map_ipaddress'];
+				$this->options['map_supporteronly'] = $_POST['map_supporteronly'];
+				$this->options['map_admindomain'] = $_POST['map_admindomain'];
+				$this->options['map_logindomain'] = $_POST['map_logindomain'];
+
+				update_site_option('domain_mapping', $this->options);
+
 			}
 
 			if (is_admin()) {
 				// We are in the admin area, so check for the redirects here
-				$addom = get_site_option( 'map_admindomain', 'user' );
-
-				switch($addom) {
+				switch($this->options['map_admindomain']) {
 					case 'user':
 						break;
 					case 'mapped':
@@ -157,9 +178,7 @@ if( !class_exists('domain_map')) {
 			} else {
 				if (strpos(addslashes($_SERVER["SCRIPT_NAME"]),'/wp-login.php') !== false) {
 					// We are in the login area, so check for the redirects here
-					$logdom = get_site_option( 'map_logindomain', 'user' );
-
-					switch($logdom) {
+					switch($this->options['map_logindomain']) {
 						case 'user':
 							break;
 						case 'mapped':
@@ -179,9 +198,8 @@ if( !class_exists('domain_map')) {
 			//add_action( 'wpmu_options', array(&$this, 'handle_domain_options'));
 			//add_action( 'update_wpmu_options', array(&$this, 'update_domain_options'));
 			add_action( 'network_admin_menu', array(&$this, 'add_admin_pages') );
-			$sup = get_site_option( 'map_supporteronly', '0' );
 
-			if(function_exists('is_pro_site') && $sup == '1') {
+			if(function_exists('is_pro_site') && $this->options['map_supporteronly'] == '1') {
 				// The supporter function exists and we are limiting domain mapping to supporters
 
 				if(is_pro_site()) {
@@ -333,13 +351,6 @@ if( !class_exists('domain_map')) {
 			return $location;
 		}
 
-		function handle_translation() {
-			$locale = get_locale();
-			if(empty($locale)) $locale = "en_US";
-			$mofile = WP_LANG_DIR . "/domainmap-$locale.mo";
-			load_textdomain('domainmap', $mofile);
-		}
-
 		// Cookie functions
 		function build_logout_cookie() {
 			if(isset($_GET['loggedout'])) {
@@ -384,7 +395,7 @@ if( !class_exists('domain_map')) {
 				$urls[$domain['domain']] = 'http://' . $domain['domain'] . $domain['path'];
 
 			// Mapped site
-			$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+			$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
 			if($domains && is_array($domains)) {
 				foreach ($domains as $domain) {
 					if (!isset($urls[$domain['domain']]))
@@ -396,7 +407,7 @@ if( !class_exists('domain_map')) {
 			if ($redirect_to) {
 				$redirect_url = parse_url($redirect_to);
 
-				$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmt} WHERE domain = '{$redirect_url['host']}' OR domain LIKE '{$redirect_url['host']}/%' ORDER BY id LIMIT 1 /* domain mapping */", ARRAY_A);
+				$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' OR domain LIKE '{$redirect_url['host']}/%' ORDER BY id LIMIT 1 /* domain mapping */", ARRAY_A);
 				if ($domain) {
 					// redirect to unmapped site
 					$addom = get_site_option( 'map_admindomain', 'user' );
@@ -404,7 +415,7 @@ if( !class_exists('domain_map')) {
 						$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
 
 					// Other mapped sites
-					$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+					$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
 					if($domains && is_array($domains)) {
 						foreach ($domains as $domain) {
 							if (!isset($urls[$domain['domain']]))
@@ -426,7 +437,7 @@ if( !class_exists('domain_map')) {
 							$urls[$domain['domain']] = 'http://' . $domain['domain'] . $domain['path'];
 
 						// Other mapped sites
-						$domains = $this->db->get_results( "SELECT domain FROM {$this->dmt} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
+						$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain->blog_id}' ORDER BY id /* domain mapping */", ARRAY_A);
 						if($domains && is_array($domains)) {
 							foreach ($domains as $domain) {
 								if (!isset($urls[$domain['domain']]))
@@ -435,7 +446,7 @@ if( !class_exists('domain_map')) {
 						}
 
 						// redirect to mapped site
-						$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmt} WHERE blog_id = '{$domains->blog_id}' LIMIT 1 /* domain mapping */", ARRAY_A);
+						$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmtable} WHERE blog_id = '{$domains->blog_id}' LIMIT 1 /* domain mapping */", ARRAY_A);
 						if ($domain) {
 							if (!isset($urls[$domain['domain']]))
 								$urls[$domain['domain']] = 'http://' . $domain['domain'] . '/';
@@ -507,7 +518,7 @@ if( !class_exists('domain_map')) {
 				$allowed_hosts[] = $redirect_url['host'];
 			}
 
-			$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmt} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */");
+			$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */");
 			if ($bid) {
 				$allowed_hosts[] = $redirect_url['host'];
 			}
@@ -838,11 +849,11 @@ if( !class_exists('domain_map')) {
 				switch( $_POST[ 'action' ] ) {
 					case "add":
 						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
-							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmt} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
+							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
 						}
 					break;
 					case "delete":
-						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) );
+						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($domain) ) );
 					break;
 				}
 			}
@@ -872,7 +883,7 @@ if( !class_exists('domain_map')) {
 				<tbody id="the-list">
 
 			<?php
-			$domains = $this->db->get_results( $this->db->prepare("SELECT * FROM {$this->dmt} WHERE blog_id = %d",$this->db->blogid) );
+			$domains = $this->db->get_results( $this->db->prepare("SELECT * FROM {$this->dmtable} WHERE blog_id = %d",$this->db->blogid) );
 			if ( is_array( $domains ) && !empty( $domains ) ) {
 				foreach( $domains as $details ) { ?>
 
@@ -965,11 +976,11 @@ if( !class_exists('domain_map')) {
 			}
 			if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
 				$s = $this->db->suppress_errors();
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
 				//$olddomain = str_replace($path, '', $url);
 				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
 				if ( empty( $domain ) ) {
-					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
 				$this->db->suppress_errors( $s );
 				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
@@ -995,11 +1006,11 @@ if( !class_exists('domain_map')) {
 
 			if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
 				$s = $this->db->suppress_errors();
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
 				//$olddomain = str_replace($path, '', $url);
 				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
 				if ( empty( $domain ) ) {
-					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
 				$this->db->suppress_errors( $s );
 				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
@@ -1030,10 +1041,10 @@ if( !class_exists('domain_map')) {
 			if ( !isset( $return_url[ $this->db->blogid ] ) ) {
 				$s = $this->db->suppress_errors();
 
-				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
 
 				if ( empty( $domain ) ) {
-					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
 
 				$this->db->suppress_errors( $s );
@@ -1060,10 +1071,10 @@ if( !class_exists('domain_map')) {
 			if ( !isset( $return_home[ $this->db->blogid ] ) ) {
 				$s = $this->db->suppress_errors();
 
-				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
 
 				if ( empty( $domain ) ) {
-					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmt} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
 
 				$this->db->suppress_errors( $s );
@@ -1146,7 +1157,7 @@ if( !class_exists('domain_map')) {
 		function delete_blog_domain_mapping( $blog_id, $drop ) {
 
 			if ( $blog_id && $drop ) {
-				$this->db->query( $this->db->prepare( "DELETE FROM {$this->dmt} WHERE blog_id  = %d /* domain mapping */", $blog_id ) );
+				$this->db->query( $this->db->prepare( "DELETE FROM {$this->dmtable} WHERE blog_id  = %d /* domain mapping */", $blog_id ) );
 			}
 		}
 
@@ -1164,7 +1175,7 @@ if( !class_exists('domain_map')) {
 
 			if(empty($this->mappings)) {
 
-				$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmt} /* domain mapping */" );
+				$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmtable} /* domain mapping */" );
 				foreach($mappings as $map) {
 					if($current_site->path == '/') {
 						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . "</a>";
