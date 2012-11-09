@@ -45,6 +45,12 @@ if( !class_exists('domain_map')) {
 				}
 			}
 
+			$version = get_site_option('domainmapping_version', false);
+			if($version === false || $version < $this->build) {
+				update_site_option('domainmapping_version', $this->build);
+				$this->install( $version );
+			}
+
 			// Set up the plugin
 			add_action( 'init', array(&$this, 'setup_plugin'));
 			// Add any header css or js that we need for the admin page
@@ -76,6 +82,19 @@ if( !class_exists('domain_map')) {
 			$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
 			if ( file_exists( $mofile ) )
 				load_textdomain( 'domainmap', $mofile );
+		}
+
+		function install( $version ) {
+			// Just the single table creating function for now - will get more complex later
+			$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
+				`id` bigint(20) NOT NULL auto_increment,
+				`blog_id` bigint(20) NOT NULL,
+				`domain` varchar(255) NOT NULL,
+				`active` tinyint(4) default '1',
+				PRIMARY KEY  (`id`),
+				KEY `blog_id` (`blog_id`,`domain`,`active`)
+			);" );
+
 		}
 
 		function add_admin_header() {
@@ -149,7 +168,7 @@ if( !class_exists('domain_map')) {
 					// remove the http and https parts of the url
 					$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
 					// remove the filter we added to swap the url
-					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 					// get the original url now with our filter removed
 					$url = trailingslashit( get_option('siteurl') );
 					// again remove the http and https parts of the url
@@ -157,7 +176,7 @@ if( !class_exists('domain_map')) {
 					// replace the mapped url with the original one
 					$login_url = str_replace($mapped_url, $url, $login_url);
 					// put our filter back in place
-					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 
 					break;
 			}
@@ -183,7 +202,7 @@ if( !class_exists('domain_map')) {
 					// remove the http and https parts of the url
 					$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
 					// remove the filter we added to swap the url
-					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 					// get the original url now with our filter removed
 					$url = trailingslashit( get_option('siteurl') );
 					// remove the http and https parts of the original url
@@ -191,7 +210,7 @@ if( !class_exists('domain_map')) {
 					// swap the mapped url with the original one
 					$admin_url = str_replace($mapped_url, $url, $admin_url);
 					// put our filter back in place
-					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 
 					break;
 			}
@@ -817,22 +836,6 @@ if( !class_exists('domain_map')) {
 
 			global $current_site;
 
-			$this->db->dmtable = $this->db->base_prefix . 'domain_map';
-
-			if ( is_super_admin() ) {
-				if($this->db->get_var("SHOW TABLES LIKE '{$this->dmtable}'") != $this->dmt) {
-					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
-						`id` bigint(20) NOT NULL auto_increment,
-						`blog_id` bigint(20) NOT NULL,
-						`domain` varchar(255) NOT NULL,
-						`active` tinyint(4) default '1',
-						PRIMARY KEY  (`id`),
-						KEY `blog_id` (`blog_id`,`domain`,`active`)
-					);" );
-				}
-			}
-
-
 			if ( !empty( $_POST[ 'action' ] ) ) {
 				$domain = $this->db->escape( preg_replace( "/^www\./", "", $_POST[ 'domain' ] ) );
 				check_admin_referer( 'domain_mapping' );
@@ -1109,7 +1112,7 @@ if( !class_exists('domain_map')) {
 				return;
 
 			$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) )  ? 'https://' : 'http://';
-			remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+			remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 			$url = get_option( 'siteurl' );
 			if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 				// strip out any subdirectory blog names
@@ -1123,7 +1126,7 @@ if( !class_exists('domain_map')) {
 				}
 				exit;
 			}
-			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 		}
 
 		function delete_blog_domain_mapping( $blog_id, $drop ) {
