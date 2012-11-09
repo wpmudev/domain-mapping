@@ -18,6 +18,9 @@ if( !class_exists('domain_map')) {
 		// The domain mapping options
 		var $options;
 
+		// For caching swapped urls later on
+		var $swapped_url = array();
+
 		function __construct() {
 
 			global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
@@ -247,7 +250,7 @@ if( !class_exists('domain_map')) {
 			add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
 			add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
 
-			add_filter( 'includes_url', array(&$this, 'unswap_mapped_url'), 10, 2);
+			add_filter( 'includes_url', array(&$this, 'swap_mapped_url'), 10, 2);
 
 			add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
 			add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
@@ -950,8 +953,6 @@ if( !class_exists('domain_map')) {
 			// This function swaps the url to the mapped one
 
 			global $current_blog, $current_site, $mapped_id, $current_blog;
-			// To reduce the number of database queries, save the results the first time we encounter each blog ID.
-			static $swapped_url = array();
 
 			if ($plugin == 'relative') {
 				return "{$current_blog->path}{$path}";
@@ -965,7 +966,7 @@ if( !class_exists('domain_map')) {
 				return $this->domain_mapping_admin_url($url);
 			}
 
-			if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
+			if ( !isset( $this->swapped_url[ $this->db->blogid ] ) ) {
 
 				$s = $this->db->suppress_errors();
 
@@ -986,49 +987,61 @@ if( !class_exists('domain_map')) {
 					// replace any occurance of the old domain with the new one
 					$newurl = str_replace($olddomain, $innerurl, $url);
 					// store the olddomain and the new one in a cache
-					$swapped_url[ $this->db->blogid ] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl);
+					$this->swapped_url[ $this->db->blogid ] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl);
 					// get ready to return our new url
 					$url = $newurl;
 				} else {
 					// we can't find a map for this domain so record a false in the cache
-					$swapped_url[ $this->db->blogid ] = false;
+					$this->swapped_url[ $this->db->blogid ] = false;
 				}
-			} elseif ( $swapped_url[ $this->db->blogid ] !== false) {
+			} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
 				// get the information from the cache for the old domain
-				$olddomain = $swapped_url[ $this->db->blogid ]['olddomain'];
+				$olddomain = $this->swapped_url[ $this->db->blogid ]['olddomain'];
 				// replace the old domain with the new one and set the url for returning
-				$url = str_replace($olddomain, $swapped_url[ $this->db->blogid ]['newdomain'], $url);
+				$url = str_replace($olddomain, $this->swapped_url[ $this->db->blogid ]['newdomain'], $url);
 			}
 			return $url;
 		}
 
 		function unswap_mapped_url($url, $path) {
 			global $current_blog, $current_site, $mapped_id;
-			// To reduce the number of database queries, save the results the first time we encounter each blog ID.
-			static $swapped_url = array();
 
-			if ( !isset( $swapped_url[ $this->db->blogid ] ) ) {
+
+			if ( !isset( $this->swapped_url[ $this->db->blogid ] ) ) {
+
 				$s = $this->db->suppress_errors();
+				// Try to get the mapped domain from the domain table
 				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
-				//$olddomain = str_replace($path, '', $url);
-				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
-				if ( empty( $domain ) ) {
-					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+				if ( empty( $newdomain ) ) {
+					$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
+				// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
+				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT 1 /* domain mapping */" ) );
+
 				$this->db->suppress_errors( $s );
+
 				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
-				if ( $domain ) {
-					$innerurl = trailingslashit( $protocol . $domain . $current_site->path );
+
+				if ( !empty($newdomain) ) {
+					// Work out the mapped domain
+					$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
+					// swap any mapped domains with the original domain in the passed url
 					$newurl = str_replace($innerurl, $olddomain, $url);
-					$swapped_url[ $this->db->blogid ] = array($olddomain, $innerurl);
+					// Cache the information for later use
+					$this->swapped_url[ $this->db->blogid ] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl);
+					// Return the new url
 					$url = $newurl;
 				} else {
-					$swapped_url[ $this->db->blogid ] = false;
+					// No mapped domain so set the cache to false
+					$this->swapped_url[ $this->db->blogid ] = false;
 				}
-			} elseif ( $swapped_url[ $this->db->blogid ] !== FALSE) {
-				$olddomain = $swapped_url[ $this->db->blogid ][0];
-				$url = str_replace($swapped_url[ $this->db->blogid ][1], $olddomain, $url);
+			} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
+				// get the information from the cache for the old domain
+				$olddomain = $this->swapped_url[ $this->db->blogid ]['olddomain'];
+				// replace the new domain with the old one
+				$url = str_replace($this->swapped_url[ $this->db->blogid ]['newdomain'], $olddomain, $url);
 			}
+			// Update the protocal if we need to
 			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
 				$url = str_replace('http://', 'https://', $url);
 			}
