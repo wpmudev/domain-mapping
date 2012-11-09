@@ -57,10 +57,12 @@ if( !class_exists('domain_map')) {
 			// Add in the cross domain logins
 			add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
 
-			// Add in menus
-			add_action( 'manage_sites_custom_column', array(&$this, 'add_domain_mapping_field'), 1, 2 );
+			// Add in column header to the Site table
+			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_site_column_header') );
+			// Add in the column data to the Sites table
+			add_action( 'manage_sites_custom_column', array(&$this, 'add_sites_column_data'), 1, 2 );
 
-			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_domain_mapping_column') );
+
 
 	                add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
 	                add_filter( 'logout_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
@@ -81,6 +83,48 @@ if( !class_exists('domain_map')) {
 			if ( file_exists( $mofile ) )
 				load_textdomain( 'domainmap', $mofile );
 		}
+
+		/** Sites columns functions **/
+
+		function add_site_column_header( $columns ) {
+
+			$first_array = array_splice ($columns, 0, 2);
+			$columns = array_merge ($first_array, array('domainmap' => __('Mapped Domain', 'domainmap')), $columns);
+
+			return $columns;
+		}
+
+		function build_domain_mapping_cache() {
+
+			global $current_site;
+
+			if(empty($this->mappings)) {
+
+				$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmtable} /* domain mapping */" );
+				foreach($mappings as $map) {
+					if($current_site->path == '/') {
+						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . "</a>";
+					} else {
+						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . $current_site->path . "</a>";
+					}
+				}
+
+			}
+
+		}
+
+		function add_sites_column_data( $column, $blog_id ) {
+
+			$this->build_domain_mapping_cache();
+
+			if ( $column == 'domainmap' ) {
+				if(isset($this->mappings[$blog_id])) {
+					echo implode("<br/>", $this->mappings[$blog_id]);
+				}
+			}
+		}
+
+
 
 		function shibboleth_session_initiator_url($initiator_url) {
 			return $initiator_url;
@@ -830,8 +874,8 @@ if( !class_exists('domain_map')) {
 			$this->db->dmtable = $this->db->base_prefix . 'domain_map';
 
 			if ( is_super_admin() ) {
-				if($this->db->get_var("SHOW TABLES LIKE '{$this->dmt}'") != $this->dmt) {
-					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmt}` (
+				if($this->db->get_var("SHOW TABLES LIKE '{$this->dmtable}'") != $this->dmt) {
+					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
 						`id` bigint(20) NOT NULL auto_increment,
 						`blog_id` bigint(20) NOT NULL,
 						`domain` varchar(255) NOT NULL,
@@ -1161,44 +1205,6 @@ if( !class_exists('domain_map')) {
 			}
 		}
 
-		function add_domain_mapping_column( $columns ) {
-
-			$first_array = array_splice ($columns, 0, 2);
-			$columns = array_merge ($first_array, array('domainmap' => __('Custom Domain')), $columns);
-
-			return $columns;
-		}
-
-		function build_domain_mapping_cache() {
-
-			global $current_site;
-
-			if(empty($this->mappings)) {
-
-				$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmtable} /* domain mapping */" );
-				foreach($mappings as $map) {
-					if($current_site->path == '/') {
-						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . "</a>";
-					} else {
-						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . $current_site->path . "</a>";
-					}
-				}
-
-			}
-
-		}
-
-		function add_domain_mapping_field( $column, $blog_id ) {
-
-			$this->build_domain_mapping_cache();
-
-			if ( $column == 'domainmap' ) {
-				if(isset($this->mappings[$blog_id])) {
-					echo implode("<br/>", $this->mappings[$blog_id]);
-				}
-			}
-		}
-
 		//// New function added to handle mapping the domain for the thickbox plugin in the admin section
 		function load_tb_fix()
 		{
@@ -1209,7 +1215,7 @@ if( !class_exists('domain_map')) {
 			</script>
 
 			<?php
-	}
+		}
 
 	} //end class domain_map
 
