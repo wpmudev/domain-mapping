@@ -364,8 +364,8 @@ if( !class_exists('domain_map')) {
 
 			if ($dm_authenticated) {
 				define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-				header("HTTP/1.1 302 Found", true, 302);
-				header("Location: {$location}", true, 302);
+				header("HTTP/1.1 301 Moved Permanently", true, 301);
+				header("Location: {$location}", true, 301);
 				?>
 				<!DOCTYPE html>
 				<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -401,8 +401,8 @@ if( !class_exists('domain_map')) {
 
 			if ($dm_logout) {
 				define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-				header("HTTP/1.1 302 Found", true, 302);
-				header("Location: {$location}", true, 302);
+				header("HTTP/1.1 301 Moved Permanently", true, 301);
+				header("Location: {$location}", true, 301);
 				?>
 				<!DOCTYPE html>
 				<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -1091,9 +1091,11 @@ if( !class_exists('domain_map')) {
 				// strip out any subdirectory blog names
 				$request = str_replace("/a" . $current_blog->path, "/", "/a" . $_SERVER[ 'REQUEST_URI' ]);
 				if($request != $_SERVER[ 'REQUEST_URI' ]) {
-					Header( "Location: " . $url . $request,  301);
+					header("HTTP/1.1 301 Moved Permanently", true, 301);
+					header( "Location: " . $url . $request, true, 301);
 				} else {
-					Header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], 301 );
+					header("HTTP/1.1 301 Moved Permanently", true, 301);
+					header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], true, 301 );
 				}
 				exit;
 			}
@@ -1113,9 +1115,11 @@ if( !class_exists('domain_map')) {
 				// strip out any subdirectory blog names
 				$request = str_replace("/a" . $current_blog->path, "/", "/a" . $_SERVER[ 'REQUEST_URI' ]);
 				if($request != $_SERVER[ 'REQUEST_URI' ]) {
-					Header( "Location: " . $url . $request,  301);
+					header("HTTP/1.1 301 Moved Permanently", true, 301);
+					header( "Location: " . $url . $request,  true, 301);
 				} else {
-					Header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], 301 );
+					header("HTTP/1.1 301 Moved Permanently", true, 301);
+					header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], true, 301 );
 				}
 				exit;
 			}

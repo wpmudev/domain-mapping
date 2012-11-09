@@ -41,8 +41,8 @@ if ( !is_multisite() ) {
 	require_once('includes/functions.php');
 	// Main domain mapping class
 	require_once('classes/class.domainmap.php');
-
-	include_once('dash-notice/wpmudev-dash-notification.php');
+	// Load the WPMUDEV dashboard notification library
+	include_once('external/wpmudev-dash-notification.php');
 
 	// Set up my location
 	set_domainmap_dir(__FILE__);
