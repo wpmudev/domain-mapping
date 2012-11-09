@@ -232,37 +232,37 @@ if( !class_exists('domain_map')) {
 		function add_domain_mapping_filters() {
 
 			if ( defined( 'DOMAIN_MAPPING' ) ) {
-				// replace the
+				// replace the siteurl with the mapped domain
 				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				// replace the hom url with the mapped url
 				add_filter( 'pre_option_home', array(&$this, 'domain_mapping_mappedurl') );
+				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
 				// Jump in just before header output to change base_url - until a neater method can be found
 				add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
+
+				add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
+				add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
+				add_filter( 'includes_url', array(&$this, 'swap_mapped_url'), 10, 2);
+				add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
+				add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
+
+				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+
+				add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
+
+				add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
+	            add_filter( 'logout_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
+	            add_filter( 'admin_url', array(&$this, 'domain_mapping_admin_url'), 3, 100 );
+
+				add_filter( 'theme_root_uri', array(&$this, 'domain_mapping_post_content'), 1 );
+				add_filter( 'stylesheet_uri', array(&$this, 'domain_mapping_post_content'), 1 );
+				add_filter( 'stylesheet_directory', array(&$this, 'domain_mapping_post_content'), 1 );
+				add_filter( 'stylesheet_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
+				add_filter( 'template_directory', array(&$this, 'domain_mapping_post_content'), 1 );
+				add_filter( 'template_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
 			}
 
-			//home_url
-			//site_url
-			//admin_url
-			//includes_url
-			//content_url
-			//plugins_url
-
-			add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
-			add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
-
-			add_filter( 'includes_url', array(&$this, 'swap_mapped_url'), 10, 2);
-
-			add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
-			add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
-
-
-			add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
-
-			add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
-
-			add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
-            add_filter( 'logout_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
-            add_filter( 'admin_url', array(&$this, 'domain_mapping_admin_url'), 3, 100 );
 		}
 
 		function setup_plugin() {
@@ -1052,22 +1052,34 @@ if( !class_exists('domain_map')) {
 
 			static $orig_urls = array();
 			if ( ! isset( $orig_urls[ $this->db->blogid ] ) ) {
-				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				// remove the filter from the site url so that we can get the original url
+				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				// get the original url
 				$orig_url = get_option( 'siteurl' );
+				// switch the url to use the correct http or https
 				if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
 					$orig_url = str_replace( "http://", "https://", $orig_url );
 				} else {
 					$orig_url = str_replace( "https://", "http://", $orig_url );
 				}
+				// store the url in the cache
 				$orig_urls[ $this->db->blogid ] = $orig_url;
-				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_siteurl') );
+				// put our filter back in place
+				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
 			} else {
+				// we have a cached entry so just return that
 				$orig_url = $orig_urls[ $this->db->blogid ];
 			}
+			// Get the new mapped url
 			$url = $this->domain_mapping_mappedurl( 'NA' );
-			if ( $url == 'NA' )
+			if ( $url == 'NA' ) {
+				// If we don't have a mapped url then just return the content unchanged
 				return $post_content;
-			return str_replace( trailingslashit($orig_url), trailingslashit($url), $post_content );
+			} else {
+				// replace all the original urls with the new ones and then return the content
+				return str_replace( trailingslashit($orig_url), trailingslashit($url), $post_content );
+			}
+
 		}
 
 		function redirect_to_mapped_domain() {
