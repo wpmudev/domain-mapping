@@ -71,6 +71,9 @@ if( !class_exists('domain_map')) {
 			add_filter( 'allowed_redirect_hosts' , array(&$this, 'allowed_redirect_hosts'), 10);
 
 			add_action( 'login_head', array(&$this, 'build_logout_cookie') );
+
+			// Add in the filters for domain mapping early on to get any information covered before the init action is hit
+			$this->add_domain_mapping_filters();
 		}
 
 		function domain_map() {
@@ -340,8 +343,6 @@ if( !class_exists('domain_map')) {
 					// Add the management page
 					add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
 
-					$this->add_domain_mapping_filters();
-
 					add_action('wp_logout', array(&$this, 'wp_logout'), 10);
 					add_action( 'admin_head', array(&$this, 'build_cookie') );
 					add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
@@ -351,8 +352,6 @@ if( !class_exists('domain_map')) {
 				// Add the management page
 
 				add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
-
-				$this->add_domain_mapping_filters();
 
 				add_action('wp_logout', array(&$this, 'wp_logout'), 10);
 				add_action( 'admin_head', array(&$this, 'build_cookie') );
@@ -843,10 +842,14 @@ if( !class_exists('domain_map')) {
 					case "add":
 						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
 							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
+							// fire the action when a new domain is added
+							do_action( 'domainmapping_added_domain', strtolower($domain), $this->db->blogid );
 						}
 					break;
 					case "delete":
 						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($domain) ) );
+						// fire the action when a domain is removed
+						do_action( 'domainmapping_deleted_domain', strtolower($domain), $this->db->blogid );
 					break;
 				}
 			}
