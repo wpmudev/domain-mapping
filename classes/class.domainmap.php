@@ -31,7 +31,7 @@ if( !class_exists('domain_map')) {
 
 			$this->db =& $wpdb;
 
-			if(defined('DM_COMPATIBILITY')) {
+			if(defined('DM_COMPATIBILITY') && DM_COMPATIBILITY == 'yes') {
 				if(!empty($this->db->base_prefix)) {
 					$this->dmtable = $this->db->base_prefix . 'domain_mapping';
 				} else {

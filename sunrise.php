@@ -6,7 +6,7 @@ define('DM_COMPATIBILITY', 'yes');
 global $wpdb;
 
 // No if statement needed as the code was the same for both VHOST and non VHOST installations
-if(defined('DM_COMPATIBILITY')) {
+if(defined('DM_COMPATIBILITY') && DM_COMPATIBILITY == 'yes' ) {
 	if(!empty($wpdb->base_prefix)) {
 		$wpdb->dmtable = $wpdb->base_prefix . 'domain_mapping';
 	} else {
