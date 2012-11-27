@@ -3,7 +3,7 @@ if( !class_exists('domain_map')) {
 
 	class domain_map {
 
-		var $build = 6;
+		var $build = 7;
 
 		var $db;
 
@@ -859,7 +859,7 @@ if( !class_exists('domain_map')) {
 			echo "<div class='wrap'><div class='icon32' id='icon-tools'><br/></div><h2>" . __('Domain Mapping', 'domainmap') . "</h2>";
 
 			echo "<p>" . __( 'If your domain name includes a sub-domain such as "blog" then you can add a CNAME for that hostname in your DNS pointing at this blog URL.', 'domainmap' ) . "</p>";
-			$map_ipaddress = get_site_option( 'map_ipaddress', __('IP not set by admin yet.', 'domainmap') );
+			$map_ipaddress = $this->options['map_ipaddress'];
 			if ( strpos( $map_ipaddress, ',' ) ) {
 				echo "<p>" . __( 'If you want to redirect a domain you will need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . "<strong>" . $map_ipaddress . "</strong></p>";
 			} else {
