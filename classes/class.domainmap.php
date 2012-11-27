@@ -823,12 +823,67 @@ if( !class_exists('domain_map')) {
 			<?php
 			echo '</p>';
 
+			echo '<h4>' . __( 'Domain Mapping Table', 'domainmap' ) . '</h4>';
+
+
+
+			if( $this->check_for_table() ) {
+				echo "<p>" . __( "The domain mapping table is called <strong>", 'domainmap' ) . $this->dmtable . __('</strong> and exists in your database.','domainmap') . "</p>";
+			} else {
+				echo "<p>" . __( "The domain mapping table should be called <strong>", 'domainmap' ) . $this->dmtable . __('</strong> but does not seem to exist in your database and cannot be created.','domainmap') . "</p>";
+				echo "<p>" . __( "To create the database table you need to run the following SQL.",'domainmap') . "</p>";
+				echo "<textarea class='code' rows='10' cols='100' readonly='readonly'>";
+				echo "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
+`id` bigint(20) NOT NULL auto_increment,
+`blog_id` bigint(20) NOT NULL,
+`domain` varchar(255) NOT NULL,
+`active` tinyint(4) default '1',
+PRIMARY KEY  (`id`),
+KEY `blog_id` (`blog_id`,`domain`,`active`)
+);";
+				echo "</textarea>";
+			}
+
 			?>
 				<input type='hidden' name='action' value='updateoptions' />
 				<p class="submit"><input type="submit" value="<?php _e('Save Changes','domainmap'); ?>" class="button-primary" id="submit" name="submit"></p>
 				</form>
 				</div>
 			<?php
+		}
+
+		function check_for_table( $trytocreate = true ) {
+
+			$sql = $this->db->prepare( "SHOW TABLES LIKE '{$this->dmtable}'" );
+
+			$table = $this->db->get_var( $sql );
+			if( empty( $table ) ) {
+				// We don't have the table so we should check if we should create it.
+				if($trytocreate) {
+					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
+						`id` bigint(20) NOT NULL auto_increment,
+						`blog_id` bigint(20) NOT NULL,
+						`domain` varchar(255) NOT NULL,
+						`active` tinyint(4) default '1',
+						PRIMARY KEY  (`id`),
+						KEY `blog_id` (`blog_id`,`domain`,`active`)
+					);" );
+
+					// Do another check to see if it was created
+					$sql = $this->db->prepare( "SHOW TABLES LIKE '{$this->dmtable}'" );
+					$table = $this->db->get_var( $sql );
+					if( empty( $table ) ) {
+						return false;
+					} else {
+						return true;
+					}
+				}
+			} else {
+				return true;
+			}
+
+			return true;
+
 		}
 
 		function handle_domain_page() {
