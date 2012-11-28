@@ -43,6 +43,11 @@ if( !empty($mapped_id) ) {
 	define( 'COOKIE_DOMAIN', $using_domain );
 
 	$current_site = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->site} WHERE id = %d LIMIT 0,1 /* domain mapping */", $current_blog->site_id ) );
+	// Add in the blog id
+	$current_site->blog_id = $wpdb->get_var( $wpdb->prepare("SELECT blog_id FROM {$wpdb->blogs} WHERE domain=%s AND path=%s", $current_site->domain, $current_site->path) );
+	if( function_exists( 'get_current_site_name' ) ) {
+		$current_site = get_current_site_name( $current_site );
+	}
 
 	$current_blog->path = $current_site->path;
 
