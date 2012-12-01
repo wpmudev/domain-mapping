@@ -462,7 +462,7 @@ if( !class_exists('domain_map')) {
 		}
 
 		function build_cookie($action = 'login', $user = false, $redirect_to = false) {
-			global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls;
+			global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls, $user;
 
 			/**
 			 * Cookie building order:
@@ -563,6 +563,10 @@ if( !class_exists('domain_map')) {
 			}
 
 			if(count($urls) > 0) {
+				if (!$user) {
+					$user = wp_get_current_user();
+				}
+
 				$key = get_user_meta($user->ID, 'cross_domain', true);
 				if($key == 'none') $key = array();
 				foreach ($urls as $url) {
@@ -574,9 +578,6 @@ if( !class_exists('domain_map')) {
 
 					$hash = md5( AUTH_KEY . microtime() . 'COOKIEMONSTER' . $url );
 
-					if (!$user) {
-						$user = wp_get_current_user();
-					}
 					$key[$hash] = array ( 	"domain" 	=> $url,
 											"hash"		=> $hash,
 											"user_id"	=> $user->ID,
