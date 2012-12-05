@@ -567,39 +567,41 @@ if( !class_exists('domain_map')) {
 					$user = wp_get_current_user();
 				}
 
-				$key = get_user_meta($user->ID, 'cross_domain', true);
-				if($key == 'none') $key = array();
-				foreach ($urls as $url) {
-					$parsed_url = parse_url($url);
+				if(!is_wp_error( $user )) {
+					$key = get_user_meta($user->ID, 'cross_domain', true);
+					if($key == 'none') $key = array();
+					foreach ($urls as $url) {
+						$parsed_url = parse_url($url);
 
-					if (!isset($parsed_url['host']) || empty($parsed_url['host'])) {
-						continue;
-					}
-
-					$hash = md5( AUTH_KEY . microtime() . 'COOKIEMONSTER' . $url );
-
-					$key[$hash] = array ( 	"domain" 	=> $url,
-											"hash"		=> $hash,
-											"user_id"	=> $user->ID,
-											"action"	=> $action
-											);
-
-					if ( is_admin() ) {
-						if ( ( ($_ssl && preg_match('/https:\/\//', $url) > 0) || (!$_ssl && preg_match('/http:\/\//', $url) > 0) ) ) {
-							$dm_cookie_style_printed = true;
-							echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
-						} else if ($_ssl) {
-							$url = preg_replace( '/http:\/\//', 'https://', $url );
-							echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
-						} else {
-							$url = preg_replace( '/https:\/\//', 'http://', $url );
-							echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+						if (!isset($parsed_url['host']) || empty($parsed_url['host'])) {
+							continue;
 						}
-					}
 
-					$dm_csc_building_urls[] = rawurlencode( $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) );
+						$hash = md5( AUTH_KEY . microtime() . 'COOKIEMONSTER' . $url );
+
+						$key[$hash] = array ( 	"domain" 	=> $url,
+												"hash"		=> $hash,
+												"user_id"	=> $user->ID,
+												"action"	=> $action
+												);
+
+						if ( is_admin() ) {
+							if ( ( ($_ssl && preg_match('/https:\/\//', $url) > 0) || (!$_ssl && preg_match('/http:\/\//', $url) > 0) ) ) {
+								$dm_cookie_style_printed = true;
+								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+							} else if ($_ssl) {
+								$url = preg_replace( '/http:\/\//', 'https://', $url );
+								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+							} else {
+								$url = preg_replace( '/https:\/\//', 'http://', $url );
+								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
+							}
+						}
+
+						$dm_csc_building_urls[] = rawurlencode( $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) );
+					}
+					update_user_meta($user->ID, 'cross_domain', $key);
 				}
-				update_user_meta($user->ID, 'cross_domain', $key);
 			}
 		}
 
