@@ -283,6 +283,18 @@ if( !class_exists('domain_map')) {
 				add_filter( 'stylesheet_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
 				add_filter( 'template_directory', array(&$this, 'domain_mapping_post_content'), 1 );
 				add_filter( 'template_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
+			} else {
+				// We are assuming that we are on the original domain - so if we check if we are in the admin area, we need to only map those links that
+				// point to the front end of the site
+				if(is_admin()) {
+					// replace the hom url with the mapped url
+					add_filter( 'pre_option_home', array(&$this, 'domain_mapping_mappedurl') );
+					// filter the content with any original urls and change them to the mapped urls
+					add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
+					add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
+					add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+					add_filter( 'authenticate', array(&$this, 'authenticate'), 999, 3);
+				}
 			}
 
 		}
@@ -735,7 +747,7 @@ if( !class_exists('domain_map')) {
 				$this->options = get_site_option('domain_mapping', array());
 
 				$this->options['map_ipaddress'] = $_POST['map_ipaddress'];
-				$this->options['map_supporteronly'] = $_POST['map_supporteronly'];
+				$this->options['map_supporteronly'] = (isset($_POST['map_supporteronly'])) ? $_POST['map_supporteronly'] : '';
 				$this->options['map_admindomain'] = $_POST['map_admindomain'];
 				$this->options['map_logindomain'] = $_POST['map_logindomain'];
 
@@ -898,7 +910,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				check_admin_referer( 'domain_mapping' );
 				switch( $_POST[ 'action' ] ) {
 					case "add":
-						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmt} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
+						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
 							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
 							// fire the action when a new domain is added
 							do_action( 'domainmapping_added_domain', strtolower($domain), $this->db->blogid );
