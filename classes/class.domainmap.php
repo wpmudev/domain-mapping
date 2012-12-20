@@ -1024,7 +1024,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 			return $return;
 		}
 
-		function swap_mapped_url($url, $path, $plugin = false, $bid = null) {
+		function swap_mapped_url($url, $path = '', $plugin = false, $bid = null) {
 
 			// This function swaps the url to the mapped one
 
@@ -1079,7 +1079,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 			return $url;
 		}
 
-		function unswap_mapped_url($url, $path) {
+		function unswap_mapped_url($url, $path = '') {
 			global $current_blog, $current_site, $mapped_id;
 
 
