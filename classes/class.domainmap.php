@@ -1072,9 +1072,9 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				}
 			} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
 				// get the information from the cache for the old domain
-				$olddomain = $this->swapped_url[ $this->db->blogid ]['olddomain'];
+				$olddomain = untrailingslashit( $this->swapped_url[ $this->db->blogid ]['olddomain'] );
 				// replace the old domain with the new one and set the url for returning
-				$url = str_replace($olddomain, $this->swapped_url[ $this->db->blogid ]['newdomain'], $url);
+				$url = str_replace($olddomain, untrailingslashit( $this->swapped_url[ $this->db->blogid ]['newdomain'] ), $url);
 			}
 			return $url;
 		}
