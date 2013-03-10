@@ -348,10 +348,24 @@ if( !class_exists('domain_map')) {
 			// Add the network admin settings
 			add_action( 'network_admin_menu', array(&$this, 'add_network_admin_page') );
 
-			if(function_exists('is_pro_site') && $this->options['map_supporteronly'] == '1') {
-				// The supporter function exists and we are limiting domain mapping to supporters
+			if(function_exists('is_pro_site') && !empty($this->options['map_supporteronly'])) {
+				// We have a pro-site option set and the pro-site plugin exists
 
-				if(is_pro_site()) {
+				$levels = (array) get_site_option( 'psts_levels' );
+
+				if(!is_array( $this->options['map_supporteronly'] ) && !empty($levels) && $this->options['map_supporteronly'] == '1' ) {
+					$keys = array_keys( $levels );
+					$this->options['map_supporteronly'] = array( $keys[0] );
+				}
+
+				$on_a_level = false;
+				foreach( (array) $this->options['map_supporteronly'] as $level ) {
+					if( is_pro_site( false, $level ) ) {
+						$on_a_level = true;
+					}
+				}
+
+				if( $on_a_level ) {
 					// Add the management page
 					add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
 
