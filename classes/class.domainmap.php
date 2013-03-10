@@ -598,14 +598,14 @@ if( !class_exists('domain_map')) {
 												);
 
 						if ( is_admin() ) {
-							if ( ( ($_ssl && preg_match('/https:\/\//', $url) > 0) || (!$_ssl && preg_match('/http:\/\//', $url) > 0) ) ) {
+							if ( ( ($_ssl && preg_match('#https://#', $url) > 0) || (!$_ssl && preg_match('#http://#', $url) > 0) ) ) {
 								$dm_cookie_style_printed = true;
 								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
 							} else if ($_ssl) {
-								$url = preg_replace( '/http:\/\//', 'https://', $url );
+								$url = preg_replace( '#http://#', 'https://', $url );
 								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
 							} else {
-								$url = preg_replace( '/https:\/\//', 'http://', $url );
+								$url = preg_replace( '#https://#', 'http://', $url );
 								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
 							}
 						}
@@ -747,7 +747,7 @@ if( !class_exists('domain_map')) {
 				$this->options = get_site_option('domain_mapping', array());
 
 				$this->options['map_ipaddress'] = $_POST['map_ipaddress'];
-				$this->options['map_supporteronly'] = (isset($_POST['map_supporteronly'])) ? $_POST['map_supporteronly'] : '';
+				$this->options['map_supporteronly'] = (isset($_POST['map_supporteronly'])) ? $_POST['map_supporteronly'] : array();
 				$this->options['map_admindomain'] = $_POST['map_admindomain'];
 				$this->options['map_logindomain'] = $_POST['map_logindomain'];
 
@@ -796,17 +796,6 @@ if( !class_exists('domain_map')) {
 			_e( "Server IP Address: ", 'domainmap' );
 			echo "<input type='text' name='map_ipaddress' value='" . $this->options['map_ipaddress'] . "' />";
 
-			if(function_exists('is_pro_site')) {
-				echo '<p>' . __('Make this functionality only available to Pro Sites', 'domainmap') . '</p>';
-				_e("Pro Sites Only: ", 'domainmap');
-				?>
-				<select name='map_supporteronly'>
-					<option value='0' <?php selected('0', $this->options['map_supporteronly']); ?>><?php _e('No', 'domainmap'); ?></option>
-					<option value='1' <?php selected('1', $this->options['map_supporteronly']); ?>><?php _e('Yes', 'domainmap'); ?></option>
-				</select>
-				<?php
-			}
-
 			echo '<h4>' . __( 'Administration mapping', 'domainmap' ) . '</h4>';
 
 			echo "<p>" . __( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) . "</p>";
@@ -840,8 +829,6 @@ if( !class_exists('domain_map')) {
 
 			echo '<h4>' . __( 'Domain Mapping Table', 'domainmap' ) . '</h4>';
 
-
-
 			if( $this->check_for_table() ) {
 				echo "<p>" . __( "The domain mapping table is called <strong>", 'domainmap' ) . $this->dmtable . __('</strong> and exists in your database.','domainmap') . "</p>";
 			} else {
@@ -857,6 +844,35 @@ PRIMARY KEY  (`id`),
 KEY `blog_id` (`blog_id`,`domain`,`active`)
 );";
 				echo "</textarea>";
+			}
+
+			if(function_exists('is_pro_site')) {
+				echo '<h4>' . __( 'Restricted Access', 'domainmap' ) . '</h4>';
+				echo '<p>' . __('Make this functionality only available to certain Pro Sites levels', 'domainmap') . '</p>';
+				echo "<table>";
+				echo "<tr>";
+					echo "<td valign='top'><strong>";
+					_e("Select Pro Sites Levels: ", 'domainmap');
+					echo "</strong></td>";
+					echo "<td valign='top'>";
+					echo "<ul style='margin-top: 0;'>";
+					$levels = (array) get_site_option( 'psts_levels' );
+
+					if(!is_array( $this->options['map_supporteronly'] ) && !empty($levels) && $this->options['map_supporteronly'] == '1' ) {
+						$keys = array_keys( $levels );
+						$this->options['map_supporteronly'] = array( $keys[0] );
+					}
+					foreach ($levels as $level => $value) {
+					?>
+						<li><label><input type='checkbox' name='map_supporteronly[]' value='<?php echo $level; ?>' <?php if(in_array($level, (array) $this->options['map_supporteronly'])) { echo "checked='checked'"; } ?> >&nbsp;<?php echo $level . ': ' . esc_attr($value['name']); ?></label></li>
+					<?php
+					}
+
+					echo "</ul>";
+					echo "</td>";
+				echo "</tr>";
+				echo "</table>";
+
 			}
 
 			?>
