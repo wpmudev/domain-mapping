@@ -1143,9 +1143,9 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				}
 			} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
 				// get the information from the cache for the old domain
-				$olddomain = $this->swapped_url[ $this->db->blogid ]['olddomain'];
+				$olddomain = untrailingslashit( $this->swapped_url[ $this->db->blogid ]['olddomain'] );
 				// replace the new domain with the old one
-				$url = str_replace($this->swapped_url[ $this->db->blogid ]['newdomain'], $olddomain, $url);
+				$url = str_replace( untrailingslashit( $this->swapped_url[ $this->db->blogid ]['newdomain'] ), $olddomain, $url);
 			}
 			// Update the protocal if we need to
 			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
