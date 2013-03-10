@@ -784,26 +784,48 @@ if( !class_exists('domain_map')) {
 			<h2><?php _e('Domain mapping Options', 'domainmap') ?>
 			</h2>
 
-				<?php
-				if ( isset($_GET['msg']) ) {
-					echo '<div id="message" class="updated fade"><p>' . $messages[(int) $_GET['msg']] . '</p></div>';
-					$_SERVER['REQUEST_URI'] = remove_query_arg(array('message'), $_SERVER['REQUEST_URI']);
-				}
-				?>
+			<?php
+
+			$msg = array();
+
+			if ( isset($_GET['msg']) ) {
+				$msg[] = '<p>' . $messages[(int) $_GET['msg']] . '</p>';
+				$_SERVER['REQUEST_URI'] = remove_query_arg(array('message'), $_SERVER['REQUEST_URI']);
+			}
+
+			if ( !file_exists( ABSPATH . '/wp-content/sunrise.php' ) ) {
+				$msg[] = "<p><strong>" . __("Please copy the sunrise.php to ", 'domainmap') . ABSPATH . __("wp-content/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap') . ABSPATH . __("wp-config.php file", 'domainmap') . "</strong></p>";
+			}
+
+			if ( !defined( 'SUNRISE' ) ) {
+				$msg[] = "<p><strong>" . __("If you've followed the instructions and not already added define( 'SUNRISE', 'on' ); then please do so. If you added the constant be sure to uncomment this line: //define( 'SUNRISE', 'on' ); in the wp-config.php file.", 'domainmap') . "</strong></p>";
+			}
+
+			if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
+
+				$str = "<p><strong>" . __("You may have some lines in your wp-config.php file that will interfere with the operation of the domain mapping plugin, can you please check and remove the following lines:.", 'domainmap') . "</strong></p>";
+				$str .= "<ul>";
+				$str .= "<li>" . "define( 'DOMAIN_CURRENT_SITE', '" . DOMAIN_CURRENT_SITE . "' );" . "</li>";
+				$str .= "<li>" . "define( 'PATH_CURRENT_SITE', '" . PATH_CURRENT_SITE . "' );" . "</li>";
+				$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
+				$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
+				$str .= "</ul>";
+
+				$msg[] = $str;
+
+			}
+
+			if(!empty($msg)) {
+				echo '<div id="message" class="updated fade">' . implode( $msg ) . '</div>';
+			}
+
+			?>
 
 			<form action="" method="post" id="">
 
 			<?php
 			wp_nonce_field('update-dmoptions');
 			echo '<h3>' . __( 'Domain mapping Configuration', 'domainmap' ) . '</h3>';
-
-			if ( !file_exists( ABSPATH . '/wp-content/sunrise.php' ) ) {
-				echo "<p><strong>" . __("Please copy the sunrise.php to ", 'domainmap') . ABSPATH . __("/wp-content/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap') . ABSPATH . __("wp-config.php file", 'domainmap') . "</strong></p>";
-			}
-
-			if ( !defined( 'SUNRISE' ) ) {
-				echo "<p><strong>" . __("Please uncomment the line <em>//define( 'SUNRISE', 'on' );</em> in the ", 'domainmap') . ABSPATH . __("wp-config.php file.", 'domainmap') . "</strong></p>";
-			}
 
 			echo "<p>" . __( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) . "</p>";
 			echo "<p>" . __( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) . "</p>";
