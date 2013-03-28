@@ -803,13 +803,14 @@ if( !class_exists('domain_map')) {
 
 			if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
 
-				$str = "<p><strong>" . __("You may have some lines in your wp-config.php file that will interfere with the operation of the domain mapping plugin, can you please check and remove the following lines:.", 'domainmap') . "</strong></p>";
+				$str = "<p><strong>" . __("If you are having problems with domain mapping you should try removing the following lines from your wp-config.php file:.", 'domainmap') . "</strong></p>";
 				$str .= "<ul>";
 				$str .= "<li>" . "define( 'DOMAIN_CURRENT_SITE', '" . DOMAIN_CURRENT_SITE . "' );" . "</li>";
 				$str .= "<li>" . "define( 'PATH_CURRENT_SITE', '" . PATH_CURRENT_SITE . "' );" . "</li>";
 				$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
 				$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
 				$str .= "</ul>";
+				$str .= "<p><strong>" . __("Note: If you domain mapping plugin is working correctly, then please leave these lines in place.", 'domainmap') . "</strong></p>";
 
 				$msg[] = $str;
 
