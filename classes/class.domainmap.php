@@ -810,7 +810,7 @@ if( !class_exists('domain_map')) {
 				$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
 				$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
 				$str .= "</ul>";
-				$str .= "<p><strong>" . __("Note: If you domain mapping plugin is working correctly, then please leave these lines in place.", 'domainmap') . "</strong></p>";
+				$str .= "<p><strong>" . __("Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place.", 'domainmap') . "</strong></p>";
 
 				$msg[] = $str;
 

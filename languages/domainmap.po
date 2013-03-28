@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-10 22:24+0100\n"
-"PO-Revision-Date: 2013-03-10 22:24+0100\n"
+"POT-Creation-Date: 2013-03-28 15:27+0100\n"
+"PO-Revision-Date: 2013-03-28 15:28+0100\n"
 "Last-Translator: Barry <barry@mapinated.com>\n"
 "Language-Team: Incsub <barry@incsub.com>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:108
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:112
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:739
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:981
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:982
 msgid "Domain Mapping"
 msgstr ""
 
@@ -76,129 +76,133 @@ msgid "If you've followed the instructions and not already added define( 'SUNRIS
 msgstr ""
 
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:806
-msgid "You may have some lines in your wp-config.php file that will interfere with the operation of the domain mapping plugin, can you please check and remove the following lines:."
+msgid "If you are having problems with domain mapping you should try removing the following lines from your wp-config.php file:."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:828
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:813
+msgid "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place."
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:829
 msgid "Domain mapping Configuration"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:830
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:831
 msgid "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:831
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:832
 msgid "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:832
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:833
 msgid "Server IP Address: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:835
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:836
 msgid "Administration mapping"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:837
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:838
 msgid "The settings below allow you to control how the domain mapping plugin operates with the administration area."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:840
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:841
 msgid "The domain used for the administration area should be the"
-msgstr ""
-
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:843
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:859
-msgid "domain entered by the user"
 msgstr ""
 
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:844
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:860
-msgid "mapped domain"
+msgid "domain entered by the user"
 msgstr ""
 
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:845
 #: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:861
+msgid "mapped domain"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:846
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:862
 msgid "original domain"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:850
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:851
 msgid "Login mapping"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:852
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:853
 msgid "The settings below allow you to control how the domain mapping plugin operates with the login area."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:856
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:857
 msgid "The domain used for the login area should be the"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:866
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:867
 msgid "Domain Mapping Table"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:869
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:870
 msgid "The domain mapping table is called <strong>"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:869
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:870
 msgid "</strong> and exists in your database."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:871
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:872
 msgid "The domain mapping table should be called <strong>"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:871
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:872
 msgid "</strong> but does not seem to exist in your database and cannot be created."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:872
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:873
 msgid "To create the database table you need to run the following SQL."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:886
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:887
 msgid "Restricted Access"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:887
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:888
 msgid "Make this functionality only available to certain Pro Sites levels"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:891
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:892
 msgid "Select Pro Sites Levels: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:916
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:917
 msgid "Save Changes"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:983
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:984
 msgid "If your domain name includes a sub-domain such as \"blog\" then you can add a CNAME for that hostname in your DNS pointing at this blog URL."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:986
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:987
 msgid "If you want to redirect a domain you will need to add multiple DNS \"A\" records pointing at the IP addresses of this server: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:988
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:989
 msgid "If you want to redirect a domain you will need to add a DNS \"A\" record pointing at the IP address of this server: "
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:996
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:997
 msgid "Custom Domain"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:997
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:998
 msgid "Original Blog Address"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:998
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:999
 msgid "Actions"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:1026
+#: /Users/barrygetty/Work/wordpress/plugins/domain-mapping/classes/class.domainmap.php:1027
 msgid "Delete"
 msgstr ""
 
