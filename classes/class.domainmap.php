@@ -237,7 +237,12 @@ if( !class_exists('domain_map')) {
 				}
 
 				$this->db->suppress_errors( $s );
-				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+				if( defined('DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN') && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
+					$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+				} else {
+					$protocol = 'http://';
+				}
+
 				if ( !empty($domain) ) {
 					$return_url[ $this->db->blogid ] = untrailingslashit( $protocol . $domain . $current_site->path );
 					$setting = $return_url[ $this->db->blogid ];
@@ -1108,8 +1113,11 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT %d /* domain mapping */", 1 ) );
 
 				$this->db->suppress_errors( $s );
-				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
-
+				if( defined('DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN') && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
+					$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+				} else {
+					$protocol = 'http://';
+				}
 				if ( !empty($newdomain) ) {
 					// Get the domain and path we want to swap to
 					$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
@@ -1149,7 +1157,11 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 
 				$this->db->suppress_errors( $s );
 
-				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+				if( defined('DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN') && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
+					$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+				} else {
+					$protocol = 'http://';
+				}
 
 				if ( !empty($newdomain) ) {
 					// Work out the mapped domain
@@ -1170,10 +1182,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				// replace the new domain with the old one
 				$url = str_replace( untrailingslashit( $this->swapped_url[ $this->db->blogid ]['newdomain'] ), $olddomain, $url);
 			}
-			// Update the protocal if we need to
-			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
-				$url = str_replace('http://', 'https://', $url);
-			}
+
 			return $url;
 		}
 
