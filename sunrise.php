@@ -24,7 +24,6 @@ if(defined('COOKIE_DOMAIN')) {
 	define('COOKIE_DOMAIN_ERROR', true);
 }
 
-
 $wpdb->suppress_errors();
 
 $using_domain = $wpdb->escape( preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ) );
@@ -36,7 +35,7 @@ $wpdb->suppress_errors( false );
 
 if( !empty($mapped_id) ) {
 	$current_blog = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = %d LIMIT 1 /* domain mapping */", $mapped_id) );
-	$current_blog->domain = $using_domain;
+	$current_blog->domain = $_SERVER[ 'HTTP_HOST' ];
 
 	$blog_id = $mapped_id;
 	$site_id = $current_blog->site_id;
