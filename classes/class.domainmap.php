@@ -230,7 +230,7 @@ if( !class_exists('domain_map')) {
 			if ( !isset( $return_url[ $this->db->blogid ] ) ) {
 				$s = $this->db->suppress_errors();
 
-				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
 
 				if ( empty( $domain ) ) {
 					$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
@@ -962,14 +962,15 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				check_admin_referer( 'domain_mapping' );
 				switch( $_POST[ 'action' ] ) {
 					case "add":
-						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($domain)) ) && null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($domain) ) ) ) {
-							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($domain)) );
+						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($_POST[ 'domain' ])) ) &&
+							null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($_POST[ 'domain' ]) ) ) ) {
+							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($_POST[ 'domain' ])) );
 							// fire the action when a new domain is added
 							do_action( 'domainmapping_added_domain', strtolower($domain), $this->db->blogid );
 						}
 					break;
 					case "delete":
-						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($domain) ) );
+						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($_POST[ 'domain' ]) ) );
 						// fire the action when a domain is removed
 						do_action( 'domainmapping_deleted_domain', strtolower($domain), $this->db->blogid );
 					break;
@@ -1099,7 +1100,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				$s = $this->db->suppress_errors();
 
 				// Get the mapped domain
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
 				if ( empty( $newdomain ) ) {
 					$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
@@ -1139,7 +1140,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 
 				$s = $this->db->suppress_errors();
 				// Try to get the mapped domain from the domain table
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ), $this->db->blogid ) );
+				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
 				if ( empty( $newdomain ) ) {
 					$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 				}
