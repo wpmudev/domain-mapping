@@ -29,7 +29,8 @@ $wpdb->suppress_errors();
 
 $using_domain = $wpdb->escape( preg_replace( "/^www\./", "", $_SERVER[ 'HTTP_HOST' ] ) );
 
-$mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE domain = %s LIMIT 1 /* domain mapping */", $using_domain ) );
+// Check for the domain with and without the www. prefix
+$mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE domain = %s OR domain = %s LIMIT 1 /* domain mapping */", $using_domain, 'www.' . $using_domain ) );
 
 $wpdb->suppress_errors( false );
 

@@ -640,7 +640,7 @@ if( !class_exists('domain_map')) {
 
 			$redirect_url = parse_url($_REQUEST['redirect_to']);
 			$network_home_url = parse_url(network_home_url());
-			if ($redirect_url['host'] === $network_home_url['host']) {
+			if ( isset($redirect_url['host']) && $redirect_url['host'] === $network_home_url['host']) {
 				return $allowed_hosts;
 			}
 
@@ -959,7 +959,6 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 			global $current_site;
 
 			if ( !empty( $_POST[ 'action' ] ) ) {
-				$domain = $this->db->escape( preg_replace( "/^www\./", "", $_POST[ 'domain' ] ) );
 				check_admin_referer( 'domain_mapping' );
 				switch( $_POST[ 'action' ] ) {
 					case "add":
