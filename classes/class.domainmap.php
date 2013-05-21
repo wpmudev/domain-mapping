@@ -201,22 +201,28 @@ if( !class_exists('domain_map')) {
 				case 'mapped':
 					break;
 				case 'original':
+					// get the mapped url using our filter
+					$mapped_url = site_url('/');
+					// remove the http and https parts of the url
+					$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
+					// remove the filter we added to swap the url
+					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+					// get the original url now with our filter removed
+					$url = trailingslashit( get_option('siteurl') );
+					// remove the http and https parts of the original url
+					$url = str_replace(array('https://', 'http://'), '', $url);
+					// put our filter back in place
+					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+
 					// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
 					if( $path != 'admin-ajax.php' ) {
-						// get the mapped url using our filter
-						$mapped_url = site_url('/');
-						// remove the http and https parts of the url
-						$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
-						// remove the filter we added to swap the url
-						remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-						// get the original url now with our filter removed
-						$url = trailingslashit( get_option('siteurl') );
-						// remove the http and https parts of the original url
-						$url = str_replace(array('https://', 'http://'), '', $url);
 						// swap the mapped url with the original one
 						$admin_url = str_replace($mapped_url, $url, $admin_url);
-						// put our filter back in place
-						add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+					} else {
+						if( !is_admin() ) {
+							// swap the original url with the mapped one
+							$admin_url = str_replace($url, $mapped_url, $admin_url);
+						}
 					}
 
 					break;
