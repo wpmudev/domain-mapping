@@ -423,7 +423,7 @@ if( !class_exists('domain_map')) {
 						<title><?php _e('Authenticating...', 'domainmap'); ?></title>
 						<?php
 						if (!empty($dm_authenticated) && !empty($dm_authenticated->ID)) {
-							$this->build_cookie('loging', $dm_authenticated, $location);
+							$this->build_cookie('login', $dm_authenticated, $location);
 						} else {
 							$this->build_cookie('logout');
 						}
