@@ -51,17 +51,18 @@ if( !class_exists('domain_map')) {
 				$this->install( $version );
 			}
 
+			// Translate the plugin
+			add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
+
 			// Set up the plugin
 			add_action( 'init', array(&$this, 'setup_plugin'));
+			// Add in the cross domain logins
+			add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
+
 			// Add any header css or js that we need for the admin page
 			add_action( 'load-tools_page_domainmapping', array(&$this, 'add_admin_header'));
 			// Add any header css or js for the network side
 			add_action('load-settings_page_domainmapping_options', array(&$this, 'add_network_admin_header'));
-			// Translate the plugin
-			add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
-
-			// Add in the cross domain logins
-			add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
 
 			// Add in column header to the Site table
 			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_site_column_header') );
@@ -200,20 +201,23 @@ if( !class_exists('domain_map')) {
 				case 'mapped':
 					break;
 				case 'original':
-					// get the mapped url using our filter
-					$mapped_url = site_url('/');
-					// remove the http and https parts of the url
-					$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
-					// remove the filter we added to swap the url
-					remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-					// get the original url now with our filter removed
-					$url = trailingslashit( get_option('siteurl') );
-					// remove the http and https parts of the original url
-					$url = str_replace(array('https://', 'http://'), '', $url);
-					// swap the mapped url with the original one
-					$admin_url = str_replace($mapped_url, $url, $admin_url);
-					// put our filter back in place
-					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+					// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
+					if( $path != 'admin-ajax.php' ) {
+						// get the mapped url using our filter
+						$mapped_url = site_url('/');
+						// remove the http and https parts of the url
+						$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
+						// remove the filter we added to swap the url
+						remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+						// get the original url now with our filter removed
+						$url = trailingslashit( get_option('siteurl') );
+						// remove the http and https parts of the original url
+						$url = str_replace(array('https://', 'http://'), '', $url);
+						// swap the mapped url with the original one
+						$admin_url = str_replace($mapped_url, $url, $admin_url);
+						// put our filter back in place
+						add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+					}
 
 					break;
 			}
@@ -261,7 +265,7 @@ if( !class_exists('domain_map')) {
 			if ( defined( 'DOMAIN_MAPPING' ) ) {
 				// replace the siteurl with the mapped domain
 				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-				// replace the hom url with the mapped url
+				// replace the home url with the mapped url
 				add_filter( 'pre_option_home', array(&$this, 'domain_mapping_mappedurl') );
 				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
@@ -374,7 +378,7 @@ if( !class_exists('domain_map')) {
 					// Add the management page
 					add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
 
-					add_action('wp_logout', array(&$this, 'wp_logout'), 10);
+					add_action( 'wp_logout', array(&$this, 'wp_logout'), 10 );
 					add_action( 'admin_head', array(&$this, 'build_cookie') );
 					add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
 				}
@@ -384,7 +388,7 @@ if( !class_exists('domain_map')) {
 
 				add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
 
-				add_action('wp_logout', array(&$this, 'wp_logout'), 10);
+				add_action( 'wp_logout', array(&$this, 'wp_logout'), 10 );
 				add_action( 'admin_head', array(&$this, 'build_cookie') );
 				add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
 			}
