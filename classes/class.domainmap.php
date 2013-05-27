@@ -177,10 +177,20 @@ if( !class_exists('domain_map')) {
 					$url = trailingslashit( get_option('siteurl') );
 					// again remove the http and https parts of the url
 					$url = str_replace(array('https://', 'http://'), '', $url);
-					// replace the mapped url with the original one
-					$login_url = str_replace($mapped_url, $url, $login_url);
 					// put our filter back in place
 					add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+
+					// replace the mapped url with the original one
+					$login_url = str_replace($mapped_url, $url, $login_url);
+
+					/*
+					if( !isset($_POST['postpass']) ) {
+
+					} else {
+						// keep the mapped url as we need to just process and return
+						$login_url = str_replace($url, $mapped_url, $login_url);
+					}
+					*/
 
 					break;
 			}
@@ -351,8 +361,8 @@ if( !class_exists('domain_map')) {
 							$this->redirect_to_mapped_domain();
 							break;
 						case 'original':
-							if ( defined( 'DOMAIN_MAPPING' ) ) {
-								// put in the code to send me to the original domain
+							if ( defined( 'DOMAIN_MAPPING' ) && empty($_POST) ) {
+								// put in the code to send me to the original domain unless we are submitting to the form
 								$this->redirect_to_orig_domain();
 							}
 							break;
