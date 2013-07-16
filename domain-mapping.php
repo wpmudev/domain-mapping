@@ -47,5 +47,5 @@ if ( !is_multisite() ) {
 	// Set up my location
 	set_domainmap_dir(__FILE__);
 
-	$dm_map =& new domain_map();
+	$dm_map = new domain_map();
 }
