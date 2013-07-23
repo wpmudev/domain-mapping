@@ -1021,7 +1021,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 						<th scope="col" class="check-column"></th>
 						<th scope="col" width="45%"><?php _e('Custom Domain','domainmap'); ?></th>
 						<th scope="col" width="45%"><?php _e('Original Blog Address','domainmap'); ?></th>
-						<th scope="col"><?php _e('Actions'); ?></th>
+						<th scope="col"><?php _e('Actions', 'domaimmap'); ?></th>
 					</tr>
 				</thead>
 				<tbody id="the-list">
@@ -1081,7 +1081,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 				<?php
 				echo '<input type="hidden" name="action" value="add" />';
 				wp_nonce_field( 'domain_mapping' );
-				echo "<input type='submit' value='Add' class='button' />";
+				echo "<input type='submit' value='" . __('Add', 'domainmap') . "' class='button' />";
 				?>
 				</td>
 			</tr>
