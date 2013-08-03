@@ -106,7 +106,7 @@ if( !class_exists('domain_map')) {
 		}
 
 		function add_network_admin_page() {
-			add_submenu_page('settings.php', __('Domain Mapping','domainmap'), __('Domain Mapping','domainmap'), 'manage_options', "domainmapping_options", array(&$this,'handle_options_page'));
+			add_submenu_page('settings.php', __('Domain Mapping','domainmap'), __('Domain Mapping','domainmap'), 'manage_network_options', "domainmapping_options", array(&$this,'handle_options_page'));
 		}
 
 		function add_site_admin_page() {
