@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 3.2.4.2
+Version: 3.2.4.3
 Author: Barry (Incsub)
 Author URI: http://caffeinatedb.com
 WDP ID: 99
@@ -36,13 +36,13 @@ if ( !is_multisite() ) {
 	global $dm_map;
 
 	// Include the configuration file
-	require_once('includes/config.php');
+	require_once( dirname(__FILE__) . '/includes/config.php');
 	// Add in the global functions
-	require_once('includes/functions.php');
+	require_once( dirname(__FILE__) . '/includes/functions.php');
 	// Main domain mapping class
-	require_once('classes/class.domainmap.php');
+	require_once( dirname(__FILE__) . '/classes/class.domainmap.php');
 	// Load the WPMUDEV dashboard notification library
-	include_once('external/wpmudev-dash-notification.php');
+	include_once( dirname(__FILE__) . '/external/wpmudev-dash-notification.php');
 
 	// Set up my location
 	set_domainmap_dir(__FILE__);

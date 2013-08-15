@@ -953,6 +953,18 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 			if( empty( $table ) ) {
 				// We don't have the table so we should check if we should create it.
 				if($trytocreate) {
+
+					$charset_collate = '';
+
+					if ( ! empty($this->db->charset) ) {
+						$charset_collate = "DEFAULT CHARACTER SET " . $this->db->charset;
+					}
+
+					if ( ! empty($this->db->collate) ) {
+						$charset_collate .= " COLLATE " . $this->db->collate;
+					}
+
+
 					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
 						`id` bigint(20) NOT NULL auto_increment,
 						`blog_id` bigint(20) NOT NULL,
@@ -960,7 +972,7 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 						`active` tinyint(4) default '1',
 						PRIMARY KEY  (`id`),
 						KEY `blog_id` (`blog_id`,`domain`,`active`)
-					);" );
+					) $charset_collate;" );
 
 					// Do another check to see if it was created
 					$sql = "SHOW TABLES LIKE '{$this->dmtable}'";
