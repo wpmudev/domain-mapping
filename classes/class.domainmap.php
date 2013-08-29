@@ -1,6 +1,5 @@
 <?php
-if( !class_exists('domain_map')) {
-
+if ( !class_exists( 'domain_map', false ) ) :
 	class domain_map {
 
 		var $build = 7;
@@ -51,18 +50,13 @@ if( !class_exists('domain_map')) {
 				$this->install( $version );
 			}
 
-			// Translate the plugin
-			add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
-
 			// Set up the plugin
-			add_action( 'init', array(&$this, 'setup_plugin'));
+			add_action( 'init', array( $this, 'setup_plugin' ) );
 			// Add in the cross domain logins
 			add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
 
 			// Add any header css or js that we need for the admin page
 			add_action( 'load-tools_page_domainmapping', array(&$this, 'add_admin_header'));
-			// Add any header css or js for the network side
-			add_action('load-settings_page_domainmapping_options', array(&$this, 'add_network_admin_header'));
 
 			// Add in column header to the Site table
 			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_site_column_header') );
@@ -81,13 +75,6 @@ if( !class_exists('domain_map')) {
 			$this->__construct();
 		}
 
-		function load_textdomain() {
-			$locale = apply_filters( 'domainmap_locale', get_locale() );
-			$mofile = domainmap_dir( "languages/domainmap-$locale.mo" );
-			if ( file_exists( $mofile ) )
-				load_textdomain( 'domainmap', $mofile );
-		}
-
 		function install( $version ) {
 			// Just the single table creating function for now - will get more complex later
 			$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
@@ -98,19 +85,10 @@ if( !class_exists('domain_map')) {
 				PRIMARY KEY  (`id`),
 				KEY `blog_id` (`blog_id`,`domain`,`active`)
 			);" );
-
 		}
 
 		function add_admin_header() {
 
-		}
-
-		function add_network_admin_page() {
-			add_submenu_page('settings.php', __('Domain Mapping','domainmap'), __('Domain Mapping','domainmap'), 'manage_network_options', "domainmapping_options", array(&$this,'handle_options_page'));
-		}
-
-		function add_site_admin_page() {
-			add_management_page( __('Domain Mapping', 'domainmap'), __('Domain Mapping', 'domainmap'), 'manage_options', 'domainmapping', array(&$this, 'handle_domain_page') );
 		}
 
 		/** Sites columns functions **/
@@ -124,7 +102,6 @@ if( !class_exists('domain_map')) {
 		}
 
 		function build_domain_mapping_cache() {
-
 			global $current_site;
 
 			if(empty($this->mappings)) {
@@ -139,7 +116,6 @@ if( !class_exists('domain_map')) {
 				}
 
 			}
-
 		}
 
 		function add_sites_column_data( $column, $blog_id ) {
@@ -152,8 +128,6 @@ if( !class_exists('domain_map')) {
 				}
 			}
 		}
-
-
 
 		function shibboleth_session_initiator_url($initiator_url) {
 			return $initiator_url;
@@ -325,22 +299,11 @@ if( !class_exists('domain_map')) {
 		}
 
 		function setup_plugin() {
+			$this->options = Domainmap_Plugin::instance()->get_options();
 
-			$this->options = get_site_option('domain_mapping', array());
-			if(empty($this->options)) {
-				$this->options['map_ipaddress'] = get_site_option('map_ipaddress');
-				$this->options['map_supporteronly'] = get_site_option('map_supporteronly', '0');
-				$this->options['map_admindomain'] = get_site_option('map_admindomain', 'user');
-				$this->options['map_logindomain'] = get_site_option('map_logindomain', 'user');
-
-				update_site_option('domain_mapping', $this->options);
-			}
-
-			if (is_admin()) {
+			if ( is_admin() ) {
 				// We are in the admin area, so check for the redirects here
-				switch($this->options['map_admindomain']) {
-					case 'user':
-						break;
+				switch( $this->options['map_admindomain'] ) {
 					case 'mapped':
 						$this->redirect_to_mapped_domain();
 						break;
@@ -352,16 +315,14 @@ if( !class_exists('domain_map')) {
 						break;
 				}
 			} else {
-				if (strpos(addslashes($_SERVER["SCRIPT_NAME"]),'/wp-login.php') !== false) {
+				if ( strpos( addslashes( $_SERVER["SCRIPT_NAME"] ), '/wp-login.php' ) !== false ) {
 					// We are in the login area, so check for the redirects here
-					switch($this->options['map_logindomain']) {
-						case 'user':
-							break;
+					switch( $this->options['map_logindomain'] ) {
 						case 'mapped':
 							$this->redirect_to_mapped_domain();
 							break;
 						case 'original':
-							if ( defined( 'DOMAIN_MAPPING' ) && empty($_POST) ) {
+							if ( defined( 'DOMAIN_MAPPING' ) && empty( $_POST ) ) {
 								// put in the code to send me to the original domain unless we are submitting to the form
 								$this->redirect_to_orig_domain();
 							}
@@ -370,46 +331,30 @@ if( !class_exists('domain_map')) {
 				}
 			}
 
-			// Add the network admin settings
-			add_action( 'network_admin_menu', array(&$this, 'add_network_admin_page') );
-
-			if(function_exists('is_pro_site') && !empty($this->options['map_supporteronly'])) {
+			$permitted = true;
+			if ( function_exists( 'is_pro_site' ) && !empty( $this->options['map_supporteronly'] ) ) {
 				// We have a pro-site option set and the pro-site plugin exists
-
-				$levels = (array) get_site_option( 'psts_levels' );
-
-				if(!is_array( $this->options['map_supporteronly'] ) && !empty($levels) && $this->options['map_supporteronly'] == '1' ) {
+				$levels = (array)get_site_option( 'psts_levels' );
+				if( !is_array( $this->options['map_supporteronly'] ) && !empty( $levels ) && $this->options['map_supporteronly'] == '1' ) {
 					$keys = array_keys( $levels );
 					$this->options['map_supporteronly'] = array( $keys[0] );
 				}
 
-				$on_a_level = false;
-				foreach( (array) $this->options['map_supporteronly'] as $level ) {
+				$permitted = false;
+				foreach ( (array)$this->options['map_supporteronly'] as $level ) {
 					if( is_pro_site( false, $level ) ) {
-						$on_a_level = true;
+						$permitted = true;
 					}
 				}
-
-				if( $on_a_level ) {
-					// Add the management page
-					add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
-
-					add_action( 'wp_logout', array(&$this, 'wp_logout'), 10 );
-					add_action( 'admin_head', array(&$this, 'build_cookie') );
-					add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
-				}
-
-			} else {
-				// Add the management page
-
-				add_action( 'admin_menu', array(&$this, 'add_site_admin_page') );
-
-				add_action( 'wp_logout', array(&$this, 'wp_logout'), 10 );
-				add_action( 'admin_head', array(&$this, 'build_cookie') );
-				add_action( 'template_redirect', array(&$this, 'redirect_to_mapped_domain') );
 			}
 
-			add_action( 'delete_blog', array(&$this, 'delete_blog_domain_mapping'), 1, 2 );
+			// Add the network admin settings
+			add_action( 'delete_blog', array( $this, 'delete_blog_domain_mapping' ), 1, 2 );
+			if ( $permitted ) {
+				add_action( 'wp_logout', array( $this, 'wp_logout' ), 10 );
+				add_action( 'admin_head', array( $this, 'build_cookie' ) );
+				add_action( 'template_redirect', array( $this, 'redirect_to_mapped_domain' ) );
+			}
 		}
 
 		function authenticate($user) {
@@ -608,11 +553,6 @@ if( !class_exists('domain_map')) {
 				}
 			}
 
-			$_ssl = false;
-			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
-				$_ssl = true;
-			}
-
 			if(count($urls) > 0) {
 				if (!$user) {
 					$user = wp_get_current_user();
@@ -634,9 +574,10 @@ if( !class_exists('domain_map')) {
 												"hash"		=> $hash,
 												"user_id"	=> $user->ID,
 												"action"	=> $action
-												);
+						);
 
 						if ( is_admin() ) {
+							$_ssl = is_ssl();
 							if ( ( ($_ssl && preg_match('#https://#', $url) > 0) || (!$_ssl && preg_match('#http://#', $url) > 0) ) ) {
 								$dm_cookie_style_printed = true;
 								echo '<link rel="stylesheet" href="' . $url . $hash . '?action='.$action.'&uid='.$user->ID.'&build=' . date("Ymd", strtotime('-24 days') ) . '" type="text/css" media="screen" />';
@@ -694,18 +635,15 @@ if( !class_exists('domain_map')) {
 						if(!is_user_logged_in() ) {
 							// Set the cookies
 							switch($key[$hash]['action']) {
-								case 'login':	wp_set_auth_cookie($key[$hash]['user_id']);
-												break;
-								default:
-												break;
+								case 'login':
+									wp_set_auth_cookie($key[$hash]['user_id']);
+									break;
 							}
 						} else {
 							// Set the cookies
 							switch($key[$hash]['action']) {
 								case 'logout':
 									wp_clear_auth_cookie();
-									break;
-								default:
 									break;
 							}
 						}
@@ -753,198 +691,6 @@ if( !class_exists('domain_map')) {
 			}
 		}
 
-		function handle_dash_page() {
-
-			require_once('classes/class.domains.php');
-			$wp_domains_table = new WP_MS_Domains_List_Table();
-
-			?>
-				<div class="wrap">
-				<?php screen_icon('ms-admin'); ?>
-				<h2><?php _e('Domain Mapping', 'domainmap') ?>
-				<?php echo $msg; ?>
-				</h2>
-
-				<form action="" method="get" id="ms-search">
-				<?php $wp_domains_table->search_box( __( 'Search Sites' ), 'site' ); ?>
-				<input type="hidden" name="action" value="blogs" />
-				</form>
-
-				<form id="form-site-list" action="edit.php?action=allblogs" method="post">
-					<?php $wp_domains_table->display(); ?>
-				</form>
-				</div>
-			<?php
-		}
-
-		function add_network_admin_header() {
-
-			if(isset($_POST['action']) && $_POST['action'] == 'updateoptions') {
-				check_admin_referer('update-dmoptions');
-
-				// Update the domain mapping settings
-				$this->options = get_site_option('domain_mapping', array());
-
-				$this->options['map_ipaddress'] = $_POST['map_ipaddress'];
-				$this->options['map_supporteronly'] = (isset($_POST['map_supporteronly'])) ? $_POST['map_supporteronly'] : array();
-				$this->options['map_admindomain'] = $_POST['map_admindomain'];
-				$this->options['map_logindomain'] = $_POST['map_logindomain'];
-
-				update_site_option('domain_mapping', $this->options);
-
-				wp_safe_redirect( add_query_arg( array( 'msg' => 1 ), wp_get_referer() ) );
-				exit;
-			}
-
-		}
-
-		function handle_options_page() {
-
-			$messages = array();
-			$messages[1] = __('Options updated.','domainmap');
-
-			?>
-			<div class="wrap">
-			<?php screen_icon('ms-admin'); ?>
-			<h2><?php _e('Domain mapping Options', 'domainmap') ?>
-			</h2>
-
-			<?php
-
-			$msg = array();
-
-			if ( isset($_GET['msg']) ) {
-				$msg[] = '<p>' . $messages[(int) $_GET['msg']] . '</p>';
-				$_SERVER['REQUEST_URI'] = remove_query_arg(array('message'), $_SERVER['REQUEST_URI']);
-			}
-
-			if ( !file_exists( ABSPATH . '/wp-content/sunrise.php' ) ) {
-				$msg[] = "<p><strong>" . __("Please copy the sunrise.php to ", 'domainmap') . ABSPATH . __("wp-content/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap') . ABSPATH . __("wp-config.php file", 'domainmap') . "</strong></p>";
-			}
-
-			if ( !defined( 'SUNRISE' ) ) {
-				$msg[] = "<p><strong>" . __("If you've followed the instructions and not already added define( 'SUNRISE', 'on' ); then please do so. If you added the constant be sure to uncomment this line: //define( 'SUNRISE', 'on' ); in the wp-config.php file.", 'domainmap') . "</strong></p>";
-			}
-
-			if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
-
-				$str = "<p><strong>" . __("If you are having problems with domain mapping you should try removing the following lines from your wp-config.php file:.", 'domainmap') . "</strong></p>";
-				$str .= "<ul>";
-				$str .= "<li>" . "define( 'DOMAIN_CURRENT_SITE', '" . DOMAIN_CURRENT_SITE . "' );" . "</li>";
-				$str .= "<li>" . "define( 'PATH_CURRENT_SITE', '" . PATH_CURRENT_SITE . "' );" . "</li>";
-				$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
-				$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
-				$str .= "</ul>";
-				$str .= "<p><strong>" . __("Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place.", 'domainmap') . "</strong></p>";
-
-				$msg[] = $str;
-
-			}
-
-			if(!empty($msg)) {
-				echo '<div id="message" class="updated fade">' . implode( $msg ) . '</div>';
-			}
-
-			?>
-
-			<form action="" method="post" id="">
-
-			<?php
-			wp_nonce_field('update-dmoptions');
-			echo '<h3>' . __( 'Domain mapping Configuration', 'domainmap' ) . '</h3>';
-
-			echo "<p>" . __( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) . "</p>";
-			echo "<p>" . __( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) . "</p>";
-			_e( "Server IP Address: ", 'domainmap' );
-			echo "<input type='text' name='map_ipaddress' value='" . $this->options['map_ipaddress'] . "' />";
-
-			echo '<h4>' . __( 'Administration mapping', 'domainmap' ) . '</h4>';
-
-			echo "<p>" . __( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) . "</p>";
-
-			echo '<p>';
-			echo __('The domain used for the administration area should be the', 'domainmap') . '&nbsp;';
-			?>
-			<select name='map_admindomain'>
-				<option value='user' <?php selected('user', $this->options['map_admindomain']); ?>><?php _e('domain entered by the user', 'domainmap'); ?></option>
-				<option value='mapped' <?php selected('mapped', $this->options['map_admindomain']); ?>><?php _e('mapped domain', 'domainmap'); ?></option>
-				<option value='original' <?php selected('original', $this->options['map_admindomain']); ?>><?php _e('original domain', 'domainmap'); ?></option>
-			</select>
-			<?php
-			echo '</p>';
-
-			echo '<h4>' . __( 'Login mapping', 'domainmap' ) . '</h4>';
-
-			echo "<p>" . __( "The settings below allow you to control how the domain mapping plugin operates with the login area.", 'domainmap' ) . "</p>";
-
-			$logdom = get_site_option( 'map_logindomain', 'user' );
-			echo '<p>';
-			echo __('The domain used for the login area should be the', 'domainmap') . '&nbsp;';
-			?>
-			<select name='map_logindomain'>
-				<option value='user' <?php selected('user', $this->options['map_logindomain']); ?>><?php _e('domain entered by the user', 'domainmap'); ?></option>
-				<option value='mapped' <?php selected('mapped', $this->options['map_logindomain']); ?>><?php _e('mapped domain', 'domainmap'); ?></option>
-				<option value='original' <?php selected('original', $this->options['map_logindomain']); ?>><?php _e('original domain', 'domainmap'); ?></option>
-			</select>
-			<?php
-			echo '</p>';
-
-			echo '<h4>' . __( 'Domain Mapping Table', 'domainmap' ) . '</h4>';
-
-			if( $this->check_for_table() ) {
-				echo "<p>" . __( "The domain mapping table is called <strong>", 'domainmap' ) . $this->dmtable . __('</strong> and exists in your database.','domainmap') . "</p>";
-			} else {
-				echo "<p>" . __( "The domain mapping table should be called <strong>", 'domainmap' ) . $this->dmtable . __('</strong> but does not seem to exist in your database and cannot be created.','domainmap') . "</p>";
-				echo "<p>" . __( "To create the database table you need to run the following SQL.",'domainmap') . "</p>";
-				echo "<textarea class='code' rows='10' cols='100' readonly='readonly'>";
-				echo "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
-`id` bigint(20) NOT NULL auto_increment,
-`blog_id` bigint(20) NOT NULL,
-`domain` varchar(255) NOT NULL,
-`active` tinyint(4) default '1',
-PRIMARY KEY  (`id`),
-KEY `blog_id` (`blog_id`,`domain`,`active`)
-);";
-				echo "</textarea>";
-			}
-
-			if(function_exists('is_pro_site')) {
-				echo '<h4>' . __( 'Restricted Access', 'domainmap' ) . '</h4>';
-				echo '<p>' . __('Make this functionality only available to certain Pro Sites levels', 'domainmap') . '</p>';
-				echo "<table>";
-				echo "<tr>";
-					echo "<td valign='top'><strong>";
-					_e("Select Pro Sites Levels: ", 'domainmap');
-					echo "</strong></td>";
-					echo "<td valign='top'>";
-					echo "<ul style='margin-top: 0;'>";
-					$levels = (array) get_site_option( 'psts_levels' );
-
-					if(!is_array( $this->options['map_supporteronly'] ) && !empty($levels) && $this->options['map_supporteronly'] == '1' ) {
-						$keys = array_keys( $levels );
-						$this->options['map_supporteronly'] = array( $keys[0] );
-					}
-					foreach ($levels as $level => $value) {
-					?>
-						<li><label><input type='checkbox' name='map_supporteronly[]' value='<?php echo $level; ?>' <?php if(in_array($level, (array) $this->options['map_supporteronly'])) { echo "checked='checked'"; } ?> >&nbsp;<?php echo $level . ': ' . esc_attr($value['name']); ?></label></li>
-					<?php
-					}
-
-					echo "</ul>";
-					echo "</td>";
-				echo "</tr>";
-				echo "</table>";
-
-			}
-
-			?>
-				<input type='hidden' name='action' value='updateoptions' />
-				<p class="submit"><input type="submit" value="<?php _e('Save Changes','domainmap'); ?>" class="button-primary" id="submit" name="submit"></p>
-				</form>
-				</div>
-			<?php
-		}
-
 		function check_for_table( $trytocreate = true ) {
 
 			$sql = "SHOW TABLES LIKE '{$this->dmtable}'";
@@ -979,130 +725,11 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 					$table = $this->db->get_var( $sql );
 					if( empty( $table ) ) {
 						return false;
-					} else {
-						return true;
 					}
 				}
-			} else {
-				return true;
 			}
 
 			return true;
-
-		}
-
-		function handle_domain_page() {
-
-			global $current_site;
-
-			if ( !empty( $_POST[ 'action' ] ) ) {
-				check_admin_referer( 'domain_mapping' );
-				switch( $_POST[ 'action' ] ) {
-					case "add":
-						if( null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->db->blogs} WHERE domain = %s AND path = '/' /* domain mapping */", strtolower($_POST[ 'domain' ])) ) &&
-							null == $this->db->get_row( $this->db->prepare("SELECT blog_id FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($_POST[ 'domain' ]) ) ) ) {
-							$this->db->query( $this->db->prepare( "INSERT INTO {$this->dmtable} ( `id` , `blog_id` , `domain` , `active` ) VALUES ( NULL, %d, %s, '1') /* domain mapping */", $this->db->blogid, strtolower($_POST[ 'domain' ])) );
-							// fire the action when a new domain is added
-							do_action( 'domainmapping_added_domain', strtolower($domain), $this->db->blogid );
-						}
-					break;
-					case "delete":
-						$this->db->query( $this->db->prepare("DELETE FROM {$this->dmtable} WHERE domain = %s /* domain mapping */", strtolower($_POST[ 'domain' ]) ) );
-						// fire the action when a domain is removed
-						do_action( 'domainmapping_deleted_domain', strtolower($domain), $this->db->blogid );
-					break;
-				}
-			}
-
-			//testing
-
-			echo "<div class='wrap'><div class='icon32' id='icon-tools'><br/></div><h2>" . __('Domain Mapping', 'domainmap') . "</h2>";
-
-			echo "<p>" . __( 'If your domain name includes a sub-domain such as "blog" then you can add a CNAME for that hostname in your DNS pointing at this blog URL.', 'domainmap' ) . "</p>";
-			$map_ipaddress = $this->options['map_ipaddress'];
-			if ( strpos( $map_ipaddress, ',' ) ) {
-				echo "<p>" . __( 'If you want to redirect a domain you will need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . "<strong>" . $map_ipaddress . "</strong></p>";
-			} else {
-				echo "<p>" . __( 'If you want to redirect a domain you will need to add a DNS "A" record pointing at the IP address of this server: ', 'domainmap' ) . "<strong>" . $map_ipaddress . "</strong></p>";
-			}
-
-			?>
-			<table width="100%" cellpadding="3" cellspacing="3" class="widefat">
-				<thead>
-					<tr>
-						<th scope="col" class="check-column"></th>
-						<th scope="col" width="45%"><?php _e('Custom Domain','domainmap'); ?></th>
-						<th scope="col" width="45%"><?php _e('Original Blog Address','domainmap'); ?></th>
-						<th scope="col"><?php _e('Actions', 'domaimmap'); ?></th>
-					</tr>
-				</thead>
-				<tbody id="the-list">
-
-			<?php
-			$domains = $this->db->get_results( $this->db->prepare("SELECT * FROM {$this->dmtable} WHERE blog_id = %d",$this->db->blogid) );
-			if ( is_array( $domains ) && !empty( $domains ) ) {
-				foreach( $domains as $details ) { ?>
-
-					<tr  class=''>
-						<th scope="row" class="check-column">&nbsp;
-
-						</th>
-						<td>
-							<a href='http://<?php echo $details->domain . $current_site->path; ?>'>http://<?php echo $details->domain . $current_site->path; ?></a>
-						</td>
-						<td>
-						<?php
-						$orig = $this->db->get_row( $this->db->prepare("SELECT * FROM {$this->db->blogs} WHERE blog_id = %d",$this->db->blogid) );
-						?>
-						<a href='http://<?php echo $orig->domain . $orig->path; ?>'>http://<?php echo $orig->domain . $orig->path; ?></a>
-						</td>
-						<td>
-						<?php
-						echo '<form method="POST">';
-						echo '<input type="hidden" name="action" value="delete" />';
-						echo "<input type='hidden' name='domain' value='{$details->domain}' />";
-						echo "<input type='submit' value='" . __('Delete','domainmap') . "' class='button' />";
-						wp_nonce_field( 'domain_mapping' );
-						echo "</form>";
-						?>
-						</td>
-					</tr>
-				<?php
-				}
-			}
-
-			reset($domains);
-
-			if(empty($domains) || defined('DOMAINMAPPING_ALLOWMULTI')) {
-			?>
-			<form method="POST">
-			<tr  class=''>
-				<th scope="row" class="check-column">&nbsp;
-
-				</th>
-				<td>
-					http://<input type='text' name='domain' value='' />/
-				</td>
-				<td>
-				<?php
-				$orig = $this->db->get_row( $this->db->prepare("SELECT * FROM {$this->db->blogs} WHERE blog_id = %d",$this->db->blogid) );
-				?>
-				<a href='http://<?php echo $orig->domain . $orig->path; ?>'>http://<?php echo $orig->domain . $orig->path; ?></a>
-				</td>
-				<td>
-				<?php
-				echo '<input type="hidden" name="action" value="add" />';
-				wp_nonce_field( 'domain_mapping' );
-				echo "<input type='submit' value='" . __('Add', 'domainmap') . "' class='button' />";
-				?>
-				</td>
-			</tr>
-			</form>
-						<?php } ?>
-			</tbody>
-			</table>
-			</div>
-			<?php
 		}
 
 		function reset_script_url($return) {
@@ -1317,8 +944,6 @@ KEY `blog_id` (`blog_id`,`domain`,`active`)
 
 	} //end class domain_map
 
-
-}
-
-
-?>
+	// set up the plugin core class
+	$GLOBALS['dm_map'] = new domain_map();
+endif;

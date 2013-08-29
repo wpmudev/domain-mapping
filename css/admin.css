@@ -1,0 +1,308 @@
+#wpwrap {
+    background: #F0F1F2 url(../images/texture.png) repeat
+}
+
+#adminmenuback {
+    z-index: 0
+}
+
+#domainmapping-content * {
+    font-family: "Lato", Helvetica Neue, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased !important
+}
+
+.domainmapping-clear {
+    clear: both
+}
+
+.domainmapping-tab-switch {
+    border-bottom: 1px solid #ccc
+}
+
+.domainmapping-tab-switch ul {
+    margin: 20px 0;
+    padding: 0 0 0 10px;
+    list-style: none;
+    clear: both
+}
+
+.domainmapping-tab-switch li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+
+.domainmapping-tab-switch a {
+    display: block;
+    background-color: #f1f2f3;
+    margin: 0 6px -1px 0;
+    padding: 14px 30px 15px;
+    font-size: 16px;
+    line-height: 16px;
+    color: #aaa;
+    text-decoration: none;
+    outline: none;
+    border: 1px solid #ccc
+}
+
+.domainmapping-tab-switch a:hover {
+    color: #01b1f3;
+    text-decoration: none;
+    outline: none
+}
+
+.domainmapping-tab-switch a.active {
+    color: #464646;
+    border-bottom: 1px solid #f9f9fa;
+    background-color: rgba(0, 0, 0, 0)
+}
+
+.domainmapping-tab {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 21px;
+    min-width: 858px;
+    max-width: 1400px
+}
+
+.domainmapping-tabs .domainmapping-tab {
+	display: none;
+}
+
+.domainmapping-tabs .domainmapping-tab.active {
+	display: block;
+}
+
+.domainmapping-info {
+    border-left: 3px solid #01b1f3;
+    border-left-color: rgba(1, 177, 243, 0.7);
+    background-color: #cff;
+    background-color: rgba(204, 255, 255, 0.4);
+    color: #444;
+    padding: 10px 15px;
+	margin: 1em 0;
+}
+
+#domainmapping-content .updated {
+    padding: 10px 15px;
+	margin: 1em 0;
+	font-size: 14px;
+}
+
+.domainmapping-box {
+    border: 3px solid #00487f;
+    border-top-width: 0;
+    background-color: white;
+	margin-bottom: 20px;
+}
+
+.domainmapping-box h3 {
+    padding: 5px 10px 7px;
+    margin: 0;
+    background-color: #00487f;
+    color: white
+}
+
+.domainmapping-origin {
+    color: #01b1f3;
+    font-weight: bold
+}
+
+.domainmapping-box-content {
+    padding: 10px 20px;
+}
+
+.domainmapping-box-content p {
+	margin-top: 0;
+}
+
+.domainmapping-box .domainmapping-domains-list {
+    margin: 0;
+	padding: 0;
+    list-style: none
+}
+
+.domainmapping-domains-list li {
+    list-style: none;
+    text-align: center;
+    padding: 8px 0 10px;
+    margin: 0;
+    border-bottom: 1px dashed #dfdfdf;
+    position: relative
+}
+
+.domainmapping-mapped, .domainmapping-map-remove {
+    position: absolute;
+    top: 8px
+}
+
+.domainmapping-mapped {
+    left: 0
+}
+
+.domainmapping-map-state, .domainmapping-map-state:hover {
+    color: black
+}
+
+.domainmapping-map-remove {
+    right: 0;
+    color: red
+}
+
+.domainmapping-mapped, .domainmapping-map-state, .domainmapping-map-remove {
+    text-decoration: none
+}
+
+.domainmapping-box .domainmapping-domains-list li > span {
+    color: #464646;
+    font-weight: bold
+}
+
+.domainmapping-box .domainmapping-form {
+    text-align: left;
+    border-bottom-width: 0;
+    margin-top: 10px
+}
+
+.domainmapping-form input[type="text"] {
+    padding: 5px 10px;
+    width: 200px;
+    float: left;
+    margin: 0
+}
+
+.domainmapping-form input.domainmapping-input-domain {
+    border-right-width: 0;
+    border-left-width: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0
+}
+
+.domainmapping-form input.domainmapping-input-domain:active, .domainmapping-form input.domainmapping-input-domain:focus {
+    border-color: #dfdfdf;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none
+}
+
+.domainmapping-form input.domainmapping-input-sufix {
+    width: 30px;
+    margin-right: 10px;
+    border-left-width: 0;
+    -webkit-border-top-left-radius: 0;
+    -moz-border-radius-topleft: 0;
+    border-top-left-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -moz-border-radius-bottomleft: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-radius-topleft: 0;
+    -moz-border-radius-bottomleft: 0
+}
+
+.domainmapping-form input.domainmapping-input-prefix {
+    width: 60px;
+    border-right-width: 0;
+    padding-right: 0;
+    margin-right: 0;
+    -webkit-border-top-right-radius: 0;
+    -moz-border-radius-topright: 0;
+    border-top-right-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+    -moz-border-radius-bottomright: 0;
+    border-bottom-right-radius: 0;
+    -moz-border-radius-topright: 0;
+    -moz-border-radius-bottomright: 0
+}
+
+.domainmapping-form input.domainmapping-input-sufix, .domainmapping-form input.domainmapping-input-prefix {
+    background-color: #f1f1f1
+}
+
+.domainmapping-form-submit {
+    padding: 5px 20px;
+    margin: 0;
+    text-transform: uppercase;
+    outline: none;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-background-clip: padding;
+    background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    -moz-box-shadow: 0 1px 0 #001c33, inset 0 1px 0 #004f8c;
+    -webkit-box-shadow: 0 1px 0 #001c33, inset 0 1px 0 #004f8c;
+    box-shadow: 0 1px 0 #001c33, inset 0 1px 0 #004f8c;
+    background-image: -moz-linear-gradient(bottom, #003866 0%, #00487f 100%);
+    background-image: -o-linear-gradient(bottom, #003866 0%, #00487f 100%);
+    background-image: -webkit-linear-gradient(bottom, #003866 0%, #00487f 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #003866 0%), color-stop(1, #00487f 100%));
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#003866 0%, EndColorStr=#00487f 100%)";
+    background-image: linear-gradient(bottom, #003866 0%, #00487f 100%);
+    color: #e2ecf4;
+    text-shadow: 0 -1px 0 #002a4c;
+    border: none;
+	cursor: pointer;
+}
+
+.domainmapping-form-submit:active {
+    background-image: -moz-linear-gradient(bottom, #00487f 0%, #003866 100%);
+    background-image: -o-linear-gradient(bottom, #00487f 0%, #003866 100%);
+    background-image: -webkit-linear-gradient(bottom, #00487f 0%, #003866 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00487f 0%), color-stop(1, #003866 100%));
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#00487f 0%, EndColorStr=#003866 100%)";
+    background-image: linear-gradient(bottom, #00487f 0%, #003866 100%);
+}
+
+.domainmapping-invalid-domain,
+.domainmapping-need-revalidate {
+	color: red;
+}
+
+.domainmapping-valid-domain {
+	color: green;
+}
+
+.domainmapping-wait-status-refresh {
+	background-image: url(../images/ajax-loader-small.gif);
+	background-position: center center;
+	background-repeat: no-repeat;
+	height: 21px;
+}
+
+.domainmapping-domains-wrapper {
+	position: relative;
+}
+
+.domainmapping-locker {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	z-index: 9999;
+	background-color: rgba(255, 255, 255, 0.85);
+	background-image: url(../images/ajax-loader-big.gif);
+	background-position: center center;
+	background-repeat: no-repeat;
+	display: none;
+}
+
+.domainmapping-domains-wrapper-locked .domainmapping-locker {
+	display: block;
+}
+
+.domainmapping-form-hidden .domainmapping-form {
+	display: none;
+}
+
+.domainmapping-form-hidden li:nth-last-child(2) {
+	border-bottom-width: 0;
+}
+
+.domainmapping-label {
+	width: 150px;
+	display: inline-block;
+}
