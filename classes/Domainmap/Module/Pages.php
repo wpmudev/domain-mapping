@@ -115,6 +115,61 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	}
 
 	/**
+	 * Updates network options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _update_network_options() {
+		check_admin_referer( 'update-dmoptions' );
+
+		// Update the domain mapping settings
+		$options = $this->_plugin->get_options();
+
+		// parse IP addresses
+		$ips = array();
+		foreach ( explode( ',', filter_input( INPUT_POST, 'map_ipaddress' ) ) as $ip ) {
+			$ip = filter_var( trim( $ip ), FILTER_VALIDATE_IP );
+			if ( $ip ) {
+				$ips[] = $ip;
+			}
+		}
+
+		// parse supported levels
+		$supporters = array();
+		if ( isset( $_POST['map_supporteronly'] ) ) {
+			$supporters = array_filter( array_map( 'intval', (array)$_POST['map_supporteronly'] ) );
+		}
+
+		$options['map_ipaddress'] = implode( ', ', array_unique( $ips ) );
+		$options['map_supporteronly'] = $supporters;
+		$options['map_admindomain'] = filter_input( INPUT_POST, 'map_admindomain' );
+		$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
+
+		// save reseller options
+		$options['map_reseller'] = '';
+		$resellers = $this->_plugin->get_resellers();
+		$reseller = filter_input( INPUT_POST, 'map_reseller' );
+		if ( isset( $resellers[$reseller] ) ) {
+			$options['map_reseller'] = $reseller;
+			$resellers[$reseller]->save_options( $options );
+		}
+
+		// update options
+		update_site_option( 'domain_mapping', $options );
+
+		// update active tab cookie
+		setcookie( 'domainmapping-actab', md5( filter_input( INPUT_POST, 'active_tab' ) ), time() + YEAR_IN_SECONDS );
+
+		// if noheader argument is passed, then redirect back to options page
+		if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+			wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'msg' => 1 ) ) );
+			exit;
+		}
+	}
+
+	/**
 	 * Renders network options page.
 	 *
 	 * @since 4.0.0
@@ -125,37 +180,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	public function render_network_options_page() {
 		// if request method is post, then save options
 		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-			check_admin_referer( 'update-dmoptions' );
-
-			// Update the domain mapping settings
-			$options = $this->_plugin->get_options();
-
-			$ips = array();
-			foreach ( explode( ',', filter_input( INPUT_POST, 'map_ipaddress' ) ) as $ip ) {
-				$ip = filter_var( trim( $ip ), FILTER_VALIDATE_IP );
-				if ( $ip ) {
-					$ips[] = $ip;
-				}
-			}
-
-			$supporters = array();
-			if ( isset( $_POST['map_supporteronly'] ) ) {
-				$supporters = array_filter( array_map( 'intval', (array)$_POST['map_supporteronly'] ) );
-			}
-
-			$options['map_ipaddress'] = implode( ', ', array_unique( $ips ) );
-			$options['map_supporteronly'] = $supporters;
-			$options['map_admindomain'] = $_POST['map_admindomain'];
-			$options['map_logindomain'] = $_POST['map_logindomain'];
-			$options['map_reseller'] = $_POST['map_reseller'];
-
-			update_site_option( 'domain_mapping', $options );
-
-			// if noheader argument is passed, then redirect back to options page
-			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
-				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'msg' => 1 ) ) );
-				exit;
-			}
+			$this->_update_network_options();
 		}
 
 		// render page

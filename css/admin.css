@@ -84,6 +84,11 @@
 	margin: 1em 0;
 }
 
+.domainmapping-info-error {
+	border-left-color: #ff3333;
+	background-color: #ffbbbb;
+}
+
 #domainmapping-content .updated {
     padding: 10px 15px;
 	margin: 1em 0;
@@ -223,6 +228,7 @@
 .domainmapping-form-submit {
     padding: 5px 20px;
     margin: 0;
+	font-size: 14px;
     text-transform: uppercase;
     outline: none;
     -moz-border-radius: 3px;
@@ -254,6 +260,10 @@
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00487f 0%), color-stop(1, #003866 100%));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#00487f 0%, EndColorStr=#003866 100%)";
     background-image: linear-gradient(bottom, #00487f 0%, #003866 100%);
+}
+
+.domainmapping-form-submit i {
+	margin-right: 5px;
 }
 
 .domainmapping-invalid-domain,
@@ -305,4 +315,49 @@
 .domainmapping-label {
 	width: 150px;
 	display: inline-block;
+}
+
+.domainmapping-resellers-switch {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.domainmapping-resellers-switch li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+input.domainmapping-reseller-switch {
+	margin-top: 3px;
+	margin-right: 5px;
+}
+
+.domainmapping-reseller-settings {
+	display: none;
+	margin-top: 40px;
+	padding-top: 20px;
+	border-top: 1px dashed #ddd;
+}
+
+.domainmapping-reseller-settings.active {
+	display: block;
+}
+
+#domainmapping-enom-header {
+	background-color: #113D83;
+	background-image: linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
+	background-image: -o-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
+	background-image: -moz-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
+	background-image: -webkit-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
+	background-image: -ms-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
+	background-image: -webkit-gradient(linear,left bottom,right bottom,color-stop(0,#113D83),color-stop(0.5,#305AA3),color-stop(1,#113D83));
+}
+
+#domainmapping-enom-logo {
+	height: 60px;
+	background-image: url(../images/enom.png);
+	background-repeat: no-repeat;
+	background-position: 15px 15px;
 }

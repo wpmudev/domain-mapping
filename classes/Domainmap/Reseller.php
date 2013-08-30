@@ -37,6 +37,7 @@ abstract class Domainmap_Reseller {
 	 *
 	 * @abstract
 	 * @access public
+	 * @return string The title of reseller provider.
 	 */
 	public abstract function get_title();
 
@@ -49,5 +50,27 @@ abstract class Domainmap_Reseller {
 	 * @access public
 	 */
 	public abstract function render_options();
+
+	/**
+	 * Saves reseller options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @abstract
+	 * @access public
+	 * @param array $options The array of plugin options.
+	 */
+	public abstract function save_options( &$options );
+
+	/**
+	 * Determines whether reseller API connected properly or not.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @abstract
+	 * @access public
+	 * @return boolean TRUE if API connected properly, otherwise FALSE.
+	 */
+	public abstract function is_valid();
 
 }

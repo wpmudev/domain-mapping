@@ -70,6 +70,18 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @access protected
 	 */
 	protected function _to_html() {
+		$tabs = array(
+			'#domainmapping-general-options' => __( 'Mapping options', 'domainmap' ),
+			'#domainmapping-reseller-options' => __( 'Reseller options', 'domainmap' ),
+		);
+
+		$active_href = '';
+		$active_tab = filter_input( INPUT_COOKIE, 'domainmapping-actab', FILTER_DEFAULT, array(
+			'options' => array(
+				'default' => md5( key( $tabs ) ),
+			),
+		) );
+
 		?><div id="domainmapping-content" class="wrap">
 			<?php screen_icon( 'ms-admin' ) ?>
 			<h2><?php _e( 'Domain Mapping', 'domainmap' ) ?></h2>
@@ -79,15 +91,30 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 				<?php $this->_get_messages() ?>
 				<div class="domainmapping-tab-switch domainmapping-tab-switch-js">
 					<ul>
-						<li><a class="active" href="#domainmapping-general-options"><?php _e( 'Mapping options', 'domainmap' ) ?></a></li>
-						<li><a href="#domainmapping-reseller-options"><?php _e( 'Reseller options', 'domainmap' ) ?></a></li>
+						<?php foreach ( $tabs as $href => $label ) : ?>
+						<li>
+							<?php if ( $active_tab == md5( $href ) ) : ?>
+								<?php $active_href = $href ?>
+								<a class="active" href="<?php echo $href ?>"><?php echo $label ?></a>
+							<?php else : ?>
+								<a href="<?php echo $href ?>"><?php echo $label ?></a>
+							<?php endif; ?>
+						</li>
+						<?php endforeach; ?>
 					</ul>
 					<div class="domainmapping-clear"></div>
 				</div>
 
+				<input type="hidden" id="domainmapping-active-tab" name="active_tab" value="<?php echo $active_href ?>">
+
 				<div class="domainmapping-tabs">
-					<div id="domainmapping-general-options" class="domainmapping-tab active"><?php $this->_render_mapping_options_tab() ?></div>
-					<div id="domainmapping-reseller-options" class="domainmapping-tab"><?php $this->_render_reseller_options_tab() ?></div>
+					<div id="domainmapping-general-options" class="domainmapping-tab<?php echo $active_href == '#domainmapping-general-options' ? ' active' : '' ?>"><?php
+						$this->_render_mapping_options_tab()
+					?></div>
+
+					<div id="domainmapping-reseller-options" class="domainmapping-tab<?php echo $active_href == '#domainmapping-reseller-options' ? ' active' : '' ?>"><?php
+						$this->_render_reseller_options_tab()
+					?></div>
 				</div>
 
 				<p class="submit">
@@ -279,14 +306,34 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @access private
 	 */
 	private function _render_reseller_options_tab() {
-		?><p></p><?php
+		$selected = false;
 
-		foreach ( $this->resellers as $reseller ) :
-			?><div class="domainmapping-box">
-				<h3><?php echo esc_html( $reseller->get_title() ) ?></h3>
-				<div class="domainmapping-box-content">
-					<?php $reseller->render_options() ?>
-				</div>
+		?><div>
+			<h4><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
+
+			<ul class="domainmapping-resellers-switch"><?php
+				foreach ( $this->resellers as $hash => $reseller ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
+						<?php echo esc_html( $reseller->get_title() ) ?>
+						<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
+					</label>
+				</li><?php
+				endforeach;
+
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( empty( $selected ) ) ?>>
+						<?php _e( "Don't use any", 'domainmap' ) ?>
+					</label>
+				</li>
+			</ul>
+		</div><?php
+
+		foreach ( $this->resellers as $hash => $reseller ) :
+			?><div id="reseller-<?php echo $hash ?>" class="domainmapping-reseller-settings<?php echo $selected == $hash ? ' active' :'' ?>">
+				<?php $reseller->render_options() ?>
 			</div><?php
 		endforeach;
 	}

@@ -234,4 +234,24 @@ class Domainmap_Plugin {
 		return $this->_resellers;
 	}
 
+	/**
+	 * Returns active reseller instance.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return Domainmap_Reseller The reseller instance or NULL.
+	 */
+	public function get_reseller() {
+		$options = $this->get_options();
+		if ( empty( $options['map_reseller'] ) ) {
+			return null;
+		}
+
+		$resellers = $this->get_resellers();
+		return is_string( $options['map_reseller'] ) && array_key_exists( $options['map_reseller'], $resellers )
+			? $resellers[$options['map_reseller']]
+			: null;
+	}
+
 }
