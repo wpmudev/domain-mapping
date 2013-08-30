@@ -67,11 +67,11 @@
 }
 
 .domainmapping-tabs .domainmapping-tab {
-	display: none;
+    display: none
 }
 
 .domainmapping-tabs .domainmapping-tab.active {
-	display: block;
+    display: block
 }
 
 .domainmapping-info {
@@ -81,25 +81,30 @@
     background-color: rgba(204, 255, 255, 0.4);
     color: #444;
     padding: 10px 15px;
-	margin: 1em 0;
+    margin: 1em 0
 }
 
 .domainmapping-info-error {
-	border-left-color: #ff3333;
-	background-color: #ffbbbb;
+    border-left-color: #f33;
+    background-color: #fbb
+}
+
+.domainmapping-info-success {
+    border-left-color: #093;
+    background-color: #cfc
 }
 
 #domainmapping-content .updated {
     padding: 10px 15px;
-	margin: 1em 0;
-	font-size: 14px;
+    margin: 1em 0;
+    font-size: 14px
 }
 
 .domainmapping-box {
     border: 3px solid #00487f;
     border-top-width: 0;
     background-color: white;
-	margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .domainmapping-box h3 {
@@ -115,16 +120,16 @@
 }
 
 .domainmapping-box-content {
-    padding: 10px 20px;
+    padding: 10px 20px
 }
 
 .domainmapping-box-content p {
-	margin-top: 0;
+    margin-top: 0
 }
 
 .domainmapping-box .domainmapping-domains-list {
     margin: 0;
-	padding: 0;
+    padding: 0;
     list-style: none
 }
 
@@ -178,8 +183,7 @@
 }
 
 .domainmapping-form input.domainmapping-input-domain {
-    border-right-width: 0;
-    border-left-width: 0;
+    border: 0;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0
@@ -199,10 +203,10 @@
     -webkit-border-top-left-radius: 0;
     -moz-border-radius-topleft: 0;
     border-top-left-radius: 0;
+    -moz-border-radius-topleft: 0;
     -webkit-border-bottom-left-radius: 0;
     -moz-border-radius-bottomleft: 0;
     border-bottom-left-radius: 0;
-    -moz-border-radius-topleft: 0;
     -moz-border-radius-bottomleft: 0
 }
 
@@ -214,10 +218,10 @@
     -webkit-border-top-right-radius: 0;
     -moz-border-radius-topright: 0;
     border-top-right-radius: 0;
+    -moz-border-radius-topright: 0;
     -webkit-border-bottom-right-radius: 0;
     -moz-border-radius-bottomright: 0;
     border-bottom-right-radius: 0;
-    -moz-border-radius-topright: 0;
     -moz-border-radius-bottomright: 0
 }
 
@@ -225,10 +229,31 @@
     background-color: #f1f1f1
 }
 
+.domainmapping-form select.domainmapping-select-domain {
+    float: left;
+    background-color: white;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    height: auto;
+    padding: 4px 0;
+    margin: 0;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 0
+}
+
+.domainmapping-controls-wrapper {
+    border-top: 1px solid #dfdfdf;
+    border-bottom: 1px solid #dfdfdf;
+    float: left
+}
+
 .domainmapping-form-submit {
     padding: 5px 20px;
     margin: 0;
-	font-size: 14px;
+    font-size: 14px;
     text-transform: uppercase;
     outline: none;
     -moz-border-radius: 3px;
@@ -250,7 +275,7 @@
     color: #e2ecf4;
     text-shadow: 0 -1px 0 #002a4c;
     border: none;
-	cursor: pointer;
+    cursor: pointer
 }
 
 .domainmapping-form-submit:active {
@@ -263,101 +288,104 @@
 }
 
 .domainmapping-form-submit i {
-	margin-right: 5px;
+    margin-right: 5px
 }
 
-.domainmapping-invalid-domain,
-.domainmapping-need-revalidate {
-	color: red;
+.domainmapping-invalid-domain, .domainmapping-need-revalidate {
+    color: red
 }
 
 .domainmapping-valid-domain {
-	color: green;
+    color: green
 }
 
 .domainmapping-wait-status-refresh {
-	background-image: url(../images/ajax-loader-small.gif);
-	background-position: center center;
-	background-repeat: no-repeat;
-	height: 21px;
+    background-image: url(../images/ajax-loader-small.gif);
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 21px
 }
 
 .domainmapping-domains-wrapper {
-	position: relative;
+    position: relative
 }
 
 .domainmapping-locker {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	top: 0;
-	z-index: 9999;
-	background-color: rgba(255, 255, 255, 0.85);
-	background-image: url(../images/ajax-loader-big.gif);
-	background-position: center center;
-	background-repeat: no-repeat;
-	display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.85);
+    background-image: url(../images/ajax-loader-big.gif);
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: none
 }
 
 .domainmapping-domains-wrapper-locked .domainmapping-locker {
-	display: block;
+    display: block
 }
 
 .domainmapping-form-hidden .domainmapping-form {
-	display: none;
+    display: none
 }
 
 .domainmapping-form-hidden li:nth-last-child(2) {
-	border-bottom-width: 0;
+    border-bottom-width: 0
 }
 
 .domainmapping-label {
-	width: 150px;
-	display: inline-block;
+    width: 150px;
+    display: inline-block
 }
 
 .domainmapping-resellers-switch {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+    margin: 0;
+    padding: 0;
+    list-style: none
 }
 
 .domainmapping-resellers-switch li {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+    margin: 0;
+    padding: 0;
+    list-style: none
 }
 
 input.domainmapping-reseller-switch {
-	margin-top: 3px;
-	margin-right: 5px;
+    margin-top: 3px;
+    margin-right: 5px
 }
 
 .domainmapping-reseller-settings {
-	display: none;
-	margin-top: 40px;
-	padding-top: 20px;
-	border-top: 1px dashed #ddd;
+    display: none;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px dashed #ddd
 }
 
 .domainmapping-reseller-settings.active {
-	display: block;
+    display: block
 }
 
 #domainmapping-enom-header {
-	background-color: #113D83;
-	background-image: linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
-	background-image: -o-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
-	background-image: -moz-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
-	background-image: -webkit-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
-	background-image: -ms-linear-gradient(left,#113D83 0,#305AA3 50%,#113D83 100%);
-	background-image: -webkit-gradient(linear,left bottom,right bottom,color-stop(0,#113D83),color-stop(0.5,#305AA3),color-stop(1,#113D83));
+    background-color: #113D83;
+    background-image: linear-gradient(left, #113D83 0, #305AA3 50%, #113D83 100%);
+    background-image: -o-linear-gradient(left, #113D83 0, #305AA3 50%, #113D83 100%);
+    background-image: -moz-linear-gradient(left, #113D83 0, #305AA3 50%, #113D83 100%);
+    background-image: -webkit-linear-gradient(left, #113D83 0, #305AA3 50%, #113D83 100%);
+    background-image: -ms-linear-gradient(left, #113D83 0, #305AA3 50%, #113D83 100%);
+    background-image: -webkit-gradient(linear, left bottom, right bottom, color-stop(0, #113D83), color-stop(0.5, #305AA3), color-stop(1, #113D83))
 }
 
 #domainmapping-enom-logo {
-	height: 60px;
-	background-image: url(../images/enom.png);
-	background-repeat: no-repeat;
-	background-position: 15px 15px;
+    height: 60px;
+    background-image: url(../images/enom.png);
+    background-repeat: no-repeat;
+    background-position: 15px 15px
+}
+
+#dommainmapping-check-domain-form {
+	margin-bottom: 10px;
 }

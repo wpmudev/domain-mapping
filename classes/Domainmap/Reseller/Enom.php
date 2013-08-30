@@ -29,8 +29,22 @@
  */
 class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
-	const API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp';
-	const COMMAND_CHECK = 'check';
+	const RESELLER_ID            = 'enom';
+	const RESELLER_API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp';
+
+	const COMMAND_CHECK        = 'check';
+	const COMMAND_GET_TLD_LIST = 'gettldlist';
+
+	/**
+	 * Returns reseller internal id.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 */
+	protected function _get_reseller_id() {
+		return self::RESELLER_ID;
+	}
 
 	/**
 	 * Executes remote command and returns response of execution.
@@ -61,7 +75,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$args['command'] = $command;
 
-		$response = wp_remote_get( add_query_arg( $args, self::API_ENDPOINT ) );
+		$response = wp_remote_get( add_query_arg( $args, self::RESELLER_API_ENDPOINT ) );
 		if ( !is_array( $response ) || !isset( $response['body'] ) ) {
 			return false;
 		}
@@ -79,23 +93,23 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @param array $options The array of plugin options.
 	 */
 	public function save_options( &$options ) {
-		if ( !isset( $options['enom'] ) || !is_array( $options['enom'] ) ) {
-			$options['enom'] = array();
+		if ( !isset( $options[self::RESELLER_ID] ) || !is_array( $options[self::RESELLER_ID] ) ) {
+			$options[self::RESELLER_ID] = array();
 		}
 
 		$uid = trim( filter_input( INPUT_POST, 'map_reseller_enom_uid' ) );
-		$need_health_check = !isset( $options['enom']['uid'] ) || $options['enom']['uid'] != $uid;
-		$options['enom']['uid'] = $uid;
+		$need_health_check = !isset( $options[self::RESELLER_ID]['uid'] ) || $options[self::RESELLER_ID]['uid'] != $uid;
+		$options[self::RESELLER_ID]['uid'] = $uid;
 
 		$pwd = filter_input( INPUT_POST, 'map_reseller_enom_pwd' );
 		$pwd_hash = filter_input( INPUT_POST, 'map_reseller_enom_pwd_hash' );
 		if ( $pwd_hash != sha1( $pwd ) ) {
-			$options['enom']['pwd'] = $pwd;
+			$options[self::RESELLER_ID]['pwd'] = $pwd;
 			$need_health_check = true;
 		}
 
-		$options['enom']['valid'] = $need_health_check || ( isset( $options['enom']['valid'] ) && $options['enom']['valid'] == false )
-			? $this->_validateCredentials( $options['enom']['uid'], $options['enom']['pwd'] )
+		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
+			? $this->_validateCredentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] )
 			: true;
 	}
 
@@ -141,7 +155,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 */
 	public function render_options() {
 		$options = Domainmap_Plugin::instance()->get_options();
-		$options = isset( $options['enom'] ) ? $options['enom'] : array();
+		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 
 		$uid = isset( $options['uid'] ) ? $options['uid'] : '';
 		$pwd = isset( $options['pwd'] ) ? str_shuffle( $options['pwd'] ) : '';
@@ -182,7 +196,48 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 */
 	public function is_valid() {
 		$options = Domainmap_Plugin::instance()->get_options();
-		return !isset( $options['enom']['valid'] ) || $options['enom']['valid'] == true;
+		return !isset( $options[self::RESELLER_ID]['valid'] ) || $options[self::RESELLER_ID]['valid'] == true;
+	}
+
+	/**
+	 * Returns TLD list accepted by reseller.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @return array The array of TLD accepted by reseller.
+	 */
+	protected function _get_tld_list() {
+		$xml = $this->_exec_command( self::COMMAND_GET_TLD_LIST );
+
+		$tlds = array();
+		if ( $xml && isset( $xml->tldlist->tld ) ) {
+			$tldlist = json_decode( json_encode( $xml->tldlist ), true );
+			foreach ( $tldlist['tld'] as $tld ) {
+				$tlds[] = $tld['tld'];
+			}
+		}
+
+		return array_filter( $tlds );
+	}
+
+	/**
+	 * Checks domain availability.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @param string $tld The top level domain.
+	 * @param string $sld The second level domain.
+	 * @return boolean TRUE if domain is available to puchase, otherwise FALSE.
+	 */
+	protected function _check_domain( $tld, $sld ) {
+		$xml = $this->_exec_command( self::COMMAND_CHECK, array(
+			'tld' => $tld,
+			'sld' => $sld,
+		) );
+
+		return $xml && isset( $xml->RRPCode ) && $xml->RRPCode == 210;
 	}
 
 }

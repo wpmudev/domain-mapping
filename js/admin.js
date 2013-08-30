@@ -2,7 +2,7 @@
 	$(document).ready(function() {
 		var $domains = $('.domainmapping-domains');
 
-		$('.domainmapping-form form').submit(function() {
+		$('#domainmapping-form-map-domain').submit(function() {
 			var self = this,
 				$self = $(self),
 				domain = $.trim($self.find('.domainmapping-input-domain').val()),
@@ -96,6 +96,35 @@
 		$('.domainmapping-reseller-switch').change(function() {
 			$('.domainmapping-reseller-settings').hide();
 			$('#reseller-' + $(this).val()).show();
+		});
+
+		$('#dommainmapping-check-domain-form').submit(function() {
+			var $self = $(this),
+				domain = $.trim($self.find('.domainmapping-input-domain').val()),
+				wrapper = $self.parents('.domainmapping-domains-wrapper');
+
+			if (domain) {
+				wrapper.addClass('domainmapping-domains-wrapper-locked');
+				$.post($self.attr('action'), $self.serialize(), function(response) {
+					wrapper.removeClass('domainmapping-domains-wrapper-locked');
+
+					if (response.success == undefined) {
+						return;
+					}
+
+					if (response.success) {
+						wrapper.find('.domainmapping-form-results').html(response.data.html);
+					} else {
+						if (response.data.message) {
+							alert(response.data.message);
+						}
+					}
+				});
+			} else {
+				alert(domainmapping.message.empty);
+			}
+
+			return false;
 		});
 	});
 })(jQuery);

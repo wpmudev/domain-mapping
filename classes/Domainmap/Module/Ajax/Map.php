@@ -28,7 +28,7 @@
  *
  * @since 4.0.0
  */
-class Domainmap_Module_Ajax_Map extends Domainmap_Module {
+class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 	const NAME = __CLASS__;
 
@@ -48,48 +48,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module {
 		$this->_add_ajax_action( 'domainmapping_unmap_domain', 'unmap_domain' );
 		$this->_add_ajax_action( 'domainmapping_check_health', 'check_health_status', true, true );
 		$this->_add_ajax_action( 'domainmapping_heartbeat_check', 'check_heartbeat', false, true );
-	}
-
-	/**
-	 * Validates domain name.
-	 *
-	 * @since 4.0.0
-	 * @link http://stackoverflow.com/questions/1755144/how-to-validate-domain-name-in-php/4694816#4694816
-	 *
-	 * @static
-	 * @access private
-	 * @param string $domain The domain name to validate.
-	 * @return boolean TRUE if domain name is valid, otherwise FALSE.
-	 */
-	private static function _validate_domain_name( $domain ) {
-		return preg_match( "/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
-			&& preg_match( "/^.{1,253}$/", $domain ) //overall length check
-			&& preg_match( "/^[^\.]{2,63}(\.[^\.]{2,63})+$/", $domain ); //length of each label
-	}
-
-	/**
-	 * Checks user permissions and block AJAX request if they don't match.
-	 *
-	 * @since 4.0.0
-	 * @uses status_header() To set response HTTP code.
-	 *
-	 * @static
-	 * @access private
-	 * @param type $ajax_action
-	 * @param type $credentials
-	 */
-	private static function _check_premissions( $ajax_action, $credentials = 'manage_options' ) {
-		// check if request has been made via jQuery
-		if ( empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) || strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) != 'xmlhttprequest' ) {
-			status_header( 404 );
-			exit;
-		}
-
-		// check if user has permissions
-		if ( !check_admin_referer( $ajax_action, 'nonce' ) || !current_user_can( $credentials ) ) {
-			status_header( 403 );
-			exit;
-		}
 	}
 
 	/**

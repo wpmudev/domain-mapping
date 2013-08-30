@@ -89,6 +89,7 @@ function domainmap_launch() {
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// set ajax modules
 		$plugin->set_module( Domainmap_Module_Ajax_Map::NAME );
+		$plugin->set_module( Domainmap_Module_Ajax_Purchase::NAME );
 	} else {
 		if ( is_admin() ) {
 			// set admin modules

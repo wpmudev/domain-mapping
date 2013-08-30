@@ -121,11 +121,13 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 							<?php self::render_mapping_row( $domain, $schema ) ?>
 						<?php endforeach; ?>
 						<li class="domainmapping-form">
-							<form action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
+							<form id="domainmapping-form-map-domain" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
 								<?php wp_nonce_field( 'domainmapping_map_domain', 'nonce' ) ?>
 								<input type="hidden" name="action" value="domainmapping_map_domain">
 								<input type="text" class="domainmapping-input-prefix" readonly disabled value="<?php echo $schema ?>://">
-								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
+								<div class="domainmapping-controls-wrapper">
+									<input type="text" class="domainmapping-input-domain" autofocus name="domain">
+								</div>
 								<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
 								<button type="submit" class="domainmapping-form-submit"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
 								<div class="domainmapping-clear"></div>
@@ -212,7 +214,33 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 	 * @access private
 	 */
 	private function _handle_domain_purchase_page() {
+		$tlds = $this->reseller->get_tld_list();
+
 		?><div class="domainmapping-tab">
+			<div class="domainmapping-box">
+				<h3><?php _e( 'Step 1: Check domain availability', 'domainmap' ) ?></h3>
+				<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
+					<div class="domainmapping-locker"></div>
+					<form id="dommainmapping-check-domain-form" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
+						<?php wp_nonce_field( 'domainmapping_check_domain', 'nonce' ) ?>
+						<input type="hidden" name="action" value="domainmapping_check_domain">
+						<input type="text" class="domainmapping-input-prefix" readonly disabled value="http://">
+						<div class="domainmapping-controls-wrapper">
+							<input type="text" class="domainmapping-input-domain" autofocus name="sld">
+							<select name="tld" class="domainmapping-select-domain">
+								<?php foreach ( $tlds as $tld ) : ?>
+								<option<?php selected( $tld, 'com' ) ?> value="<?php echo esc_attr( $tld ) ?>">.<?php echo esc_html( $tld ) ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+						<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
+						<button type="submit" class="domainmapping-form-submit"><i class="icon-search"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>
+						<div class="domainmapping-clear"></div>
+					</form>
+
+					<div class="domainmapping-form-results"></div>
+				</div>
+			</div>
 		</div><?php
 	}
 
