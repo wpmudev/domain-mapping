@@ -42,11 +42,14 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 				'label'    => __( 'Map domain', 'domainmap' ),
 				'callback' => '_handle_domain_mapping_page',
 			),
-			'purchase' => array(
+		);
+
+		if ( $this->reseller && $this->reseller->is_valid() ) {
+			$tabs['purchase'] = array(
 				'label'    => __( 'Purchase domain', 'domainmap' ),
 				'callback' => '_handle_domain_purchase_page',
-			),
-		);
+			);
+		}
 
 		$activetab = strtolower( trim( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) );
 		if ( !in_array( $activetab, array_keys( $tabs ) ) ) {

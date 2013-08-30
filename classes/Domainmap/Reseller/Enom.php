@@ -67,7 +67,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		libxml_use_internal_errors( true );
-		return simplexml_load_file( $response['body'] );
+		return simplexml_load_string( $response['body'] );
 	}
 
 	/**

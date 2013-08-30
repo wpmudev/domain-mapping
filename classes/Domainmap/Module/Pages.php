@@ -86,6 +86,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 		$page = new Domainmap_Render_Page_Site( $this->_plugin->get_options() );
 
+		$page->reseller = $this->_plugin->get_reseller();
+
 		$page->origin = $this->_wpdb->get_row( sprintf(
 			"SELECT * FROM %s WHERE blog_id = %d",
 			$this->_wpdb->blogs,
