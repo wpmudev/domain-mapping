@@ -34,6 +34,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 	const COMMAND_CHECK        = 'check';
 	const COMMAND_GET_TLD_LIST = 'gettldlist';
+	const COMMAND_RETAIL_PRICE = 'PE_GetRetailPrice';
 
 	/**
 	 * Returns reseller internal id.
@@ -238,6 +239,28 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		) );
 
 		return $xml && isset( $xml->RRPCode ) && $xml->RRPCode == 210;
+	}
+
+	/**
+	 * Fetches and returns TLD price.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $tld The top level domain.
+	 * @return float The price for the TLD.
+	 */
+	protected function _get_tld_price( $tld ) {
+		$xml = $this->_exec_command( self::COMMAND_RETAIL_PRICE, array(
+			'tld'         => $tld,
+			'ProductType' => 10,
+		) );
+
+		if ( $xml && isset( $xml->productprice->price ) ) {
+			return floatval( $xml->productprice->price );
+		}
+
+		return false;
 	}
 
 }

@@ -152,4 +152,38 @@ abstract class Domainmap_Reseller {
 		return $available;
 	}
 
+	/**
+	 * Fetches and returns TLD price.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @abstract
+	 * @access public
+	 * @param string $tld The top level domain.
+	 * @return float The price for the TLD.
+	 */
+	protected abstract function _get_tld_price( $tld );
+
+	/**
+	 * Returns TLD price.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $tld The top level domain.
+	 * @return float The price for the TLD.
+	 */
+	public function get_tld_price( $tld ) {
+		$transient = sprintf( 'reseller-%s-%s-price', $this->_get_reseller_id(), $tld );
+		$price = get_transient( $transient );
+		if ( $price != false ) {
+			return $price;
+		}
+
+		$price = $this->_get_tld_price( $tld );
+		set_transient( $transient, $price, DAY_IN_SECONDS );
+
+		return $price;
+	}
+
 }

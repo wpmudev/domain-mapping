@@ -47,6 +47,13 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( 'domainmapping_check_domain', 'check_domain' );
 	}
 
+	/**
+	 * Checks the domain availability and returns it's price.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
 	public function check_domain() {
 		self::_check_premissions( 'domainmapping_check_domain' );
 
@@ -56,13 +63,30 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		$message = false;
 		$domain = "{$sld}.{$tld}";
 		if ( self::_validate_domain_name( $domain ) ) {
-			$available = $this->_plugin->get_reseller()->check_domain( $tld, $sld );
+			$reseller = $this->_plugin->get_reseller();
+
+			$price = false;
+			$available = $reseller->check_domain( $tld, $sld );
+			if ( $available ) {
+				$price = floatval( $reseller->get_tld_price( $tld ) );
+			}
 
 			wp_send_json_success( array(
 				'available' => $available,
 				'html'      => $available
-					? sprintf( '<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s.</div>', $domain, __( 'is available to purchase', 'domainmap' ) )
-					: sprintf( '<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>', $domain, __( 'is not available to purchase', 'domainmap' ) ),
+					? sprintf(
+						'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b>.<br><a href="javascript:;"><b>%s</b></a></div>',
+						strtoupper( $domain ),
+						__( 'is available to purchase for', 'domainmap' ),
+						number_format( $price, 2 ),
+						__( 'Purchase this domain.', 'domainmap' )
+					)
+
+					: sprintf(
+						'<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>',
+						$domain,
+						__( 'is not available to purchase', 'domainmap' )
+					),
 			) );
 		} else {
 			$message = __( 'Domain name is invalid.', 'domainmap' );
