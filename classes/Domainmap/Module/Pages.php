@@ -228,6 +228,10 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 					'card_expiry' => __( 'Credit card expiry date is invalid.', 'domainmap' ),
 					'card_cvv'    => __( 'Credit card CVV2 code is invalid.', 'domainmap' ),
 				),
+				'purchase' => array(
+					'success' => __( 'Domain name has been purchased successfully.', 'domainmap' ),
+					'failed'  => __( 'Domain name purchase has failed.', 'domainmap' ),
+				),
 			),
 		) );
 

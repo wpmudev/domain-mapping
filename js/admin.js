@@ -155,8 +155,9 @@
 			return false;
 		});
 
-		$('.domainmapping-tab').on('submit', '#domainmapping-box-purchase-domain', function() {
+		$('.domainmapping-tab').on('submit', '#domainmapping-purchase-domain-form', function() {
 			var $this = $(this),
+				wrapper = $this.parents('.domainmapping-domains-wrapper'),
 				card_number = $this.find('#card_number').val(),
 				card_expiry = $this.find('#card_expiration').payment('cardExpiryVal'),
 				card_type = null;
@@ -182,6 +183,17 @@
 				alert(domainmapping.message.invalid.card_cvv);
 				return false;
 			}
+
+			wrapper.addClass('domainmapping-domains-wrapper-locked');
+			$.post($this.attr('action'), $this.serialize(), function(response) {
+				wrapper.removeClass('domainmapping-domains-wrapper-locked');
+				if (response.success) {
+					alert(domainmapping.message.purchase.success);
+					location.href = location.href.replace('&tab=purchase', '');
+				} else {
+					alert(domainmapping.message.purchase.failed);
+				}
+			});
 
 			return false;
 		});

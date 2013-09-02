@@ -30,11 +30,13 @@
 class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 	const RESELLER_ID            = 'enom';
-	const RESELLER_API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp';
+	const RESELLER_API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp?';
 
-	const COMMAND_CHECK        = 'check';
-	const COMMAND_GET_TLD_LIST = 'gettldlist';
+	const COMMAND_CHECK        = 'Check';
+	const COMMAND_GET_TLD_LIST = 'GetTLDList';
 	const COMMAND_RETAIL_PRICE = 'PE_GetRetailPrice';
+	const COMMAND_PURCHASE     = 'Purchase';
+	const COMMAND_SET_HOSTS    = 'SetHosts';
 
 	/**
 	 * Returns reseller internal id.
@@ -76,7 +78,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$args['command'] = $command;
 
-		$response = wp_remote_get( add_query_arg( $args, self::RESELLER_API_ENDPOINT ) );
+		$response = wp_remote_get( self::RESELLER_API_ENDPOINT . http_build_query( $args ) );
 		if ( !is_array( $response ) || !isset( $response['body'] ) ) {
 			return false;
 		}
@@ -271,6 +273,83 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		if ( $xml && isset( $xml->productprice->price ) ) {
 			return floatval( $xml->productprice->price );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Purchases a domain name.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @return string|boolean The domain name if purchased successfully, otherwise FALSE.
+	 */
+	public function purchase() {
+		$sld = trim( filter_input( INPUT_POST, 'sld' ) );
+		$tld = trim( filter_input( INPUT_POST, 'tld' ) );
+		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
+
+		$billing_phone = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
+		$registrant_phone = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
+		$registrant_fax = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+			'sld'                        => $sld,
+			'tld'                        => $tld,
+			'UseDNS'                     => 'default',
+			'ChargeAmount'               => $this->get_tld_price( $tld ),
+			'EndUserIP'                  => $_SERVER['REMOTE_ADDR'],
+			'CardType'                   => filter_input( INPUT_POST, 'card_type' ),
+			'CCName'                     => filter_input( INPUT_POST, 'card_cardholder' ),
+			'CreditCardNumber'           => preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'card_number' ) ),
+			'CreditCardExpMonth'         => $expiry[0],
+			'CreditCardExpYear'          => isset( $expiry[1] ) ? "20{$expiry[1]}" : '',
+			'CVV2'                       => filter_input( INPUT_POST, 'card_cvv2' ),
+			'CCAddress'                  => filter_input( INPUT_POST, 'billing_address' ),
+			'CCCity'                     => filter_input( INPUT_POST, 'billing_city' ),
+			'CCStateProvince'            => filter_input( INPUT_POST, 'billing_state' ),
+			'CCZip'                      => filter_input( INPUT_POST, 'billing_zip' ),
+			'CCPhone'                    => $billing_phone,
+			'CCCountry'                  => filter_input( INPUT_POST, 'billing_country' ),
+			'RegistrantFirstName'        => filter_input( INPUT_POST, 'registrant_first_name' ),
+			'RegistrantLastName'         => filter_input( INPUT_POST, 'registrant_last_name' ),
+			'RegistrantOrganizationName' => filter_input( INPUT_POST, 'registrant_organization' ),
+			'RegistrantJobTitle'         => filter_input( INPUT_POST, 'registrant_job_title' ),
+			'RegistrantAddress1'         => filter_input( INPUT_POST, 'registrant_address1' ),
+			'RegistrantAddress2'         => filter_input( INPUT_POST, 'registrant_address2' ),
+			'RegistrantCity'             => filter_input( INPUT_POST, 'registrant_city' ),
+			'RegistrantStateProvince'    => filter_input( INPUT_POST, 'registrant_state' ),
+			'RegistrantPostalCode'       => filter_input( INPUT_POST, 'registrant_zip' ),
+			'RegistrantCountry'          => filter_input( INPUT_POST, 'registrant_country' ),
+			'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
+			'RegistrantPhone'            => $registrant_phone,
+			'RegistrantFax'              => $registrant_fax,
+		) );
+
+		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			if ( !empty( $options['map_ipaddress'] ) ) {
+				$args = array(
+					'sld' => $sld,
+					'tld' => $tld,
+				);
+
+				$i = 0;
+				foreach ( explode( ',', $options['map_ipaddress'] ) as $ip ) {
+					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
+						$i++;
+						$args["HostName{$i}"] = "@";
+						$args["RecordType{$i}"] = "A";
+						$args["Address{$i}"] = $ip;
+					}
+				}
+
+				$this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+			}
+
+			return "{$sld}.{$tld}";
 		}
 
 		return false;

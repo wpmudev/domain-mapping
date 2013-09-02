@@ -208,4 +208,14 @@ abstract class Domainmap_Reseller {
 		);
 	}
 
+	/**
+	 * Purchases a domain name.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return string|boolean The domain name if purchased successfully, otherwise FALSE.
+	 */
+	public abstract function purchase();
+
 }

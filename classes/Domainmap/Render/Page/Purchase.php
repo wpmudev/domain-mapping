@@ -61,7 +61,7 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 					<?php $this->_render_registrant_fields() ?>
 
 					<p>&nbsp;</p>
-					
+
 					<button type="submit" class="domainmapping-form-submit"><i class="icon-shopping-cart"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
 					<div class="domainmapping-clear"></div>
 				</form>
@@ -84,22 +84,22 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 		</p>
 
 		<p>
-			<label for="card_number" class="domainmapping-label"><?php _e( 'Card Number:', 'domainmap' ) ?></label>
+			<label for="card_number" class="domainmapping-label"><?php _e( 'Card Number:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="card_number" required name="card_number" maxlength="19" x-autocompletetype="cc-number" placeholder="0000 0000 0000 0000">
 		</p>
 
 		<p>
-			<label for="card_expiration" class="domainmapping-label"><?php _e( 'Card Expiration:', 'domainmap' ) ?></label>
+			<label for="card_expiration" class="domainmapping-label"><?php _e( 'Card Expiration:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="card_expiration" required name="card_expiration" x-autocompletetype="cc-exp" placeholder="mm / yy">
 		</p>
 
 		<p>
-			<label for="card_cvv2" class="domainmapping-label"><?php _e( 'CVV2:', 'domainmap' ) ?></label>
+			<label for="card_cvv2" class="domainmapping-label"><?php _e( 'CVV2:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="card_cvv2" required name="card_cvv2" maxlength="4" autocomplete="off" placeholder="xxx">
 		</p>
 
 		<p>
-			<label for="card_cardholder" class="domainmapping-label"><?php _e( "Cardholder's Name:", 'domainmap' ) ?></label>
+			<label for="card_cardholder" class="domainmapping-label"><?php _e( "Cardholder's Name:", 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="card_cardholder" required name="card_cardholder" maxlength="60" x-autocompletetype="cc-name" placeholder="<?php echo esc_attr( $this->cardholder ) ?>">
 		</p><?php
 	}
@@ -115,32 +115,32 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 		?><h4><i class="icon-building"></i> <?php _e( 'Billing Information', 'domainmap' ) ?></h4>
 
 		<p>
-			<label for="billing_address" class="domainmapping-label"><?php _e( 'Address:', 'domainmap' ) ?></label>
+			<label for="billing_address" class="domainmapping-label"><?php _e( 'Address:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="billing_address" required name="billing_address" maxlength="60" x-autocompletetype="address-line1">
 		</p>
 
 		<p>
-			<label for="billing_city" class="domainmapping-label"><?php _e( 'City:', 'domainmap' ) ?></label>
+			<label for="billing_city" class="domainmapping-label"><?php _e( 'City:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="billing_city" required name="billing_city" maxlength="60" x-autocompletetype="city">
 		</p>
 
 		<p>
-			<label for="billing_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?></label>
+			<label for="billing_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="billing_state" required name="billing_state" maxlength="60" x-autocompletetype="administrative-area">
 		</p>
 
 		<p>
-			<label for="billing_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?></label>
+			<label for="billing_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="billing_zip" required name="billing_zip" maxlength="15" x-autocompletetype="postal-code">
 		</p>
 
 		<p>
-			<label for="billing_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?></label>
+			<label for="billing_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="billing_phone" required name="billing_phone" maxlength="15" x-autocompletetype="tel">
 		</p>
 
 		<p>
-			<label for="billing_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?></label>
+			<label for="billing_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<select id="billing_country" required name="billing_country">
 				<option></option>
 				<?php foreach ( $this->countries as $code => $country ) : ?>
@@ -161,12 +161,12 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 		?><h4><i class="icon-user"></i> <?php _e( 'Registrant Information', 'domainmap' ) ?></h4>
 
 		<p>
-			<label for="registrant_first_name" class="domainmapping-label"><?php _e( 'First Name:', 'domainmap' ) ?></label>
+			<label for="registrant_first_name" class="domainmapping-label"><?php _e( 'First Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_first_name" required name="registrant_first_name" maxlength="60">
 		</p>
 
 		<p>
-			<label for="registrant_last_name" class="domainmapping-label"><?php _e( 'Last Name:', 'domainmap' ) ?></label>
+			<label for="registrant_last_name" class="domainmapping-label"><?php _e( 'Last Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_last_name" required name="registrant_last_name" maxlength="60">
 		</p>
 
@@ -176,32 +176,37 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 		</p>
 
 		<p>
-			<label for="registrant_job_title" class="domainmapping-label"><?php _e( 'Job Title:', 'domainmap' ) ?></label>
+			<label for="registrant_job_title" class="domainmapping-label"><?php _e( 'Job Title:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_job_title" name="registrant_job_title" maxlength="60">
 		</p>
 
 		<p>
-			<label for="registrant_address" class="domainmapping-label"><?php _e( 'Address:', 'domainmap' ) ?></label>
-			<input type="text" id="registrant_address" required name="registrant_address" maxlength="60" x-autocompletetype="address-line1">
+			<label for="registrant_address1" class="domainmapping-label"><?php _e( 'Address:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="text" id="registrant_address1" required name="registrant_address1" maxlength="60" x-autocompletetype="address-line1">
 		</p>
 
 		<p>
-			<label for="registrant_city" class="domainmapping-label"><?php _e( 'City:', 'domainmap' ) ?></label>
+			<label for="registrant_address2" class="domainmapping-label"><?php _e( 'Alternative Address:', 'domainmap' ) ?></label>
+			<input type="text" id="registrant_address2" name="registrant_address2" maxlength="60" x-autocompletetype="address-line2">
+		</p>
+
+		<p>
+			<label for="registrant_city" class="domainmapping-label"><?php _e( 'City:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_city" required name="registrant_city" maxlength="60" x-autocompletetype="city">
 		</p>
 
 		<p>
-			<label for="registrant_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?></label>
+			<label for="registrant_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_state" required name="registrant_state" maxlength="60" x-autocompletetype="administrative-area">
 		</p>
 
 		<p>
-			<label for="registrant_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?></label>
+			<label for="registrant_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_zip" required name="registrant_zip" maxlength="15" x-autocompletetype="postal-code">
 		</p>
 
 		<p>
-			<label for="registrant_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?></label>
+			<label for="registrant_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<select id="registrant_country" required name="registrant_country">
 				<option></option>
 				<?php foreach ( $this->countries as $code => $country ) : ?>
@@ -211,18 +216,18 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 		</p>
 
 		<p>
-			<label for="registrant_email" class="domainmapping-label"><?php _e( 'Email:', 'domainmap' ) ?></label>
+			<label for="registrant_email" class="domainmapping-label"><?php _e( 'Email:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_email" required name="registrant_email" maxlength="128" x-autocompletetype="email">
 		</p>
 
 		<p>
-			<label for="registrant_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?></label>
+			<label for="registrant_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="registrant_phone" required name="registrant_phone" maxlength="20" x-autocompletetype="tel">
 		</p>
 
 		<p>
 			<label for="registrant_fax" class="domainmapping-label"><?php _e( 'Fax:', 'domainmap' ) ?></label>
-			<input type="text" id="registrant_fax" required name="registrant_fax" maxlength="20" x-autocompletetype="fax">
+			<input type="text" id="registrant_fax" name="registrant_fax" maxlength="20" x-autocompletetype="fax">
 		</p><?php
 	}
 

@@ -410,3 +410,8 @@ input.domainmapping-reseller-switch {
 	float: none;
 	width: 300px;
 }
+
+.domainmapping-field-required {
+	color: red;
+	font-weight: bold;
+}

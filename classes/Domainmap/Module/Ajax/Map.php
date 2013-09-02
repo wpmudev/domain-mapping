@@ -57,7 +57,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 *
 	 * @access private
 	 * @global domain_map $dm_map The instance of the domain_map class.
-	 * @return type
+	 * @return int The count of already mapped domains.
 	 */
 	private function _get_domains_count() {
 		global $dm_map;
