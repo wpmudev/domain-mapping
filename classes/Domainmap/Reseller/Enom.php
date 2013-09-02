@@ -166,11 +166,24 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		<div id="domainmapping-enom-header">
 			<div id="domainmapping-enom-logo"></div>
 		</div>
+
 		<?php if ( isset( $options['valid'] ) && $options['valid'] == false ) : ?>
 		<div class="domainmapping-info domainmapping-info-error">
 			<?php _e( 'Looks like your credentials are invalid. Please, enter valid credentials and resave the form.', 'domainmap' ) ?>
 		</div>
 		<?php endif; ?>
+
+		<div class="domainmapping-info"><?php
+			_e( 'Pay attention that if you want to use eNom credit card processing services, this service is available only to resellers who have entered into a credit card processing agreement with eNom.', 'domainmap' )
+		?></div>
+
+		<div class="domainmapping-info"><?php
+			printf(
+				__( 'Also keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
+				'<a href="http://www.enom.com/help/" target="_blank">eNom Help Center</a>'
+			)
+		?></div>
+
 		<div>
 			<p>
 				<?php _e( 'In case to use eNom provider, please, enter your account id and password in the fields below.', 'domainmap' ) ?>
