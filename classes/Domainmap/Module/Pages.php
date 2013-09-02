@@ -197,6 +197,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @since 3.3
 	 * @action admin_enqueue_scripts
 	 * @uses plugins_url() To generate base URL of assets files.
+	 * @uses wp_register_script() To register javascript files.
 	 * @uses wp_enqueue_script() To enqueue javascript files.
 	 * @uses wp_enqueue_style() To enqueue CSS files.
 	 *
@@ -215,11 +216,18 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$baseurl = plugins_url( '/', DOMAINMAP_BASEFILE );
 
 		// enqueue scripts
+		wp_register_script( 'jquery-payment', $baseurl . 'js/jquery.payment.js', array( 'jquery' ), '1.0.1', true );
 		wp_enqueue_script( 'domainmapping-admin', $baseurl . 'js/admin.js', array( 'jquery' ), Domainmap_Plugin::VERSION, true );
 		wp_localize_script( 'domainmapping-admin', 'domainmapping', array(
 			'message' => array(
-				'unmap' => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
-				'empty' => __( 'Please, enter not empty domain name.', 'domainmap' ),
+				'unmap'   => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
+				'empty'   => __( 'Please, enter not empty domain name.', 'domainmap' ),
+				'invalid' => array(
+					'card_number' => __( 'Credit card number is invalid.', 'domainmap' ),
+					'card_type'   => __( 'Credit card type is invalid.', 'domainmap' ),
+					'card_expiry' => __( 'Credit card expiry date is invalid.', 'domainmap' ),
+					'card_cvv'    => __( 'Credit card CVV2 code is invalid.', 'domainmap' ),
+				),
 			),
 		) );
 

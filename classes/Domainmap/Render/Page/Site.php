@@ -210,18 +210,24 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 	 * Handles domain purchase tab.
 	 *
 	 * @sicne 4.0.0
+	 * @uses wp_enqueue_script() To enqueue already registered jQuery payment script.
 	 *
 	 * @access private
 	 */
 	private function _handle_domain_purchase_page() {
+		wp_enqueue_script( 'jquery-payment' );
 		$tlds = $this->reseller->get_tld_list();
 
 		?><div class="domainmapping-tab">
-			<div class="domainmapping-box">
+			<p class="domainmapping-info"><?php
+				_e( 'If you want to buy an unique domain name and map it to your site, then you can do it on this page. Check whether desired domain name is available, and if it is, just fill in payment details and purchase it. New domain will be bought and mapped to your site. All necessary DNS records will be setup automatically.', 'domainmap' )
+			?></p>
+
+			<div id="domainmapping-box-check-domain" class="domainmapping-box">
 				<h3><?php _e( 'Step 1: Check domain availability', 'domainmap' ) ?></h3>
 				<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 					<div class="domainmapping-locker"></div>
-					<form id="dommainmapping-check-domain-form" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
+					<form id="domainmapping-check-domain-form" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
 						<?php wp_nonce_field( 'domainmapping_check_domain', 'nonce' ) ?>
 						<input type="hidden" name="action" value="domainmapping_check_domain">
 						<input type="text" class="domainmapping-input-prefix" readonly disabled value="http://">

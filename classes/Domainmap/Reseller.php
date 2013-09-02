@@ -30,6 +30,11 @@
  */
 abstract class Domainmap_Reseller {
 
+	const CARD_TYPE_VISA             = 'Visa';
+	const CARD_TYPE_AMERICAN_EXPRESS = 'AmEx';
+	const CARD_TYPE_MASTERCARD       = 'Mastercard';
+	const CARD_TYPE_DISCOVER         = 'Discover';
+
 	/**
 	 * Returns reseller internal id.
 	 *
@@ -184,6 +189,23 @@ abstract class Domainmap_Reseller {
 		set_transient( $transient, $price, DAY_IN_SECONDS );
 
 		return $price;
+	}
+
+	/**
+	 * Returns array of supported card types.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return array The array of supported card types.
+	 */
+	public function get_card_types() {
+		return array(
+			self::CARD_TYPE_VISA,
+			self::CARD_TYPE_MASTERCARD,
+			self::CARD_TYPE_AMERICAN_EXPRESS,
+			self::CARD_TYPE_DISCOVER,
+		);
 	}
 
 }

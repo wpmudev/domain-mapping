@@ -98,7 +98,7 @@
 			$('#reseller-' + $(this).val()).show();
 		});
 
-		$('#dommainmapping-check-domain-form').submit(function() {
+		$('#domainmapping-check-domain-form').submit(function() {
 			var $self = $(this),
 				domain = $.trim($self.find('.domainmapping-input-domain').val()),
 				wrapper = $self.parents('.domainmapping-domains-wrapper');
@@ -122,6 +122,65 @@
 				});
 			} else {
 				alert(domainmapping.message.empty);
+			}
+
+			return false;
+		});
+
+		$('.domainmapping-form-results').on('click', '.domainmapping-purchase-link', function() {
+			var $this = $(this),
+				tab = $this.parents('.domainmapping-tab'),
+				step = tab.find('#domainmapping-box-purchase-domain');
+
+			$.get($this.attr('href'), {}, function(response) {
+				if (response.success == undefined) {
+					return;
+				}
+
+				if (response.success) {
+					if (step.length == 0) {
+						tab.append(response.data.html);
+					} else {
+						step.replaceWith(response.data.html);
+					}
+
+					step = tab.find('#domainmapping-box-purchase-domain');
+					if ($.payment != undefined) {
+						step.find('#card_number').payment('restrictNumeric').payment('formatCardNumber');
+						step.find('#card_expiration').payment('formatCardExpiry');
+						step.find('#card_cvv2').payment('formatCardCVC');
+					}
+				}
+			});
+			return false;
+		});
+
+		$('.domainmapping-tab').on('submit', '#domainmapping-box-purchase-domain', function() {
+			var $this = $(this),
+				card_number = $this.find('#card_number').val(),
+				card_expiry = $this.find('#card_expiration').payment('cardExpiryVal'),
+				card_type = null;
+
+			if (!$.payment.validateCardNumber(card_number)) {
+				alert(domainmapping.message.invalid.card_number);
+				return false;
+			}
+
+			if (!card_expiry.month || !card_expiry.year || !$.payment.validateCardExpiry(card_expiry.month, card_expiry.year)) {
+				alert(domainmapping.message.invalid.card_expiry);
+				return false;
+			}
+
+			card_type = $.payment.cardType(card_number);
+			$this.find('#card_type').val(card_type);
+			if (card_type === null) {
+				alert(domainmapping.message.invalid.card_type);
+				return false;
+			}
+
+			if (!$.payment.validateCardCVC($this.find('#card_cvv2').val(), card_type)) {
+				alert(domainmapping.message.invalid.card_cvv);
+				return false;
 			}
 
 			return false;
