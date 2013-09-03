@@ -69,8 +69,13 @@ function domainmap_autoloader( $class ) {
  * Instantiates the plugin and setup all modules.
  *
  * @since 4.0.0
+ *
+ * @global wpdb $wpdb The instance of database connection.
+ * @global domain_map $dm_map The instance of domain_map class.
  */
 function domainmap_launch() {
+	global $wpdb, $dm_map;
+
 	// setup environment
 	define( 'DOMAINMAP_BASEFILE', __FILE__ );
 	define( 'DOMAINMAP_ABSURL', plugins_url( '/', __FILE__ ) );
@@ -79,6 +84,14 @@ function domainmap_launch() {
 	if( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
 		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
 	}
+
+	$prefix = !empty( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix;
+	define( 'DOMAINMAP_TABLE_MAP', defined( 'DM_COMPATIBILITY' ) && filter_var( DM_COMPATIBILITY, FILTER_VALIDATE_BOOLEAN )
+		? "{$prefix}domain_mapping"
+		: "{$prefix}domain_map" );
+
+	// set up the plugin core class
+	$dm_map = new domain_map();
 
 	// instantiate the plugin
 	$plugin = Domainmap_Plugin::instance();

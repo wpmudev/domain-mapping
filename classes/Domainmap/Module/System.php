@@ -42,6 +42,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 		$this->_check_sunrise();
+		$this->_upgrade();
 	}
 
 	/**
@@ -59,6 +60,103 @@ class Domainmap_Module_System extends Domainmap_Module {
 				@copy( $source, $dest );
 			}
 		}
+	}
+
+	/**
+	 * Executes an array of sql queries.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param array $queries The arrayof queries to execute.
+	 */
+	private function _exec_queries( array $queries ) {
+		foreach ( $queries as $query ) {
+			$this->_wpdb->query( $query );
+		}
+	}
+
+	/**
+	 * Generates CREATE TABLE sql script for provided table name and columns list.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $name The name of a table.
+	 * @param array $columns The array  of columns, indexes, constraints.
+	 * @return string The sql script for table creation.
+	 */
+	private function _create_table( $name, array $columns ) {
+		$charset = '';
+		if ( !empty( $this->_wpdb->charset ) ) {
+			$charset = " DEFAULT CHARACTER SET " . $this->_wpdb->charset;
+		}
+
+		$collate = '';
+		if ( !empty( $this->_wpdb->collate ) ) {
+			$collate .= " COLLATE " . $this->_wpdb->collate;
+		}
+
+		return sprintf( 'CREATE TABLE IF NOT EXISTS `%s` (%s)%s%s', $name, implode( ', ', $columns ), $charset, $collate );
+	}
+
+	/**
+	 * Performs upgrade plugin evnironment to up to date version.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _upgrade() {
+		$filter = 'domainmapping_upgrade';
+		$option = 'domainmapping_version';
+
+		// fetch current database version
+		$db_version = get_option( $option );
+		if ( $db_version === false || !preg_match( '/^\d+(\.\d+){2,3}$/', $db_version ) ) {
+			$db_version = '0.0.0';
+			update_option( $option, $db_version );
+		}
+
+		// check if current version is equal to database version, then there is nothing to upgrade
+		if ( version_compare( $db_version, Domainmap_Plugin::VERSION, '=' ) ) {
+			return;
+		}
+
+		// add upgrade functions
+		$this->_add_filter( $filter, 'upgrade_to_4_0_0', 1 );
+
+		// upgrade database version to current plugin version
+		update_option( $option, apply_filters( $filter, $db_version ) );
+	}
+
+	/**
+	 * Upgrades plugin environment to 4.0.0 version
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $current_version The current plugin version.
+	 * @return string The upgraded version.
+	 */
+	public function upgrade_to_4_0_0( $current_version ) {
+		$this_version = '4.0.0';
+		if ( version_compare( $current_version, $this_version, '>=' ) ) {
+			return $current_version;
+		}
+
+		$this->_exec_queries( array(
+			$this->_create_table( DOMAINMAP_TABLE_MAP, array(
+				'`id` BIGINT NOT NULL AUTO_INCREMENT',
+				'`blog_id` BIGINT NOT NULL',
+				'`domain` VARCHAR(255) NOT NULL',
+				'`active` TINYINT DEFAULT 1',
+				'PRIMARY KEY (`id`)',
+				'KEY `blog_id` (`blog_id`, `domain`, `active`)'
+			) ),
+		) );
+
+		return $this_version;
 	}
 
 }

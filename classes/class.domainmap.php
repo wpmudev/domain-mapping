@@ -2,8 +2,6 @@
 if ( !class_exists( 'domain_map', false ) ) :
 	class domain_map {
 
-		var $build = 7;
-
 		var $db;
 
 		// The tables we need to map - empty for now as we will move to this later
@@ -21,34 +19,14 @@ if ( !class_exists( 'domain_map', false ) ) :
 		var $swapped_url = array();
 
 		function __construct() {
-
 			global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
 			$dm_cookie_style_printed = false;
 			$dm_logout = false;
 			$dm_authenticated = false;
 
-			$this->db =& $wpdb;
-
-			if(defined('DM_COMPATIBILITY') && DM_COMPATIBILITY == 'yes') {
-				if(!empty($this->db->base_prefix)) {
-					$this->dmtable = $this->db->base_prefix . 'domain_mapping';
-				} else {
-					$this->dmtable = $this->db->prefix . 'domain_mapping';
-				}
-			} else {
-				if(!empty($this->db->base_prefix)) {
-					$this->dmtable = $this->db->base_prefix . 'domain_map';
-				} else {
-					$this->dmtable = $this->db->prefix . 'domain_map';
-				}
-			}
-
-			$version = get_site_option('domainmapping_version', false);
-			if($version === false || $version < $this->build) {
-				update_site_option('domainmapping_version', $this->build);
-				$this->install( $version );
-			}
+			$this->db = $wpdb;
+			$this->dmtable = DOMAINMAP_TABLE_MAP;
 
 			// Set up the plugin
 			add_action( 'init', array( $this, 'setup_plugin' ) );
@@ -73,18 +51,6 @@ if ( !class_exists( 'domain_map', false ) ) :
 
 		function domain_map() {
 			$this->__construct();
-		}
-
-		function install( $version ) {
-			// Just the single table creating function for now - will get more complex later
-			$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
-				`id` bigint(20) NOT NULL auto_increment,
-				`blog_id` bigint(20) NOT NULL,
-				`domain` varchar(255) NOT NULL,
-				`active` tinyint(4) default '1',
-				PRIMARY KEY  (`id`),
-				KEY `blog_id` (`blog_id`,`domain`,`active`)
-			);" );
 		}
 
 		function add_admin_header() {
@@ -691,47 +657,6 @@ if ( !class_exists( 'domain_map', false ) ) :
 			}
 		}
 
-		function check_for_table( $trytocreate = true ) {
-
-			$sql = "SHOW TABLES LIKE '{$this->dmtable}'";
-
-			$table = $this->db->get_var( $sql );
-			if( empty( $table ) ) {
-				// We don't have the table so we should check if we should create it.
-				if($trytocreate) {
-
-					$charset_collate = '';
-
-					if ( ! empty($this->db->charset) ) {
-						$charset_collate = "DEFAULT CHARACTER SET " . $this->db->charset;
-					}
-
-					if ( ! empty($this->db->collate) ) {
-						$charset_collate .= " COLLATE " . $this->db->collate;
-					}
-
-
-					$this->db->query( "CREATE TABLE IF NOT EXISTS `{$this->dmtable}` (
-						`id` bigint(20) NOT NULL auto_increment,
-						`blog_id` bigint(20) NOT NULL,
-						`domain` varchar(255) NOT NULL,
-						`active` tinyint(4) default '1',
-						PRIMARY KEY  (`id`),
-						KEY `blog_id` (`blog_id`,`domain`,`active`)
-					) $charset_collate;" );
-
-					// Do another check to see if it was created
-					$sql = "SHOW TABLES LIKE '{$this->dmtable}'";
-					$table = $this->db->get_var( $sql );
-					if( empty( $table ) ) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
 		function reset_script_url($return) {
 
 			global $wp_scripts;
@@ -931,19 +856,12 @@ if ( !class_exists( 'domain_map', false ) ) :
 		}
 
 		//// New function added to handle mapping the domain for the thickbox plugin in the admin section
-		function load_tb_fix()
-		{
-			?>
-			<script type="text/javascript">
+		function load_tb_fix() {
+			?><script type="text/javascript">
 				'tb_pathToImage = "<?php echo includes_url('js/thickbox/loadingAnimation.gif'); ?>";
 				'tb_closeImage = "<?php echo includes_url('js/thickbox/tb-close.png'); ?>";
-			</script>
-
-			<?php
+			</script><?php
 		}
 
 	} //end class domain_map
-
-	// set up the plugin core class
-	$GLOBALS['dm_map'] = new domain_map();
 endif;

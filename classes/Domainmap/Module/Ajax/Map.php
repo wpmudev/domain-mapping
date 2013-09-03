@@ -56,15 +56,12 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @since 4.0.0
 	 *
 	 * @access private
-	 * @global domain_map $dm_map The instance of the domain_map class.
 	 * @return int The count of already mapped domains.
 	 */
 	private function _get_domains_count() {
-		global $dm_map;
-
 		return $this->_wpdb->get_var( sprintf(
 			"SELECT COUNT(*) FROM %s WHERE blog_id = %d",
-			$dm_map->dmtable,
+			DOMAINMAP_TABLE_MAP,
 			$this->_wpdb->blogid
 		) );
 	}
@@ -77,11 +74,8 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @uses current_user_can() To check user permissions.
 	 *
 	 * @access public
-	 * @global domain_map $dm_map The instance of the domain_map class.
 	 */
 	public function map_domain() {
-		global $dm_map;
-
 		self::_check_premissions( 'domainmapping_map_domain' );
 
 		$message = $hide_form = false;
@@ -96,10 +90,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				// check if domain has not been mapped
 				$escaped_domain = esc_sql( $domain );
 				$blog = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s' AND path = '/'", $this->_wpdb->blogs, $escaped_domain ) );
-				$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", $dm_map->dmtable, $escaped_domain ) );
+				$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", DOMAINMAP_TABLE_MAP, $escaped_domain ) );
 
 				if( is_null( $blog ) && is_null( $map ) ) {
-					$this->_wpdb->insert( $dm_map->dmtable, array(
+					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
 						'blog_id' => $this->_wpdb->blogid,
 						'domain'  => $domain,
 						'active'  => 1,
@@ -140,17 +134,14 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @uses current_user_can() To check user permissions.
 	 *
 	 * @access public
-	 * @global domain_map $dm_map The instance of the domain_map class.
 	 */
 	public function unmap_domain() {
-		global $dm_map;
-
 		self::_check_premissions( 'domainmapping_unmap_domain' );
 
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
 		if ( self::_validate_domain_name( $domain ) ) {
-			$this->_wpdb->delete( $dm_map->dmtable, array( 'domain' => $domain ), array( '%s' ) );
+			$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
 			delete_transient( "domainmapping-{$domain}-health" );
 
 			// check if we need to show form

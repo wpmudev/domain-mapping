@@ -230,32 +230,12 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @since 4.0.0
 	 *
 	 * @access public
-	 * @global domain_map $dm_map The instance of core class.
 	 */
 	private function _render_domain_mapping_table() {
-		global $dm_map;
-
-		?><h4><?php _e( 'Domain Mapping Table', 'domainmap' ) ?></h4>
-		<?php if ( $dm_map->check_for_table() ) : ?>
-			<p><?php echo __( "The domain mapping table is called <strong>", 'domainmap' ), $dm_map->dmtable, __('</strong> and exists in your database.','domainmap') ?></p>
-		<?php else : ?>
-			<p>
-				<?php echo __( "The domain mapping table should be called <strong>", 'domainmap' ), $dm_map->dmtable, __( '</strong> but does not seem to exist in your database and cannot be created.', 'domainmap' ) ?>
-				<?php _e( "To create the database table you need to run the following SQL.", 'domainmap' ) ?>
-			</p>
-			<p>
-				<textarea class="code" rows="10" cols="100" readonly><?php
-					echo "CREATE TABLE IF NOT EXISTS `{$dm_map->dmtable}` (
-    `id` bigint(20) NOT NULL auto_increment,
-    `blog_id` bigint(20) NOT NULL,
-    `domain` varchar(255) NOT NULL,
-    `active` tinyint(4) default '1',
-    PRIMARY KEY  (`id`),
-    KEY `blog_id` (`blog_id`,`domain`,`active`)
-);"
-				?></textarea>
-			</p><?php
-		endif;
+		echo '<h4>', __( 'Domain Mapping Table', 'domainmap' ), '</h4>';
+		echo '<p>';
+			printf( __( 'The domain mapping table is called <strong>%s</strong> and exists in your database.', 'domainmap' ), DOMAINMAP_TABLE_MAP );
+		echo '</p>';
 	}
 
 	/**

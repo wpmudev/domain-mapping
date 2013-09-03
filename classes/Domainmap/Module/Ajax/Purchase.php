@@ -161,24 +161,21 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 * @since 4.0.0
 	 *
 	 * @access private
-	 * @global domain_map $dm_map The instance of the domain_map class.
 	 * @param string $domain The new domain name to map.
 	 */
 	private function _map_domain( $domain ) {
-		global $dm_map;
-
 		// check if mapped domains are 0 or multi domains are enabled
-		$count = $this->_wpdb->get_var( sprintf( "SELECT COUNT(*) FROM %s WHERE blog_id = %d", $dm_map->dmtable, $this->_wpdb->blogid ) );
+		$count = $this->_wpdb->get_var( sprintf( "SELECT COUNT(*) FROM %s WHERE blog_id = %d", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
 		$allowmulti = defined( 'DOMAINMAPPING_ALLOWMULTI' );
 		if ( $count == 0 || $allowmulti ) {
 
 			// check if domain has not been mapped
 			$escaped_domain = esc_sql( $domain );
 			$blog = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s' AND path = '/'", $this->_wpdb->blogs, $escaped_domain ) );
-			$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", $dm_map->dmtable, $escaped_domain ) );
+			$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", DOMAINMAP_TABLE_MAP, $escaped_domain ) );
 
 			if( is_null( $blog ) && is_null( $map ) ) {
-				$this->_wpdb->insert( $dm_map->dmtable, array(
+				$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
 					'blog_id' => $this->_wpdb->blogid,
 					'domain'  => $domain,
 					'active'  => 1,

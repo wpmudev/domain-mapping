@@ -79,11 +79,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @callback add_management_page()
 	 *
 	 * @access public
-	 * @global domain_map $dm_map The instance of domaim_map class.
 	 */
 	public function render_site_options_page() {
-		global $dm_map;
-
 		$page = new Domainmap_Render_Page_Site( $this->_plugin->get_options() );
 
 		$page->reseller = $this->_plugin->get_reseller();
@@ -96,7 +93,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 		$page->domains = (array)$this->_wpdb->get_col( sprintf(
 			"SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC",
-			$dm_map->dmtable,
+			DOMAINMAP_TABLE_MAP,
 			$this->_wpdb->blogid
 		) );
 
