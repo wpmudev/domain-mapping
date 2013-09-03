@@ -112,7 +112,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
-			? $this->_validateCredentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] )
+			? $this->_validate_credentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] )
 			: true;
 	}
 
@@ -126,7 +126,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @param string $pwd The user password.
 	 * @return boolean TRUE if API credentials are valid, otherwise FALSE.
 	 */
-	private function _validateCredentials( $uid, $pwd ) {
+	private function _validate_credentials( $uid, $pwd ) {
 		$xml = $this->_exec_command( self::COMMAND_CHECK, array(
 			'uid' => $uid,
 			'pw'  => $pwd,
