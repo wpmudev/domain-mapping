@@ -84,6 +84,7 @@ function domainmap_launch() {
 	$plugin = Domainmap_Plugin::instance();
 
 	// set general modules
+	$plugin->set_module( Domainmap_Module_System::NAME );
 	$plugin->set_module( Domainmap_Module_Setup::NAME );
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {

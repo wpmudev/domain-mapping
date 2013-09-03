@@ -134,7 +134,7 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	private function _render_mapping_options_tab() {
 		$msg = array();
 		if ( !file_exists( WP_CONTENT_DIR . '/sunrise.php' ) ) {
-			$msg[] = "<p><strong>" . __( "Please copy the sunrise.php to ", 'domainmap' ) . ABSPATH . __( "wp-content/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap' ) . ABSPATH . __( "wp-config.php file", 'domainmap' ) . "</strong></p>";
+			$msg[] = "<p><strong>" . __( "Please copy the sunrise.php to ", 'domainmap' ) . WP_CONTENT_DIR . __( "/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap' ) . ABSPATH . __( "wp-config.php file", 'domainmap' ) . "</strong></p>";
 		}
 
 		if ( !defined( 'SUNRISE' ) ) {
