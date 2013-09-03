@@ -1,4 +1,56 @@
 (function($) {
+	function cleanup_alert(callback) {
+		$('#domainmapping-ppp, #domainmapping-ppp-overlay').fadeOut(50, function() {
+			$('#domainmapping-ppp').remove();
+			$('#domainmapping-ppp-overlay').remove();
+		});
+
+		if ($.isFunction(callback)) {
+			callback();
+		}
+	}
+
+	function show_alert(msg, callback, classes) {
+		var ppp, body, footer, overflow, close;
+
+		body = $('<div id="domainmapping-ppp-body"></div>');
+		body.html(msg);
+
+		close = $('<button type="button" class="domainmapping-form-submit"></button>');
+		close.append(domainmapping.button.close);
+		close.click(function() {
+			cleanup_alert(callback);
+		})
+
+		footer = $('<div id="domainmapping-ppp-footer"></div>');
+		footer.append(close);
+
+		ppp = $('<div id="domainmapping-ppp"></div>');
+		ppp.addClass(classes);
+		ppp.append(body);
+		ppp.append(footer);
+
+		overflow = $('<div id="domainmapping-ppp-overlay"></div>"');
+
+		cleanup_alert();
+		$('body').append(ppp, overflow);
+
+		ppp.css({
+			'margin-left': '-' + (ppp.outerWidth() / 2) + 'px',
+			'margin-top': '-' + (ppp.outerHeight() / 2) + 'px'
+		});
+
+		$('#domainmapping-ppp, #domainmapping-ppp-overlay').fadeIn(50);
+	};
+
+	function show_success(msg, callback) {
+		show_alert(msg, callback, 'domainmapping-ppp-success');
+	};
+
+	function show_error(msg, callback) {
+		show_alert(msg, callback, 'domainmapping-ppp-error')
+	};
+
 	$(document).ready(function() {
 		var $domains = $('.domainmapping-domains');
 
@@ -22,7 +74,7 @@
 						self.reset();
 					} else {
 						if (response.data.message) {
-							alert(response.data.message);
+							show_error(response.data.message);
 						}
 					}
 
@@ -33,7 +85,7 @@
 					$('a.domainmapping-need-revalidate').click();
 				});
 			} else {
-				alert(domainmapping.message.empty);
+				show_error(domainmapping.message.empty);
 			}
 
 			return false;
@@ -116,12 +168,12 @@
 						wrapper.find('.domainmapping-form-results').html(response.data.html);
 					} else {
 						if (response.data.message) {
-							alert(response.data.message);
+							show_error(response.data.message);
 						}
 					}
 				});
 			} else {
-				alert(domainmapping.message.empty);
+				show_error(domainmapping.message.empty);
 			}
 
 			return false;
@@ -163,24 +215,24 @@
 				card_type = null;
 
 			if (!$.payment.validateCardNumber(card_number)) {
-				alert(domainmapping.message.invalid.card_number);
+				show_error(domainmapping.message.invalid.card_number);
 				return false;
 			}
 
 			if (!card_expiry.month || !card_expiry.year || !$.payment.validateCardExpiry(card_expiry.month, card_expiry.year)) {
-				alert(domainmapping.message.invalid.card_expiry);
+				show_error(domainmapping.message.invalid.card_expiry);
 				return false;
 			}
 
 			card_type = $.payment.cardType(card_number);
 			$this.find('#card_type').val(card_type);
 			if (card_type === null) {
-				alert(domainmapping.message.invalid.card_type);
+				show_error(domainmapping.message.invalid.card_type);
 				return false;
 			}
 
 			if (!$.payment.validateCardCVC($this.find('#card_cvv2').val(), card_type)) {
-				alert(domainmapping.message.invalid.card_cvv);
+				show_error(domainmapping.message.invalid.card_cvv);
 				return false;
 			}
 
@@ -188,10 +240,11 @@
 			$.post($this.attr('action'), $this.serialize(), function(response) {
 				wrapper.removeClass('domainmapping-domains-wrapper-locked');
 				if (response.success) {
-					alert(domainmapping.message.purchase.success);
-					location.href = location.href.replace('&tab=purchase', '');
+					show_success(domainmapping.message.purchase.success, function() {
+						location.href = location.href.replace('&tab=purchase', '');
+					});
 				} else {
-					alert(domainmapping.message.purchase.failed);
+					show_error(domainmapping.message.purchase.failed);
 				}
 			});
 

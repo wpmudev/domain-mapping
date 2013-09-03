@@ -216,6 +216,9 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		wp_register_script( 'jquery-payment', $baseurl . 'js/jquery.payment.js', array( 'jquery' ), '1.0.1', true );
 		wp_enqueue_script( 'domainmapping-admin', $baseurl . 'js/admin.js', array( 'jquery' ), Domainmap_Plugin::VERSION, true );
 		wp_localize_script( 'domainmapping-admin', 'domainmapping', array(
+			'button'  => array(
+				'close' => __( 'Ok', 'domainmap' ),
+			),
 			'message' => array(
 				'unmap'   => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
 				'empty'   => __( 'Please, enter not empty domain name.', 'domainmap' ),
