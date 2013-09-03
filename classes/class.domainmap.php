@@ -10,8 +10,6 @@ if ( !class_exists( 'domain_map', false ) ) :
 		// The main domain mapping tables
 		var $dmtable;
 
-		var $mappings = array();
-
 		// The domain mapping options
 		var $options;
 
@@ -33,66 +31,12 @@ if ( !class_exists( 'domain_map', false ) ) :
 			// Add in the cross domain logins
 			add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
 
-			// Add any header css or js that we need for the admin page
-			add_action( 'load-tools_page_domainmapping', array(&$this, 'add_admin_header'));
-
-			// Add in column header to the Site table
-			add_filter( 'wpmu_blogs_columns', array(&$this, 'add_site_column_header') );
-			// Add in the column data to the Sites table
-			add_action( 'manage_sites_custom_column', array(&$this, 'add_sites_column_data'), 1, 2 );
-
 			add_filter( 'allowed_redirect_hosts' , array(&$this, 'allowed_redirect_hosts'), 10);
 
 			add_action( 'login_head', array(&$this, 'build_logout_cookie') );
 
 			// Add in the filters for domain mapping early on to get any information covered before the init action is hit
 			$this->add_domain_mapping_filters();
-		}
-
-		function domain_map() {
-			$this->__construct();
-		}
-
-		function add_admin_header() {
-
-		}
-
-		/** Sites columns functions **/
-
-		function add_site_column_header( $columns ) {
-
-			$first_array = array_splice ($columns, 0, 2);
-			$columns = array_merge ($first_array, array('domainmap' => __('Mapped Domain', 'domainmap')), $columns);
-
-			return $columns;
-		}
-
-		function build_domain_mapping_cache() {
-			global $current_site;
-
-			if(empty($this->mappings)) {
-
-				$mappings = $this->db->get_results( "SELECT blog_id, domain FROM {$this->dmtable} /* domain mapping */" );
-				foreach($mappings as $map) {
-					if($current_site->path == '/') {
-						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . "</a>";
-					} else {
-						$this->mappings[$map->blog_id][] = "<a href='http://" . $map->domain . $current_site->path . "'>" . $map->domain . $current_site->path . "</a>";
-					}
-				}
-
-			}
-		}
-
-		function add_sites_column_data( $column, $blog_id ) {
-
-			$this->build_domain_mapping_cache();
-
-			if ( $column == 'domainmap' ) {
-				if(isset($this->mappings[$blog_id])) {
-					echo implode("<br/>", $this->mappings[$blog_id]);
-				}
-			}
 		}
 
 		function shibboleth_session_initiator_url($initiator_url) {
@@ -315,7 +259,6 @@ if ( !class_exists( 'domain_map', false ) ) :
 			}
 
 			// Add the network admin settings
-			add_action( 'delete_blog', array( $this, 'delete_blog_domain_mapping' ), 1, 2 );
 			if ( $permitted ) {
 				add_action( 'wp_logout', array( $this, 'wp_logout' ), 10 );
 				add_action( 'admin_head', array( $this, 'build_cookie' ) );
@@ -846,21 +789,6 @@ if ( !class_exists( 'domain_map', false ) ) :
 				exit;
 			}
 			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-		}
-
-		function delete_blog_domain_mapping( $blog_id, $drop ) {
-
-			if ( $blog_id && $drop ) {
-				$this->db->query( $this->db->prepare( "DELETE FROM {$this->dmtable} WHERE blog_id  = %d /* domain mapping */", $blog_id ) );
-			}
-		}
-
-		//// New function added to handle mapping the domain for the thickbox plugin in the admin section
-		function load_tb_fix() {
-			?><script type="text/javascript">
-				'tb_pathToImage = "<?php echo includes_url('js/thickbox/loadingAnimation.gif'); ?>";
-				'tb_closeImage = "<?php echo includes_url('js/thickbox/tb-close.png'); ?>";
-			</script><?php
 		}
 
 	} //end class domain_map

@@ -108,6 +108,7 @@ function domainmap_launch() {
 		if ( is_admin() ) {
 			// set admin modules
 			$plugin->set_module( Domainmap_Module_Pages::NAME );
+			$plugin->set_module( Domainmap_Module_Admin::NAME );
 		}
 	}
 }
