@@ -627,43 +627,40 @@ if ( !class_exists( 'domain_map', false ) ) :
 				return $this->domain_mapping_admin_url($url);
 			}
 
-			if ( !isset( $this->swapped_url[ $this->db->blogid ] ) ) {
-
+			if ( !isset( $this->swapped_url[$this->db->blogid] ) ) {
 				$s = $this->db->suppress_errors();
 
 				// Get the mapped domain
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
+				$newdomain = $this->db->get_var( sprintf( "SELECT domain FROM %s WHERE domain = %s AND blog_id = %d LIMIT 1", $this->dmtable, $_SERVER['HTTP_HOST'], $this->db->blogid ) );
 				if ( empty( $newdomain ) ) {
-					$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
+					$newdomain = $this->db->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d LIMIT 1", $this->dmtable, $this->db->blogid ) );
 				}
 				// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
-				$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT %d /* domain mapping */", 1 ) );
+				$olddomain = $this->db->get_var( "SELECT option_value FROM {$this->db->options} WHERE option_name = 'siteurl'" );
 
 				$this->db->suppress_errors( $s );
-				if( defined('DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN') && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
-					$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
-				} else {
-					$protocol = 'http://';
-				}
-				if ( !empty($newdomain) ) {
+
+				$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https://' : 'http://';
+				if ( !empty( $newdomain ) ) {
 					// Get the domain and path we want to swap to
 					$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
 					// replace any occurance of the old domain with the new one
-					$newurl = str_replace($olddomain, $innerurl, $url);
+					$newurl = str_replace( $olddomain, $innerurl, $url );
 					// store the olddomain and the new one in a cache
-					$this->swapped_url[ $this->db->blogid ] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl);
+					$this->swapped_url[$this->db->blogid] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl );
 					// get ready to return our new url
 					$url = $newurl;
 				} else {
 					// we can't find a map for this domain so record a false in the cache
-					$this->swapped_url[ $this->db->blogid ] = false;
+					$this->swapped_url[$this->db->blogid] = false;
 				}
-			} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
+			} elseif ( $this->swapped_url[$this->db->blogid] !== false) {
 				// get the information from the cache for the old domain
-				$olddomain = untrailingslashit( $this->swapped_url[ $this->db->blogid ]['olddomain'] );
+				$olddomain = untrailingslashit( $this->swapped_url[$this->db->blogid]['olddomain'] );
 				// replace the old domain with the new one and set the url for returning
-				$url = str_replace($olddomain, untrailingslashit( $this->swapped_url[ $this->db->blogid ]['newdomain'] ), $url);
+				$url = str_replace( $olddomain, untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $url);
 			}
+
 			return $url;
 		}
 

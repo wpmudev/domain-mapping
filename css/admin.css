@@ -65,14 +65,6 @@
     max-width: 1400px
 }
 
-.domainmapping-tabs .domainmapping-tab {
-    display: none
-}
-
-.domainmapping-tabs .domainmapping-tab.active {
-    display: block
-}
-
 .domainmapping-info {
     border-left: 3px solid #01b1f3;
     border-left-color: rgba(1, 177, 243, 0.7);

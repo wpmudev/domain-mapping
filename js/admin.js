@@ -132,21 +132,6 @@
 
 		$('a.domainmapping-need-revalidate').click();
 
-		$('.domainmapping-tab-switch-js a').click(function() {
-			var $this = $(this),
-				tab = $this.attr('href');
-
-			$this.parents('.domainmapping-tab-switch').find('a.active').removeClass('active');
-			$this.addClass('active');
-
-			$this.parents('#domainmapping-content').find('.domainmapping-tab.active').removeClass('active');
-			$(tab).addClass('active');
-
-			$this.parents('form').find('#domainmapping-active-tab').val(tab);
-
-			return false;
-		});
-
 		$('.domainmapping-reseller-switch').change(function() {
 			$('.domainmapping-reseller-settings').hide();
 			$('#reseller-' + $(this).val()).show();

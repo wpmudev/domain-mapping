@@ -121,8 +121,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access private
 	 */
 	private function _update_network_options() {
-		check_admin_referer( 'update-dmoptions' );
-
 		// Update the domain mapping settings
 		$options = $this->_plugin->get_options();
 
@@ -146,6 +144,21 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$options['map_admindomain'] = filter_input( INPUT_POST, 'map_admindomain' );
 		$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
 
+		// update options
+		update_site_option( 'domain_mapping', $options );
+	}
+
+	/**
+	 * Updates reseller options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _update_reseller_options() {
+		// Update the domain mapping settings
+		$options = $this->_plugin->get_options();
+
 		// save reseller options
 		$options['map_reseller'] = '';
 		$resellers = $this->_plugin->get_resellers();
@@ -157,14 +170,37 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 		// update options
 		update_site_option( 'domain_mapping', $options );
+	}
 
-		// update active tab cookie
-		setcookie( 'domainmapping-actab', md5( filter_input( INPUT_POST, 'active_tab' ) ), time() + YEAR_IN_SECONDS );
+	/**
+	 * Processes POST request sent to network options page.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $activetab The active tab.
+	 */
+	private function _save_network_options_page( $activetab ) {
+		// if request method is post, then save options
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			// check referer
+			check_admin_referer( 'update-dmoptions' );
 
-		// if noheader argument is passed, then redirect back to options page
-		if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
-			wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'msg' => 1 ) ) );
-			exit;
+			// update options
+			switch ( $activetab ) {
+				case 'general-options':
+					$this->_update_network_options();
+					break;
+				case 'reseller-options':
+					$this->_update_reseller_options();
+					break;
+			}
+
+			// if noheader argument is passed, then redirect back to options page
+			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				exit;
+			}
 		}
 	}
 
@@ -177,14 +213,33 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function render_network_options_page() {
-		// if request method is post, then save options
-		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-			$this->_update_network_options();
+		$tabs = array(
+			'general-options'  => __( 'Mapping options', 'domainmap' ),
+			'reseller-options' => __( 'Reseller options', 'domainmap' ),
+		);
+
+		$activetab = strtolower( trim( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) );
+		if ( !in_array( $activetab, array_keys( $tabs ) ) ) {
+			$activetab = key( $tabs );
 		}
+
+		$this->_save_network_options_page( $activetab );
 
 		// render page
 		$page = new Domainmap_Render_Page_Network( $this->_plugin->get_options() );
-		$page->resellers = $this->_plugin->get_resellers();
+		$page->tabs = $tabs;
+		$page->active_tab = $activetab;
+
+		switch ( $activetab ) {
+			case 'general-options':
+				// fetch unchanged domain name from database, because get_option function could return mapped domain name
+				$page->basedomain = $this->_wpdb->get_var( "SELECT option_value FROM {$this->_wpdb->options} WHERE option_name = 'siteurl'" );
+				break;
+			case 'reseller-options':
+				$page->resellers = $this->_plugin->get_resellers();
+				break;
+		}
+
 		$page->render();
 	}
 

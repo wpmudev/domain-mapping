@@ -96,7 +96,7 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 			}
 		}
 
-		$schema = is_ssl() ? 'https' : 'http';
+		$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';
 		$form_class = count( $this->domains ) > 0 && !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ? ' domainmapping-form-hidden' : '';
 
 		?><div class="domainmapping-tab">
@@ -154,7 +154,7 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 		global $current_site;
 
 		if ( !$schema ) {
-			$schema = is_ssl() ? 'https' : 'http';
+			$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';;
 		}
 
 		$remove_link = add_query_arg( array(

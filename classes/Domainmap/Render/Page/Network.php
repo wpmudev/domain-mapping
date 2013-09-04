@@ -47,22 +47,6 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	}
 
 	/**
-	 * Builds and renders messages array.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access private
-	 */
-	private function _get_messages() {
-		$messages = array();
-		$messages[1] = __( 'Options updated.','domainmap' );
-		if ( isset( $_GET['msg'] ) ) {
-			echo '<div id="message" class="updated fade">' . $messages[(int)$_GET['msg']] . '</div>';
-			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'message' ), $_SERVER['REQUEST_URI'] );
-		}
-	}
-
-	/**
 	 * Renders site admin page.
 	 *
 	 * @since 4.0.0
@@ -70,17 +54,7 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @access protected
 	 */
 	protected function _to_html() {
-		$tabs = array(
-			'#domainmapping-general-options' => __( 'Mapping options', 'domainmap' ),
-			'#domainmapping-reseller-options' => __( 'Reseller options', 'domainmap' ),
-		);
-
-		$active_href = '';
-		$active_tab = filter_input( INPUT_COOKIE, 'domainmapping-actab', FILTER_DEFAULT, array(
-			'options' => array(
-				'default' => md5( key( $tabs ) ),
-			),
-		) );
+		$baseurl = add_query_arg( 'saved', false );
 
 		?><div id="domainmapping-content" class="wrap">
 			<?php screen_icon( 'ms-admin' ) ?>
@@ -88,37 +62,39 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 
 			<form action="<?php echo add_query_arg( 'noheader', 'true' ) ?>" method="post">
 				<?php wp_nonce_field( 'update-dmoptions' ) ?>
-				<?php $this->_get_messages() ?>
-				<div class="domainmapping-tab-switch domainmapping-tab-switch-js">
+
+				<?php if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) : ?>
+					<div id="message" class="updated fade"><?php _e( 'Options updated.', 'domainmap' ) ?></div>
+				<?php endif; ?>
+
+				<div class="domainmapping-tab-switch">
 					<ul>
-						<?php foreach ( $tabs as $href => $label ) : ?>
+						<?php foreach ( $this->tabs as $tab => $label ) : ?>
 						<li>
-							<?php if ( $active_tab == md5( $href ) ) : ?>
-								<?php $active_href = $href ?>
-								<a class="active" href="<?php echo $href ?>"><?php echo $label ?></a>
-							<?php else : ?>
-								<a href="<?php echo $href ?>"><?php echo $label ?></a>
-							<?php endif; ?>
+							<a<?php echo $this->active_tab == $tab ? ' class="active"' : '' ?> href="<?php echo esc_url( add_query_arg( 'tab', $tab, $baseurl ) ) ?>">
+								<?php echo $label ?>
+							</a>
 						</li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="domainmapping-clear"></div>
 				</div>
 
-				<input type="hidden" id="domainmapping-active-tab" name="active_tab" value="<?php echo $active_href ?>">
-
-				<div class="domainmapping-tabs">
-					<div id="domainmapping-general-options" class="domainmapping-tab<?php echo $active_href == '#domainmapping-general-options' ? ' active' : '' ?>"><?php
-						$this->_render_mapping_options_tab()
-					?></div>
-
-					<div id="domainmapping-reseller-options" class="domainmapping-tab<?php echo $active_href == '#domainmapping-reseller-options' ? ' active' : '' ?>"><?php
-						$this->_render_reseller_options_tab()
-					?></div>
-				</div>
+				<div class="domainmapping-tab"><?php
+					switch ( $this->active_tab ) {
+						case 'general-options':
+							$this->_render_mapping_options_tab();
+							break;
+						case 'reseller-options':
+							$this->_render_reseller_options_tab();
+							break;
+					}
+				?></div>
 
 				<p class="submit">
-					<button type="submit" class="button button-primary domainmapping-button"><i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?></button>
+					<button type="submit" class="button button-primary domainmapping-button">
+						<i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
+					</button>
 				</p>
 			</form>
 		</div><?php
@@ -161,7 +137,6 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 		$this->_render_domain_configuration();
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();
-		$this->_render_domain_mapping_table();
 		$this->_render_pro_site();
 	}
 
@@ -173,11 +148,28 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @access private
 	 */
 	private function _render_domain_configuration() {
+		$ips = false;
+		if ( function_exists( 'dns_get_record' ) && !empty( $this->basedomain ) ) {
+			$ips = wp_list_pluck( dns_get_record( $this->basedomain, DNS_A ), 'ip' );
+		}
+
 		?><h4><?php _e( 'Domain mapping Configuration', 'domainmap' ) ?></h4>
 		<p>
 			<?php _e( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) ?><br>
 			<?php _e( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) ?>
 		</p>
+
+		<?php if ( !empty( $ips ) ) : ?>
+		<div class="domainmapping-info">
+			<p><?php
+				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch IP address(es) assigned to it. You can use folloding IP addres(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
+			?></p>
+			<p>
+				<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
+			</p>
+		</div>
+		<?php endif; ?>
+
 		<p>
 			<?php _e( "Server IP Address: ", 'domainmap' ) ?>
 			<input type="text" name="map_ipaddress" class="regular-text" value="<?php echo esc_attr( $this->map_ipaddress ) ?>">
@@ -225,20 +217,6 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	}
 
 	/**
-	 * Renders domain mapping table section.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access public
-	 */
-	private function _render_domain_mapping_table() {
-		echo '<h4>', __( 'Domain Mapping Table', 'domainmap' ), '</h4>';
-		echo '<p>';
-			printf( __( 'The domain mapping table is called <strong>%s</strong> and exists in your database.', 'domainmap' ), DOMAINMAP_TABLE_MAP );
-		echo '</p>';
-	}
-
-	/**
 	 * Renders pro site section.
 	 *
 	 * @since 4.0.0
@@ -258,20 +236,20 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 					<td valign="top">
 						<ul style="margin-top: 0"><?php
 							$levels = (array)get_site_option( 'psts_levels' );
-							if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) {
+							if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
 								$keys = array_keys( $levels );
 								$this->map_supporteronly = array( $keys[0] );
-							}
+							endif;
 
-							foreach ( $levels as $level => $value ) : ?>
-								<li>
+							foreach ( $levels as $level => $value ) :
+								?><li>
 									<label>
 										<input type="checkbox" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
 										<?php echo $level, ': ', esc_html( $value['name'] ) ?>
 									</label>
-								</li>
-							<?php endforeach; ?>
-						</ul>
+								</li><?php
+							endforeach;
+						?></ul>
 					</td>
 				</tr>
 			</table>
