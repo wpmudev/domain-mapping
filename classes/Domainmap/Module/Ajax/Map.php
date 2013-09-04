@@ -92,23 +92,28 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				$blog = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s' AND path = '/'", $this->_wpdb->blogs, $escaped_domain ) );
 				$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", DOMAINMAP_TABLE_MAP, $escaped_domain ) );
 
-				if( is_null( $blog ) && is_null( $map ) ) {
+				if ( is_null( $blog ) && is_null( $map ) ) {
 					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
 						'blog_id' => $this->_wpdb->blogid,
 						'domain'  => $domain,
 						'active'  => 1,
 					), array( '%d', '%s', '%d' ) );
 
-					// fire the action when a new domain is added
-					do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
+					if ( $this->_validate_health_status( $domain ) ) {
+						// fire the action when a new domain is added
+						do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
 
-					// send success response
-					ob_start();
-					Domainmap_Render_Page_Site::render_mapping_row( $domain );
-					wp_send_json_success( array(
-						'html'      => ob_get_clean(),
-						'hide_form' => !$allowmulti,
-					) );
+						// send success response
+						ob_start();
+						Domainmap_Render_Page_Site::render_mapping_row( $domain );
+						wp_send_json_success( array(
+							'html'      => ob_get_clean(),
+							'hide_form' => !$allowmulti,
+						) );
+					} else {
+						$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
+						$message = __( 'Domain name is unavailable to access.', 'domainmap' );
+					}
 				} else {
 					$message = __( 'Domain is already mapped.', 'domainmap' );
 				}
@@ -155,6 +160,27 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	}
 
 	/**
+	 * Validates health status of a domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $domain The domain name to validate.
+	 * @return boolean TRUE if the domain name works, otherwise FALSE.
+	 */
+	private function _validate_health_status( $domain ) {
+		$check = sha1( time() );
+		$ajax_url = admin_url( 'admin-ajax.php' );
+		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
+		$request = wp_remote_request( add_query_arg( array(
+			'action' => 'domainmapping_heartbeat_check',
+			'check'  => $check,
+		), $ajax_url ) );
+
+		return !is_wp_error( $request ) && isset( $request['response']['code'] ) && $request['response']['code'] == 200 && isset( $request['body'] ) && $request['body'] == $check ? 1 : 0;
+	}
+
+	/**
 	 * Checks domain health status.
 	 *
 	 * @since 4.0.0
@@ -169,22 +195,12 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			wp_send_json_error();
 		}
 
-		$check = sha1( time() );
-		$ajax_url = admin_url( 'admin-ajax.php' );
-		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
-		$request = wp_remote_request( add_query_arg( array(
-			'action' => 'domainmapping_heartbeat_check',
-			'check'  => $check,
-		), $ajax_url ) );
-
-		$valid = !is_wp_error( $request ) && isset( $request['response']['code'] ) && $request['response']['code'] == 200 && isset( $request['body'] ) && $request['body'] == $check ? 1 : 0;
+		$valid = $this->_validate_health_status( $domain );
 		set_transient( "domainmapping-{$domain}-health", $valid, WEEK_IN_SECONDS );
 
 		ob_start();
 		Domainmap_Render_Page_Site::render_health_column( $domain );
-		wp_send_json_success( array(
-			'html' => ob_get_clean(),
-		) );
+		wp_send_json_success( array( 'html' => ob_get_clean() ) );
 	}
 
 	/**

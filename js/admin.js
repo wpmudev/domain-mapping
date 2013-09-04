@@ -41,6 +41,8 @@
 		});
 
 		$('#domainmapping-ppp, #domainmapping-ppp-overlay').fadeIn(50);
+
+		close.focus();
 	};
 
 	function show_success(msg, callback) {
