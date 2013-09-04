@@ -159,7 +159,8 @@
     color: red
 }
 
-.domainmapping-mapped, .domainmapping-map-state, .domainmapping-map-remove {
+.domainmapping-mapped, .domainmapping-map-state,
+.domainmapping-map-remove {
     text-decoration: none
 }
 
@@ -188,7 +189,8 @@
     border-radius: 0
 }
 
-.domainmapping-form input.domainmapping-input-domain:active, .domainmapping-form input.domainmapping-input-domain:focus {
+.domainmapping-form input.domainmapping-input-domain:active,
+.domainmapping-form input.domainmapping-input-domain:focus {
     border-color: #dfdfdf;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
@@ -224,7 +226,8 @@
     -moz-border-radius-bottomright: 0
 }
 
-.domainmapping-form input.domainmapping-input-sufix, .domainmapping-form input.domainmapping-input-prefix {
+.domainmapping-form input.domainmapping-input-sufix,
+.domainmapping-form input.domainmapping-input-prefix {
     background-color: #f1f1f1
 }
 
@@ -286,11 +289,13 @@
     background-image: linear-gradient(bottom, #00487f 0%, #003866 100%);
 }
 
+.wp-core-ui .domainmapping-button i,
 .domainmapping-form-submit i {
     margin-right: 5px
 }
 
-.domainmapping-invalid-domain, .domainmapping-need-revalidate {
+.domainmapping-invalid-domain,
+.domainmapping-need-revalidate {
     color: red
 }
 
@@ -484,4 +489,11 @@ input.domainmapping-reseller-switch {
 
 .domainmapping-ppp-error #domainmapping-ppp-footer {
     background-color: #fdd
+}
+
+.wp-core-ui .domainmapping-button {
+	padding-top: 1px;
+	padding-bottom: 2px;
+	height: auto;
+	font-size: 14px;
 }

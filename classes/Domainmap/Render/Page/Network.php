@@ -118,7 +118,7 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 				</div>
 
 				<p class="submit">
-					<button type="submit" class="domainmapping-form-submit"><i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?></button>
+					<button type="submit" class="button button-primary domainmapping-button"><i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?></button>
 				</p>
 			</form>
 		</div><?php

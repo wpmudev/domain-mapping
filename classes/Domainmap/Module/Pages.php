@@ -217,7 +217,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		wp_enqueue_script( 'domainmapping-admin', $baseurl . 'js/admin.js', array( 'jquery' ), Domainmap_Plugin::VERSION, true );
 		wp_localize_script( 'domainmapping-admin', 'domainmapping', array(
 			'button'  => array(
-				'close' => __( 'Ok', 'domainmap' ),
+				'close' => __( 'OK', 'domainmap' ),
 			),
 			'message' => array(
 				'unmap'   => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
@@ -239,7 +239,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		wp_enqueue_style( 'font-awesome', $baseurl . 'css/font-awesome.min.css', array(), '3.2.1' );
 		wp_enqueue_style( 'font-awesome-ie', $baseurl . 'css/font-awesome-ie7.min.css', array( 'font-awesome' ), '3.2.1' );
 		wp_enqueue_style( 'google-font-lato', 'https://fonts.googleapis.com/css?family=Lato:300,400,700,400italic', array(), Domainmap_Plugin::VERSION );
-		wp_enqueue_style( 'domainmapping-admin', $baseurl . 'css/admin.css', array( 'google-font-lato' ), Domainmap_Plugin::VERSION );
+		wp_enqueue_style( 'domainmapping-admin', $baseurl . 'css/admin.css', array( 'google-font-lato', 'buttons' ), Domainmap_Plugin::VERSION );
 
 		$wp_styles->registered['font-awesome-ie']->add_data( 'conditional', 'IE 7' );
 	}

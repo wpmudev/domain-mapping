@@ -16,7 +16,7 @@
 		body = $('<div id="domainmapping-ppp-body"></div>');
 		body.html(msg);
 
-		close = $('<button type="button" class="domainmapping-form-submit"></button>');
+		close = $('<button type="button" class="button domainmapping-button"></button>');
 		close.append(domainmapping.button.close);
 		close.click(function() {
 			cleanup_alert(callback);

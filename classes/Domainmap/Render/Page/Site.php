@@ -44,12 +44,12 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 			),
 		);
 
-		if ( $this->reseller && $this->reseller->is_valid() ) {
+//		if ( $this->reseller && $this->reseller->is_valid() ) {
 			$tabs['purchase'] = array(
 				'label'    => __( 'Purchase domain', 'domainmap' ),
 				'callback' => '_handle_domain_purchase_page',
 			);
-		}
+//		}
 
 		$activetab = strtolower( trim( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) );
 		if ( !in_array( $activetab, array_keys( $tabs ) ) ) {
@@ -129,7 +129,7 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 									<input type="text" class="domainmapping-input-domain" autofocus name="domain">
 								</div>
 								<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-								<button type="submit" class="domainmapping-form-submit"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
+								<button type="submit" class="button button-primary domainmapping-button"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
 								<div class="domainmapping-clear"></div>
 							</form>
 						</li>
@@ -239,8 +239,8 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 								<?php endforeach; ?>
 							</select>
 						</div>
-						<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-						<button type="submit" class="domainmapping-form-submit"><i class="icon-search"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>
+						<input type="text" class="domainmapping-input-sufix" readonly disabled value="">
+						<button type="submit" class="button-primary button domainmapping-button"><i class="icon-search"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>
 						<div class="domainmapping-clear"></div>
 					</form>
 
