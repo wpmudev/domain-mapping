@@ -43,9 +43,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @access protected
+	 * @access public
 	 */
-	protected function _get_reseller_id() {
+	public function get_reseller_id() {
 		return self::RESELLER_ID;
 	}
 
@@ -85,6 +85,25 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		libxml_use_internal_errors( true );
 		return simplexml_load_string( $response['body'] );
+	}
+
+	/**
+	 * Logs request to reseller API.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @param int $type The request type.
+	 * @param SimpleXMLElement $response The response information, received on request.
+	 */
+	private function _log_enom_request( $type, SimpleXMLElement $xml ) {
+		$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
+		$errors = array();
+		if ( !$valid && isset( $xml->errors ) ) {
+			$errors = json_decode( json_encode( $xml->errors ), true );
+		}
+
+		$this->_log_request( $type, $valid, $errors, $xml );
 	}
 
 	/**
@@ -134,7 +153,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'tld' => 'com',
 		) );
 
-		return isset( $xml->ErrCount ) && $xml->ErrCount == 0;
+		$this->_log_enom_request( self::REQUEST_VALIDATE_CREDENTIALS, $xml );
+
+		return !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
 	}
 
 	/**
@@ -225,6 +246,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 */
 	protected function _get_tld_list() {
 		$xml = $this->_exec_command( self::COMMAND_GET_TLD_LIST );
+		$this->_log_enom_request( self::REQUEST_GET_TLD_LIST, $xml );
 
 		$tlds = array();
 		if ( $xml && isset( $xml->tldlist->tld ) ) {
@@ -253,6 +275,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'sld' => $sld,
 		) );
 
+		$this->_log_enom_request( self::REQUEST_CHECK_DOMAIN, $xml );
+
 		return $xml && isset( $xml->RRPCode ) && $xml->RRPCode == 210;
 	}
 
@@ -270,6 +294,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'tld'         => $tld,
 			'ProductType' => 10,
 		) );
+
+		$this->_log_enom_request( self::REQUEST_GET_RETAIL_PRICE, $xml );
 
 		if ( $xml && isset( $xml->productprice->price ) ) {
 			return floatval( $xml->productprice->price );
@@ -328,6 +354,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantFax'              => $registrant_fax,
 		) );
 
+		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
 			$options = Domainmap_Plugin::instance()->get_options();
 			if ( !empty( $options['map_ipaddress'] ) ) {
@@ -346,7 +374,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 					}
 				}
 
-				$this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+				$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+				$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
 			}
 
 			return "{$sld}.{$tld}";

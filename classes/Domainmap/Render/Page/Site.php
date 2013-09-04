@@ -129,7 +129,7 @@ class Domainmap_Render_Page_Site extends Domainmap_Render {
 									<input type="text" class="domainmapping-input-domain" autofocus name="domain">
 								</div>
 								<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-								<button type="submit" class="button button-primary domainmapping-button"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
+								<button type="submit" class="button button-primary"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
 								<div class="domainmapping-clear"></div>
 							</form>
 						</li>

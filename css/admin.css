@@ -483,9 +483,64 @@ input.domainmapping-reseller-switch {
     background-color: #fdd
 }
 
-.wp-core-ui .domainmapping-button {
+.wp-core-ui #domainmapping-content .button {
 	padding-top: 1px;
 	padding-bottom: 2px;
 	height: auto;
 	font-size: 14px;
+}
+.domainmapping-request-valid,
+.domainmapping-request-invalid {
+    color: white;
+    padding: 1px 6px 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    font-weight: bold
+}
+
+.domainmapping-request-invalid {
+    background-color: #DB4A4A
+}
+
+.domainmapping-request-valid {
+    background-color: #56A356
+}
+
+#domainmapping-content .widefat td {
+    font-size: 13px;
+    line-height: 20px
+}
+
+#domainmapping-content .widefat thead tr th,
+#domainmapping-content .widefat tfoot tr th {
+    font-weight: bold
+}
+
+#domainmapping-content .tablenav .displaying-num {
+    font-size: 13px
+}
+
+#domainmapping-content .tablenav .tablenav-pages {
+    font-size: 13px
+}
+
+#domainmapping-reseller-log-table .tablenav.top {
+    margin-bottom: 10px
+}
+
+#domainmapping-reseller-log-table .column-requested_at span {
+    color: #aaa;
+    display: block
+}
+
+#domainmapping-reseller-log-table .column-valid,
+#domainmapping-reseller-log-table .column-action,
+#domainmapping-reseller-log-table .column-requested_at {
+    width: 200px
+}
+
+#domainmapping-content .subsubsub {
+    font-size: 14px;
+    line-height: 21px
 }

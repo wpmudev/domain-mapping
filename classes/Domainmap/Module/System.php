@@ -108,8 +108,8 @@ class Domainmap_Module_System extends Domainmap_Module {
 	 * @access private
 	 */
 	private function _upgrade() {
-		$filter = 'domainmapping_upgrade';
-		$option = 'domainmapping_version';
+		$filter = 'domainmap_upgrade';
+		$option = 'domainmap_version';
 
 		// fetch current database version
 		$db_version = get_option( $option );
@@ -152,7 +152,20 @@ class Domainmap_Module_System extends Domainmap_Module {
 				'`domain` VARCHAR(255) NOT NULL',
 				'`active` TINYINT DEFAULT 1',
 				'PRIMARY KEY (`id`)',
-				'KEY `blog_id` (`blog_id`, `domain`, `active`)'
+				'KEY `blog_id` (`blog_id`, `domain`, `active`)',
+			) ),
+
+			$this->_create_table( DOMAINMAP_TABLE_RESELLER_LOG, array(
+				'`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT',
+				'`user_id` BIGINT UNSIGNED NOT NULL',
+				'`provider` VARCHAR(255) NOT NULL',
+				'`requested_at` DATETIME NOT NULL',
+				'`type` TINYINT UNSIGNED NOT NULL',
+				'`valid` TINYINT UNSIGNED NOT NULL',
+				'`errors` TEXT NOT NULL',
+				'`response` TEXT NOT NULL',
+				'PRIMARY KEY (`id`)',
+				'KEY `idx_reseller_log` (`provider`, `valid`)',
 			) ),
 		) );
 

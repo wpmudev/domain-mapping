@@ -54,14 +54,17 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	 * @access protected
 	 */
 	protected function _to_html() {
-		$baseurl = add_query_arg( 'saved', false );
+		$baseurl = add_query_arg( array(
+			'saved'   => false,
+			'deleted' => false,
+		) );
 
 		?><div id="domainmapping-content" class="wrap">
 			<?php screen_icon( 'ms-admin' ) ?>
 			<h2><?php _e( 'Domain Mapping', 'domainmap' ) ?></h2>
 
 			<form action="<?php echo add_query_arg( 'noheader', 'true' ) ?>" method="post">
-				<?php wp_nonce_field( 'update-dmoptions' ) ?>
+				<?php wp_nonce_field( $this->nonce_action ) ?>
 
 				<?php if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) : ?>
 					<div id="message" class="updated fade"><?php _e( 'Options updated.', 'domainmap' ) ?></div>
@@ -88,14 +91,11 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 						case 'reseller-options':
 							$this->_render_reseller_options_tab();
 							break;
+						case 'reseller-api-log':
+							$this->_render_reseller_log_tab();
+							break;
 					}
 				?></div>
-
-				<p class="submit">
-					<button type="submit" class="button button-primary domainmapping-button">
-						<i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
-					</button>
-				</p>
 			</form>
 		</div><?php
 	}
@@ -138,6 +138,12 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();
 		$this->_render_pro_site();
+
+		?><p class="submit">
+			<button type="submit" class="button button-primary">
+				<i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
+			</button>
+		</p><?php
 	}
 
 	/**
@@ -266,34 +272,58 @@ class Domainmap_Render_Page_Network extends Domainmap_Render {
 	private function _render_reseller_options_tab() {
 		$selected = false;
 
-		?><div>
-			<h4><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
+		?><h4><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
 
-			<ul class="domainmapping-resellers-switch"><?php
-				foreach ( $this->resellers as $hash => $reseller ) :
-				?><li>
-					<label>
-						<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
-						<?php echo esc_html( $reseller->get_title() ) ?>
-						<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
-					</label>
-				</li><?php
-				endforeach;
+		<ul class="domainmapping-resellers-switch"><?php
+			foreach ( $this->resellers as $hash => $reseller ) :
+			?><li>
+				<label>
+					<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
+					<?php echo esc_html( $reseller->get_title() ) ?>
+					<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
+				</label>
+			</li><?php
+			endforeach;
 
-				?><li>
-					<label>
-						<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( empty( $selected ) ) ?>>
-						<?php _e( "Don't use any", 'domainmap' ) ?>
-					</label>
-				</li>
-			</ul>
-		</div><?php
+			?><li>
+				<label>
+					<input type="radio" class="domainmapping-reseller-switch" name="map_reseller"<?php checked( empty( $selected ) ) ?>>
+					<?php _e( "Don't use any", 'domainmap' ) ?>
+				</label>
+			</li>
+		</ul><?php
 
 		foreach ( $this->resellers as $hash => $reseller ) :
 			?><div id="reseller-<?php echo $hash ?>" class="domainmapping-reseller-settings<?php echo $selected == $hash ? ' active' :'' ?>">
 				<?php $reseller->render_options() ?>
 			</div><?php
 		endforeach;
+
+		?><p class="submit">
+			<button type="submit" class="button button-primary">
+				<i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
+			</button>
+		</p><?php
+	}
+
+	/**
+	 * Renders resellers log tab.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_reseller_log_tab() {
+		$this->table->prepare_items();
+
+		if ( filter_input( INPUT_GET, 'deleted', FILTER_VALIDATE_BOOLEAN ) ) : ?>
+			<div id="message" class="updated fade"><?php _e( 'Log records were deleted.', 'domainmap' ) ?></div>
+		<?php endif;
+
+		echo '<div id="domainmapping-reseller-log-table">';
+			$this->table->views();
+			$this->table->display();
+		echo '</div>';
 	}
 
 }

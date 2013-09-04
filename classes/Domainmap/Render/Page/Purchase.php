@@ -62,7 +62,7 @@ class Domainmap_Render_Page_Purchase extends Domainmap_Render {
 
 					<p>&nbsp;</p>
 
-					<button type="submit" class="button button-primary domainmapping-button"><i class="icon-shopping-cart"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
+					<button type="submit" class="button button-primary"><i class="icon-shopping-cart"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>

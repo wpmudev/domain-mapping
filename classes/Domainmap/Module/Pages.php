@@ -119,33 +119,46 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @since 4.0.0
 	 *
 	 * @access private
+	 * @param string $nonce_action The nonce action param.
 	 */
-	private function _update_network_options() {
-		// Update the domain mapping settings
-		$options = $this->_plugin->get_options();
+	private function _update_network_options( $nonce_action ) {
+		// if request method is post, then save options
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			// check referer
+			check_admin_referer( $nonce_action );
 
-		// parse IP addresses
-		$ips = array();
-		foreach ( explode( ',', filter_input( INPUT_POST, 'map_ipaddress' ) ) as $ip ) {
-			$ip = filter_var( trim( $ip ), FILTER_VALIDATE_IP );
-			if ( $ip ) {
-				$ips[] = $ip;
+			// Update the domain mapping settings
+			$options = $this->_plugin->get_options();
+
+			// parse IP addresses
+			$ips = array();
+			foreach ( explode( ',', filter_input( INPUT_POST, 'map_ipaddress' ) ) as $ip ) {
+				$ip = filter_var( trim( $ip ), FILTER_VALIDATE_IP );
+				if ( $ip ) {
+					$ips[] = $ip;
+				}
+			}
+
+			// parse supported levels
+			$supporters = array();
+			if ( isset( $_POST['map_supporteronly'] ) ) {
+				$supporters = array_filter( array_map( 'intval', (array)$_POST['map_supporteronly'] ) );
+			}
+
+			$options['map_ipaddress'] = implode( ', ', array_unique( $ips ) );
+			$options['map_supporteronly'] = $supporters;
+			$options['map_admindomain'] = filter_input( INPUT_POST, 'map_admindomain' );
+			$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
+
+			// update options
+			update_site_option( 'domain_mapping', $options );
+
+			// if noheader argument is passed, then redirect back to options page
+			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				exit;
 			}
 		}
-
-		// parse supported levels
-		$supporters = array();
-		if ( isset( $_POST['map_supporteronly'] ) ) {
-			$supporters = array_filter( array_map( 'intval', (array)$_POST['map_supporteronly'] ) );
-		}
-
-		$options['map_ipaddress'] = implode( ', ', array_unique( $ips ) );
-		$options['map_supporteronly'] = $supporters;
-		$options['map_admindomain'] = filter_input( INPUT_POST, 'map_admindomain' );
-		$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
-
-		// update options
-		update_site_option( 'domain_mapping', $options );
 	}
 
 	/**
@@ -154,22 +167,90 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @since 4.0.0
 	 *
 	 * @access private
+	 * @param string $nonce_action The nonce action param.
 	 */
-	private function _update_reseller_options() {
-		// Update the domain mapping settings
-		$options = $this->_plugin->get_options();
+	private function _update_reseller_options( $nonce_action ) {
+		// if request method is post, then save options
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			// check referer
+			check_admin_referer( $nonce_action );
 
-		// save reseller options
-		$options['map_reseller'] = '';
-		$resellers = $this->_plugin->get_resellers();
-		$reseller = filter_input( INPUT_POST, 'map_reseller' );
-		if ( isset( $resellers[$reseller] ) ) {
-			$options['map_reseller'] = $reseller;
-			$resellers[$reseller]->save_options( $options );
+			// Update the domain mapping settings
+			$options = $this->_plugin->get_options();
+
+			// save reseller options
+			$options['map_reseller'] = '';
+			$resellers = $this->_plugin->get_resellers();
+			$reseller = filter_input( INPUT_POST, 'map_reseller' );
+			if ( isset( $resellers[$reseller] ) ) {
+				$options['map_reseller'] = $reseller;
+				$resellers[$reseller]->save_options( $options );
+			}
+
+			// update options
+			update_site_option( 'domain_mapping', $options );
+
+			// if noheader argument is passed, then redirect back to options page
+			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				exit;
+			}
+		}
+	}
+
+	/**
+	 * Handles table log actions.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $nonce_action The nonce action param.
+	 */
+	private function _handle_log_actions( $nonce_action ) {
+		$redirect = wp_get_referer();
+		$nonce = filter_input( INPUT_GET, 'nonce' );
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			$nonce = filter_input( INPUT_POST, '_wpnonce' );
 		}
 
-		// update options
-		update_site_option( 'domain_mapping', $options );
+		$table = new Domainmap_Table_Reseller_Log();
+		switch ( $table->current_action() ) {
+			case 'reseller-log-view':
+				$item = filter_input( INPUT_GET, 'items', FILTER_VALIDATE_INT );
+				if ( wp_verify_nonce( $nonce, $nonce_action ) && $item ) {
+					@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+					@header( 'Content-Disposition: inline; filename="' . $item . '-request-log.json"' );
+					echo $this->_wpdb->get_var( sprintf(
+						'SELECT response FROM %s WHERE id = %d',
+						DOMAINMAP_TABLE_RESELLER_LOG,
+						$item
+					) );
+					exit;
+				}
+				break;
+
+			case 'reseller-log-delete':
+				$items = isset( $_REQUEST['items'] ) ? (array)$_REQUEST['items'] : array();
+				$items = array_filter( array_map( 'intval', $items ) );
+
+				if ( wp_verify_nonce( $nonce, $nonce_action ) && !empty( $items ) ) {
+					$this->_wpdb->query( sprintf(
+						'DELETE FROM %s WHERE id IN (%s)',
+						DOMAINMAP_TABLE_RESELLER_LOG,
+						implode( ', ', $items )
+					) );
+
+					$redirect = add_query_arg( 'deleted', 'true', $redirect );
+				}
+				break;
+		}
+
+
+		// if noheader argument is passed, then redirect back to options page
+		if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+			wp_safe_redirect( $redirect );
+			exit;
+		}
 	}
 
 	/**
@@ -179,28 +260,26 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 *
 	 * @access private
 	 * @param string $activetab The active tab.
+	 * @param string $nonce_action The nonce action param.
 	 */
-	private function _save_network_options_page( $activetab ) {
-		// if request method is post, then save options
-		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-			// check referer
-			check_admin_referer( 'update-dmoptions' );
+	private function _save_network_options_page( $activetab, $nonce_action ) {
+		// update options
+		switch ( $activetab ) {
+			case 'general-options':
+				$this->_update_network_options( $nonce_action );
+				break;
+			case 'reseller-options':
+				$this->_update_reseller_options( $nonce_action );
+				break;
+			case 'reseller-api-log':
+				$this->_handle_log_actions( $nonce_action );
+				break;
+		}
 
-			// update options
-			switch ( $activetab ) {
-				case 'general-options':
-					$this->_update_network_options();
-					break;
-				case 'reseller-options':
-					$this->_update_reseller_options();
-					break;
-			}
-
-			// if noheader argument is passed, then redirect back to options page
-			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
-				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
-				exit;
-			}
+		// if noheader argument is passed, then redirect back to options page
+		if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+			wp_safe_redirect( wp_get_referer() );
+			exit;
 		}
 	}
 
@@ -218,17 +297,24 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			'reseller-options' => __( 'Reseller options', 'domainmap' ),
 		);
 
+		$reseller = $this->_plugin->get_reseller();
+		if ( !is_null( $reseller ) ) {
+			$tabs['reseller-api-log'] = __( 'Reseller API log', 'domainmap' );
+		}
+
 		$activetab = strtolower( trim( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) );
 		if ( !in_array( $activetab, array_keys( $tabs ) ) ) {
 			$activetab = key( $tabs );
 		}
 
-		$this->_save_network_options_page( $activetab );
+		$nonce_action = "domainmapping-{$activetab}";
+		$this->_save_network_options_page( $activetab, $nonce_action );
 
 		// render page
 		$page = new Domainmap_Render_Page_Network( $this->_plugin->get_options() );
 		$page->tabs = $tabs;
 		$page->active_tab = $activetab;
+		$page->nonce_action = $nonce_action;
 
 		switch ( $activetab ) {
 			case 'general-options':
@@ -237,6 +323,15 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				break;
 			case 'reseller-options':
 				$page->resellers = $this->_plugin->get_resellers();
+				break;
+			case 'reseller-api-log':
+				$page->table = new Domainmap_Table_Reseller_Log( array(
+					'reseller'     => $reseller->get_reseller_id(),
+					'nonce_action' => $nonce_action,
+					'actions'      => array(
+						'reseller-log-delete' => __( 'Delete', 'domainmap' ),
+					),
+				) );
 				break;
 		}
 

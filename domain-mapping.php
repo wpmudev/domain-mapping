@@ -86,6 +86,7 @@ function domainmap_launch() {
 	}
 
 	$prefix = !empty( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix;
+	define( 'DOMAINMAP_TABLE_RESELLER_LOG', "{$prefix}domain_mapping_reseller_log" );
 	define( 'DOMAINMAP_TABLE_MAP', defined( 'DM_COMPATIBILITY' ) && filter_var( DM_COMPATIBILITY, FILTER_VALIDATE_BOOLEAN )
 		? "{$prefix}domain_mapping"
 		: "{$prefix}domain_map" );
