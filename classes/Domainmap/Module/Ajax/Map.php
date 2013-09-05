@@ -105,7 +105,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 						// send success response
 						ob_start();
-						Domainmap_Render_Page_Site::render_mapping_row( $domain );
+						Domainmap_Render_Site_Map::render_mapping_row( $domain );
 						wp_send_json_success( array(
 							'html'      => ob_get_clean(),
 							'hide_form' => !$allowmulti,
@@ -199,7 +199,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		set_transient( "domainmapping-{$domain}-health", $valid, WEEK_IN_SECONDS );
 
 		ob_start();
-		Domainmap_Render_Page_Site::render_health_column( $domain );
+		Domainmap_Render_Site_Map::render_health_column( $domain );
 		wp_send_json_success( array( 'html' => ob_get_clean() ) );
 	}
 

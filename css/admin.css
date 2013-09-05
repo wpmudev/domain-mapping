@@ -343,13 +343,13 @@
     list-style: none
 }
 
-.domainmapping-resellers-switch li {
+#reseller-options-tab > ul > li {
     margin: 0;
     padding: 0;
     list-style: none
 }
 
-input.domainmapping-reseller-switch {
+input.domainmapping-radio {
     margin-top: 3px;
     margin-right: 5px
 }

@@ -148,7 +148,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 			$cardholder = __( 'Your name', 'domainmap' );
 		}
 
-		$render = new Domainmap_Render_Page_Purchase( $info );
+		$render = new Domainmap_Render_Partial_Purchase( $info );
 		$render->cardtypes = $reseller->get_card_types();
 		$render->cardholder = $cardholder;
 		$render->countries = $this->_plugin->get_countries();

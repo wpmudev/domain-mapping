@@ -171,6 +171,7 @@ class Domainmap_Plugin {
 				$this->_options['map_admindomain'] = get_site_option( 'map_admindomain', 'user' );
 				$this->_options['map_logindomain'] = get_site_option( 'map_logindomain', 'user' );
 				$this->_options['map_reseller'] = array();
+				$this->_options['map_reseller_log'] = Domainmap_Reseller::LOG_LEVEL_DISABLED;
 
 				update_site_option('domain_mapping', $this->_options);
 			}

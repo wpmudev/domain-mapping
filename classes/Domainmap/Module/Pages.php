@@ -81,23 +81,36 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function render_site_options_page() {
-		$page = new Domainmap_Render_Page_Site( $this->_plugin->get_options() );
+		$reseller = $this->_plugin->get_reseller();
 
-		$page->reseller = $this->_plugin->get_reseller();
+		$tabs = array( 'mapping' => __( 'Map domain', 'domainmap' ) );
+		if ( $reseller && $reseller->is_valid() ) {
+			$tabs['purchase'] = __( 'Purchase domain', 'domainmap' );
+		}
 
-		$page->origin = $this->_wpdb->get_row( sprintf(
-			"SELECT * FROM %s WHERE blog_id = %d",
-			$this->_wpdb->blogs,
-			$this->_wpdb->blogid
-		) );
+		$activetab = strtolower( trim( filter_input( INPUT_GET, 'tab', FILTER_DEFAULT ) ) );
+		if ( !in_array( $activetab, array_keys( $tabs ) ) ) {
+			$activetab = key( $tabs );
+		}
 
-		$page->domains = (array)$this->_wpdb->get_col( sprintf(
-			"SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC",
-			DOMAINMAP_TABLE_MAP,
-			$this->_wpdb->blogid
-		) );
+		$page = null;
+		$options = $this->_plugin->get_options();
+		switch ( $activetab ) {
+			default:
+			case 'mapping':
+				$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
+				$page->origin = $this->_wpdb->get_row( sprintf( "SELECT * FROM %s WHERE blog_id = %d", $this->_wpdb->blogs, $this->_wpdb->blogid ) );
+				$page->domains = (array)$this->_wpdb->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP,  $this->_wpdb->blogid ) );
+				break;
+			case 'purchase':
+				$page = new Domainmap_Render_Site_Purchase( $tabs, $activetab, $options );
+				$page->reseller = $reseller;
+				break;
+		}
 
-		$page->render();
+		if ( $page ) {
+			$page->render();
+		}
 	}
 
 	/**
@@ -186,6 +199,15 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				$options['map_reseller'] = $reseller;
 				$resellers[$reseller]->save_options( $options );
 			}
+
+			// save reseller API requests log level
+			$options['map_reseller_log'] = filter_input( INPUT_POST, 'map_reseller_log', FILTER_VALIDATE_INT, array(
+				'options' => array(
+					'min_range' => Domainmap_Reseller::LOG_LEVEL_DISABLED,
+					'max_range' => Domainmap_Reseller::LOG_LEVEL_ALL,
+					'default'   => Domainmap_Reseller::LOG_LEVEL_DISABLED,
+				),
+			) );
 
 			// update options
 			update_site_option( 'domain_mapping', $options );
@@ -292,13 +314,15 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function render_network_options_page() {
+		$options = $this->_plugin->get_options();
+
 		$tabs = array(
 			'general-options'  => __( 'Mapping options', 'domainmap' ),
 			'reseller-options' => __( 'Reseller options', 'domainmap' ),
 		);
 
 		$reseller = $this->_plugin->get_reseller();
-		if ( !is_null( $reseller ) ) {
+		if ( isset( $options['map_reseller_log'] ) && $options['map_reseller_log'] && !is_null( $reseller ) ) {
 			$tabs['reseller-api-log'] = __( 'Reseller API log', 'domainmap' );
 		}
 
@@ -311,20 +335,20 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$this->_save_network_options_page( $activetab, $nonce_action );
 
 		// render page
-		$page = new Domainmap_Render_Page_Network( $this->_plugin->get_options() );
-		$page->tabs = $tabs;
-		$page->active_tab = $activetab;
-		$page->nonce_action = $nonce_action;
-
+		$page = null;
 		switch ( $activetab ) {
+			default:
 			case 'general-options':
+				$page = new Domainmap_Render_Network_Options( $tabs, $activetab, $nonce_action, $options );
 				// fetch unchanged domain name from database, because get_option function could return mapped domain name
 				$page->basedomain = $this->_wpdb->get_var( "SELECT option_value FROM {$this->_wpdb->options} WHERE option_name = 'siteurl'" );
 				break;
 			case 'reseller-options':
+				$page = new Domainmap_Render_Network_Resellers( $tabs, $activetab, $nonce_action, $options );
 				$page->resellers = $this->_plugin->get_resellers();
 				break;
 			case 'reseller-api-log':
+				$page = new Domainmap_Render_Network_Log( $tabs, $activetab, $nonce_action, $options );
 				$page->table = new Domainmap_Table_Reseller_Log( array(
 					'reseller'     => $reseller->get_reseller_id(),
 					'nonce_action' => $nonce_action,
@@ -335,7 +359,9 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				break;
 		}
 
-		$page->render();
+		if ( $page ) {
+			$page->render();
+		}
 	}
 
 	/**

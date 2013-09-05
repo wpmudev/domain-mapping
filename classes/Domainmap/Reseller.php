@@ -42,6 +42,10 @@ abstract class Domainmap_Reseller {
 	const REQUEST_PURCHASE_DOMAIN      = 5;
 	const REQUEST_SET_DNS_RECORDS      = 6;
 
+	const LOG_LEVEL_DISABLED = 0;
+	const LOG_LEVEL_ERRORS   = 1;
+	const LOG_LEVEL_ALL      = 2;
+
 	/**
 	 * Returns reseller internal id.
 	 *
@@ -240,6 +244,19 @@ abstract class Domainmap_Reseller {
 	protected function _log_request( $type, $valid, $errors, $response ) {
 		global $wpdb;
 
+		// get logging level option
+		$options = Domainmap_Plugin::instance()->get_options();
+		$level = isset( $options['map_reseller_log'] )
+			? (int)$options['map_reseller_log']
+			: self::LOG_LEVEL_DISABLED;
+
+		// don't log request if logging is disabled or request is valid,
+		// but only errors should be logged
+		if ( !$level || ( $valid && $level == self::LOG_LEVEL_ERRORS ) ) {
+			return;
+		}
+
+		// save requests into the log
 		$wpdb->insert( DOMAINMAP_TABLE_RESELLER_LOG, array(
 			'user_id'      => get_current_user_id(),
 			'provider'     => $this->get_reseller_id(),
