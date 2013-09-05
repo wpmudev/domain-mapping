@@ -25,9 +25,9 @@
  * @since 4.0.0
  * @category Domainmap
  * @package Render
- * @subpackage Page
+ * @subpackage Partial
  */
-class Domainmap_Render_Page_Purchase extends Domainmap_Render {
+class Domainmap_Render_Partial_Purchase extends Domainmap_Render {
 
 	/**
 	 * Renders purchase step section.
