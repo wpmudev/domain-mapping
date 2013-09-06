@@ -82,12 +82,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$args['command'] = $command;
 
 		$response = wp_remote_get( self::RESELLER_API_ENDPOINT . http_build_query( $args ) );
-		if ( !is_array( $response ) || !isset( $response['body'] ) ) {
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
 			return false;
 		}
 
 		libxml_use_internal_errors( true );
-		return simplexml_load_string( $response['body'] );
+		return simplexml_load_string( wp_remote_retrieve_body( $response ) );
 	}
 
 	/**
@@ -184,7 +184,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	private function _get_gateways() {
 		return array(
 			self::GATEWAY_ENOM     => __( 'eNom credit card processing services', 'domainmap' ),
-			self::GATEWAY_PROSITES => __( 'Pro Sites payment gateway', 'domainmap' ),
+			self::GATEWAY_PROSITES => __( 'Pro Sites PayPal payment gateway', 'domainmap' ),
 		);
 	}
 
@@ -194,20 +194,34 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @since 4.0.0
 	 *
 	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
 	 * @param array $options The plugin options.
 	 * @return string The current gateway key.
 	 */
 	private function _get_gateway( $options = null ) {
+		global $psts;
+
+		// if no options were passed, take it from the plugin instance
 		if ( !$options ) {
 			$options = Domainmap_Plugin::instance()->get_options();
 			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 		}
 
+		// fetch gateway information
 		$gateways = $this->_get_gateways();
-		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] ) ? $options['gateway'] : self::GATEWAY_ENOM;
+		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] )
+			? $options['gateway']
+			: self::GATEWAY_ENOM;
 
-		if ( $gateway == self::GATEWAY_PROSITES && !function_exists( 'is_pro_site' ) ) {
-			$gateway = self::GATEWAY_ENOM;
+		// if paypal gateway is selected, then check if it is available
+		if ( $gateway == self::GATEWAY_PROSITES ) {
+			$paypal_class = 'ProSites_Gateway_PayPalExpressPro';
+			$pro_gateways = $psts->get_setting( 'gateways_enabled' ) ;
+
+			// if prosites is not activated or paypal gateway is not activated, then use eNom gateway
+			if ( !$psts || !in_array( $paypal_class, (array)$pro_gateways ) || !class_exists( $paypal_class ) ) {
+				$gateway = self::GATEWAY_ENOM;
+			}
 		}
 
 		return $gateway;
@@ -236,62 +250,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$options = Domainmap_Plugin::instance()->get_options();
 		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 
-		$uid = isset( $options['uid'] ) ? $options['uid'] : '';
-		$pwd = isset( $options['pwd'] ) ? str_shuffle( $options['pwd'] ) : '';
-		$pwd_hash = sha1( $pwd );
-
-		$gateways = $this->_get_gateways();
-		$gateway = $this->_get_gateway( $options );
-
-		?><div id="domainmapping-enom-header">
-			<div id="domainmapping-enom-logo"></div>
-		</div>
-
-		<?php if ( isset( $options['valid'] ) && $options['valid'] == false ) : ?>
-		<div class="domainmapping-info domainmapping-info-error">
-			<?php _e( 'Looks like your credentials are invalid. Please, enter valid credentials and resave the form.', 'domainmap' ) ?>
-		</div>
-		<?php endif; ?>
-
-		<?php if ( $gateway == self::GATEWAY_ENOM ) : ?>
-		<div class="domainmapping-info domainmapping-info-warning"><?php
-			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom.', 'domainmap' )
-		?></div>
-		<?php endif; ?>
-
-		<div class="domainmapping-info"><?php
-			printf(
-				__( 'Keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
-				'<a href="http://www.enom.com/help/" target="_blank">eNom Help Center</a>'
-			)
-		?></div>
-
-		<div>
-			<h4><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
-			<div>
-				<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
-				<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $uid ) ?>" autocomplete="off">
-			</div>
-			<div>
-				<label for="enom-pwd" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?></label>
-				<input type="password" id="enom-pwd" class="regular-text" name="map_reseller_enom_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
-				<input type="hidden" name="map_reseller_enom_pwd_hash" value="<?php echo $pwd_hash ?>">
-			</div>
-
-			<?php if ( function_exists( 'is_pro_site' ) ) : ?>
-			<h4><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
-			<ul>
-				<?php foreach ( $gateways as $key => $label ) : ?>
-				<li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_reseller_enom_payment" value="<?php echo esc_attr( $key ) ?>"<?php checked( $key, $gateway )  ?>>
-						<?php echo esc_html( $label ) ?>
-					</label>
-				</li>
-				<?php endforeach; ?>
-			</ul>
-			<?php endif; ?>
-		</div><?php
+		$render = new Domainmap_Render_Reseller_Enom_Settings( $options );
+		$render->gateways = $this->_get_gateways();
+		$render->gateway = $this->_get_gateway( $options );
+		$render->render();
 	}
 
 	/**
@@ -423,6 +385,237 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
 			'RegistrantPhone'            => $registrant_phone,
 			'RegistrantFax'              => $registrant_fax,
+		) );
+
+		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+
+		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			if ( !empty( $options['map_ipaddress'] ) ) {
+				$args = array(
+					'sld' => $sld,
+					'tld' => $tld,
+				);
+
+				$i = 0;
+				foreach ( explode( ',', $options['map_ipaddress'] ) as $ip ) {
+					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
+						$i++;
+						$args["HostName{$i}"] = "@";
+						$args["RecordType{$i}"] = "A";
+						$args["Address{$i}"] = $ip;
+					}
+				}
+
+				$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+				$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
+			}
+
+			return "{$sld}.{$tld}";
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns purchase form html.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global WP_User $current_user The current user object.
+	 * @param array $domain_info The information about a domain to purchase.
+	 * @return string The purchase form html.
+	 */
+	public function get_purchase_form_html( $domain_info ) {
+		global $current_user;
+
+		get_currentuserinfo();
+		$cardholder = trim( $current_user->user_firstname . ' ' . $current_user->user_lastname );
+		if ( empty( $cardholder ) ) {
+			$cardholder = __( 'Your name', 'domainmap' );
+		}
+
+		$render = new Domainmap_Render_Reseller_Enom_Purchase( $domain_info );
+		$render->cardtypes = $this->get_card_types();
+		$render->cardholder = $cardholder;
+		$render->countries = Domainmap_Plugin::instance()->get_countries();
+
+		return $render->to_html();
+	}
+
+	/**
+	 * Returns domain available response HTML with a link on purchase form or paypal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param string $sld The actual SLD.
+	 * @param string $tld The actual TLD.
+	 * @param string $purchase_link The purchase URL.
+	 * @return string Response HTML.
+	 */
+	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
+		global $psts;
+
+		$gateway = $this->_get_gateway();
+
+		if ( $gateway == self::GATEWAY_PROSITES && $psts ) {
+			$response = $this->_set_express_checkout( $this->get_tld_price( $tld ), $sld, $tld );
+			if ( !$response || !isset( $response['ACK'] ) || !isset( $response['TOKEN'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
+				return parent::get_domain_available_response( $sld, $tld, $purchase_link );
+			}
+
+			$paypal_url = $psts->get_setting( 'pypl_status' ) == 'live'
+				? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
+				: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+
+			return parent::get_domain_available_response( $sld, $tld, sprintf(
+				'<a href="%s"><b>%s</b></a>',
+				$paypal_url . urlencode( $response['TOKEN'] ),
+				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' )
+			) );
+		}
+
+		return parent::get_domain_available_response( $sld, $tld, $purchase_link );
+	}
+
+	/**
+	 * Executes SetExpressCheckout command of PayPal API and returns response.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param float $amount The price of the domain.
+	 * @param string $sld The second level domain.
+	 * @param string $tld The first level domain.
+	 * @return array The response array on success, otherwise FALSE.
+	 */
+	private function _set_express_checkout( $amount, $sld, $tld ) {
+		global $psts;
+		if ( !$psts ) {
+			return false;
+		}
+
+		$returnurl = add_query_arg( array(
+			'action' => 'domainmapping_do_express_checkout',
+			'sld'    => $sld,
+			'tld'    => $tld,
+		), admin_url( 'admin-ajax.php' ) );
+
+		return $this->_call_paypal_api( 'SetExpressCheckout', array(
+			'PAYMENTREQUEST_0_AMT'           => $amount,
+			'PAYMENTREQUEST_0_ITEMAMT'       => $amount,
+			'PAYMENTREQUEST_0_CURRENCYCODE'  => 'USD',
+			'PAYMENTREQUEST_0_DESC'          => __( 'Payment for 1 year usage of the domain name.', 'domainmap' ),
+			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+			'L_PAYMENTREQUEST_0_NAME0'       => "{$sld}.{$tld}",
+			'L_PAYMENTREQUEST_0_QTY0'        => 1,
+			'L_PAYMENTREQUEST_0_AMT0'        => $amount,
+			'LOCALECODE'                     => $psts->get_setting( 'pypl_site' ),
+			'NOSHIPPING'                     => 1,
+			'ALLOWNOTE'                      => 0,
+			'RETURNURL'                      => $returnurl,
+			'CANCELURL'                      => site_url( add_query_arg( 'token', false, wp_get_referer() ) ),
+			'HDRIMG'                         => $psts->get_setting( 'pypl_header_img' ),
+			'HDRBORDERCOLOR'                 => $psts->get_setting( 'pypl_header_border' ),
+			'HDRBACKCOLOR'                   => $psts->get_setting( 'pypl_header_back' ),
+			'PAYFLOWCOLOR'                   => $psts->get_setting( 'pypl_page_back' ),
+		) );
+	}
+
+	/**
+	 * Calls PayPal API and returns response array.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param string $method The request command.
+	 * @param array $args The array of request arguments.
+	 * @return boolean|array The response array on success, otherwise FALSE.
+	 */
+	private function _call_paypal_api( $method, array $args ) {
+		global $psts;
+		if ( !$psts ) {
+			return false;
+		}
+
+		$endpoint = $psts->get_setting( 'pypl_status' ) == 'live'
+			? "https://api-3t.paypal.com/nvp"
+			: "https://api-3t.sandbox.paypal.com/nvp";
+
+		$response = wp_remote_post( $endpoint, array(
+			'user-agent' => "Pro Sites: http://premium.wpmudev.org/project/pro-sites | PayPal Express/Pro Gateway",
+			'sslverify'  => false,
+			'timeout'    => 60,
+			'body'       => http_build_query( array_merge( array(
+				'VERSION'   => '63.0',
+				'PWD'       => $psts->get_setting( 'pypl_api_pass' ),
+				'USER'      => $psts->get_setting( 'pypl_api_user' ),
+				'SIGNATURE' => $psts->get_setting( 'pypl_api_sig' ),
+				'METHOD'    => $method,
+			), $args ) ),
+		) );
+
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
+			return false;
+		}
+
+		$nvp_response = array();
+		parse_str( wp_remote_retrieve_body( $response ), $nvp_response );
+		return $nvp_response;
+	}
+
+	/**
+	 * Completes PayPal checkout and purchase a domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return string|boolean Returns domain name on success, otherwise FALSE.
+	 */
+	public function complete_paypal_checkout() {
+		$token = filter_input( INPUT_GET, 'token' );
+		if ( !$token ) {
+			return false;
+		}
+
+		// receive checkout details
+		$details = $this->_call_paypal_api( 'GetExpressCheckoutDetails', array( 'TOKEN' => $token ) );
+		if ( !$details || !isset( $details['ACK'] ) || ( $details['ACK'] != 'Success' && $details['ACK'] != 'SuccessWithWarning' ) ) {
+			return false;
+		}
+
+		// complete checkout
+		$response = $this->_call_paypal_api( 'DoExpressCheckoutPayment', array(
+			'PAYERID'                        => $details['PAYERID'],
+			'TOKEN'                          => $details['TOKEN'],
+			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+			'PAYMENTREQUEST_0_CURRENCYCODE'  => $details['PAYMENTREQUEST_0_CURRENCYCODE'],
+			'PAYMENTREQUEST_0_AMT'           => $details['PAYMENTREQUEST_0_AMT'],
+			'PAYMENTREQUEST_0_ITEMAMT'       => $details['PAYMENTREQUEST_0_ITEMAMT'],
+			'L_PAYMENTREQUEST_0_QTY0'        => $details['L_PAYMENTREQUEST_0_QTY0'],
+			'L_PAYMENTREQUEST_0_AMT0'        => $details['L_PAYMENTREQUEST_0_AMT0'],
+			'L_PAYMENTREQUEST_0_NAME0'       => $details['L_PAYMENTREQUEST_0_NAME0'],
+			'L_PAYMENTREQUEST_0_NUMBER0'     => 0,
+		) );
+
+		if ( !$response || !isset( $response['ACK'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
+			return false;
+		}
+
+		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
+		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+			'sld'           => $sld,
+			'tld'           => $tld,
+			'UseDNS'        => 'default',
+			'UseCreditCard' => 'no',
+			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
 		) );
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );

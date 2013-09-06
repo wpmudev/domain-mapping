@@ -47,6 +47,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( 'domainmapping_check_domain', 'check_domain' );
 		$this->_add_ajax_action( 'domainmapping_purchase_domain', 'purchase_domain' );
 		$this->_add_ajax_action( 'domainmapping_get_purchase_form', 'get_purchase_form' );
+		$this->_add_ajax_action( 'domainmapping_do_express_checkout', 'complete_paypal_checkout' );
 	}
 
 	/**
@@ -96,25 +97,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 			wp_send_json_success( array(
 				'available' => $available,
 				'html'      => $available
-					? sprintf(
-						'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>%s</b> %s.<br><a class="domainmapping-purchase-link" href="%s"><b>%s</b></a></div>',
-						strtoupper( $domain ),
-						__( 'is available to purchase for', 'domainmap' ),
-						$price,
-						__( 'per year', 'domainmap' ),
-						add_query_arg( array(
-							'action' => 'domainmapping_get_purchase_form',
-							'nonce'  => wp_create_nonce( 'domainmapping_get_purchase_form' ),
-							'tld'    => $tld,
-						), admin_url( 'admin-ajax.php' ) ),
-						__( 'Purchase this domain.', 'domainmap' )
-					)
-
-					: sprintf(
-						'<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>',
-						$domain,
-						__( 'is not available to purchase', 'domainmap' )
-					),
+					? $reseller->get_domain_available_response( $sld, $tld )
+					: sprintf( '<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>', $domain, __( 'is not available to purchase', 'domainmap' ) ),
 			) );
 		} else {
 			$message = __( 'Domain name is invalid.', 'domainmap' );
@@ -129,11 +113,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 * @since 4.0.0
 	 *
 	 * @access public
-	 * @global WP_User $current_user The current user object.
 	 */
 	public function get_purchase_form() {
-		global $current_user;
-
 		self::_check_premissions( 'domainmapping_get_purchase_form' );
 
 		$reseller = $this->_plugin->get_reseller();
@@ -142,17 +123,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 			wp_send_json_error();
 		}
 
-		get_currentuserinfo();
-		$cardholder = trim( $current_user->user_firstname . ' ' . $current_user->user_lastname );
-		if ( empty( $cardholder ) ) {
-			$cardholder = __( 'Your name', 'domainmap' );
-		}
-
-		$render = new Domainmap_Render_Partial_Purchase( $info );
-		$render->cardtypes = $reseller->get_card_types();
-		$render->cardholder = $cardholder;
-		$render->countries = $this->_plugin->get_countries();
-		wp_send_json_success( array( 'html' => $render->to_html() ) );
+		wp_send_json_success( array( 'html' => $reseller->get_purchase_form_html( $info ) ) );
 	}
 
 	/**
@@ -207,6 +178,26 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		}
 
 		wp_send_json_error();
+	}
+
+	/**
+	 * Completes PayPal checkout and purcheses a domain name.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
+	public function complete_paypal_checkout() {
+		$reseller = $this->_plugin->get_reseller();
+		if ( $reseller ) {
+			$domain = $reseller->complete_paypal_checkout();
+			if ( $domain ) {
+				$this->_map_domain( $domain );
+			}
+		}
+
+		wp_redirect( add_query_arg( 'page', 'domainmapping', admin_url( 'tools.php' ) ) );
+		exit;
 	}
 
 }

@@ -288,4 +288,64 @@ abstract class Domainmap_Reseller {
 		);
 	}
 
+	/**
+	 * Returns purchase form html.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @abstract
+	 * @access public
+	 * @param array $domain_info The information about a domain to purchase.
+	 * @return string The purchase form html.
+	 */
+	public abstract function get_purchase_form_html( $domain_info );
+
+	/**
+	 * Returns domain available response HTML with a link on purchase form.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $sld The actual SLD.
+	 * @param string $tld The actual TLD.
+	 * @param string $purchase_link The purchase URL.
+	 * @return string Response HTML.
+	 */
+	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
+		if ( !$purchase_link ) {
+			$purchase_link = add_query_arg( array(
+				'action' => 'domainmapping_get_purchase_form',
+				'nonce'  => wp_create_nonce( 'domainmapping_get_purchase_form' ),
+				'tld'    => $tld,
+			), admin_url( 'admin-ajax.php' ) );
+
+			$purchase_link = sprintf(
+				'<a class="domainmapping-purchase-link" href="%s"><b>%s</b></a>',
+				$purchase_link,
+				__( 'Purchase this domain.', 'domainmap' )
+			);
+		}
+
+		return sprintf(
+			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<br>%s</div>',
+			strtoupper( "{$sld}.{$tld}" ),
+			__( 'is available to purchase for', 'domainmap' ),
+			$this->get_tld_price( $tld ),
+			__( 'per year', 'domainmap' ),
+			$purchase_link
+		);
+	}
+
+	/**
+	 * Completes PayPal checkout and purchase a domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return string|boolean Returns domain name on success, otherwise FALSE.
+	 */
+	public function complete_paypal_checkout() {
+		return false;
+	}
+
 }

@@ -40,7 +40,14 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 	 */
 	protected function _render_tab() {
 		wp_enqueue_script( 'jquery-payment' );
+
 		$tlds = $this->reseller->get_tld_list();
+
+		$predefined_sld = trim( filter_input( INPUT_GET, 'sld' ) );
+		$predefined_tld = trim( filter_input( INPUT_GET, 'tld' ) );
+		if ( !in_array( $predefined_tld, $tlds ) ) {
+			$predefined_tld = 'com';
+		}
 
 		?><p class="domainmapping-info"><?php
 			_e( 'If you want to buy an unique domain name and map it to your site, then you can do it on this page. Check whether desired domain name is available, and if it is, just fill in payment details and purchase it. New domain will be bought and mapped to your site. All necessary DNS records will be setup automatically.', 'domainmap' )
@@ -55,10 +62,10 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 					<input type="hidden" name="action" value="domainmapping_check_domain">
 					<input type="text" class="domainmapping-input-prefix" readonly disabled value="http://">
 					<div class="domainmapping-controls-wrapper">
-						<input type="text" class="domainmapping-input-domain" autofocus name="sld">
+						<input type="text" class="domainmapping-input-domain" autofocus name="sld" value="<?php echo esc_attr( $predefined_sld ) ?>">
 						<select name="tld" class="domainmapping-select-domain">
 							<?php foreach ( $tlds as $tld ) : ?>
-							<option<?php selected( $tld, 'com' ) ?> value="<?php echo esc_attr( $tld ) ?>">.<?php echo esc_html( $tld ) ?></option>
+							<option<?php selected( $tld, $predefined_tld ) ?> value="<?php echo esc_attr( $tld ) ?>">.<?php echo esc_html( $tld ) ?></option>
 							<?php endforeach; ?>
 						</select>
 					</div>
