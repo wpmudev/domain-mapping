@@ -38,6 +38,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	const COMMAND_PURCHASE     = 'Purchase';
 	const COMMAND_SET_HOSTS    = 'SetHosts';
 
+	const GATEWAY_ENOM     = 'enom';
+	const GATEWAY_PROSITES = 'prosites';
+
 	/**
 	 * Returns reseller internal id.
 	 *
@@ -119,10 +122,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			$options[self::RESELLER_ID] = array();
 		}
 
+		// user name
 		$uid = trim( filter_input( INPUT_POST, 'map_reseller_enom_uid' ) );
 		$need_health_check = !isset( $options[self::RESELLER_ID]['uid'] ) || $options[self::RESELLER_ID]['uid'] != $uid;
 		$options[self::RESELLER_ID]['uid'] = $uid;
 
+		// password
 		$pwd = filter_input( INPUT_POST, 'map_reseller_enom_pwd' );
 		$pwd_hash = filter_input( INPUT_POST, 'map_reseller_enom_pwd_hash' );
 		if ( $pwd_hash != sha1( $pwd ) ) {
@@ -130,6 +135,16 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			$need_health_check = true;
 		}
 
+		// payment gateway
+		$gateway = filter_input( INPUT_POST, 'map_reseller_enom_payment' );
+		if ( $gateway !== false ) {
+			$gateways = $this->_get_gateways();
+			if ( isset( $gateways[$gateway] ) ) {
+				$options[self::RESELLER_ID]['gateway'] = $gateway;
+			}
+		}
+
+		// validate credentials
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
 			? $this->_validate_credentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] )
 			: true;
@@ -159,6 +174,46 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	}
 
 	/**
+	 * Returns the array of payments gateways supported by reseller.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @return array The associative array of payment gateways.
+	 */
+	private function _get_gateways() {
+		return array(
+			self::GATEWAY_ENOM     => __( 'eNom credit card processing services', 'domainmap' ),
+			self::GATEWAY_PROSITES => __( 'Pro Sites payment gateway', 'domainmap' ),
+		);
+	}
+
+	/**
+	 * Returns current reseller payment gateway.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param array $options The plugin options.
+	 * @return string The current gateway key.
+	 */
+	private function _get_gateway( $options = null ) {
+		if ( !$options ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
+		}
+
+		$gateways = $this->_get_gateways();
+		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] ) ? $options['gateway'] : self::GATEWAY_ENOM;
+
+		if ( $gateway == self::GATEWAY_PROSITES && !function_exists( 'is_pro_site' ) ) {
+			$gateway = self::GATEWAY_ENOM;
+		}
+
+		return $gateway;
+	}
+
+	/**
 	 * Returns reseller title.
 	 *
 	 * @since 4.0.0
@@ -185,8 +240,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$pwd = isset( $options['pwd'] ) ? str_shuffle( $options['pwd'] ) : '';
 		$pwd_hash = sha1( $pwd );
 
-		?>
-		<div id="domainmapping-enom-header">
+		$gateways = $this->_get_gateways();
+		$gateway = $this->_get_gateway( $options );
+
+		?><div id="domainmapping-enom-header">
 			<div id="domainmapping-enom-logo"></div>
 		</div>
 
@@ -196,21 +253,21 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		</div>
 		<?php endif; ?>
 
-		<div class="domainmapping-info"><?php
-			_e( 'Pay attention that if you want to use eNom credit card processing services, this service is available only to resellers who have entered into a credit card processing agreement with eNom.', 'domainmap' )
+		<?php if ( $gateway == self::GATEWAY_ENOM ) : ?>
+		<div class="domainmapping-info domainmapping-info-warning"><?php
+			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom.', 'domainmap' )
 		?></div>
+		<?php endif; ?>
 
 		<div class="domainmapping-info"><?php
 			printf(
-				__( 'Also keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
+				__( 'Keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
 				'<a href="http://www.enom.com/help/" target="_blank">eNom Help Center</a>'
 			)
 		?></div>
 
 		<div>
-			<p>
-				<?php _e( 'In case to use eNom provider, please, enter your account id and password in the fields below.', 'domainmap' ) ?>
-			</p>
+			<h4><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
 			<div>
 				<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
 				<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $uid ) ?>" autocomplete="off">
@@ -220,6 +277,20 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 				<input type="password" id="enom-pwd" class="regular-text" name="map_reseller_enom_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
 				<input type="hidden" name="map_reseller_enom_pwd_hash" value="<?php echo $pwd_hash ?>">
 			</div>
+
+			<?php if ( function_exists( 'is_pro_site' ) ) : ?>
+			<h4><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
+			<ul>
+				<?php foreach ( $gateways as $key => $label ) : ?>
+				<li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_reseller_enom_payment" value="<?php echo esc_attr( $key ) ?>"<?php checked( $key, $gateway )  ?>>
+						<?php echo esc_html( $label ) ?>
+					</label>
+				</li>
+				<?php endforeach; ?>
+			</ul>
+			<?php endif; ?>
 		</div><?php
 	}
 

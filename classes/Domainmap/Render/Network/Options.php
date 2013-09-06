@@ -191,36 +191,38 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access public
 	 */
 	private function _render_pro_site() {
-		if ( function_exists( 'is_pro_site' ) ) : ?>
-			<h4><?php _e( 'Restricted Access', 'domainmap' ) ?></h4>
-			<p><?php _e( 'Make this functionality only available to certain Pro Sites levels', 'domainmap' ) ?></p>
+		if ( !function_exists( 'is_pro_site' ) ) {
+			return;
+		}
 
-			<table>
-				<tr>
-					<td valign="top">
-						<strong><?php _e( "Select Pro Sites Levels: ", 'domainmap' ) ?></strong>
-					</td>
-					<td valign="top">
-						<ul style="margin-top: 0"><?php
-							$levels = (array)get_site_option( 'psts_levels' );
-							if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
-								$keys = array_keys( $levels );
-								$this->map_supporteronly = array( $keys[0] );
-							endif;
+		?><h4><?php _e( 'Restricted Access', 'domainmap' ) ?></h4>
+		<p><?php _e( 'Make this functionality only available to certain Pro Sites levels', 'domainmap' ) ?></p>
 
-							foreach ( $levels as $level => $value ) :
-								?><li>
-									<label>
-										<input type="checkbox" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
-										<?php echo $level, ': ', esc_html( $value['name'] ) ?>
-									</label>
-								</li><?php
-							endforeach;
-						?></ul>
-					</td>
-				</tr>
-			</table>
-		<?php endif;
+		<table>
+			<tr>
+				<td valign="top">
+					<strong><?php _e( "Select Pro Sites Levels: ", 'domainmap' ) ?></strong>
+				</td>
+				<td valign="top">
+					<ul style="margin-top: 0"><?php
+						$levels = (array)get_site_option( 'psts_levels' );
+						if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
+							$keys = array_keys( $levels );
+							$this->map_supporteronly = array( $keys[0] );
+						endif;
+
+						foreach ( $levels as $level => $value ) :
+							?><li>
+								<label>
+									<input type="checkbox" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
+									<?php echo $level, ': ', esc_html( $value['name'] ) ?>
+								</label>
+							</li><?php
+						endforeach;
+					?></ul>
+				</td>
+			</tr>
+		</table><?php
 	}
 
 }
