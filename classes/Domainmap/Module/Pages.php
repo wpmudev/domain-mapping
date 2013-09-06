@@ -240,13 +240,21 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			case 'reseller-log-view':
 				$item = filter_input( INPUT_GET, 'items', FILTER_VALIDATE_INT );
 				if ( wp_verify_nonce( $nonce, $nonce_action ) && $item ) {
-					@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
-					@header( 'Content-Disposition: inline; filename="' . $item . '-request-log.json"' );
-					echo $this->_wpdb->get_var( sprintf(
-						'SELECT response FROM %s WHERE id = %d',
-						DOMAINMAP_TABLE_RESELLER_LOG,
-						$item
-					) );
+					$log = $this->_wpdb->get_row( sprintf( 'SELECT * FROM %s WHERE id = %d', DOMAINMAP_TABLE_RESELLER_LOG, $item ) );
+					if ( !$log ) {
+						status_header( 404 );
+					} else {
+						@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+						@header( sprintf(
+							'Content-Disposition: inline; filename="%s-%s-%d-%s-request.json"',
+							parse_url( home_url(), PHP_URL_HOST ),
+							$log->provider,
+							$log->id,
+							preg_replace( '/\D+/', '', $log->requested_at )
+						) );
+
+						echo $log->response;
+					}
 					exit;
 				}
 				break;
