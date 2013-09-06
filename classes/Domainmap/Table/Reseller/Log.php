@@ -265,4 +265,18 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		) );
 	}
 
+	/**
+	 * Generates content for a single row of the table.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param arra $item The current item.
+	 */
+	public function single_row( $item ) {
+		echo '<tr class="domainmapping-log-item-', ( $item['valid'] ? 'valid' : 'invalid' ), '">';
+			$this->single_row_columns( $item );
+		echo '</tr>';
+	}
+
 }

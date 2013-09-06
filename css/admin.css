@@ -557,3 +557,11 @@ input.domainmapping-radio {
     font-size: 14px;
     line-height: 21px
 }
+
+.domainmapping-log-item-invalid {
+	background-color: #fee;
+}
+
+.domainmapping-log-item-valid {
+	background-color: #efe;
+}
