@@ -68,7 +68,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 		?></div>
 
 		<div>
-			<h4><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
+			<h4 class="domainmapping-block-header"><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
 			<div>
 				<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
 				<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
@@ -80,7 +80,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 			</div>
 
 			<?php if ( $psts && in_array( 'ProSites_Gateway_PayPalExpressPro', $psts->get_setting( 'gateways_enabled' ) ) ) : ?>
-			<h4><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
+			<h4 class="domainmapping-block-header"><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
 			<ul>
 				<?php foreach ( $this->gateways as $key => $label ) : ?>
 				<li>

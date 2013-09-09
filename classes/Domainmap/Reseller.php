@@ -327,7 +327,7 @@ abstract class Domainmap_Reseller {
 		}
 
 		return sprintf(
-			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<br>%s</div>',
+			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<br>%s<div class="domainmapping-clear"></div></div>',
 			strtoupper( "{$sld}.{$tld}" ),
 			__( 'is available to purchase for', 'domainmap' ),
 			$this->get_tld_price( $tld ),

@@ -40,7 +40,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 */
 	private function _get_mapping_options() {
 		return array(
-			'user'     => __( 'domain entered by the user', 'domainmap' ),
+			'user'     => __( 'domain entered by an user', 'domainmap' ),
 			'mapped'   => __( 'mapped domain', 'domainmap' ),
 			'original' => __( 'original domain', 'domainmap' ),
 		);
@@ -120,7 +120,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			$ips = wp_list_pluck( dns_get_record( $this->basedomain, DNS_A ), 'ip' );
 		}
 
-		?><h4><?php _e( 'Domain mapping Configuration', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Domain mapping Configuration', 'domainmap' ) ?></h4>
 		<p>
 			<?php _e( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) ?><br>
 			<?php _e( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) ?>
@@ -137,10 +137,12 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		</div>
 		<?php endif; ?>
 
-		<p>
-			<?php _e( "Server IP Address: ", 'domainmap' ) ?>
-			<input type="text" name="map_ipaddress" class="regular-text" value="<?php echo esc_attr( $this->map_ipaddress ) ?>">
-		</p><?php
+		<div>
+			<label><?php _e( "Server IP Address: ", 'domainmap' ) ?></label>
+			<div>
+				<input type="text" name="map_ipaddress" class="regular-text" value="<?php echo esc_attr( $this->map_ipaddress ) ?>">
+			</div>
+		</div><?php
 	}
 
 	/**
@@ -151,16 +153,22 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access public
 	 */
 	private function _render_administration_mapping() {
-		?><h4><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
-		<p><?php _e( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) ?></p>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e('The domain used for the administration area should be the', 'domainmap') ?>
-			<select name='map_admindomain'>
-				<?php foreach ( $this->_get_mapping_options() as $map => $label ) : ?>
-				<option value="<?php echo $map ?>"<?php selected( $map, $this->map_admindomain ) ?>><?php echo $label ?></option>
-				<?php endforeach; ?>
-			</select>
-		</p><?php
+			<?php _e( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) ?><br>
+			<?php _e( 'Select the domain, what should be used for the administration area:', 'domainmap' ) ?>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $this->_get_mapping_options() as $map => $label ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_admindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_admindomain ) ?>>
+						<?php echo $label ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul><?php
 	}
 
 	/**
@@ -171,16 +179,22 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access public
 	 */
 	private function _render_login_mapping() {
-		?><h4><?php _e( 'Login mapping', 'domainmap' ) ?></h4>
-		<p><?php _e( "The settings below allow you to control how the domain mapping plugin operates with the login area.", 'domainmap' ) ?></p>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Login mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( 'The domain used for the login area should be the', 'domainmap' ) ?>
-			<select name="map_logindomain">
-				<?php foreach ( $this->_get_mapping_options() as $map => $label ) : ?>
-				<option value="<?php echo $map ?>"<?php selected( $map, $this->map_logindomain ) ?>><?php echo $label ?></option>
-				<?php endforeach; ?>
-			</select>
-		</p><?php
+			<?php _e( 'The settings below allow you to control how the domain mapping plugin operates with the login area.', 'domainmap' ) ?><br>
+			<?php _e( 'Select the domain, what should be used for the login area:', 'domainmap' ) ?>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $this->_get_mapping_options() as $map => $label ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_logindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_logindomain ) ?>>
+						<?php echo $label ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul><?php
 	}
 
 	/**
@@ -195,34 +209,25 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			return;
 		}
 
-		?><h4><?php _e( 'Restricted Access', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Select Pro Sites Levels:', 'domainmap' ) ?></h4>
 		<p><?php _e( 'Make this functionality only available to certain Pro Sites levels', 'domainmap' ) ?></p>
 
-		<table>
-			<tr>
-				<td valign="top">
-					<strong><?php _e( "Select Pro Sites Levels: ", 'domainmap' ) ?></strong>
-				</td>
-				<td valign="top">
-					<ul style="margin-top: 0"><?php
-						$levels = (array)get_site_option( 'psts_levels' );
-						if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
-							$keys = array_keys( $levels );
-							$this->map_supporteronly = array( $keys[0] );
-						endif;
+		<ul class="domainmapping-compressed-list"><?php
+			$levels = (array)get_site_option( 'psts_levels' );
+			if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
+				$keys = array_keys( $levels );
+				$this->map_supporteronly = array( $keys[0] );
+			endif;
 
-						foreach ( $levels as $level => $value ) :
-							?><li>
-								<label>
-									<input type="checkbox" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
-									<?php echo $level, ': ', esc_html( $value['name'] ) ?>
-								</label>
-							</li><?php
-						endforeach;
-					?></ul>
-				</td>
-			</tr>
-		</table><?php
+			foreach ( $levels as $level => $value ) :
+				?><li>
+					<label>
+						<input type="checkbox" class="domainmapping-radio" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
+						<?php echo $level, ': ', esc_html( $value['name'] ) ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul><?php
 	}
 
 }

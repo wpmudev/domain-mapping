@@ -471,10 +471,16 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 				? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
 				: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
 
+			$locale = apply_filters( 'domainmap_locale', get_locale() );
+			if ( !preg_match( '/^[a-z]{2}_[A-Z]{2}$/', $locale ) ) {
+				$locale = 'en_US';
+			}
+
 			return parent::get_domain_available_response( $sld, $tld, sprintf(
-				'<a href="%s"><b>%s</b></a>',
+				'<a class="domainmapping-purchase-paypal-link" href="%1$s" title="%2$s"><img src="http://www.paypalobjects.com/%3$s/i/btn/btn_buynow_LG.gif" alt="%2$s"></a>',
 				$paypal_url . urlencode( $response['TOKEN'] ),
-				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' )
+				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' ),
+				$locale
 			) );
 		}
 

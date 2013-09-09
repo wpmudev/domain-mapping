@@ -362,8 +362,8 @@ input.domainmapping-radio {
 .domainmapping-reseller-settings {
     display: none;
     margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px dashed #ddd
+/*    padding-top: 20px;
+    border-top: 1px dashed #ddd*/
 }
 
 .domainmapping-reseller-settings.active {
@@ -564,4 +564,26 @@ input.domainmapping-radio {
 
 .domainmapping-log-item-valid {
 	background-color: #efe;
+}
+
+.domainmapping-purchase-paypal-link {
+	margin-top: 5px;
+	height: 26px;
+	display: block;
+	float: left;
+}
+
+.domainmapping-compressed-list {
+	margin: 0;
+}
+
+.domainmapping-compressed-list > li {
+	margin: 0;
+	padding: 0;
+}
+
+.domainmapping-block-header {
+	border-bottom: 1px dashed #ddd;
+	margin: 40px 0 10px;
+	padding-bottom: 10px;
 }

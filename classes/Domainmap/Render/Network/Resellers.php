@@ -61,7 +61,20 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 			Domainmap_Reseller::LOG_LEVEL_DISABLED => __( 'Disable loggin', 'domainmap' ),
 		);
 
-		?><h4><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Select reseller API requests log level:', 'domainmap' ) ?></h4>
+
+		<ul><?php
+			foreach ( $log_levels as $level => $label ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_reseller_log"<?php checked( $level, (int)$this->map_reseller_log ) ?> value="<?php echo esc_attr( $level ) ?>">
+						<?php echo esc_html( $label ) ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul>
+
+		<h4 class="domainmapping-block-header"><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
 
 		<ul class="domainmapping-resellers-switch"><?php
 			foreach ( $this->resellers as $hash => $reseller ) :
@@ -80,20 +93,7 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 					<?php _e( "Don't use any", 'domainmap' ) ?>
 				</label>
 			</li>
-		</ul>
-
-		<h4><?php _e( 'Select reseller API requests log level:', 'domainmap' ) ?></h4>
-
-		<ul><?php
-			foreach ( $log_levels as $level => $label ) :
-				?><li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_reseller_log"<?php checked( $level, (int)$this->map_reseller_log ) ?> value="<?php echo esc_attr( $level ) ?>">
-						<?php echo esc_html( $label ) ?>
-					</label>
-				</li><?php
-			endforeach;
-		?></ul><?php
+		</ul><?php
 
 		foreach ( $this->resellers as $hash => $reseller ) :
 			?><div id="reseller-<?php echo $hash ?>" class="domainmapping-reseller-settings<?php echo $selected == $hash ? ' active' :'' ?>">
