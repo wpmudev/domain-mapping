@@ -41,6 +41,7 @@ abstract class Domainmap_Reseller {
 	const REQUEST_GET_RETAIL_PRICE     = 4;
 	const REQUEST_PURCHASE_DOMAIN      = 5;
 	const REQUEST_SET_DNS_RECORDS      = 6;
+	const REQUEST_GET_EXT_ATTRIBUTES   = 7;
 
 	const LOG_LEVEL_DISABLED = 0;
 	const LOG_LEVEL_ERRORS   = 1;
@@ -283,6 +284,7 @@ abstract class Domainmap_Reseller {
 			self::REQUEST_CHECK_DOMAIN         => __( 'Check domain availability', 'domainmap' ),
 			self::REQUEST_GET_TLD_LIST         => __( 'Get TLD list', 'domainmap' ),
 			self::REQUEST_GET_RETAIL_PRICE     => __( 'Get retail price', 'domainmap' ),
+			self::REQUEST_GET_EXT_ATTRIBUTES   => __( 'Get extended attributes', 'domainmap' ),
 			self::REQUEST_PURCHASE_DOMAIN      => __( 'Purchase domain', 'domainmap' ),
 			self::REQUEST_SET_DNS_RECORDS      => __( 'Set DNS record', 'domainmap' ),
 		);

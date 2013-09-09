@@ -32,11 +32,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	const RESELLER_ID            = 'enom';
 	const RESELLER_API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp?';
 
-	const COMMAND_CHECK        = 'Check';
-	const COMMAND_GET_TLD_LIST = 'GetTLDList';
-	const COMMAND_RETAIL_PRICE = 'PE_GetRetailPrice';
-	const COMMAND_PURCHASE     = 'Purchase';
-	const COMMAND_SET_HOSTS    = 'SetHosts';
+	const COMMAND_CHECK              = 'Check';
+	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
+	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
+	const COMMAND_PURCHASE           = 'Purchase';
+	const COMMAND_SET_HOSTS          = 'SetHosts';
+	const COMMAND_GET_EXT_ATTRIBUTES = 'GetExtAttributes';
 
 	const GATEWAY_ENOM     = 'enom';
 	const GATEWAY_PROSITES = 'prosites';
@@ -99,7 +100,11 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @param int $type The request type.
 	 * @param SimpleXMLElement $response The response information, received on request.
 	 */
-	private function _log_enom_request( $type, SimpleXMLElement $xml ) {
+	private function _log_enom_request( $type, $xml ) {
+		if ( !is_object( $xml ) ) {
+			return;
+		}
+
 		$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
 		$errors = array();
 		if ( !$valid && isset( $xml->errors ) ) {
@@ -385,7 +390,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
 			'RegistrantPhone'            => $registrant_phone,
 			'RegistrantFax'              => $registrant_fax,
-		) );
+		) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
@@ -440,8 +445,43 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$render->cardtypes = $this->get_card_types();
 		$render->cardholder = $cardholder;
 		$render->countries = Domainmap_Plugin::instance()->get_countries();
+		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
 
 		return $render->to_html();
+	}
+
+	/**
+	 * Returns extended attributes for specific TLD.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $tld The TLD name.
+	 */
+	private function _get_extended_attributes( $tld ) {
+		$transient = "domainmap-ext-attributes-{$tld}";
+		$attributes = get_transient( $transient );
+		if ( $attributes !== false ) {
+			return $attributes;
+		}
+
+		$attributes = array();
+		$response = $this->_exec_command( self::COMMAND_GET_EXT_ATTRIBUTES, array( 'TLD' => $tld ) );
+		$this->_log_enom_request( self::REQUEST_GET_EXT_ATTRIBUTES, $response );
+
+		$response = json_decode( json_encode( $response ), true );
+		if ( !empty( $response['Attributes']['Attribute'] ) && is_array( $response['Attributes']['Attribute'] ) ) {
+			foreach ( $response['Attributes']['Attribute'] as $attribute ) {
+				if ( $attribute['Application'] == 2 ) {
+					$attribute['Options'] = $attribute['Options']['Option'];
+					$attributes[] = $attribute;
+				}
+			}
+		}
+
+		set_transient( $transient, $attributes, DAY_IN_SECONDS );
+
+		return $attributes;
 	}
 
 	/**

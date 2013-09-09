@@ -59,6 +59,7 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render {
 					<?php $this->_render_card_fields() ?>
 					<?php $this->_render_billing_fields() ?>
 					<?php $this->_render_registrant_fields() ?>
+					<?php $this->_render_extra_fields() ?>
 
 					<p>&nbsp;</p>
 
@@ -229,6 +230,47 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render {
 			<label for="registrant_fax" class="domainmapping-label"><?php _e( 'Fax:', 'domainmap' ) ?></label>
 			<input type="text" id="registrant_fax" name="registrant_fax" maxlength="20" x-autocompletetype="fax">
 		</p><?php
+	}
+
+	/**
+	 * Renders extra attributes fields.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_extra_fields() {
+		if ( empty( $this->ext_attributes ) ) {
+			return;
+		}
+
+
+		?><h4><i class="icon-asterisk"></i> <?php _e( 'Additional Registrar Information', 'domainmap' ) ?></h4><?php
+
+		foreach ( $this->ext_attributes as $attribute ) :
+			$e_att_name = esc_attr( $attribute['Name'] );
+			$required = $required_ast = '';
+			if ( $attribute['Required'] > 0 ) :
+				$required = ' required';
+				$required_ast = ' <span class="domainmapping-field-required">*</span>';
+			endif;
+
+			?><p>
+				<label for="extendedettributes_<?php echo $e_att_name ?>" class="domainmapping-label">
+					<?php echo esc_html( $attribute['Description'] ) ?>:<?php echo $required_ast ?>
+				</label>
+
+				<?php if ( !empty( $attribute['Options'] ) ) : ?>
+					<select id="extendedettributes_<?php echo $e_att_name ?>" name="ExtendedAttributes[<?php echo $e_att_name ?>]"<?php echo $required ?>>
+						<?php foreach ( $attribute['Options'] as $option ) : ?>
+						<option value="<?php echo esc_attr( $option['Value'] ) ?>"><?php echo esc_html( $option['Title'] ) ?></option>
+						<?php endforeach; ?>
+					</select>
+				<?php else : ?>
+				<input type="text" id="extendedettributes_<?php echo $e_att_name ?>" name="ExtendedAttributes[<?php echo $e_att_name ?>]"<?php echo $required ?>>
+				<?php endif; ?>
+			</p><?php
+		endforeach;
 	}
 
 }
