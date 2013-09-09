@@ -172,6 +172,7 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 	public function get_views() {
 		global $wpdb;
 
+		$type = $this->_get_type_filter();
 		$valid = filter_input( INPUT_GET, 'valid', FILTER_VALIDATE_INT, array(
 			'options' => array(
 				'min_range' => 0,
@@ -188,9 +189,10 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 				!isseT( $_GET['valid'] ) ? ' class="current"' : '',
 				__( 'All', 'domainmap' ),
 				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s'",
+					"SELECT COUNT(*) FROM %s WHERE provider = '%s'%s",
 					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider
+					$provider,
+					$type !== false ? ' AND type = ' . $type : ''
 				) ) )
 			),
 			'valid' => sprintf(
@@ -199,9 +201,10 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 				$valid > 0 ? ' class="current"' : '',
 				__( 'Success', 'domainmap' ),
 				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid > 0",
+					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid > 0%s",
 					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider
+					$provider,
+					$type !== false ? ' AND type = ' . $type : ''
 				) ) )
 			),
 			'invalid' => sprintf(
@@ -210,12 +213,32 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 				$valid === 0 ? ' class="current"' : '',
 				__( 'Failed', 'domainmap' ),
 				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid = 0",
+					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid = 0%s",
 					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider
+					$provider,
+					$type !== false ? ' AND type = ' . $type : ''
 				) ) )
 			),
 		);
+	}
+
+	/**
+	 * Returns type filter value.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @return int Request type filter value.
+	 */
+	private function _get_type_filter() {
+		$types = array_keys( Domainmap_Reseller::get_request_types() );
+		return filter_input( INPUT_GET, 'type', FILTER_VALIDATE_INT, array(
+			'options' => array(
+				'min_range' => min( $types ),
+				'max_range' => max( $types ),
+				'default'   => false,
+			),
+		) );
 	}
 
 	/**
@@ -232,6 +255,7 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		parent::prepare_items();
 
 		$per_page = 20;
+		$type = $this->_get_type_filter();
 		$valid = filter_input( INPUT_GET, 'valid', FILTER_VALIDATE_INT, array(
 			'options' => array(
 				'min_range' => 0,
@@ -244,7 +268,7 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 			SELECT SQL_CALC_FOUND_ROWS l.id, l.user_id, l.requested_at, l.type, l.valid, l.errors, u.display_name AS user_name
 			  FROM %s AS l
 			  LEFT JOIN %s AS u ON u.ID = l.user_id
-			 WHERE l.provider = '%s' %s
+			 WHERE l.provider = '%s' %s %s
 			 ORDER BY l.id DESC
 			 LIMIT %d
 			OFFSET %d
@@ -253,6 +277,7 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 			$wpdb->users,
 			esc_sql( $this->_args['reseller'] ),
 			$valid !== false ? 'AND l.valid = ' . $valid : '',
+			$type !== false ? 'AND l.type = ' . $type : '',
 			$per_page,
 			( $this->get_pagenum() - 1 ) * $per_page
 		), ARRAY_A );
@@ -277,6 +302,37 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		echo '<tr class="domainmapping-log-item-', ( $item['valid'] ? 'valid' : 'invalid' ), '">';
 			$this->single_row_columns( $item );
 		echo '</tr>';
+	}
+
+	/**
+	 * Extra controls to be displayed between bulk actions and pagination
+	 *
+	 * @since 3.1.0
+	 * @access protected
+	 */
+	public function extra_tablenav( $which ) {
+		$current_type = filter_input( INPUT_GET, 'type' );
+
+		?><div class="alignleft actions"><?php
+
+		if ( 'top' == $which ) :
+			?><select name="type">
+				<option value=""><?php _e( 'Show all actions', 'domainmap' ) ?></option>
+				<?php
+					foreach ( Domainmap_Reseller::get_request_types() as $type => $label ) :
+						printf( '<option%s value="%s">%s</option>',
+							selected( $type, $current_type, false ),
+							esc_attr( $type ),
+							esc_html( $label )
+						);
+					endforeach;
+				?>
+			</select><?php
+
+			submit_button( __( 'Filter' ), 'button', false, false, array( 'id' => 'post-query-submit' ) );
+		endif;
+
+		?></div><?php
 	}
 
 }

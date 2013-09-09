@@ -278,7 +278,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 		// if noheader argument is passed, then redirect back to options page
 		if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
-			wp_safe_redirect( $redirect );
+			wp_safe_redirect( add_query_arg( 'type', isset( $_REQUEST['type'] ) ? $_REQUEST['type'] : false, $redirect ) );
 			exit;
 		}
 	}
