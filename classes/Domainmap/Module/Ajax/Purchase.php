@@ -46,6 +46,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		// add ajax actions
 		$this->_add_ajax_action( 'domainmapping_check_domain', 'check_domain' );
 		$this->_add_ajax_action( 'domainmapping_purchase_domain', 'purchase_domain' );
+		$this->_add_ajax_action( 'domainmapping_purchase_with_paypal', 'purchase_with_paypal' );
 		$this->_add_ajax_action( 'domainmapping_get_purchase_form', 'get_purchase_form' );
 		$this->_add_ajax_action( 'domainmapping_do_express_checkout', 'complete_paypal_checkout' );
 	}
@@ -124,6 +125,23 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		}
 
 		wp_send_json_success( array( 'html' => $reseller->get_purchase_form_html( $info ) ) );
+	}
+
+	/**
+	 * Proceeds PayPal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
+	public function purchase_with_paypal() {
+		$reseller = $this->_plugin->get_reseller();
+		if ( $reseller ) {
+			$reseller->proceed_paypal_checkout();
+		}
+
+		wp_redirect( wp_get_referer() );
+		exit;
 	}
 
 	/**

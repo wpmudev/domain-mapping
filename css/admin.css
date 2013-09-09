@@ -587,3 +587,15 @@ input.domainmapping-radio {
 	margin: 40px 0 10px;
 	padding-bottom: 10px;
 }
+
+.domainmapping-transparent-button {
+	background-color: transparent;
+	border: none;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+.domainmapping-paypal-form {
+	margin-top: 5px;
+}

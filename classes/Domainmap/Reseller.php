@@ -337,6 +337,15 @@ abstract class Domainmap_Reseller {
 	}
 
 	/**
+	 * Proceeds PayPal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
+	public function proceed_paypal_checkout() {}
+
+	/**
 	 * Completes PayPal checkout and purchase a domain.
 	 *
 	 * @since 4.0.0

@@ -462,25 +462,26 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$gateway = $this->_get_gateway();
 
 		if ( $gateway == self::GATEWAY_PROSITES && $psts ) {
-			$response = $this->_set_express_checkout( $this->get_tld_price( $tld ), $sld, $tld );
-			if ( !$response || !isset( $response['ACK'] ) || !isset( $response['TOKEN'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
-				return parent::get_domain_available_response( $sld, $tld, $purchase_link );
-			}
-
-			$paypal_url = $psts->get_setting( 'pypl_status' ) == 'live'
-				? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
-				: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
-
 			$locale = apply_filters( 'domainmap_locale', get_locale() );
 			if ( !preg_match( '/^[a-z]{2}_[A-Z]{2}$/', $locale ) ) {
 				$locale = 'en_US';
 			}
 
-			return parent::get_domain_available_response( $sld, $tld, sprintf(
-				'<a class="domainmapping-purchase-paypal-link" href="%1$s" title="%2$s"><img src="http://www.paypalobjects.com/%3$s/i/btn/btn_buynow_LG.gif" alt="%2$s"></a>',
-				$paypal_url . urlencode( $response['TOKEN'] ),
-				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' ),
-				$locale
+			return parent::get_domain_available_response( $sld, $tld, sprintf( '
+				<form class="domainmapping-paypal-form" action="%s">
+					<input type="hidden" name="action" value="domainmapping_purchase_with_paypal">
+					<input type="hidden" name="nonce" value="%s">
+					<input type="hidden" name="sld" value="%s">
+					<input type="hidden" name="tld" value="%s">
+					<button type="submit" class="domainmapping-transparent-button"><img src="http://www.paypalobjects.com/%s/i/btn/btn_buynow_LG.gif" alt="%s"></button>
+				</form>
+				',
+				admin_url( 'admin-ajax.php' ),
+				wp_create_nonce( 'domainmapping_purchase_with_paypal' ),
+				$sld,
+				$tld,
+				$locale,
+				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' )
 			) );
 		}
 
@@ -511,6 +512,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'tld'    => $tld,
 		), admin_url( 'admin-ajax.php' ) );
 
+		$cancelurl = parse_url( add_query_arg( array(
+			'token' => false,
+			'sld'   => $sld,
+			'tld'   => $tld,
+		), wp_get_referer() ) );
+
 		return $this->_call_paypal_api( 'SetExpressCheckout', array(
 			'PAYMENTREQUEST_0_AMT'           => $amount,
 			'PAYMENTREQUEST_0_ITEMAMT'       => $amount,
@@ -524,7 +531,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'NOSHIPPING'                     => 1,
 			'ALLOWNOTE'                      => 0,
 			'RETURNURL'                      => $returnurl,
-			'CANCELURL'                      => site_url( add_query_arg( 'token', false, wp_get_referer() ) ),
+			'CANCELURL'                      => site_url( "{$cancelurl['path']}?{$cancelurl['query']}" ),
 			'HDRIMG'                         => $psts->get_setting( 'pypl_header_img' ),
 			'HDRBORDERCOLOR'                 => $psts->get_setting( 'pypl_header_border' ),
 			'HDRBACKCOLOR'                   => $psts->get_setting( 'pypl_header_back' ),
@@ -573,6 +580,32 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$nvp_response = array();
 		parse_str( wp_remote_retrieve_body( $response ), $nvp_response );
 		return $nvp_response;
+	}
+
+	/**
+	 * Proceeds PayPal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 */
+	public function proceed_paypal_checkout() {
+		global $psts;
+
+		$tld = strtolower( trim( filter_input( INPUT_GET, 'tld' ) ) );
+		$sld = strtolower( trim( filter_input( INPUT_GET, 'sld' ) ) );
+		$response = $this->_set_express_checkout( $this->get_tld_price( $tld ), $sld, $tld );
+		if ( !$response || !isset( $response['ACK'] ) || !isset( $response['TOKEN'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
+			return;
+		}
+
+		$paypal_url = $psts->get_setting( 'pypl_status' ) == 'live'
+			? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
+			: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+
+		wp_redirect( $paypal_url . urlencode( $response['TOKEN'] ) );
+		exit;
 	}
 
 	/**
