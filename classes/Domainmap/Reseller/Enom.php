@@ -395,31 +395,97 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
-			$options = Domainmap_Plugin::instance()->get_options();
-			if ( !empty( $options['map_ipaddress'] ) ) {
-				$args = array(
-					'sld' => $sld,
-					'tld' => $tld,
-				);
-
-				$i = 0;
-				foreach ( explode( ',', $options['map_ipaddress'] ) as $ip ) {
-					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
-						$i++;
-						$args["HostName{$i}"] = "@";
-						$args["RecordType{$i}"] = "A";
-						$args["Address{$i}"] = $ip;
-					}
-				}
-
-				$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
-				$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
-			}
-
+			$this->_populate_dns_records( $tld, $sld );
 			return "{$sld}.{$tld}";
 		}
 
 		return false;
+	}
+
+	/**
+	 * Populates either DNS A or CNAME records for purchased domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global wpdb $wpdb The database connection.
+	 * @param string $tld The TLD name.
+	 * @param string $sld The SLD name.
+	 */
+	private function _populate_dns_records( $tld, $sld ) {
+		global $wpdb;
+
+		$ips = $args = array();
+		$options = Domainmap_Plugin::instance()->get_options();
+
+		// fetch unchanged domain name from database, because get_option function could return mapped domain name
+		$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
+
+		// if server ip addresses are provided, use it to populate DNS records
+		if ( !empty( $options['map_ipaddress'] ) ) {
+			$ips = explode( ',', $options['map_ipaddress'] );
+		}
+
+		// looks like server ip addresses are not set, then try to read it automatically
+		if ( empty( $ips ) && function_exists( 'dns_get_record' ) ) {
+			$ips = wp_list_pluck( dns_get_record( $basedomain, DNS_A ), 'ip' );
+		}
+
+		// if we have an ip address to populate DNS record, then try to detect if we use shared or dedicated hosting
+		$dedicated = false;
+		if ( !empty( $ips ) ) {
+			$check = sha1( time() );
+			$ajax_url = admin_url( 'admin-ajax.php' );
+			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
+
+			$response = wp_remote_request( add_query_arg( array(
+				'action' => 'domainmapping_heartbeat_check',
+				'check'  => $check,
+			), $ajax_url ) );
+
+			$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check;
+		}
+
+		// populate request arguments
+		if ( !empty( $ips ) ) {
+			if ( defined( 'SUBDOMAIN_INSTALL' ) && !$dedicated ) {
+				if ( SUBDOMAIN_INSTALL ) {
+					// network is hosted on shared hosting and uses subdomains for sites
+					// we can use DNS CNAME records for it
+					$args['HostName1'] = "{$sld}.{$tld}";
+					$args['RecordType1'] = 'CNAME';
+					$args['Address1'] = "{$basedomain}.";
+
+					$args['HostName2'] = "www.{$sld}.{$tld}";
+					$args['RecordType2'] = 'CNAME';
+					$args['Address2'] = "{$basedomain}.";
+				} else {
+					// network is hosted on shared hosting and uses subfolders for sites
+					// neither DNS A record nor DNS CNAME record won't work in this case
+					return;
+				}
+			} else {
+				// network is hosted on dedicated hosting and we can use DNS A records
+				$i = 0;
+				foreach ( $ips as $ip ) {
+					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
+						$i++;
+						$args["HostName{$i}"] = '@';
+						$args["RecordType{$i}"] = 'A';
+						$args["Address{$i}"] = $ip;
+					}
+				}
+			}
+		}
+
+		// setup DNS records if it has been populated
+		if ( !empty( $args ) ) {
+			$args['sld'] = $sld;
+			$args['tld'] = $tld;
+
+			$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+			$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
+		}
 	}
 
 	/**

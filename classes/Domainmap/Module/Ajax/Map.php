@@ -172,12 +172,13 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$check = sha1( time() );
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
-		$request = wp_remote_request( add_query_arg( array(
+
+		$response = wp_remote_request( add_query_arg( array(
 			'action' => 'domainmapping_heartbeat_check',
 			'check'  => $check,
 		), $ajax_url ) );
 
-		return !is_wp_error( $request ) && isset( $request['response']['code'] ) && $request['response']['code'] == 200 && isset( $request['body'] ) && $request['body'] == $check ? 1 : 0;
+		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check ? 1 : 0;
 	}
 
 	/**
