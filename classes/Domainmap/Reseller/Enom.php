@@ -766,27 +766,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
-			$options = Domainmap_Plugin::instance()->get_options();
-			if ( !empty( $options['map_ipaddress'] ) ) {
-				$args = array(
-					'sld' => $sld,
-					'tld' => $tld,
-				);
-
-				$i = 0;
-				foreach ( explode( ',', $options['map_ipaddress'] ) as $ip ) {
-					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
-						$i++;
-						$args["HostName{$i}"] = "@";
-						$args["RecordType{$i}"] = "A";
-						$args["Address{$i}"] = $ip;
-					}
-				}
-
-				$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
-				$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
-			}
-
+			$this->_populate_dns_records( $tld, $sld );
 			return "{$sld}.{$tld}";
 		}
 
