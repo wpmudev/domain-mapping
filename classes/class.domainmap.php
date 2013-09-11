@@ -631,9 +631,9 @@ if ( !class_exists( 'domain_map', false ) ) :
 				$s = $this->db->suppress_errors();
 
 				// Get the mapped domain
-				$newdomain = $this->db->get_var( sprintf( "SELECT domain FROM %s WHERE domain = %s AND blog_id = %d LIMIT 1", $this->dmtable, $_SERVER['HTTP_HOST'], $this->db->blogid ) );
+				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
 				if ( empty( $newdomain ) ) {
-					$newdomain = $this->db->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d LIMIT 1", $this->dmtable, $this->db->blogid ) );
+					$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d LIMIT 1 /* domain mapping */", $this->db->blogid ) );
 				}
 				// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
 				$olddomain = $this->db->get_var( "SELECT option_value FROM {$this->db->options} WHERE option_name = 'siteurl'" );
