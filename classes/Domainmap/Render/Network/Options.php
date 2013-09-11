@@ -40,7 +40,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 */
 	private function _get_mapping_options() {
 		return array(
-			'user'     => __( 'domain entered by an user', 'domainmap' ),
+			'user'     => __( 'domain entered by the user', 'domainmap' ),
 			'mapped'   => __( 'mapped domain', 'domainmap' ),
 			'original' => __( 'original domain', 'domainmap' ),
 		);
@@ -75,7 +75,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		}
 
 		if ( !defined( 'SUNRISE' ) ) {
-			$msg[] = "<p><strong>" . __( "If you've followed the instructions and not already added define( 'SUNRISE', 'on' ); then please do so. If you added the constant be sure to uncomment this line: //define( 'SUNRISE', 'on' ); in the wp-config.php file.", 'domainmap' ) . "</strong></p>";
+			$msg[] = "<p><strong>" . __( "If you've not already added define( 'SUNRISE', 'on' ); then please do so. If you added the constant be sure to uncomment this line: //define( 'SUNRISE', 'on' ); in the wp-config.php file.", 'domainmap' ) . "</strong></p>";
 		}
 
 		if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
@@ -129,7 +129,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<?php if ( !empty( $ips ) ) : ?>
 		<div class="domainmapping-info">
 			<p><?php
-				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch IP address(es) assigned to it. You can use folloding IP addres(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
+				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
 			?></p>
 			<p>
 				<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
@@ -155,8 +155,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_administration_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "The settings below allow you to control how the domain mapping plugin operates with the administration area.", 'domainmap' ) ?><br>
-			<?php _e( 'Select the domain, what should be used for the administration area:', 'domainmap' ) ?>
+			<?php _e( "The settings below allow you to control how the domain mapping plugin operates with the dashboard administration area.", 'domainmap' ) ?><br>
+			<?php _e( 'Select the domain that should be used for the administration area:', 'domainmap' ) ?>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -181,8 +181,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_login_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Login mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( 'The settings below allow you to control how the domain mapping plugin operates with the login area.', 'domainmap' ) ?><br>
-			<?php _e( 'Select the domain, what should be used for the login area:', 'domainmap' ) ?>
+			<?php _e( 'The settings below allow you to control how the domain mapping plugin operates login page.', 'domainmap' ) ?><br>
+			<?php _e( 'Select the domain, what should be used for the login page:', 'domainmap' ) ?>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -210,7 +210,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		}
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Select Pro Sites Levels:', 'domainmap' ) ?></h4>
-		<p><?php _e( 'Make this functionality only available to certain Pro Sites levels', 'domainmap' ) ?></p>
+		<p><?php _e( 'Make this functionality only available to certain Pro Site levels', 'domainmap' ) ?></p>
 
 		<ul class="domainmapping-compressed-list"><?php
 			$levels = (array)get_site_option( 'psts_levels' );
