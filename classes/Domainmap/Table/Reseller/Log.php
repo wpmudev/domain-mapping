@@ -173,6 +173,8 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		global $wpdb;
 
 		$type = $this->_get_type_filter();
+		$type = ( $type !== false ? ' AND type = ' . $type : '' );
+
 		$valid = filter_input( INPUT_GET, 'valid', FILTER_VALIDATE_INT, array(
 			'options' => array(
 				'min_range' => 0,
@@ -188,36 +190,21 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 				add_query_arg( array( 'valid' => false, 'paged' => false ) ),
 				!isseT( $_GET['valid'] ) ? ' class="current"' : '',
 				__( 'All', 'domainmap' ),
-				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s'%s",
-					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider,
-					$type !== false ? ' AND type = ' . $type : ''
-				) ) )
+				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s" . $type, $provider ) ) )
 			),
 			'valid' => sprintf(
 				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
 				add_query_arg( array( 'valid' => '1', 'paged' => false ) ),
 				$valid > 0 ? ' class="current"' : '',
 				__( 'Success', 'domainmap' ),
-				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid > 0%s",
-					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider,
-					$type !== false ? ' AND type = ' . $type : ''
-				) ) )
+				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s AND valid > 0" . $type, $provider ) ) )
 			),
 			'invalid' => sprintf(
 				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
 				add_query_arg( array( 'valid' => '0', 'paged' => false ) ),
 				$valid === 0 ? ' class="current"' : '',
 				__( 'Failed', 'domainmap' ),
-				intval( $wpdb->get_var( sprintf(
-					"SELECT COUNT(*) FROM %s WHERE provider = '%s' AND valid = 0%s",
-					DOMAINMAP_TABLE_RESELLER_LOG,
-					$provider,
-					$type !== false ? ' AND type = ' . $type : ''
-				) ) )
+				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s AND valid = 0" . $type, $provider ) ) )
 			),
 		);
 	}
@@ -255,31 +242,24 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		parent::prepare_items();
 
 		$per_page = 20;
-		$type = $this->_get_type_filter();
-		$valid = filter_input( INPUT_GET, 'valid', FILTER_VALIDATE_INT, array(
-			'options' => array(
-				'min_range' => 0,
-				'max_range' => 1,
-				'default'   => false,
-			),
-		) );
+		$offset = ( $this->get_pagenum() - 1 ) * $per_page;
 
-		$this->items = $wpdb->get_results( sprintf( "
+		$type = $this->_get_type_filter();
+		$type = $type !== false ? ' AND l.type = ' . $type : '';
+
+		$valid = filter_input( INPUT_GET, 'valid', FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 0, 'max_range' => 1, 'default' => false ) ) );
+		$valid = $valid !== false ? ' AND l.valid = ' . $valid : '';
+
+		$this->items = $wpdb->get_results( $wpdb->prepare( "
 			SELECT SQL_CALC_FOUND_ROWS l.id, l.user_id, l.requested_at, l.type, l.valid, l.errors, u.display_name AS user_name
-			  FROM %s AS l
-			  LEFT JOIN %s AS u ON u.ID = l.user_id
-			 WHERE l.provider = '%s' %s %s
+			  FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " AS l
+			  LEFT JOIN {$wpdb->users} AS u ON u.ID = l.user_id
+			 WHERE l.provider = %s{$type}{$valid}
 			 ORDER BY l.id DESC
-			 LIMIT %d
-			OFFSET %d
+			 LIMIT {$per_page}
+			OFFSET {$offset}
 			",
-			DOMAINMAP_TABLE_RESELLER_LOG,
-			$wpdb->users,
-			esc_sql( $this->_args['reseller'] ),
-			$valid !== false ? 'AND l.valid = ' . $valid : '',
-			$type !== false ? 'AND l.type = ' . $type : '',
-			$per_page,
-			( $this->get_pagenum() - 1 ) * $per_page
+			$this->_args['reseller']
 		), ARRAY_A );
 
 		$total_items = $wpdb->get_var( 'SELECT FOUND_ROWS()' );

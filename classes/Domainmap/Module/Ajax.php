@@ -52,6 +52,8 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 *
 	 * @since 4.0.0
 	 * @uses status_header() To set response HTTP code.
+	 * @uses check_admin_referer() To avoid security exploits.
+	 * @uses current_user_can() To check user permissions.
 	 *
 	 * @static
 	 * @access protected

@@ -59,19 +59,13 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @return int The count of already mapped domains.
 	 */
 	private function _get_domains_count() {
-		return $this->_wpdb->get_var( sprintf(
-			"SELECT COUNT(*) FROM %s WHERE blog_id = %d",
-			DOMAINMAP_TABLE_MAP,
-			$this->_wpdb->blogid
-		) );
+		return $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . intval( $this->_wpdb->blogid ) );
 	}
 
 	/**
 	 * Maps new domain.
 	 *
 	 * @since 4.0.0
-	 * @uses check_admin_referer() To avoid security exploits.
-	 * @uses current_user_can() To check user permissions.
 	 *
 	 * @access public
 	 */
@@ -88,9 +82,8 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			if ( $count == 0 || $allowmulti ) {
 
 				// check if domain has not been mapped
-				$escaped_domain = esc_sql( $domain );
-				$blog = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s' AND path = '/'", $this->_wpdb->blogs, $escaped_domain ) );
-				$map = $this->_wpdb->get_row( sprintf( "SELECT blog_id FROM %s WHERE domain = '%s'", DOMAINMAP_TABLE_MAP, $escaped_domain ) );
+				$blog = $this->_wpdb->get_row( $this->_wpdb->prepare( "SELECT blog_id FROM {$this->_wpdb->blogs} WHERE domain = %s AND path = '/'", $domain ) );
+				$map = $this->_wpdb->get_row( $this->_wpdb->prepare( "SELECT blog_id FROM " . DOMAINMAP_TABLE_MAP . " WHERE domain = %s", $domain ) );
 
 				if ( is_null( $blog ) && is_null( $map ) ) {
 					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(

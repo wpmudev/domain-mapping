@@ -99,8 +99,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			default:
 			case 'mapping':
 				$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
-				$page->origin = $this->_wpdb->get_row( sprintf( "SELECT * FROM %s WHERE blog_id = %d", $this->_wpdb->blogs, $this->_wpdb->blogid ) );
-				$page->domains = (array)$this->_wpdb->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP,  $this->_wpdb->blogid ) );
+				$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $this->_wpdb->blogid ) );
+				$page->domains = (array)$this->_wpdb->get_col( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->_wpdb->blogid ) .  " ORDER BY id ASC" );
 				break;
 			case 'purchase':
 				$page = new Domainmap_Render_Site_Purchase( $tabs, $activetab, $options );
@@ -240,7 +240,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			case 'reseller-log-view':
 				$item = filter_input( INPUT_GET, 'items', FILTER_VALIDATE_INT );
 				if ( wp_verify_nonce( $nonce, $nonce_action ) && $item ) {
-					$log = $this->_wpdb->get_row( sprintf( 'SELECT * FROM %s WHERE id = %d', DOMAINMAP_TABLE_RESELLER_LOG, $item ) );
+					$log = $this->_wpdb->get_row( 'SELECT * FROM ' . DOMAINMAP_TABLE_RESELLER_LOG . ' WHERE id = ' . $item );
 					if ( !$log ) {
 						status_header( 404 );
 					} else {
@@ -264,11 +264,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				$items = array_filter( array_map( 'intval', $items ) );
 
 				if ( wp_verify_nonce( $nonce, $nonce_action ) && !empty( $items ) ) {
-					$this->_wpdb->query( sprintf(
-						'DELETE FROM %s WHERE id IN (%s)',
-						DOMAINMAP_TABLE_RESELLER_LOG,
-						implode( ', ', $items )
-					) );
+					$this->_wpdb->query( 'DELETE FROM ' . DOMAINMAP_TABLE_RESELLER_LOG . ' WHERE id IN (' . implode( ', ', $items ) . ')' );
 
 					$redirect = add_query_arg( 'deleted', 'true', $redirect );
 				}
