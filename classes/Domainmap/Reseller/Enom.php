@@ -423,7 +423,11 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		// if server ip addresses are provided, use it to populate DNS records
 		if ( !empty( $options['map_ipaddress'] ) ) {
-			$ips = explode( ',', $options['map_ipaddress'] );
+			foreach ( explode( ',', trim( $options['map_ipaddress'] ) ) as $ip ) {
+				if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					$ips[] = $ip;
+				}
+			}
 		}
 
 		// looks like server ip addresses are not set, then try to read it automatically
