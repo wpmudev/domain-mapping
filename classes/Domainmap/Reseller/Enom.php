@@ -452,9 +452,6 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$ips = $args = array();
 		$options = Domainmap_Plugin::instance()->get_options();
 
-		// fetch unchanged domain name from database, because get_option function could return mapped domain name
-		$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
-
 		// if server ip addresses are provided, use it to populate DNS records
 		if ( !empty( $options['map_ipaddress'] ) ) {
 			foreach ( explode( ',', trim( $options['map_ipaddress'] ) ) as $ip ) {
@@ -466,6 +463,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		// looks like server ip addresses are not set, then try to read it automatically
 		if ( empty( $ips ) && function_exists( 'dns_get_record' ) ) {
+			// fetch unchanged domain name from database, because get_option function could return mapped domain name
+			$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
+			// fetch domain DNS A records
 			$ips = wp_list_pluck( dns_get_record( $basedomain, DNS_A ), 'ip' );
 		}
 
@@ -488,15 +488,17 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		if ( !empty( $ips ) ) {
 			if ( defined( 'SUBDOMAIN_INSTALL' ) && !$dedicated ) {
 				if ( SUBDOMAIN_INSTALL ) {
+					$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $wpdb->blogid ) );
+
 					// network is hosted on shared hosting and uses subdomains for sites
 					// we can use DNS CNAME records for it
 					$args['HostName1'] = "{$sld}.{$tld}";
 					$args['RecordType1'] = 'CNAME';
-					$args['Address1'] = "{$basedomain}.";
+					$args['Address1'] = "{$origin->domain}.";
 
 					$args['HostName2'] = "www.{$sld}.{$tld}";
 					$args['RecordType2'] = 'CNAME';
-					$args['Address2'] = "{$basedomain}.";
+					$args['Address2'] = "{$origin->domain}.";
 				} else {
 					// network is hosted on shared hosting and uses subfolders for sites
 					// neither DNS A record nor DNS CNAME record won't work in this case
