@@ -31,19 +31,13 @@
 class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 	/**
-	 * Renders template.
+	 * Renders eNom settings notifications.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @access protected
-	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @access private
 	 */
-	protected function _to_html() {
-		global $psts;
-
-		$pwd = str_shuffle( (string)$this->pwd );
-		$pwd_hash = sha1( $pwd );
-
+	private function _render_notifications() {
 		?><div id="domainmapping-enom-header">
 			<div id="domainmapping-enom-logo"></div>
 		</div>
@@ -65,22 +59,52 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 				__( 'Keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
 				'<a href="http://www.enom.com/help/" target="_blank">eNom Help Center</a>'
 			)
-		?></div>
+		?></div><?php
+	}
 
+	/**
+	 * Renders account credentials settings.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_account_settings() {
+		// it is a bad habit to show raw password even withing password input field
+		// so lets hash suffle it and render in the password field
+		$pwd = str_shuffle( (string)$this->pwd );
+
+		// we save shuffle hash to see on POST if the password was changed by an user
+		$pwd_hash = sha1( $pwd );
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
 		<div>
-			<h4 class="domainmapping-block-header"><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
-			<div>
-				<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
-				<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
-			</div>
-			<div>
-				<label for="enom-pwd" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?></label>
-				<input type="password" id="enom-pwd" class="regular-text" name="map_reseller_enom_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
-				<input type="hidden" name="map_reseller_enom_pwd_hash" value="<?php echo $pwd_hash ?>">
-			</div>
+			<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
+			<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
+		</div>
+		<div>
+			<label for="enom-pwd" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?></label>
+			<input type="password" id="enom-pwd" class="regular-text" name="map_reseller_enom_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
+			<input type="hidden" name="map_reseller_enom_pwd_hash" value="<?php echo $pwd_hash ?>">
+		</div><?php
+	}
 
-			<?php if ( $psts && in_array( 'ProSites_Gateway_PayPalExpressPro', $psts->get_setting( 'gateways_enabled' ) ) ) : ?>
-			<h4 class="domainmapping-block-header"><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
+	/**
+	 * Renders payment gateways settings.
+	 *
+	 * @sine 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 */
+	private function _render_payment_settings() {
+		global $psts;
+		if ( !$psts || !in_array( 'ProSites_Gateway_PayPalExpressPro', $psts->get_setting( 'gateways_enabled' ) ) ) {
+			return;
+		}
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
+		<div>
 			<ul>
 				<?php foreach ( $this->gateways as $key => $label ) : ?>
 				<li>
@@ -91,8 +115,50 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 				</li>
 				<?php endforeach; ?>
 			</ul>
-			<?php endif; ?>
 		</div><?php
+	}
+
+	/**
+	 * Renders environment settings.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_environment_settings() {
+		$environemnts = array(
+			Domainmap_Reseller_Enom::ENVIRONMENT_TEST       => __( 'Test environment', 'domainmap' ),
+			Domainmap_Reseller_Enom::ENVIRONMENT_PRODUCTION => __( 'Production environment', 'domainmap' ),
+		);
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'Select environment:', 'domainmap' ) ?></h4>
+		<div>
+			<p>Select an environment which you want to use. Use test environment to test your reseller account and production one when you will be ready to sell domains to your users.</p>
+			<ul class="domainmapping-compressed-list"><?php
+				foreach ( $environemnts as $environment => $label ) :
+					?><li>
+						<label>
+							<input type="radio" class="domainmapping-radio" name="map_reseller_enom_environment" value="<?php echo $environment ?>"<?php checked( $environment, $this->environment ) ?>>
+							<?php echo $label ?>
+						</label>
+					</li><?php
+				endforeach;
+			?></ul>
+		</div><?php
+	}
+
+	/**
+	 * Renders template.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 */
+	protected function _to_html() {
+		$this->_render_notifications();
+		$this->_render_account_settings();
+		$this->_render_environment_settings();
+		$this->_render_payment_settings();
 	}
 
 }

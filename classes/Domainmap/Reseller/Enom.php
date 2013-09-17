@@ -29,8 +29,13 @@
  */
 class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
-	const RESELLER_ID            = 'enom';
-	const RESELLER_API_ENDPOINT  = 'https://resellertest.enom.com/interface.asp?';
+	const RESELLER_ID = 'enom';
+
+	const ENDPOINT_PRODUCTION  = 'https://reseller.enom.com/interface.asp?';
+	const ENDPOINT_TEST        = 'https://resellertest.enom.com/interface.asp?';
+
+	const ENVIRONMENT_PRODUCTION = 'prod';
+	const ENVIRONMENT_TEST       = 'test';
 
 	const COMMAND_CHECK              = 'Check';
 	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
@@ -82,7 +87,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$args['command'] = $command;
 
-		$response = wp_remote_get( self::RESELLER_API_ENDPOINT . http_build_query( $args ) );
+		$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION
+			? self::ENDPOINT_PRODUCTION
+			: self::ENDPOINT_TEST;
+		$response = wp_remote_get( $endpoint . http_build_query( $args ) );
 		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
 			return false;
 		}
@@ -147,6 +155,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			if ( isset( $gateways[$gateway] ) ) {
 				$options[self::RESELLER_ID]['gateway'] = $gateway;
 			}
+		}
+
+		// environment
+		$environment = filter_input( INPUT_POST, 'map_reseller_enom_environment' );
+		if ( in_array( $environment, array( self::ENVIRONMENT_PRODUCTION, self::ENVIRONMENT_TEST ) ) ) {
+			$options[self::RESELLER_ID]['environment'] = $environment;
 		}
 
 		// validate credentials
@@ -233,6 +247,25 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	}
 
 	/**
+	 * Returns current environment.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param array $options The plugin options.
+	 * @return string The current environment.
+	 */
+	private function _get_environment( $options = null ) {
+		// if no options were passed, take it from the plugin instance
+		if ( !$options ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
+		}
+
+		return isset( $options['environment'] ) ? $options['environment'] : self::ENVIRONMENT_TEST;
+	}
+
+	/**
 	 * Returns reseller title.
 	 *
 	 * @since 4.0.0
@@ -258,6 +291,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$render = new Domainmap_Render_Reseller_Enom_Settings( $options );
 		$render->gateways = $this->_get_gateways();
 		$render->gateway = $this->_get_gateway( $options );
+		$render->environment = $this->_get_environment( $options );
 		$render->render();
 	}
 
