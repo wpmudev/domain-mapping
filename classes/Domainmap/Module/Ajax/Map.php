@@ -105,7 +105,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						) );
 					} else {
 						$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
-						$message = __( 'Domain name is unavailable to access.', 'domainmap' );
+						$message = sprintf(
+							'<b>%s</b><br><small>%s</small>',
+							__( 'Domain name is unavailable to access.', 'domainmap' ),
+							__( "We can't access the new domain. If you've just purchased it, please, wait while it will be propagated. If it is already propagated, please, check your DNS records to be sure that the domain is configured correctly.", 'domainmap' )
+						);
 					}
 				} else {
 					$message = __( 'Domain is already mapped.', 'domainmap' );

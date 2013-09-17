@@ -480,8 +480,15 @@ input.domainmapping-radio {
 #domainmapping-ppp-body {
     padding: 30px 20px;
     min-width: 400px;
+	max-width: 700px;
     font-size: 16px;
     line-height: 24px
+}
+
+#domainmapping-ppp-body small {
+	font-size: 13px;
+	line-height: 19px;
+	color: #222;
 }
 
 #domainmapping-ppp-footer {
