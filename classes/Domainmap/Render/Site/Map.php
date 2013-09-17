@@ -31,6 +31,38 @@
 class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 	/**
+	 * Renders instructions how to configure DNS records.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_instructions() {
+		if ( empty( $this->ips ) ) {
+			return;
+		}
+
+		$descriptions = array();
+		if ( defined( 'SUBDOMAIN_INSTALL' ) && !$this->dedicated ) {
+			if ( SUBDOMAIN_INSTALL ) {
+				$descriptions[] = __( 'You need to add a DNS CNAME record pointing at this server domain name: ', 'domainmap' ) . "<strong>{$this->origin->domain}.</strong>";
+			} else {
+				// network is hosted on shared hosting and uses subfolders for sites
+				// neither DNS A record nor DNS CNAME record won't work in this case
+			}
+		} else {
+			$ips = '<strong>' . implode( ', ', $this->ips ) . '</strong>';
+			$descriptions[] = count( $this->ips ) > 1
+				? __( 'You need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . $ips
+				: __( 'You need to add a DNS "A" record pointing at the IP address of this server: ', 'domainmap' ) . $ips;
+		}
+
+		foreach ( $descriptions as $description ) :
+			?><p class="domainmapping-info"><?php echo $description ?></p><?php
+		endforeach;
+	}
+
+	/**
 	 * Renders tab content.
 	 *
 	 * @since 4.0.0
@@ -38,26 +70,12 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access protected
 	 */
 	protected function _render_tab() {
-		$descriptions = array();
-		$descriptions[] = __( 'If your domain name includes a sub-domain such as "blog" then you can add a CNAME for that hostname in your DNS pointing at this blog URL.', 'domainmap' );
-
-		$map_ipaddress = isset( $this->map_ipaddress ) ? trim( $this->map_ipaddress ) : '';
-		if ( !empty( $map_ipaddress ) ) {
-			if ( strpos( $map_ipaddress, ',' ) ) {
-				$descriptions[] = __( 'If you want to redirect a domain you will need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . "<strong>{$map_ipaddress}</strong>";
-			} else {
-				$descriptions[] = __( 'If you want to redirect a domain you will need to add a DNS "A" record pointing at the IP address of this server: ', 'domainmap' ) . "<strong>{$map_ipaddress}</strong>";
-			}
-		}
-
 		$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';
 		$form_class = count( $this->domains ) > 0 && !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ? ' domainmapping-form-hidden' : '';
 
-		foreach ( $descriptions as $description ) : ?>
-			<p class="domainmapping-info"><?php echo $description ?></p>
-		<?php endforeach; ?>
+		$this->_render_instructions();
 
-		<div class="domainmapping-domains domainmapping-box">
+		?><div class="domainmapping-domains domainmapping-box">
 			<h3>
 				<?php _e( 'Domain(s) mapped to', 'domainmap' ) ?>
 				<span class="domainmapping-origin"><?php echo $schema ?>://<?php echo esc_html( $this->origin->domain . $this->origin->path ) ?></span>
