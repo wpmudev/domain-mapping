@@ -194,7 +194,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		}
 
 		$valid = $this->_validate_health_status( $domain );
-		set_transient( "domainmapping-{$domain}-health", $valid, WEEK_IN_SECONDS );
+		set_site_transient( "domainmapping-{$domain}-health", $valid, WEEK_IN_SECONDS );
 
 		ob_start();
 		Domainmap_Render_Site_Map::render_health_column( $domain );

@@ -158,7 +158,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			'domain' => $domain,
 		), admin_url( 'admin-ajax.php' ) );
 
-		$health = get_transient( "domainmapping-{$domain}-health" );
+		$health = get_site_transient( "domainmapping-{$domain}-health" );
 		$health_message = __( 'need revalidate', 'domainmap' );
 		$health_class = ' domainmapping-need-revalidate';
 		if ( $health !== false ) {
@@ -171,7 +171,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			}
 		}
 
-		?><a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo $health_link ?>" title="<?php _e( 'Refres health status', 'domainmap' ) ?>"><?php
+		?><a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo $health_link ?>" title="<?php _e( 'Refresh health status', 'domainmap' ) ?>"><?php
 			echo $health_message
 		?></a><?php
 	}

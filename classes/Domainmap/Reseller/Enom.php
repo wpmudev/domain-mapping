@@ -566,7 +566,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 */
 	private function _get_extended_attributes( $tld ) {
 		$transient = "domainmap-ext-attributes-{$tld}";
-		$attributes = get_transient( $transient );
+		$attributes = get_site_transient( $transient );
 		if ( $attributes !== false ) {
 			return $attributes;
 		}
@@ -585,7 +585,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			}
 		}
 
-		set_transient( $transient, $attributes, DAY_IN_SECONDS );
+		set_site_transient( $transient, $attributes, DAY_IN_SECONDS );
 
 		return $attributes;
 	}

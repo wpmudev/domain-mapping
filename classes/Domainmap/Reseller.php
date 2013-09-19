@@ -121,14 +121,14 @@ abstract class Domainmap_Reseller {
 	 */
 	public function get_tld_list() {
 		$transient = 'reseller-' . $this->get_reseller_id() . '-tlds';
-		$tlds = get_transient( $transient );
+		$tlds = get_site_transient( $transient );
 		if ( is_array( $tlds ) && !empty( $tlds ) ) {
 			return $tlds;
 		}
 
 		$tlds = $this->_get_tld_list();
 		sort( $tlds, SORT_STRING );
-		set_transient( $transient, $tlds, DAY_IN_SECONDS );
+		set_site_transient( $transient, $tlds, DAY_IN_SECONDS );
 
 		return $tlds;
 	}
@@ -158,13 +158,13 @@ abstract class Domainmap_Reseller {
 	 */
 	public function check_domain( $tld, $sld ) {
 		$transient = sprintf( 'reseller-%s-check-%s.%s', $this->get_reseller_id(), $sld, $tld );
-		$available = get_transient( $transient );
+		$available = get_site_transient( $transient );
 		if ( $available !== false ) {
 			return $available;
 		}
 
 		$available = $this->_check_domain( $tld, $sld );
-		set_transient( $transient, $available ? 1 : 0, HOUR_IN_SECONDS );
+		set_site_transient( $transient, $available ? 1 : 0, HOUR_IN_SECONDS );
 
 		return $available;
 	}
@@ -192,13 +192,13 @@ abstract class Domainmap_Reseller {
 	 */
 	public function get_tld_price( $tld ) {
 		$transient = sprintf( 'reseller-%s-%s-price', $this->get_reseller_id(), $tld );
-		$price = get_transient( $transient );
+		$price = get_site_transient( $transient );
 		if ( $price != false ) {
 			return $price;
 		}
 
 		$price = $this->_get_tld_price( $tld );
-		set_transient( $transient, $price, DAY_IN_SECONDS );
+		set_site_transient( $transient, $price, DAY_IN_SECONDS );
 
 		return $price;
 	}

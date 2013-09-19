@@ -121,7 +121,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			if ( !empty( $ips ) ) {
 				$current_ip = current( $ips );
 				$transient = "domainmap-hosting-type-{$current_ip}";
-				$dedicated = get_transient( $transient );
+				$dedicated = get_site_transient( $transient );
 				if ( $dedicated === false ) {
 					$check = sha1( time() );
 					$ajax_url = admin_url( 'admin-ajax.php' );
@@ -133,7 +133,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 					), $ajax_url ) );
 
 					$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check ? 1 : 0;
-					set_transient( $transient, $dedicated, WEEK_IN_SECONDS );
+					set_site_transient( $transient, $dedicated, WEEK_IN_SECONDS );
 				}
 			}
 
