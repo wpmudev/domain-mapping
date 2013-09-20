@@ -138,7 +138,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 				<?php echo $schema ?>://<?php echo $domain, $current_site->path ?>
 			</a>
 			<?php self::render_health_column( $domain ) ?>
-			<a class="domainmapping-map-remove" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"><i class="icon-remove"></i></a>
+			<a class="domainmapping-map-remove" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"><i class="icon-remove"></i> <?php _e( 'Remove', 'domainmap' ) ?></a>
 		</li><?php
 	}
 
