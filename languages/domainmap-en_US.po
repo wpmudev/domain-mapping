@@ -1,0 +1,707 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Domain Mapping 4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-20 10:46+0300\n"
+"PO-Revision-Date: 2013-09-20 10:50+0300\n"
+"Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
+"Language-Team: Incsub <devs@incsub.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: esc_html__;esc_html_e;esc_attr__;__;_e;esc_attr_e;_n;"
+"_n_noop;_nc;_nx;_nx_noop\n"
+"X-Poedit-Basepath: ./../\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Language: en_US\n"
+"X-Poedit-SearchPath-0: classes\n"
+
+#: classes/class.domainmap.php:311 classes/class.domainmap.php:348
+#: classes/class.domainmap.php:601
+msgid "Authenticating..."
+msgstr "Authenticating..."
+
+#: classes/class.domainmap.php:329 classes/class.domainmap.php:362
+#: classes/class.domainmap.php:608
+msgid "Please wait..."
+msgstr "Please wait..."
+
+#: classes/class.domainmap.php:330 classes/class.domainmap.php:363
+#, php-format
+msgid ""
+"If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
+msgstr ""
+"If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
+
+#: classes/class.domainmap.php:609
+#, php-format
+msgid ""
+"If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
+msgstr ""
+"If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
+
+#: classes/Domainmap/Reseller.php:283
+msgid "Verify credentials"
+msgstr "Verify credentials"
+
+#: classes/Domainmap/Reseller.php:284
+msgid "Check domain availability"
+msgstr "Check domain availability"
+
+#: classes/Domainmap/Reseller.php:285
+msgid "Get TLD list"
+msgstr "Get TLD list"
+
+#: classes/Domainmap/Reseller.php:286
+msgid "Get retail price"
+msgstr "Get retail price"
+
+#: classes/Domainmap/Reseller.php:287
+msgid "Get extended attributes"
+msgstr "Get extended attributes"
+
+#: classes/Domainmap/Reseller.php:288
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:66
+#: classes/Domainmap/Module/Pages.php:88
+msgid "Purchase domain"
+msgstr "Purchase domain"
+
+#: classes/Domainmap/Reseller.php:289
+msgid "Set DNS record"
+msgstr "Set DNS record"
+
+#: classes/Domainmap/Reseller.php:327
+msgid "Purchase this domain."
+msgstr "Purchase this domain."
+
+#: classes/Domainmap/Reseller.php:334
+msgid "is available to purchase for"
+msgstr "is available to purchase for"
+
+#: classes/Domainmap/Reseller.php:336
+msgid "per year"
+msgstr "per year"
+
+#: classes/Domainmap/Table.php:44
+msgid "Search"
+msgstr "Search"
+
+#: classes/Domainmap/Render/Network.php:60
+#: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:70
+#: classes/Domainmap/Module/Pages.php:161
+msgid "Domain Mapping"
+msgstr "Domain Mapping"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:47
+msgid ""
+"Looks like your credentials are invalid. Please, enter valid credentials and "
+"resave the form."
+msgstr ""
+"Looks like your credentials are invalid. Please, enter valid credentials and "
+"resave the form."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:53
+msgid ""
+"You use eNom credit card processing service. Pay attention that this service "
+"is available only to resellers who have entered into a credit card "
+"processing agreement with eNom."
+msgstr ""
+"You use eNom credit card processing service. Pay attention that this service "
+"is available only to resellers who have entered into a credit card "
+"processing agreement with eNom."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:59
+#, php-format
+msgid ""
+"Keep in mind that to start using eNom API you have to add your server IP "
+"address in the live environment. Go to %s, click \"Launch the Support Center"
+"\" button and submit a new ticket. In the new ticket set \"Add IP\" subject, "
+"type the IP address(es) you wish to add and select API category."
+msgstr ""
+"Keep in mind that to start using eNom API you have to add your server IP "
+"address in the live environment. Go to %s, click \"Launch the Support Center"
+"\" button and submit a new ticket. In the new ticket set \"Add IP\" subject, "
+"type the IP address(es) you wish to add and select API category."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:80
+msgid "Enter your account id and password:"
+msgstr "Enter your account id and password:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:82
+msgid "Account id:"
+msgstr "Account id:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:86
+msgid "Password:"
+msgstr "Password:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:106
+msgid "Select payment gateway:"
+msgstr "Select payment gateway:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:130
+msgid "Test environment"
+msgstr "Test environment"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:131
+msgid "Production environment"
+msgstr "Production environment"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:134
+msgid "Select environment:"
+msgstr "Select environment:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:41
+msgid "Step 2: Purchase domain"
+msgstr "Step 2: Purchase domain"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:53
+#, php-format
+msgid ""
+"You are about to purchase domain name <b>%s</b> and pay <b>%s</b> for 1 year "
+"of usage. Please, fill in the form below and click on purchase button."
+msgstr ""
+"You are about to purchase domain name <b>%s</b> and pay <b>%s</b> for 1 year "
+"of usage. Please, fill in the form below and click on purchase button."
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:81
+msgid "Credit Card"
+msgstr "Credit Card"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:84
+msgid "Supported card types are:"
+msgstr "Supported card types are:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:88
+msgid "Card Number:"
+msgstr "Card Number:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:93
+msgid "Card Expiration:"
+msgstr "Card Expiration:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:98
+msgid "CVV2:"
+msgstr "CVV2:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:103
+msgid "Cardholder's Name:"
+msgstr "Cardholder's Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:116
+msgid "Billing Information"
+msgstr "Billing Information"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:119
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:185
+msgid "Address:"
+msgstr "Address:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:124
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:195
+msgid "City:"
+msgstr "City:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:129
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:200
+msgid "State/Province:"
+msgstr "State/Province:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:134
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:205
+msgid "Zip/Postal Code:"
+msgstr "Zip/Postal Code:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:139
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:225
+msgid "Phone:"
+msgstr "Phone:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:144
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:210
+msgid "Country:"
+msgstr "Country:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:162
+msgid "Registrant Information"
+msgstr "Registrant Information"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:165
+msgid "First Name:"
+msgstr "First Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:170
+msgid "Last Name:"
+msgstr "Last Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:175
+msgid "Organization Name:"
+msgstr "Organization Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:180
+msgid "Job Title:"
+msgstr "Job Title:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:190
+msgid "Alternative Address:"
+msgstr "Alternative Address:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:220
+msgid "Email:"
+msgstr "Email:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:230
+msgid "Fax:"
+msgstr "Fax:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:248
+msgid "Additional Registrar Information"
+msgstr "Additional Registrar Information"
+
+#: classes/Domainmap/Render/Site/Map.php:48
+msgid ""
+"You need to add a DNS CNAME record pointing at this server domain name: "
+msgstr ""
+"You need to add a DNS CNAME record pointing at this server domain name: "
+
+#: classes/Domainmap/Render/Site/Map.php:56
+msgid ""
+"You need to add multiple DNS \"A\" records pointing at the IP addresses of "
+"this server: "
+msgstr ""
+"You need to add multiple DNS \"A\" records pointing at the IP addresses of "
+"this server: "
+
+#: classes/Domainmap/Render/Site/Map.php:57
+msgid ""
+"You need to add a DNS \"A\" record pointing at the IP address of this "
+"server: "
+msgstr ""
+"You need to add a DNS \"A\" record pointing at the IP address of this "
+"server: "
+
+#: classes/Domainmap/Render/Site/Map.php:80
+msgid "Domain(s) mapped to"
+msgstr "Domain(s) mapped to"
+
+#: classes/Domainmap/Render/Site/Map.php:87
+msgid "Mapped domain"
+msgstr "Mapped domain"
+
+#: classes/Domainmap/Render/Site/Map.php:88
+msgid "Health status"
+msgstr "Health status"
+
+#: classes/Domainmap/Render/Site/Map.php:89
+msgid "Actions"
+msgstr "Actions"
+
+#: classes/Domainmap/Render/Site/Map.php:103
+#: classes/Domainmap/Module/Pages.php:86
+msgid "Map domain"
+msgstr "Map domain"
+
+#: classes/Domainmap/Render/Site/Map.php:137
+msgid "Go to this domain"
+msgstr "Go to this domain"
+
+#: classes/Domainmap/Render/Site/Map.php:141
+msgid "Remove the domain"
+msgstr "Remove the domain"
+
+#: classes/Domainmap/Render/Site/Map.php:141
+msgid "Remove"
+msgstr "Remove"
+
+#: classes/Domainmap/Render/Site/Map.php:162
+msgid "need revalidate"
+msgstr "need revalidate"
+
+#: classes/Domainmap/Render/Site/Map.php:167
+msgid "valid"
+msgstr "valid"
+
+#: classes/Domainmap/Render/Site/Map.php:170
+msgid "invalid"
+msgstr "invalid"
+
+#: classes/Domainmap/Render/Site/Map.php:174
+msgid "Refresh health status"
+msgstr "Refresh health status"
+
+#: classes/Domainmap/Render/Site/Purchase.php:53
+msgid ""
+"If you want to buy an unique domain name and map it to your site, then you "
+"can do it on this page. Check whether desired domain name is available, and "
+"if it is, just fill in payment details and purchase it. New domain will be "
+"bought and mapped to your site. All necessary DNS records will be setup "
+"automatically."
+msgstr ""
+"If you want to buy an unique domain name and map it to your site, then you "
+"can do it on this page. Check whether desired domain name is available, and "
+"if it is, just fill in payment details and purchase it. New domain will be "
+"bought and mapped to your site. All necessary DNS records will be setup "
+"automatically."
+
+#: classes/Domainmap/Render/Site/Purchase.php:57
+msgid "Step 1: Check domain availability"
+msgstr "Step 1: Check domain availability"
+
+#: classes/Domainmap/Render/Site/Purchase.php:73
+msgid "Check domain"
+msgstr "Check domain"
+
+#: classes/Domainmap/Render/Network/Resellers.php:44
+#: classes/Domainmap/Render/Network/Options.php:60
+msgid "Options updated."
+msgstr "Options updated."
+
+#: classes/Domainmap/Render/Network/Resellers.php:59
+msgid "All requests"
+msgstr "All requests"
+
+#: classes/Domainmap/Render/Network/Resellers.php:60
+msgid "Failed requests"
+msgstr "Failed requests"
+
+#: classes/Domainmap/Render/Network/Resellers.php:61
+msgid "Disable loggin"
+msgstr "Disable loggin"
+
+#: classes/Domainmap/Render/Network/Resellers.php:64
+msgid "Select reseller API requests log level:"
+msgstr "Select reseller API requests log level:"
+
+#: classes/Domainmap/Render/Network/Resellers.php:77
+msgid "Select reseller provider if you want to sell domains to your users:"
+msgstr "Select reseller provider if you want to sell domains to your users:"
+
+#: classes/Domainmap/Render/Network/Resellers.php:93
+msgid "Don't use any"
+msgstr "Don't use any"
+
+#: classes/Domainmap/Render/Network/Resellers.php:106
+#: classes/Domainmap/Render/Network/Options.php:105
+msgid "Save Changes"
+msgstr "Save Changes"
+
+#: classes/Domainmap/Render/Network/Options.php:43
+msgid "domain entered by the user"
+msgstr "domain entered by the user"
+
+#: classes/Domainmap/Render/Network/Options.php:44
+msgid "mapped domain"
+msgstr "mapped domain"
+
+#: classes/Domainmap/Render/Network/Options.php:45
+msgid "original domain"
+msgstr "original domain"
+
+#: classes/Domainmap/Render/Network/Options.php:74
+msgid "Please copy the sunrise.php to "
+msgstr "Please copy the sunrise.php to "
+
+#: classes/Domainmap/Render/Network/Options.php:74
+msgid "/sunrise.php and uncomment the SUNRISE setting in the "
+msgstr "/sunrise.php and uncomment the SUNRISE setting in the "
+
+#: classes/Domainmap/Render/Network/Options.php:74
+msgid "wp-config.php file"
+msgstr "wp-config.php file"
+
+#: classes/Domainmap/Render/Network/Options.php:78
+msgid ""
+"If you've not already added define( 'SUNRISE', 'on' ); then please do so. If "
+"you added the constant be sure to uncomment this line: //define( 'SUNRISE', "
+"'on' ); in the wp-config.php file."
+msgstr ""
+"If you've not already added define( 'SUNRISE', 'on' ); then please do so. If "
+"you added the constant be sure to uncomment this line: //define( 'SUNRISE', "
+"'on' ); in the wp-config.php file."
+
+#: classes/Domainmap/Render/Network/Options.php:82
+msgid ""
+"If you are having problems with domain mapping you should try removing the "
+"following lines from your wp-config.php file:."
+msgstr ""
+"If you are having problems with domain mapping you should try removing the "
+"following lines from your wp-config.php file:."
+
+#: classes/Domainmap/Render/Network/Options.php:89
+msgid ""
+"Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
+"these lines in place."
+msgstr ""
+"Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
+"these lines in place."
+
+#: classes/Domainmap/Render/Network/Options.php:123
+msgid "Domain mapping Configuration"
+msgstr "Domain mapping Configuration"
+
+#: classes/Domainmap/Render/Network/Options.php:125
+msgid ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+msgstr ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+
+#: classes/Domainmap/Render/Network/Options.php:126
+msgid ""
+"If you have more than one IP address, separate them with a comma. This "
+"message is displayed on the Domain mapping page for your users."
+msgstr ""
+"If you have more than one IP address, separate them with a comma. This "
+"message is displayed on the Domain mapping page for your users."
+
+#: classes/Domainmap/Render/Network/Options.php:132
+msgid ""
+"Looks like we are able to resolve your DNS A record(s) for your main domain "
+"and fetch the IP address(es) assigned to it. You can use the following IP "
+"address(es) to enter in the <b>Server IP Address</b> field below:"
+msgstr ""
+"Looks like we are able to resolve your DNS A record(s) for your main domain "
+"and fetch the IP address(es) assigned to it. You can use the following IP "
+"address(es) to enter in the <b>Server IP Address</b> field below:"
+
+#: classes/Domainmap/Render/Network/Options.php:141
+msgid "Server IP Address: "
+msgstr "Server IP Address: "
+
+#: classes/Domainmap/Render/Network/Options.php:156
+msgid "Administration mapping"
+msgstr "Administration mapping"
+
+#: classes/Domainmap/Render/Network/Options.php:158
+msgid ""
+"The settings below allow you to control how the domain mapping plugin "
+"operates with the dashboard administration area."
+msgstr ""
+"The settings below allow you to control how the domain mapping plugin "
+"operates with the dashboard administration area."
+
+#: classes/Domainmap/Render/Network/Options.php:159
+msgid "Select the domain that should be used for the administration area:"
+msgstr "Select the domain that should be used for the administration area:"
+
+#: classes/Domainmap/Render/Network/Options.php:182
+msgid "Login mapping"
+msgstr "Login mapping"
+
+#: classes/Domainmap/Render/Network/Options.php:184
+msgid ""
+"The settings below allow you to control how the domain mapping plugin "
+"operates login page."
+msgstr ""
+"The settings below allow you to control how the domain mapping plugin "
+"operates login page."
+
+#: classes/Domainmap/Render/Network/Options.php:185
+msgid "Select the domain, what should be used for the login page:"
+msgstr "Select the domain, what should be used for the login page:"
+
+#: classes/Domainmap/Render/Network/Options.php:212
+msgid "Select Pro Sites Levels:"
+msgstr "Select Pro Sites Levels:"
+
+#: classes/Domainmap/Render/Network/Options.php:213
+msgid "Make this functionality only available to certain Pro Site levels"
+msgstr "Make this functionality only available to certain Pro Site levels"
+
+#: classes/Domainmap/Render/Network/Log.php:44
+msgid "Log records were deleted."
+msgstr "Log records were deleted."
+
+#: classes/Domainmap/Reseller/Enom.php:205
+msgid "eNom credit card processing services"
+msgstr "eNom credit card processing services"
+
+#: classes/Domainmap/Reseller/Enom.php:206
+msgid "Pro Sites PayPal payment gateway"
+msgstr "Pro Sites PayPal payment gateway"
+
+#: classes/Domainmap/Reseller/Enom.php:547
+msgid "Your name"
+msgstr "Your name"
+
+#: classes/Domainmap/Reseller/Enom.php:630
+msgid "Purchase this domain with PayPal Express Checkout."
+msgstr "Purchase this domain with PayPal Express Checkout."
+
+#: classes/Domainmap/Reseller/Enom.php:671
+msgid "Payment for 1 year usage of the domain name."
+msgstr "Payment for 1 year usage of the domain name."
+
+#: classes/Domainmap/Module/Admin.php:73
+msgid "Mapped Domain"
+msgstr "Mapped Domain"
+
+#: classes/Domainmap/Module/Pages.php:360
+msgid "Mapping options"
+msgstr "Mapping options"
+
+#: classes/Domainmap/Module/Pages.php:361
+msgid "Reseller options"
+msgstr "Reseller options"
+
+#: classes/Domainmap/Module/Pages.php:366
+msgid "Reseller API log"
+msgstr "Reseller API log"
+
+#: classes/Domainmap/Module/Pages.php:396
+#: classes/Domainmap/Table/Reseller/Log.php:116
+msgid "Delete"
+msgstr "Delete"
+
+#: classes/Domainmap/Module/Pages.php:436
+msgid "OK"
+msgstr "OK"
+
+#: classes/Domainmap/Module/Pages.php:439
+msgid "You are about to unmap selected domain. Do you really want to proceed?"
+msgstr "You are about to unmap selected domain. Do you really want to proceed?"
+
+#: classes/Domainmap/Module/Pages.php:440
+msgid "Please, enter not empty domain name."
+msgstr "Please, enter not empty domain name."
+
+#: classes/Domainmap/Module/Pages.php:442
+msgid "Credit card number is invalid."
+msgstr "Credit card number is invalid."
+
+#: classes/Domainmap/Module/Pages.php:443
+msgid "Credit card type is invalid."
+msgstr "Credit card type is invalid."
+
+#: classes/Domainmap/Module/Pages.php:444
+msgid "Credit card expiry date is invalid."
+msgstr "Credit card expiry date is invalid."
+
+#: classes/Domainmap/Module/Pages.php:445
+msgid "Credit card CVV2 code is invalid."
+msgstr "Credit card CVV2 code is invalid."
+
+#: classes/Domainmap/Module/Pages.php:448
+msgid "Domain name has been purchased successfully."
+msgstr "Domain name has been purchased successfully."
+
+#: classes/Domainmap/Module/Pages.php:449
+msgid "Domain name purchase has failed."
+msgstr "Domain name purchase has failed."
+
+#: classes/Domainmap/Module/Ajax/Map.php:110
+msgid "Domain name is unavailable to access."
+msgstr "Domain name is unavailable to access."
+
+#: classes/Domainmap/Module/Ajax/Map.php:111
+msgid ""
+"We can't access the new domain. If you've just purchased it, please, wait "
+"while it will be propagated. If it is already propagated, please, check your "
+"DNS records to be sure that the domain is configured correctly."
+msgstr ""
+"We can't access the new domain. If you've just purchased it, please, wait "
+"while it will be propagated. If it is already propagated, please, check your "
+"DNS records to be sure that the domain is configured correctly."
+
+#: classes/Domainmap/Module/Ajax/Map.php:115
+msgid "Domain is already mapped."
+msgstr "Domain is already mapped."
+
+#: classes/Domainmap/Module/Ajax/Map.php:118
+msgid "Multiple domains are not allowed."
+msgstr "Multiple domains are not allowed."
+
+#: classes/Domainmap/Module/Ajax/Map.php:122
+#: classes/Domainmap/Module/Ajax/Purchase.php:105
+msgid "Domain name is invalid."
+msgstr "Domain name is invalid."
+
+#: classes/Domainmap/Module/Ajax/Purchase.php:102
+msgid "is not available to purchase"
+msgstr "is not available to purchase"
+
+#: classes/Domainmap/Table/Reseller/Log.php:57
+msgid "failed"
+msgstr "failed"
+
+#: classes/Domainmap/Table/Reseller/Log.php:58
+msgid "success"
+msgstr "success"
+
+#: classes/Domainmap/Table/Reseller/Log.php:73
+#: classes/Domainmap/Table/Reseller/Log.php:141
+msgid "unknown"
+msgstr "unknown"
+
+#: classes/Domainmap/Table/Reseller/Log.php:106
+msgid "View Details"
+msgstr "View Details"
+
+#: classes/Domainmap/Table/Reseller/Log.php:155
+msgid "User"
+msgstr "User"
+
+#: classes/Domainmap/Table/Reseller/Log.php:156
+msgid "Action"
+msgstr "Action"
+
+#: classes/Domainmap/Table/Reseller/Log.php:157
+msgid "Status"
+msgstr "Status"
+
+#: classes/Domainmap/Table/Reseller/Log.php:158
+msgid "Requested At"
+msgstr "Requested At"
+
+#: classes/Domainmap/Table/Reseller/Log.php:159
+msgid "Errors"
+msgstr "Errors"
+
+#: classes/Domainmap/Table/Reseller/Log.php:192
+msgid "All"
+msgstr "All"
+
+#: classes/Domainmap/Table/Reseller/Log.php:199
+msgid "Success"
+msgstr "Success"
+
+#: classes/Domainmap/Table/Reseller/Log.php:206
+msgid "Failed"
+msgstr "Failed"
+
+#: classes/Domainmap/Table/Reseller/Log.php:300
+msgid "Show all actions"
+msgstr "Show all actions"
+
+#: classes/Domainmap/Table/Reseller/Log.php:312
+msgid "Filter"
+msgstr "Filter"
+
+#: classes/WPMUDEV/Dashboard/Notice.php:74
+#, php-format
+msgid ""
+"Easily get updates, support, and one-click WPMU DEV plugin/theme "
+"installations right from in your dashboard - <strong><a href=\"%s\" title="
+"\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
+"strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/wpmu-"
+"dev/update-notifications-plugin-information/\">(find out more)</a></small>"
+msgstr ""
+"Easily get updates, support, and one-click WPMU DEV plugin/theme "
+"installations right from in your dashboard - <strong><a href=\"%s\" title="
+"\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
+"strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/wpmu-"
+"dev/update-notifications-plugin-information/\">(find out more)</a></small>"
+
+#: classes/WPMUDEV/Dashboard/Notice.php:78
+#, php-format
+msgid ""
+"Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
+"\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
+"strong>."
+msgstr ""
+"Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
+"\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
+"strong>."

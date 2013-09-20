@@ -59,11 +59,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 	 * @access public
 	 */
 	public function loadTextDomain() {
-		$locale = apply_filters( 'domainmap_locale', get_locale() );
-		$mofile = DOMAINMAP_ABSPATH . "/languages/domainmap-{$locale}.mo";
-		if ( file_exists( $mofile ) ) {
-			load_textdomain( 'domainmap', $mofile );
-		}
+		load_plugin_textdomain( 'domainmap', false, dirname( plugin_basename( DOMAINMAP_BASEFILE ) ) . '/languages/' );
 	}
 
 	/**
