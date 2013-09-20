@@ -477,7 +477,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
 
 			$response = wp_remote_request( add_query_arg( array(
-				'action' => 'domainmapping_heartbeat_check',
+				'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 				'check'  => $check,
 			), $ajax_url ) );
 
@@ -529,7 +529,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	}
 
 	/**
-	 * Returns purchase form html.
+	 * Renders purchase form.
 	 *
 	 * @since 4.0.0
 	 *
@@ -538,7 +538,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @param array $domain_info The information about a domain to purchase.
 	 * @return string The purchase form html.
 	 */
-	public function get_purchase_form_html( $domain_info ) {
+	public function render_purchase_form( $domain_info ) {
 		global $current_user;
 
 		get_currentuserinfo();
@@ -553,7 +553,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$render->countries = Domainmap_Plugin::instance()->get_countries();
 		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
 
-		return $render->to_html();
+		$render->render();
 	}
 
 	/**
@@ -605,30 +605,31 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
 		global $psts;
 
-		$gateway = $this->_get_gateway();
+		if ( $psts ) {
+			if ( $this->_get_gateway() == self::GATEWAY_PROSITES ) {
+				$locale = apply_filters( 'domainmap_locale', get_locale() );
+				if ( !preg_match( '/^[a-z]{2}_[A-Z]{2}$/', $locale ) ) {
+					$locale = 'en_US';
+				}
 
-		if ( $gateway == self::GATEWAY_PROSITES && $psts ) {
-			$locale = apply_filters( 'domainmap_locale', get_locale() );
-			if ( !preg_match( '/^[a-z]{2}_[A-Z]{2}$/', $locale ) ) {
-				$locale = 'en_US';
+				return parent::get_domain_available_response( $sld, $tld, sprintf( '
+					<form class="domainmapping-paypal-form" action="%s">
+						<input type="hidden" name="action" value="%s">
+						<input type="hidden" name="nonce" value="%s">
+						<input type="hidden" name="sld" value="%s">
+						<input type="hidden" name="tld" value="%s">
+						<button type="submit" class="domainmapping-transparent-button"><img src="http://www.paypalobjects.com/%s/i/btn/btn_buynow_LG.gif" alt="%s"></button>
+					</form>
+					',
+					admin_url( 'admin-ajax.php' ),
+					Domainmap_Plugin::ACTION_PAYPAL_PURCHASE,
+					wp_create_nonce( Domainmap_Plugin::ACTION_PAYPAL_PURCHASE ),
+					$sld,
+					$tld,
+					$locale,
+					__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' )
+				) );
 			}
-
-			return parent::get_domain_available_response( $sld, $tld, sprintf( '
-				<form class="domainmapping-paypal-form" action="%s">
-					<input type="hidden" name="action" value="domainmapping_purchase_with_paypal">
-					<input type="hidden" name="nonce" value="%s">
-					<input type="hidden" name="sld" value="%s">
-					<input type="hidden" name="tld" value="%s">
-					<button type="submit" class="domainmapping-transparent-button"><img src="http://www.paypalobjects.com/%s/i/btn/btn_buynow_LG.gif" alt="%s"></button>
-				</form>
-				',
-				admin_url( 'admin-ajax.php' ),
-				wp_create_nonce( 'domainmapping_purchase_with_paypal' ),
-				$sld,
-				$tld,
-				$locale,
-				__( 'Purchase this domain with PayPal Express Checkout.', 'domainmap' )
-			) );
 		}
 
 		return parent::get_domain_available_response( $sld, $tld, $purchase_link );
@@ -653,7 +654,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		$returnurl = add_query_arg( array(
-			'action' => 'domainmapping_do_express_checkout',
+			'action' => Domainmap_Plugin::ACTION_PAYPAL_DO_EXPRESS_CHECKOUT,
 			'sld'    => $sld,
 			'tld'    => $tld,
 		), admin_url( 'admin-ajax.php' ) );

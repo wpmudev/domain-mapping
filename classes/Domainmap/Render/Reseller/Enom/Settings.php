@@ -50,7 +50,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		<?php if ( $this->gateway == Domainmap_Reseller_Enom::GATEWAY_ENOM ) : ?>
 		<div class="domainmapping-info domainmapping-info-warning"><?php
-			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom.', 'domainmap' )
+			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom. Additionally you have to configure HTTPS connection on your server to make such payments working.', 'domainmap' )
 		?></div>
 		<?php endif; ?>
 

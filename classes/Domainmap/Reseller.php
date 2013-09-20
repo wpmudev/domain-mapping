@@ -291,7 +291,7 @@ abstract class Domainmap_Reseller {
 	}
 
 	/**
-	 * Returns purchase form html.
+	 * Renders purchase form.
 	 *
 	 * @since 4.0.0
 	 *
@@ -300,7 +300,7 @@ abstract class Domainmap_Reseller {
 	 * @param array $domain_info The information about a domain to purchase.
 	 * @return string The purchase form html.
 	 */
-	public abstract function get_purchase_form_html( $domain_info );
+	public abstract function render_purchase_form( $domain_info );
 
 	/**
 	 * Returns domain available response HTML with a link on purchase form.
@@ -308,18 +308,27 @@ abstract class Domainmap_Reseller {
 	 * @since 4.0.0
 	 *
 	 * @access public
+	 * @global wpdb $wpdb Current database connection.
 	 * @param string $sld The actual SLD.
 	 * @param string $tld The actual TLD.
 	 * @param string $purchase_link The purchase URL.
 	 * @return string Response HTML.
 	 */
 	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
+		global $wpdb;
+
 		if ( !$purchase_link ) {
 			$purchase_link = add_query_arg( array(
-				'action' => 'domainmapping_get_purchase_form',
-				'nonce'  => wp_create_nonce( 'domainmapping_get_purchase_form' ),
-				'tld'    => $tld,
-			), admin_url( 'admin-ajax.php' ) );
+				'action'  => Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM,
+				'nonce'   => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM ),
+				'tld'     => $tld,
+				'blog'    => $wpdb->blogid,
+				'success' => urlencode( add_query_arg( 'page', 'domainmapping', admin_url( 'tools.php' ) ) ),
+				'cancel'  => urlencode( site_url( add_query_arg( array(
+					'sld' => $sld,
+					'tld' => $tld,
+				), wp_get_referer() ) ) ),
+			), network_site_url( 'wp-admin/admin-ajax.php', 'https' ) );
 
 			$purchase_link = sprintf(
 				'<a class="domainmapping-purchase-link" href="%s"><b>%s</b></a>',

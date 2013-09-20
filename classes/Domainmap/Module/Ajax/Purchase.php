@@ -44,11 +44,10 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		parent::__construct( $plugin );
 
 		// add ajax actions
-		$this->_add_ajax_action( 'domainmapping_check_domain', 'check_domain' );
-		$this->_add_ajax_action( 'domainmapping_purchase_domain', 'purchase_domain' );
-		$this->_add_ajax_action( 'domainmapping_purchase_with_paypal', 'purchase_with_paypal' );
-		$this->_add_ajax_action( 'domainmapping_get_purchase_form', 'get_purchase_form' );
-		$this->_add_ajax_action( 'domainmapping_do_express_checkout', 'complete_paypal_checkout' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CHECK_DOMAIN_AVAILABILITY, 'check_domain' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_PAYPAL_PURCHASE, 'purchase_with_paypal' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_PAYPAL_DO_EXPRESS_CHECKOUT, 'complete_paypal_checkout' );
 	}
 
 	/**
@@ -72,7 +71,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function check_domain() {
-		self::_check_premissions( 'domainmapping_check_domain' );
+		self::_check_premissions( Domainmap_Plugin::ACTION_CHECK_DOMAIN_AVAILABILITY );
 
 		$sld = strtolower( trim( filter_input( INPUT_POST, 'sld' ) ) );
 		$tld = strtolower( trim( filter_input( INPUT_POST, 'tld' ) ) );
@@ -109,22 +108,50 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	}
 
 	/**
-	 * Returns HTML for purchase form.
+	 * Renders purchase form.
 	 *
 	 * @since 4.0.0
 	 *
 	 * @access public
 	 */
-	public function get_purchase_form() {
-		self::_check_premissions( 'domainmapping_get_purchase_form' );
+	public function render_purchase_form() {
+		// check if user has permissions
+		if ( !check_admin_referer( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'nonce' ) || !current_user_can( 'manage_options' ) ) {
+			status_header( 403 );
+			exit;
+		}
 
 		$reseller = $this->_plugin->get_reseller();
 		$info = get_site_transient( $this->_get_transient_name( 'checkdomain' ) );
 		if ( !$info || !$reseller ) {
-			wp_send_json_error();
+			status_header( 404 );
+			exit;
 		}
 
-		wp_send_json_success( array( 'html' => $reseller->get_purchase_form_html( $info ) ) );
+		if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+			$domain = $reseller->purchase();
+			if ( $domain ) {
+				$this->_map_domain( $domain, filter_input( INPUT_GET, 'blog', FILTER_VALIDATE_INT ) );
+				wp_redirect( filter_input( INPUT_GET, 'success', FILTER_VALIDATE_URL, array( 'options' => array( 'default' => admin_url() ) ) ) );
+				exit;
+			}
+		}
+
+		define( 'IFRAME_REQUEST', true );
+
+		// enqueue scripts
+		wp_enqueue_script( 'jquery-payment' );
+		wp_enqueue_script( 'domainmapping-admin' );
+
+		// enqueue styles
+		wp_enqueue_style( 'font-awesome' );
+		wp_enqueue_style( 'font-awesome-ie' );
+		wp_enqueue_style( 'google-font-lato' );
+		wp_enqueue_style( 'domainmapping-admin' );
+
+		// render purchase form
+		wp_iframe( array( $reseller, 'render_purchase_form' ), $info );
+		exit;
 	}
 
 	/**
@@ -151,10 +178,15 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 *
 	 * @access private
 	 * @param string $domain The new domain name to map.
+	 * @param int $blog_id The blog ID to map domain to.
 	 */
-	private function _map_domain( $domain ) {
+	private function _map_domain( $domain, $blog_id = false ) {
+		if ( !$blog_id ) {
+			$blog_id = intval( $this->_wpdb->blogid );
+		}
+
 		// check if mapped domains are 0 or multi domains are enabled
-		$count = $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . intval( $this->_wpdb->blogid ) );
+		$count = $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . $blog_id );
 		$allowmulti = defined( 'DOMAINMAPPING_ALLOWMULTI' );
 		if ( $count == 0 || $allowmulti ) {
 
@@ -164,37 +196,15 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 			if( is_null( $blog ) && is_null( $map ) ) {
 				$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
-					'blog_id' => $this->_wpdb->blogid,
+					'blog_id' => $blog_id,
 					'domain'  => $domain,
 					'active'  => 1,
 				), array( '%d', '%s', '%d' ) );
 
 				// fire the action when a new domain is added
-				do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
+				do_action( 'domainmapping_added_domain', $domain, $blog_id );
 			}
 		}
-	}
-
-	/**
-	 * Purchases a domain name and sets up DNS A record.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access public
-	 */
-	public function purchase_domain() {
-		self::_check_premissions( 'domainmapping_purchase_domain' );
-
-		$reseller = $this->_plugin->get_reseller();
-		if ( !is_null( $reseller ) ) {
-			$domain = $reseller->purchase();
-			if ( $domain ) {
-				$this->_map_domain( $domain );
-				wp_send_json_success();
-			}
-		}
-
-		wp_send_json_error();
 	}
 
 	/**

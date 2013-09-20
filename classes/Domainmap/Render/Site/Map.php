@@ -93,8 +93,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 					<?php endforeach; ?>
 					<li class="domainmapping-form">
 						<form id="domainmapping-form-map-domain" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
-							<?php wp_nonce_field( 'domainmapping_map_domain', 'nonce' ) ?>
-							<input type="hidden" name="action" value="domainmapping_map_domain">
+							<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
+							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
 							<input type="text" class="domainmapping-input-prefix" readonly disabled value="<?php echo $schema ?>://">
 							<div class="domainmapping-controls-wrapper">
 								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
@@ -128,8 +128,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		}
 
 		$remove_link = add_query_arg( array(
-			'action' => 'domainmapping_unmap_domain',
-			'nonce'  => wp_create_nonce( 'domainmapping_unmap_domain' ),
+			'action' => Domainmap_Plugin::ACTION_UNMAP_DOMAIN,
+			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_UNMAP_DOMAIN ),
 			'domain' => $domain,
 		), admin_url( 'admin-ajax.php' ) );
 
@@ -153,8 +153,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 */
 	public static function render_health_column( $domain ) {
 		$health_link = add_query_arg( array(
-			'action' => 'domainmapping_check_health',
-			'nonce'  => wp_create_nonce( 'domainmapping_check_health' ),
+			'action' => Domainmap_Plugin::ACTION_HEALTH_CHECK,
+			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_HEALTH_CHECK ),
 			'domain' => $domain,
 		), admin_url( 'admin-ajax.php' ) );
 

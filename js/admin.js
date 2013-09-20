@@ -20,7 +20,7 @@
 		close.append(domainmapping.button.close);
 		close.click(function() {
 			cleanup_alert(callback);
-		})
+		});
 
 		footer = $('<div id="domainmapping-ppp-footer"></div>');
 		footer.append(close);
@@ -50,7 +50,7 @@
 	};
 
 	function show_error(msg, callback) {
-		show_alert(msg, callback, 'domainmapping-ppp-error')
+		show_alert(msg, callback, 'domainmapping-ppp-error');
 	};
 
 	$(document).ready(function() {
@@ -166,37 +166,8 @@
 			return false;
 		});
 
-		$('.domainmapping-form-results').on('click', '.domainmapping-purchase-link', function() {
-			var $this = $(this),
-				tab = $this.parents('.domainmapping-tab'),
-				step = tab.find('#domainmapping-box-purchase-domain');
-
-			$.get($this.attr('href'), {}, function(response) {
-				if (response.success == undefined) {
-					return;
-				}
-
-				if (response.success) {
-					if (step.length == 0) {
-						tab.append(response.data.html);
-					} else {
-						step.replaceWith(response.data.html);
-					}
-
-					step = tab.find('#domainmapping-box-purchase-domain');
-					if ($.payment != undefined) {
-						step.find('#card_number').payment('restrictNumeric').payment('formatCardNumber');
-						step.find('#card_expiration').payment('formatCardExpiry');
-						step.find('#card_cvv2').payment('formatCardCVC');
-					}
-				}
-			});
-			return false;
-		});
-
 		$('.domainmapping-tab').on('submit', '#domainmapping-purchase-domain-form', function() {
 			var $this = $(this),
-				wrapper = $this.parents('.domainmapping-domains-wrapper'),
 				card_number = $this.find('#card_number').val(),
 				card_expiry = $this.find('#card_expiration').payment('cardExpiryVal'),
 				card_type = null;
@@ -223,19 +194,13 @@
 				return false;
 			}
 
-			wrapper.addClass('domainmapping-domains-wrapper-locked');
-			$.post($this.attr('action'), $this.serialize(), function(response) {
-				wrapper.removeClass('domainmapping-domains-wrapper-locked');
-				if (response.success) {
-					show_success(domainmapping.message.purchase.success, function() {
-						location.href = location.href.replace('&tab=purchase', '');
-					});
-				} else {
-					show_error(domainmapping.message.purchase.failed);
-				}
-			});
-
-			return false;
+			return true;
 		});
+
+		if ($.payment != undefined) {
+			$('#domainmapping-box-purchase-domain #card_number').payment('restrictNumeric').payment('formatCardNumber');
+			$('#domainmapping-box-purchase-domain #card_expiration').payment('formatCardExpiry');
+			$('#domainmapping-box-purchase-domain #card_cvv2').payment('formatCardCVC');
+		}
 	});
 })(jQuery);

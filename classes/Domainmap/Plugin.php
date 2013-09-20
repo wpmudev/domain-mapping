@@ -31,6 +31,15 @@ class Domainmap_Plugin {
 	const NAME    = 'domainmap';
 	const VERSION = '4.0.0';
 
+	const ACTION_CHECK_DOMAIN_AVAILABILITY  = 'domainmapping_check_domain';
+	const ACTION_SHOW_PURCHASE_FORM         = 'domainmapping_show_purchase_form';
+	const ACTION_PAYPAL_DO_EXPRESS_CHECKOUT = 'domainmapping_do_express_checkout';
+	const ACTION_PAYPAL_PURCHASE            = 'domainmapping_purchase_with_paypal';
+	const ACTION_MAP_DOMAIN                 = 'domainmapping_map_domain';
+	const ACTION_UNMAP_DOMAIN               = 'domainmapping_unmap_domain';
+	const ACTION_HEALTH_CHECK               = 'domainmapping_check_health';
+	const ACTION_HEARTBEAT_CHECK            = 'domainmapping_heartbeat_check';
+
 	/**
 	 * Singletone instance of the plugin.
 	 *

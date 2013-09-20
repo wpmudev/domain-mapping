@@ -44,10 +44,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		parent::__construct( $plugin );
 
 		// add ajax actions
-		$this->_add_ajax_action( 'domainmapping_map_domain', 'map_domain' );
-		$this->_add_ajax_action( 'domainmapping_unmap_domain', 'unmap_domain' );
-		$this->_add_ajax_action( 'domainmapping_check_health', 'check_health_status', true, true );
-		$this->_add_ajax_action( 'domainmapping_heartbeat_check', 'check_heartbeat', false, true );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'map_domain' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_UNMAP_DOMAIN, 'unmap_domain' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEALTH_CHECK, 'check_health_status', true, true );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', false, true );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function map_domain() {
-		self::_check_premissions( 'domainmapping_map_domain' );
+		self::_check_premissions( Domainmap_Plugin::ACTION_MAP_DOMAIN );
 
 		$message = $hide_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
@@ -138,7 +138,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function unmap_domain() {
-		self::_check_premissions( 'domainmapping_unmap_domain' );
+		self::_check_premissions( Domainmap_Plugin::ACTION_UNMAP_DOMAIN );
 
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
@@ -171,7 +171,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
 
 		$response = wp_remote_request( add_query_arg( array(
-			'action' => 'domainmapping_heartbeat_check',
+			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
 		), $ajax_url ) );
 
@@ -186,7 +186,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function check_health_status() {
-		self::_check_premissions( 'domainmapping_check_health' );
+		self::_check_premissions( Domainmap_Plugin::ACTION_HEALTH_CHECK );
 
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
 		if ( !self::_validate_domain_name( $domain ) ) {

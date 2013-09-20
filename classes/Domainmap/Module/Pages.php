@@ -128,7 +128,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 					$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $current_ip, $ajax_url );
 
 					$response = wp_remote_request( add_query_arg( array(
-						'action' => 'domainmapping_heartbeat_check',
+						'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 						'check'  => $check,
 					), $ajax_url ) );
 
@@ -409,8 +409,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 *
 	 * @since 3.3
 	 * @action admin_enqueue_scripts
-	 * @uses plugins_url() To generate base URL of assets files.
-	 * @uses wp_register_script() To register javascript files.
 	 * @uses wp_enqueue_script() To enqueue javascript files.
 	 * @uses wp_enqueue_style() To enqueue CSS files.
 	 *
@@ -419,45 +417,19 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @param string $page The page handle.
 	 */
 	public function enqueue_scripts( $page ) {
-		global $wp_styles;
-
 		// if we are not at the site admin page, then exit
 		if ( $page != $this->_admin_page ) {
 			return;
 		}
 
-		$baseurl = plugins_url( '/', DOMAINMAP_BASEFILE );
-
 		// enqueue scripts
-		wp_register_script( 'jquery-payment', $baseurl . 'js/jquery.payment.js', array( 'jquery' ), '1.0.1', true );
-		wp_enqueue_script( 'domainmapping-admin', $baseurl . 'js/admin.js', array( 'jquery' ), Domainmap_Plugin::VERSION, true );
-		wp_localize_script( 'domainmapping-admin', 'domainmapping', array(
-			'button'  => array(
-				'close' => __( 'OK', 'domainmap' ),
-			),
-			'message' => array(
-				'unmap'   => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
-				'empty'   => __( 'Please, enter not empty domain name.', 'domainmap' ),
-				'invalid' => array(
-					'card_number' => __( 'Credit card number is invalid.', 'domainmap' ),
-					'card_type'   => __( 'Credit card type is invalid.', 'domainmap' ),
-					'card_expiry' => __( 'Credit card expiry date is invalid.', 'domainmap' ),
-					'card_cvv'    => __( 'Credit card CVV2 code is invalid.', 'domainmap' ),
-				),
-				'purchase' => array(
-					'success' => __( 'Domain name has been purchased successfully.', 'domainmap' ),
-					'failed'  => __( 'Domain name purchase has failed.', 'domainmap' ),
-				),
-			),
-		) );
+		wp_enqueue_script( 'domainmapping-admin' );
 
 		// enqueue styles
-		wp_enqueue_style( 'font-awesome', $baseurl . 'css/font-awesome.min.css', array(), '3.2.1' );
-		wp_enqueue_style( 'font-awesome-ie', $baseurl . 'css/font-awesome-ie7.min.css', array( 'font-awesome' ), '3.2.1' );
-		wp_enqueue_style( 'google-font-lato', 'https://fonts.googleapis.com/css?family=Lato:300,400,700,400italic', array(), Domainmap_Plugin::VERSION );
-		wp_enqueue_style( 'domainmapping-admin', $baseurl . 'css/admin.css', array( 'google-font-lato', 'buttons' ), Domainmap_Plugin::VERSION );
-
-		$wp_styles->registered['font-awesome-ie']->add_data( 'conditional', 'IE 7' );
+		wp_enqueue_style( 'font-awesome' );
+		wp_enqueue_style( 'font-awesome-ie' );
+		wp_enqueue_style( 'google-font-lato' );
+		wp_enqueue_style( 'domainmapping-admin' );
 	}
 
 }

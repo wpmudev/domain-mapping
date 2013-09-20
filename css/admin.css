@@ -172,7 +172,8 @@
     margin-top: 10px
 }
 
-.domainmapping-form input[type="text"] {
+.domainmapping-form input[type="text"],
+.domainmapping-form input[type="email"] {
     padding: 5px 10px;
     width: 200px;
     float: left;
@@ -408,9 +409,10 @@ input.domainmapping-radio {
 }
 
 #domainmapping-purchase-domain-form input[type="text"],
+#domainmapping-purchase-domain-form input[type="email"],
 #domainmapping-purchase-domain-form select {
 	float: none;
-	width: 300px;
+	width: 500px;
 }
 
 .domainmapping-field-required {
@@ -605,4 +607,26 @@ input.domainmapping-radio {
 
 .domainmapping-paypal-form {
 	margin-top: 5px;
+}
+
+.domainmapping-iframe {
+	width: 60%;
+	margin: 0 auto;
+	padding: 30px 0;
+}
+
+#domainmapping-iframe-content {
+	box-shadow: 0 0 7px #999;
+}
+
+.domainmapping-push-right {
+	float: right;
+}
+
+.domainmapping-push-left {
+	float: left;
+}
+
+.domainmapping-form-buttons {
+	margin-top: 50px;
 }

@@ -39,8 +39,6 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 	 * @access protected
 	 */
 	protected function _render_tab() {
-		wp_enqueue_script( 'jquery-payment' );
-
 		$tlds = $this->reseller->get_tld_list();
 
 		$predefined_sld = trim( filter_input( INPUT_GET, 'sld' ) );
@@ -54,12 +52,12 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 		?></p>
 
 		<div id="domainmapping-box-check-domain" class="domainmapping-box">
-			<h3><?php _e( 'Step 1: Check domain availability', 'domainmap' ) ?></h3>
+			<h3><?php _e( 'Check domain availability', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
 				<form id="domainmapping-check-domain-form" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
-					<?php wp_nonce_field( 'domainmapping_check_domain', 'nonce' ) ?>
-					<input type="hidden" name="action" value="domainmapping_check_domain">
+					<?php wp_nonce_field( Domainmap_Plugin::ACTION_CHECK_DOMAIN_AVAILABILITY, 'nonce' ) ?>
+					<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_CHECK_DOMAIN_AVAILABILITY ?>">
 					<input type="text" class="domainmapping-input-prefix" readonly disabled value="http://">
 					<div class="domainmapping-controls-wrapper">
 						<input type="text" class="domainmapping-input-domain" autofocus name="sld" value="<?php echo esc_attr( $predefined_sld ) ?>">

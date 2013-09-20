@@ -27,43 +27,44 @@
  * @package Render
  * @subpackage Reseller
  */
-class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render {
+class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Purchase {
 
 	/**
-	 * Renders purchase step section.
+	 * Renders purchase form.
 	 *
 	 * @since 4.0.0
 	 *
 	 * @access protected
 	 */
-	protected function _to_html() {
+	protected function _render_page() {
+		$cancel = filter_input( INPUT_GET, 'cancel', FILTER_VALIDATE_URL );
+
 		?><div id="domainmapping-box-purchase-domain" class="domainmapping-box">
-			<h3><?php _e( 'Step 2: Purchase domain', 'domainmap' ) ?></h3>
+			<h3><?php _e( 'Purchase domain', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
-				<form id="domainmapping-purchase-domain-form" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
-					<?php wp_nonce_field( 'domainmapping_purchase_domain', 'nonce' ) ?>
-					<input type="hidden" name="action" value="domainmapping_purchase_domain">
+				<form id="domainmapping-purchase-domain-form" method="post">
 					<input type="hidden" name="sld" value="<?php echo esc_attr( $this->sld ) ?>">
 					<input type="hidden" name="tld" value="<?php echo esc_attr( $this->tld ) ?>">
 					<input type="hidden" id="card_type" name="card_type">
 
-					<p class="domainmapping-info"><?php
-						printf(
-							__( 'You are about to purchase domain name <b>%s</b> and pay <b>%s</b> for 1 year of usage. Please, fill in the form below and click on purchase button.', 'domainmap' ),
-							esc_html( strtoupper( $this->domain ) ),
-							esc_html( $this->price )
-						)
-					?></p>
+					<p class="domainmapping-info"><?php printf(
+						__( 'You are about to purchase domain name %s and pay %s for 1 year of usage. Please, fill in the form below and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
+						'<b>' . esc_html( strtoupper( $this->domain ) ) . '</b>',
+						'<b>' . esc_html( $this->price ) . '</b>'
+					) ?></p>
 
 					<?php $this->_render_card_fields() ?>
 					<?php $this->_render_billing_fields() ?>
 					<?php $this->_render_registrant_fields() ?>
 					<?php $this->_render_extra_fields() ?>
 
-					<p>&nbsp;</p>
-
-					<button type="submit" class="button button-primary"><i class="icon-shopping-cart"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
+					<div class="domainmapping-form-buttons">
+						<?php if ( $cancel ) : ?>
+						<a class="button domainmapping-button domainmapping-push-right" href="<?php echo esc_url( $cancel ) ?>"><?php _e( 'Cancel', 'domainmap' ) ?></a>
+						<?php endif; ?>
+						<button type="submit" class="button button-primary domainmapping-button"><i class="icon-shopping-cart"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
+					</div>
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>
@@ -218,7 +219,7 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render {
 
 		<p>
 			<label for="registrant_email" class="domainmapping-label"><?php _e( 'Email:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_email" required name="registrant_email" maxlength="128" x-autocompletetype="email">
+			<input type="email" id="registrant_email" required name="registrant_email" maxlength="128" x-autocompletetype="email">
 		</p>
 
 		<p>
