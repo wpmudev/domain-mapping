@@ -112,7 +112,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$option = 'domainmap_version';
 
 		// fetch current database version
-		$db_version = get_option( $option );
+		$db_version = get_site_option( $option );
 		if ( $db_version === false || !preg_match( '/^\d+(\.\d+){2,3}$/', $db_version ) ) {
 			$db_version = '0.0.0';
 			update_option( $option, $db_version );
@@ -127,7 +127,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$this->_add_filter( $filter, 'upgrade_to_4_0_0', 1 );
 
 		// upgrade database version to current plugin version
-		update_option( $option, apply_filters( $filter, $db_version ) );
+		update_site_option( $option, apply_filters( $filter, $db_version ) );
 	}
 
 	/**
