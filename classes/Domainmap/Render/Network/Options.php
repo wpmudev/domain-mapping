@@ -199,7 +199,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	}
 
 	/**
-	 * Renders cross domain autologin settings.
+	 * Renders cross-domain autologin settings.
 	 *
 	 * @since 4.0.0
 	 *
@@ -212,7 +212,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			__( 'Enabled', 'domainmap' ),
 		);
 
-		?><h4 class="domainmapping-block-header"><?php _e( 'Cross domains autologin', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Cross-domain autologin', 'domainmap' ) ?></h4>
 		<p>
 			<?php _e( "If you don't want the plugin to login you cross all your mapped domains automatically, then use the setting below to disable this feature.", 'domainmap' ) ?><br>
 		</p>

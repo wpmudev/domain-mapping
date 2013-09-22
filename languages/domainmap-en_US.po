@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-22 15:55+0300\n"
-"PO-Revision-Date: 2013-09-22 16:03+0300\n"
+"POT-Creation-Date: 2013-09-22 16:06+0300\n"
+"PO-Revision-Date: 2013-09-22 16:07+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -19,12 +19,12 @@ msgstr ""
 "X-Poedit-SearchPath-0: classes\n"
 
 #: classes/class.domainmap.php:330 classes/class.domainmap.php:367
-#: classes/class.domainmap.php:620
+#: classes/class.domainmap.php:625
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
 #: classes/class.domainmap.php:348 classes/class.domainmap.php:381
-#: classes/class.domainmap.php:627
+#: classes/class.domainmap.php:632
 msgid "Please wait..."
 msgstr "Please wait..."
 
@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:628
+#: classes/class.domainmap.php:633
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -516,8 +516,8 @@ msgid "Enabled"
 msgstr "Enabled"
 
 #: classes/Domainmap/Render/Network/Options.php:215
-msgid "Cross domains autologin"
-msgstr "Cross domains autologin"
+msgid "Cross-domain autologin"
+msgstr "Cross-domain autologin"
 
 #: classes/Domainmap/Render/Network/Options.php:217
 msgid ""
