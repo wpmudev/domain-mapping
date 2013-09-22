@@ -98,6 +98,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_domain_configuration();
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();
+		$this->_render_cross_autologin();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -150,7 +151,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @access public
+	 * @access private
 	 */
 	private function _render_administration_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
@@ -176,7 +177,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @access public
+	 * @access private
 	 */
 	private function _render_login_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Login mapping', 'domainmap' ) ?></h4>
@@ -198,11 +199,42 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	}
 
 	/**
+	 * Renders cross domain autologin settings.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_cross_autologin() {
+		$selected = isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
+		$options = array(
+			__( 'Disabled', 'domainmap' ),
+			__( 'Enabled', 'domainmap' ),
+		);
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'Cross domains autologin', 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "If you don't want the plugin to login you cross all your mapped domains automatically, then use the setting below to disable this feature.", 'domainmap' ) ?><br>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $options as $option => $label ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_crossautologin" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
+						<?php echo $label ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul><?php
+	}
+
+	/**
 	 * Renders pro site section.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @access public
+	 * @access private
 	 */
 	private function _render_pro_site() {
 		if ( !function_exists( 'is_pro_site' ) ) {

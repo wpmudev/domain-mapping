@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-20 16:40+0300\n"
-"PO-Revision-Date: 2013-09-20 16:40+0300\n"
+"POT-Creation-Date: 2013-09-22 15:55+0300\n"
+"PO-Revision-Date: 2013-09-22 16:03+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: classes\n"
 
-#: classes/class.domainmap.php:311 classes/class.domainmap.php:348
-#: classes/class.domainmap.php:601
+#: classes/class.domainmap.php:330 classes/class.domainmap.php:367
+#: classes/class.domainmap.php:620
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
-#: classes/class.domainmap.php:329 classes/class.domainmap.php:362
-#: classes/class.domainmap.php:608
+#: classes/class.domainmap.php:348 classes/class.domainmap.php:381
+#: classes/class.domainmap.php:627
 msgid "Please wait..."
 msgstr "Please wait..."
 
-#: classes/class.domainmap.php:330 classes/class.domainmap.php:363
+#: classes/class.domainmap.php:349 classes/class.domainmap.php:382
 #, php-format
 msgid ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:609
+#: classes/class.domainmap.php:628
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -74,15 +74,15 @@ msgstr "Purchase domain"
 msgid "Set DNS record"
 msgstr "Set DNS record"
 
-#: classes/Domainmap/Reseller.php:331
+#: classes/Domainmap/Reseller.php:336
 msgid "Purchase this domain."
 msgstr "Purchase this domain."
 
-#: classes/Domainmap/Reseller.php:338
+#: classes/Domainmap/Reseller.php:343
 msgid "is available to purchase for"
 msgstr "is available to purchase for"
 
-#: classes/Domainmap/Reseller.php:340
+#: classes/Domainmap/Reseller.php:345
 msgid "per year"
 msgstr "per year"
 
@@ -387,7 +387,7 @@ msgid "Don't use any"
 msgstr "Don't use any"
 
 #: classes/Domainmap/Render/Network/Resellers.php:106
-#: classes/Domainmap/Render/Network/Options.php:105
+#: classes/Domainmap/Render/Network/Options.php:106
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -441,27 +441,27 @@ msgstr ""
 "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
 "these lines in place."
 
-#: classes/Domainmap/Render/Network/Options.php:123
+#: classes/Domainmap/Render/Network/Options.php:124
 msgid "Domain mapping Configuration"
 msgstr "Domain mapping Configuration"
 
-#: classes/Domainmap/Render/Network/Options.php:125
-msgid ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
-msgstr ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
-
 #: classes/Domainmap/Render/Network/Options.php:126
 msgid ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+msgstr ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+
+#: classes/Domainmap/Render/Network/Options.php:127
+msgid ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 msgstr ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 
-#: classes/Domainmap/Render/Network/Options.php:132
+#: classes/Domainmap/Render/Network/Options.php:133
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
@@ -471,15 +471,15 @@ msgstr ""
 "and fetch the IP address(es) assigned to it. You can use the following IP "
 "address(es) to enter in the <b>Server IP Address</b> field below:"
 
-#: classes/Domainmap/Render/Network/Options.php:141
+#: classes/Domainmap/Render/Network/Options.php:142
 msgid "Server IP Address: "
 msgstr "Server IP Address: "
 
-#: classes/Domainmap/Render/Network/Options.php:156
+#: classes/Domainmap/Render/Network/Options.php:157
 msgid "Administration mapping"
 msgstr "Administration mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:158
+#: classes/Domainmap/Render/Network/Options.php:159
 msgid ""
 "The settings below allow you to control how the domain mapping plugin "
 "operates with the dashboard administration area."
@@ -487,15 +487,15 @@ msgstr ""
 "The settings below allow you to control how the domain mapping plugin "
 "operates with the dashboard administration area."
 
-#: classes/Domainmap/Render/Network/Options.php:159
+#: classes/Domainmap/Render/Network/Options.php:160
 msgid "Select the domain that should be used for the administration area:"
 msgstr "Select the domain that should be used for the administration area:"
 
-#: classes/Domainmap/Render/Network/Options.php:182
+#: classes/Domainmap/Render/Network/Options.php:183
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:184
+#: classes/Domainmap/Render/Network/Options.php:185
 msgid ""
 "The settings below allow you to control how the domain mapping plugin "
 "operates login page."
@@ -503,15 +503,35 @@ msgstr ""
 "The settings below allow you to control how the domain mapping plugin "
 "operates login page."
 
-#: classes/Domainmap/Render/Network/Options.php:185
+#: classes/Domainmap/Render/Network/Options.php:186
 msgid "Select the domain, what should be used for the login page:"
 msgstr "Select the domain, what should be used for the login page:"
 
+#: classes/Domainmap/Render/Network/Options.php:211
+msgid "Disabled"
+msgstr "Disabled"
+
 #: classes/Domainmap/Render/Network/Options.php:212
+msgid "Enabled"
+msgstr "Enabled"
+
+#: classes/Domainmap/Render/Network/Options.php:215
+msgid "Cross domains autologin"
+msgstr "Cross domains autologin"
+
+#: classes/Domainmap/Render/Network/Options.php:217
+msgid ""
+"If you don't want the plugin to login you cross all your mapped domains "
+"automatically, then use the setting below to disable this feature."
+msgstr ""
+"If you don't want the plugin to login you cross all your mapped domains "
+"automatically, then use the setting below to disable this feature."
+
+#: classes/Domainmap/Render/Network/Options.php:244
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:213
+#: classes/Domainmap/Render/Network/Options.php:245
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
@@ -543,19 +563,19 @@ msgstr "Payment for 1 year usage of the domain name."
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:360
+#: classes/Domainmap/Module/Pages.php:361
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:361
+#: classes/Domainmap/Module/Pages.php:362
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:366
+#: classes/Domainmap/Module/Pages.php:367
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:396
+#: classes/Domainmap/Module/Pages.php:397
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
@@ -619,11 +639,11 @@ msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
 #: classes/Domainmap/Module/Ajax/Map.php:122
-#: classes/Domainmap/Module/Ajax/Purchase.php:105
+#: classes/Domainmap/Module/Ajax/Purchase.php:104
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:102
+#: classes/Domainmap/Module/Ajax/Purchase.php:101
 msgid "is not available to purchase"
 msgstr "is not available to purchase"
 
