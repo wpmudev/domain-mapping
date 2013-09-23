@@ -548,6 +548,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		$render = new Domainmap_Render_Reseller_Enom_Purchase( $domain_info );
+		$render->errors = $this->get_last_errors();
 		$render->cardtypes = $this->get_card_types();
 		$render->cardholder = $cardholder;
 		$render->countries = Domainmap_Plugin::instance()->get_countries();

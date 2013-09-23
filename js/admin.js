@@ -168,6 +168,7 @@
 
 		$('.domainmapping-tab').on('submit', '#domainmapping-purchase-domain-form', function() {
 			var $this = $(this),
+				wrapper = $this.parents('.domainmapping-domains-wrapper'),
 				card_number = $this.find('#card_number').val(),
 				card_expiry = $this.find('#card_expiration').payment('cardExpiryVal'),
 				card_type = null;
@@ -193,6 +194,8 @@
 				show_error(domainmapping.message.invalid.card_cvv);
 				return false;
 			}
+
+			wrapper.addClass('domainmapping-domains-wrapper-locked');
 
 			return true;
 		});

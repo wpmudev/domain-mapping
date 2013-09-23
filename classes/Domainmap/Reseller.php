@@ -48,6 +48,28 @@ abstract class Domainmap_Reseller {
 	const LOG_LEVEL_ALL      = 2;
 
 	/**
+	 * Last errors returned by reseller API.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @var WP_Error
+	 */
+	protected $_last_errors;
+
+	/**
+	 * Returns last errors returned by reseller API.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return WP_Error The error object or NULL if no errors appears.
+	 */
+	public function get_last_errors() {
+		return $this->_last_errors;
+	}
+
+	/**
 	 * Returns reseller internal id.
 	 *
 	 * @since 4.0.0
@@ -255,6 +277,16 @@ abstract class Domainmap_Reseller {
 		// but only errors should be logged
 		if ( !$level || ( $valid && $level == self::LOG_LEVEL_ERRORS ) ) {
 			return;
+		}
+
+		// sets last errors if request failed
+		if ( !$valid ) {
+			$this->_last_errors = new WP_Error();
+			foreach ( (array)$errors as $code => $message ) {
+				$this->_last_errors->add( $code, $message );
+			}
+		} else {
+			$this->_last_errors = null;
 		}
 
 		// save requests into the log
