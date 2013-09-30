@@ -21,6 +21,9 @@
 
 class domain_map {
 
+	/**
+	 * @var wpdb
+	 */
 	var $db;
 
 	// The tables we need to map - empty for now as we will move to this later
@@ -318,28 +321,31 @@ class domain_map {
 	function wp_redirect($location) {
 		global $dm_authenticated, $dm_logout, $dm_csc_building_urls;
 
-		if ($dm_authenticated) {
-			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+		if ( $dm_authenticated ) {
+			if ( !defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
+			}
+
 			header("HTTP/1.1 301 Moved Permanently", true, 301);
 			header("Location: {$location}", true, 301);
-			?>
-			<!DOCTYPE html>
+
+			?><!DOCTYPE html>
 			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
 				<head>
 					<meta name="robots" content="noindex,nofollow" />
 					<title><?php _e('Authenticating...', 'domainmap'); ?></title>
 					<?php
-					if (!empty($dm_authenticated) && !empty($dm_authenticated->ID)) {
-						$this->build_cookie('login', $dm_authenticated, $location);
+					if ( !empty( $dm_authenticated ) && !empty( $dm_authenticated->ID ) ) {
+						$this->build_cookie( 'login', $dm_authenticated, $location );
 					} else {
-						$this->build_cookie('logout');
+						$this->build_cookie( 'logout' );
 					}
 
-					if (count($dm_csc_building_urls) > 0) {
-						$dm_csc_building_urls[] = rawurlencode($location);
+					if ( count( $dm_csc_building_urls ) > 0 ) {
+						$dm_csc_building_urls[] = rawurlencode( $location );
 
-						$location = rawurldecode(array_shift($dm_csc_building_urls));
-						$location .= '&follow_through='.join(',', $dm_csc_building_urls);
+						$location = rawurldecode( array_shift( $dm_csc_building_urls ) );
+						$location .= '&follow_through=' . implode( ',', $dm_csc_building_urls );
 					}
 					?>
 					<meta http-equiv="refresh" content="3;url=<?php echo $location; ?>" />
@@ -469,19 +475,19 @@ class domain_map {
 				}
 
 				// Other mapped sites
-				$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain->blog_id}' ORDER BY id", ARRAY_A );
-				if ( $domains && is_array( $domains ) ) {
-					foreach ( $domains as $domain ) {
-						if ( !isset( $urls[$domain['domain']] ) ) {
-							$urls[$domain['domain']] = trailingslashit( $schema . $domain['domain'] );
+				$results = $this->db->get_col( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain['blog_id']}' ORDER BY id" );
+				if ( $results && is_array( $results ) ) {
+					foreach ( $results as $result ) {
+						if ( !isset( $urls[$result] ) ) {
+							$urls[$result] = trailingslashit( $schema . $result );
 						}
 					}
 				}
 
 				// redirect to mapped site
-				$domain = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$domain->blog_id}' LIMIT 1", ARRAY_A );
-				if ( $domain && !isset( $urls[$domain['domain']] ) ) {
-					$urls[$domain['domain']] = $schema . $domain['domain'] . $domain['path'];
+				$result = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$domain['blog_id']}' LIMIT 1", ARRAY_A );
+				if ( $result && !isset( $urls[$result['domain']] ) ) {
+					$urls[$result['domain']] = $schema . $result['domain'] . $result['path'];
 				}
 			} else {
 				// redirect to unmapped site
@@ -492,7 +498,7 @@ class domain_map {
 					}
 
 					// Other mapped sites
-					$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain->blog_id}' ORDER BY id", ARRAY_A );
+					$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$domain['blog_id']}' ORDER BY id", ARRAY_A );
 					if( $domains && is_array( $domains ) ) {
 						foreach ( $domains as $domain ) {
 							if ( !isset( $urls[$domain['domain']] ) ) {
@@ -502,7 +508,7 @@ class domain_map {
 					}
 
 					// redirect to mapped site
-					$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmtable} WHERE blog_id = '{$domains->blog_id}' LIMIT 1", ARRAY_A );
+					$domain = $this->db->get_row( "SELECT blog_id, domain FROM {$this->dmtable} WHERE blog_id = '{$domain['blog_id']}' LIMIT 1", ARRAY_A );
 					if ( $domain ) {
 						if ( !isset( $urls[$domain['domain']] ) ) {
 							$urls[$domain['domain']] = trailingslashit( $schema . $domain['domain'] );
@@ -523,9 +529,11 @@ class domain_map {
 				$minus24_date = date( "Ymd", strtotime( '-24 days' ) );
 
 				$keys = get_user_meta( $user->ID, 'cross_domain', true );
-				foreach( $keys as $hash => $meta ) {
-					if ( isset( $meta['built'] ) && $meta['built'] == $minus24_date ) {
-						$key[$hash] = $meta;
+				if ( !empty( $keys ) && is_array( $keys ) ) {
+					foreach( $keys as $hash => $meta ) {
+						if ( isset( $meta['built'] ) && $meta['built'] == $minus24_date ) {
+							$key[$hash] = $meta;
+						}
 					}
 				}
 
@@ -557,26 +565,28 @@ class domain_map {
 		}
 	}
 
-	function allowed_redirect_hosts($allowed_hosts) {
-		global $blog_id;
-
-		if (empty($_REQUEST['redirect_to'])) {
+	function allowed_redirect_hosts( $allowed_hosts ) {
+		if ( empty( $_REQUEST['redirect_to'] ) ) {
 			return $allowed_hosts;
 		}
 
-		$redirect_url = parse_url($_REQUEST['redirect_to']);
-		$network_home_url = parse_url(network_home_url());
-		if ( isset($redirect_url['host']) && $redirect_url['host'] === $network_home_url['host']) {
+		$redirect_url = parse_url( $_REQUEST['redirect_to'] );
+		if ( !isset( $redirect_url['host'] ) ) {
 			return $allowed_hosts;
 		}
 
-		$pos = strpos($redirect_url['host'], '.');
-		if (($pos !== false) && (substr($redirect_url['host'], $pos + 1) === $network_home_url['host'])) {
+		$network_home_url = parse_url( network_home_url() );
+		if ( $redirect_url['host'] === $network_home_url['host'] ) {
+			return $allowed_hosts;
+		}
+
+		$pos = strpos( $redirect_url['host'], '.' );
+		if ( ($pos !== false) && (substr( $redirect_url['host'], $pos + 1 ) === $network_home_url['host']) ) {
 			$allowed_hosts[] = $redirect_url['host'];
 		}
 
-		$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */");
-		if ($bid) {
+		$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */" );
+		if ( $bid ) {
 			$allowed_hosts[] = $redirect_url['host'];
 		}
 
