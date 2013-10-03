@@ -156,7 +156,8 @@
     color: red
 }
 
-.domainmapping-mapped, .domainmapping-map-state,
+.domainmapping-mapped,
+.domainmapping-map-state,
 .domainmapping-map-remove {
     text-decoration: none
 }
@@ -209,6 +210,11 @@
     -moz-border-radius-bottomleft: 0
 }
 
+.domainmapping-form input.domainmapping-input-sufix.domainmapping-input-empty {
+    padding: 5px 0;
+    width: 2px;
+}
+
 .domainmapping-form input.domainmapping-input-prefix {
     width: 60px;
     border-right-width: 0;
@@ -235,13 +241,15 @@
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0;
-    height: auto;
+    height: 27px;
     padding: 4px 0;
     margin: 0;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    border: 0
+    border: 0;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .domainmapping-controls-wrapper {
@@ -363,8 +371,6 @@ input.domainmapping-radio {
 .domainmapping-reseller-settings {
     display: none;
     margin-top: 40px;
-/*    padding-top: 20px;
-    border-top: 1px dashed #ddd*/
 }
 
 .domainmapping-reseller-settings.active {
@@ -390,34 +396,34 @@ input.domainmapping-radio {
 
 #domainmapping-check-domain-form,
 #domainmapping-purchase-domain-form {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 #domainmapping-purchase-domain-form h4 {
-	margin-top: 40px;
-	padding-bottom: 5px;
-	border-bottom: 1px dashed #ccc;
-	font-size: 16px;
+    margin-top: 40px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #ccc;
+    font-size: 16px;
 }
 
 #domainmapping-purchase-domain-form h4:first-child {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 #domainmapping-purchase-domain-form h4 i {
-	margin-right: 7px;
+    margin-right: 7px;
 }
 
 #domainmapping-purchase-domain-form input[type="text"],
 #domainmapping-purchase-domain-form input[type="email"],
 #domainmapping-purchase-domain-form select {
-	float: none;
-	width: 500px;
+    float: none;
+    width: 500px;
 }
 
 .domainmapping-field-required {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 #domainmapping-ppp-overlay {
@@ -482,15 +488,15 @@ input.domainmapping-radio {
 #domainmapping-ppp-body {
     padding: 30px 20px;
     min-width: 400px;
-	max-width: 700px;
+    max-width: 700px;
     font-size: 16px;
     line-height: 24px
 }
 
 #domainmapping-ppp-body small {
-	font-size: 13px;
-	line-height: 19px;
-	color: #222;
+    font-size: 13px;
+    line-height: 19px;
+    color: #222;
 }
 
 #domainmapping-ppp-footer {
@@ -506,11 +512,12 @@ input.domainmapping-radio {
 }
 
 .wp-core-ui #domainmapping-content .button {
-	padding-top: 1px;
-	padding-bottom: 2px;
-	height: auto;
-	font-size: 14px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    height: auto;
+    font-size: 14px;
 }
+
 .domainmapping-request-valid,
 .domainmapping-request-invalid {
     color: white;
@@ -568,65 +575,67 @@ input.domainmapping-radio {
 }
 
 .domainmapping-log-item-invalid {
-	background-color: #fee;
+    background-color: #fee;
 }
 
 .domainmapping-log-item-valid {
-	background-color: #efe;
+    background-color: #efe;
 }
 
 .domainmapping-purchase-paypal-link {
-	margin-top: 5px;
-	height: 26px;
-	display: block;
-	float: left;
+    margin-top: 5px;
+    height: 26px;
+    display: block;
+    float: left;
 }
 
 .domainmapping-compressed-list {
-	margin: 0;
+    margin: 0;
 }
 
 .domainmapping-compressed-list > li {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .domainmapping-block-header {
-	border-bottom: 1px dashed #ddd;
-	margin: 40px 0 10px;
-	padding-bottom: 10px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0 10px;
+    padding-bottom: 10px;
 }
 
 .domainmapping-transparent-button {
-	background-color: transparent;
-	border: none;
-	margin: 0;
-	padding: 0;
-	cursor: pointer;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
 }
 
 .domainmapping-paypal-form {
-	margin-top: 5px;
+    margin-top: 5px;
 }
 
 .domainmapping-iframe {
-	width: 60%;
-	margin: 0 auto;
-	padding: 30px 0;
+    width: 60%;
+    margin: 0 auto;
+    padding: 30px 0;
 }
 
 #domainmapping-iframe-content {
-	box-shadow: 0 0 7px #999;
+    -moz-box-shadow: 0 0 7px #999;
+    -webkit-box-shadow: 0 0 7px #999;
+    box-shadow: 0 0 7px #999;
 }
 
 .domainmapping-push-right {
-	float: right;
+    float: right;
 }
 
 .domainmapping-push-left {
-	float: left;
+    float: left;
 }
 
 .domainmapping-form-buttons {
-	margin-top: 50px;
+    margin-top: 50px;
 }
