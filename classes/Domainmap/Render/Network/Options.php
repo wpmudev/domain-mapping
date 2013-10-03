@@ -156,8 +156,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_administration_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "The settings below allow you to control how the domain mapping plugin operates with the dashboard administration area.", 'domainmap' ) ?><br>
-			<?php _e( 'Select the domain that should be used for the administration area:', 'domainmap' ) ?>
+			<?php _e( 'You can allow your members to access the administration area of your site through the domain they enter, you can also restrict it to the Mapped domain or the original domain (your website url):', 'domainmap' ) ?>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -182,8 +181,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_login_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Login mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( 'The settings below allow you to control how the domain mapping plugin operates login page.', 'domainmap' ) ?><br>
-			<?php _e( 'Select the domain, what should be used for the login page:', 'domainmap' ) ?>
+			<?php _e( 'How should your members access the login page of their website, this can be through the domain they enter, or restrict it to either the Mapped domain or the original domain (your website url):', 'domainmap' ) ?>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -208,13 +206,13 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_cross_autologin() {
 		$selected = isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
 		$options = array(
-			__( 'Disabled', 'domainmap' ),
-			__( 'Enabled', 'domainmap' ),
+			1 => __( 'Yes', 'domainmap' ),
+			0 => __( 'No', 'domainmap' ),
 		);
-
+		
 		?><h4 class="domainmapping-block-header"><?php _e( 'Cross-domain autologin', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "If you don't want the plugin to login you cross all your mapped domains automatically, then use the setting below to disable this feature.", 'domainmap' ) ?><br>
+			<?php _e( "Would you like for your members to be logged into all sites within your network regardless of domain name:", 'domainmap' ) ?><br>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php

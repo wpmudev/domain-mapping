@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-22 16:06+0300\n"
-"PO-Revision-Date: 2013-09-22 16:07+0300\n"
+"POT-Creation-Date: 2013-10-03 18:12+0300\n"
+"PO-Revision-Date: 2013-10-03 18:12+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -18,71 +18,71 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: classes\n"
 
-#: classes/class.domainmap.php:330 classes/class.domainmap.php:367
-#: classes/class.domainmap.php:625
+#: classes/class.domainmap.php:336 classes/class.domainmap.php:373
+#: classes/class.domainmap.php:635
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
-#: classes/class.domainmap.php:348 classes/class.domainmap.php:381
-#: classes/class.domainmap.php:632
+#: classes/class.domainmap.php:354 classes/class.domainmap.php:387
+#: classes/class.domainmap.php:642
 msgid "Please wait..."
 msgstr "Please wait..."
 
-#: classes/class.domainmap.php:349 classes/class.domainmap.php:382
+#: classes/class.domainmap.php:355 classes/class.domainmap.php:388
 #, php-format
 msgid ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:633
+#: classes/class.domainmap.php:643
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/Domainmap/Reseller.php:283
+#: classes/Domainmap/Reseller.php:315
 msgid "Verify credentials"
 msgstr "Verify credentials"
 
-#: classes/Domainmap/Reseller.php:284
+#: classes/Domainmap/Reseller.php:316
 #: classes/Domainmap/Render/Site/Purchase.php:55
 msgid "Check domain availability"
 msgstr "Check domain availability"
 
-#: classes/Domainmap/Reseller.php:285
+#: classes/Domainmap/Reseller.php:317
 msgid "Get TLD list"
 msgstr "Get TLD list"
 
-#: classes/Domainmap/Reseller.php:286
+#: classes/Domainmap/Reseller.php:318
 msgid "Get retail price"
 msgstr "Get retail price"
 
-#: classes/Domainmap/Reseller.php:287
+#: classes/Domainmap/Reseller.php:319
 msgid "Get extended attributes"
 msgstr "Get extended attributes"
 
-#: classes/Domainmap/Reseller.php:288
+#: classes/Domainmap/Reseller.php:320
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:43
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:66
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:72
 #: classes/Domainmap/Module/Pages.php:88
 msgid "Purchase domain"
 msgstr "Purchase domain"
 
-#: classes/Domainmap/Reseller.php:289
+#: classes/Domainmap/Reseller.php:321
 msgid "Set DNS record"
 msgstr "Set DNS record"
 
-#: classes/Domainmap/Reseller.php:336
+#: classes/Domainmap/Reseller.php:368
 msgid "Purchase this domain."
 msgstr "Purchase this domain."
 
-#: classes/Domainmap/Reseller.php:343
+#: classes/Domainmap/Reseller.php:375
 msgid "is available to purchase for"
 msgstr "is available to purchase for"
 
-#: classes/Domainmap/Reseller.php:345
+#: classes/Domainmap/Reseller.php:377
 msgid "per year"
 msgstr "per year"
 
@@ -170,101 +170,101 @@ msgstr ""
 "that all fields marked with red asterisk are required and has to be filled "
 "with appropriate information."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:64
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:70
 msgid "Cancel"
 msgstr "Cancel"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:82
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:88
 msgid "Credit Card"
 msgstr "Credit Card"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:85
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:91
 msgid "Supported card types are:"
 msgstr "Supported card types are:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:89
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:95
 msgid "Card Number:"
 msgstr "Card Number:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:94
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:100
 msgid "Card Expiration:"
 msgstr "Card Expiration:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:99
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:105
 msgid "CVV2:"
 msgstr "CVV2:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:104
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:110
 msgid "Cardholder's Name:"
 msgstr "Cardholder's Name:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:117
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:125
 msgid "Billing Information"
 msgstr "Billing Information"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:120
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:186
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:128
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:196
 msgid "Address:"
 msgstr "Address:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:125
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:196
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:133
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:206
 msgid "City:"
 msgstr "City:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:130
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:201
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:138
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:211
 msgid "State/Province:"
 msgstr "State/Province:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:135
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:206
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:143
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:216
 msgid "Zip/Postal Code:"
 msgstr "Zip/Postal Code:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:140
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:226
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:148
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:236
 msgid "Phone:"
 msgstr "Phone:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:145
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:211
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:153
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:221
 msgid "Country:"
 msgstr "Country:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:163
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:173
 msgid "Registrant Information"
 msgstr "Registrant Information"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:166
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:176
 msgid "First Name:"
 msgstr "First Name:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:171
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:181
 msgid "Last Name:"
 msgstr "Last Name:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:176
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:186
 msgid "Organization Name:"
 msgstr "Organization Name:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:181
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:191
 msgid "Job Title:"
 msgstr "Job Title:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:191
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:201
 msgid "Alternative Address:"
 msgstr "Alternative Address:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:221
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:231
 msgid "Email:"
 msgstr "Email:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:231
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:241
 msgid "Fax:"
 msgstr "Fax:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:249
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:258
 msgid "Additional Registrar Information"
 msgstr "Additional Registrar Information"
 
@@ -481,57 +481,53 @@ msgstr "Administration mapping"
 
 #: classes/Domainmap/Render/Network/Options.php:159
 msgid ""
-"The settings below allow you to control how the domain mapping plugin "
-"operates with the dashboard administration area."
+"You can allow your members to access the administration area of your site "
+"through the domain they enter, you can also restrict it to the Mapped domain "
+"or the original domain (your website url):"
 msgstr ""
-"The settings below allow you to control how the domain mapping plugin "
-"operates with the dashboard administration area."
+"You can allow your members to access the administration area of your site "
+"through the domain they enter, you can also restrict it to the Mapped domain "
+"or the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:160
-msgid "Select the domain that should be used for the administration area:"
-msgstr "Select the domain that should be used for the administration area:"
-
-#: classes/Domainmap/Render/Network/Options.php:183
+#: classes/Domainmap/Render/Network/Options.php:182
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:185
+#: classes/Domainmap/Render/Network/Options.php:184
 msgid ""
-"The settings below allow you to control how the domain mapping plugin "
-"operates login page."
+"How should your members access the login page of their website, this can be "
+"through the domain they enter, or restrict it to either the Mapped domain or "
+"the original domain (your website url):"
 msgstr ""
-"The settings below allow you to control how the domain mapping plugin "
-"operates login page."
+"How should your members access the login page of their website, this can be "
+"through the domain they enter, or restrict it to either the Mapped domain or "
+"the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:186
-msgid "Select the domain, what should be used for the login page:"
-msgstr "Select the domain, what should be used for the login page:"
+#: classes/Domainmap/Render/Network/Options.php:209
+msgid "Yes"
+msgstr "Yes"
 
-#: classes/Domainmap/Render/Network/Options.php:211
-msgid "Disabled"
-msgstr "Disabled"
+#: classes/Domainmap/Render/Network/Options.php:210
+msgid "No"
+msgstr "No"
 
-#: classes/Domainmap/Render/Network/Options.php:212
-msgid "Enabled"
-msgstr "Enabled"
-
-#: classes/Domainmap/Render/Network/Options.php:215
+#: classes/Domainmap/Render/Network/Options.php:213
 msgid "Cross-domain autologin"
 msgstr "Cross-domain autologin"
 
-#: classes/Domainmap/Render/Network/Options.php:217
+#: classes/Domainmap/Render/Network/Options.php:215
 msgid ""
-"If you don't want the plugin to login you cross all your mapped domains "
-"automatically, then use the setting below to disable this feature."
+"Would you like for your members to be logged into all sites within your "
+"network regardless of domain name:"
 msgstr ""
-"If you don't want the plugin to login you cross all your mapped domains "
-"automatically, then use the setting below to disable this feature."
+"Would you like for your members to be logged into all sites within your "
+"network regardless of domain name:"
 
-#: classes/Domainmap/Render/Network/Options.php:244
+#: classes/Domainmap/Render/Network/Options.php:242
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:245
+#: classes/Domainmap/Render/Network/Options.php:243
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
@@ -551,11 +547,11 @@ msgstr "Pro Sites PayPal payment gateway"
 msgid "Your name"
 msgstr "Your name"
 
-#: classes/Domainmap/Reseller/Enom.php:630
+#: classes/Domainmap/Reseller/Enom.php:631
 msgid "Purchase this domain with PayPal Express Checkout."
 msgstr "Purchase this domain with PayPal Express Checkout."
 
-#: classes/Domainmap/Reseller/Enom.php:672
+#: classes/Domainmap/Reseller/Enom.php:673
 msgid "Payment for 1 year usage of the domain name."
 msgstr "Payment for 1 year usage of the domain name."
 
