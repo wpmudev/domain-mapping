@@ -99,6 +99,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();
 		$this->_render_cross_autologin();
+		$this->_render_domain_validation();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -209,7 +210,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
 		);
-		
+
 		?><h4 class="domainmapping-block-header"><?php _e( 'Cross-domain autologin', 'domainmap' ) ?></h4>
 		<p>
 			<?php _e( "Would you like for your members to be logged into all sites within your network regardless of domain name:", 'domainmap' ) ?><br>
@@ -220,6 +221,37 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				?><li>
 					<label>
 						<input type="radio" class="domainmapping-radio" name="map_crossautologin" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
+						<?php echo $label ?>
+					</label>
+				</li><?php
+			endforeach;
+		?></ul><?php
+	}
+
+	/**
+	 * Renders domain validation on map settings.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_domain_validation() {
+		$selected = isset( $this->map_verifydomain ) ? (int)$this->map_verifydomain : 1;
+		$options = array(
+			1 => __( 'Yes', 'domainmap' ),
+			0 => __( 'No', 'domainmap' ),
+		);
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'Verify domain availability', 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Would you like to verify domain availability before they will be mapped by your members:", 'domainmap' ) ?><br>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $options as $option => $label ) :
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-radio" name="map_verifydomain" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
 						<?php echo $label ?>
 					</label>
 				</li><?php

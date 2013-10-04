@@ -92,7 +92,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						'active'  => 1,
 					), array( '%d', '%s', '%d' ) );
 
-					if ( $this->_validate_health_status( $domain ) ) {
+					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added
 						do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
 

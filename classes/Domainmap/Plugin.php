@@ -181,12 +181,29 @@ class Domainmap_Plugin {
 				$this->_options['map_logindomain'] = get_site_option( 'map_logindomain', 'user' );
 				$this->_options['map_reseller'] = array();
 				$this->_options['map_reseller_log'] = Domainmap_Reseller::LOG_LEVEL_DISABLED;
+				$this->_options['map_crossautologin'] = 1;
+				$this->_options['map_verifydomain'] = 1;
 
 				update_site_option('domain_mapping', $this->_options);
 			}
 		}
 
 		return $this->_options;
+	}
+
+	/**
+	 * Returns option value if it exists, otherwise default value.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $option The option name to return.
+	 * @param mixed $default The default value to return if an option doesn't exist.
+	 * @return mixed The option value if it exists, otherwise default value.
+	 */
+	public function get_option( $option, $default = false ) {
+		$options = $this->get_options();
+		return array_key_exists( $option, $options ) ? $options[$option] : $default;
 	}
 
 	/**
