@@ -116,32 +116,10 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				$ips = wp_list_pluck( dns_get_record( $basedomain, DNS_A ), 'ip' );
 			}
 
-			// if we have an ip address to populate DNS record, then try to detect if we use shared or dedicated hosting
-			$dedicated = false;
-			if ( !empty( $ips ) ) {
-				$current_ip = current( $ips );
-				$transient = "domainmap-hosting-type-{$current_ip}";
-				$dedicated = get_site_transient( $transient );
-				if ( $dedicated === false ) {
-					$check = sha1( time() );
-					$ajax_url = admin_url( 'admin-ajax.php' );
-					$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $current_ip, $ajax_url );
-
-					$response = wp_remote_request( add_query_arg( array(
-						'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
-						'check'  => $check,
-					), $ajax_url ) );
-
-					$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check ? 1 : 0;
-					set_site_transient( $transient, $dedicated, WEEK_IN_SECONDS );
-				}
-			}
-
 			$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
 			$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $this->_wpdb->blogid ) );
 			$page->domains = (array)$this->_wpdb->get_col( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->_wpdb->blogid ) .  " ORDER BY id ASC" );
 			$page->ips = $ips;
-			$page->dedicated = $dedicated;
 		}
 
 		if ( $page ) {

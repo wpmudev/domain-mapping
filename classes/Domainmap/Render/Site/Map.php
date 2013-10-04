@@ -38,23 +38,16 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access private
 	 */
 	private function _render_instructions() {
-		if ( empty( $this->ips ) ) {
-			return;
-		}
-
 		$descriptions = array();
-		if ( defined( 'SUBDOMAIN_INSTALL' ) && !$this->dedicated ) {
-			if ( SUBDOMAIN_INSTALL ) {
-				$descriptions[] = __( 'You need to add a DNS CNAME record pointing at this server domain name: ', 'domainmap' ) . "<strong>{$this->origin->domain}.</strong>";
+		$descriptions[] = __( 'If your domain name includes a sub-domain such as "blog" then you can add a CNAME for that hostname in your DNS pointing at this blog URL.', 'domainmap' );
+
+		$map_ipaddress = isset( $this->map_ipaddress ) ? trim( $this->map_ipaddress ) : '';
+		if ( !empty( $map_ipaddress ) ) {
+			if ( strpos( $map_ipaddress, ',' ) ) {
+				$descriptions[] = __( 'If you want to redirect a domain you will need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . "<strong>{$map_ipaddress}</strong>";
 			} else {
-				// network is hosted on shared hosting and uses subfolders for sites
-				// neither DNS A record nor DNS CNAME record won't work in this case
+				$descriptions[] = __( 'If you want to redirect a domain you will need to add a DNS "A" record pointing at the IP address of this server: ', 'domainmap' ) . "<strong>{$map_ipaddress}</strong>";
 			}
-		} else {
-			$ips = '<strong>' . implode( ', ', $this->ips ) . '</strong>';
-			$descriptions[] = count( $this->ips ) > 1
-				? __( 'You need to add multiple DNS "A" records pointing at the IP addresses of this server: ', 'domainmap' ) . $ips
-				: __( 'You need to add a DNS "A" record pointing at the IP address of this server: ', 'domainmap' ) . $ips;
 		}
 
 		foreach ( $descriptions as $description ) :
