@@ -485,37 +485,28 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		// populate request arguments
-		if ( !empty( $ips ) ) {
-			if ( defined( 'SUBDOMAIN_INSTALL' ) && !$dedicated ) {
-				if ( SUBDOMAIN_INSTALL ) {
-					$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $wpdb->blogid ) );
-
-					// network is hosted on shared hosting and uses subdomains for sites
-					// we can use DNS CNAME records for it
-					$args['HostName1'] = "{$sld}.{$tld}";
-					$args['RecordType1'] = 'CNAME';
-					$args['Address1'] = "{$origin->domain}.";
-
-					$args['HostName2'] = "www.{$sld}.{$tld}";
-					$args['RecordType2'] = 'CNAME';
-					$args['Address2'] = "{$origin->domain}.";
-				} else {
-					// network is hosted on shared hosting and uses subfolders for sites
-					// neither DNS A record nor DNS CNAME record won't work in this case
-					return;
-				}
-			} else {
-				// network is hosted on dedicated hosting and we can use DNS A records
-				$i = 0;
-				foreach ( $ips as $ip ) {
-					if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
-						$i++;
-						$args["HostName{$i}"] = '@';
-						$args["RecordType{$i}"] = 'A';
-						$args["Address{$i}"] = $ip;
-					}
+		if ( !empty( $ips ) && $dedicated ) {
+			// network is hosted on dedicated hosting and we can use DNS A records
+			$i = 0;
+			foreach ( $ips as $ip ) {
+				if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
+					$i++;
+					$args["HostName{$i}"] = '@';
+					$args["RecordType{$i}"] = 'A';
+					$args["Address{$i}"] = $ip;
 				}
 			}
+		} else {
+			// network is hosted on shared hosting and we can use DNS CNAME records for it
+			$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $wpdb->blogid ) );
+
+			$args['HostName1'] = "{$sld}.{$tld}";
+			$args['RecordType1'] = 'CNAME';
+			$args['Address1'] = "{$origin->domain}.";
+
+			$args['HostName2'] = "www.{$sld}.{$tld}";
+			$args['RecordType2'] = 'CNAME';
+			$args['Address2'] = "{$origin->domain}.";
 		}
 
 		// setup DNS records if it has been populated
