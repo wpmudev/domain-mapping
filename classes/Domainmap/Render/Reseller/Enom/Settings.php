@@ -133,12 +133,49 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Select environment:', 'domainmap' ) ?></h4>
 		<div>
-			<p>Select an environment which you want to use. Use test environment to test your reseller account and production one when you will be ready to sell domains to your users.</p>
+			<p><?php _e( 'Select an environment which you want to use. Use test environment to test your reseller account and production one when you will be ready to sell domains to your users.', 'domainmap' ) ?></p>
 			<ul class="domainmapping-compressed-list"><?php
 				foreach ( $environemnts as $environment => $label ) :
 					?><li>
 						<label>
 							<input type="radio" class="domainmapping-radio" name="map_reseller_enom_environment" value="<?php echo $environment ?>"<?php checked( $environment, $this->environment ) ?>>
+							<?php echo $label ?>
+						</label>
+					</li><?php
+				endforeach;
+			?></ul>
+		</div><?php
+	}
+
+	/**
+	 * Renders SSL verification settings.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 */
+	private function _render_sslverification_settings() {
+		$selected = isset( $this->sslverification ) ? $this->sslverification : 1;
+
+		$options = array(
+			1 => __( 'Enable SSL verification', 'domainmap' ),
+			0 => __( 'Disable SSL verification', 'domainmap' ),
+		);
+
+		?><h4 class="domainmapping-block-header"><?php _e( 'SSL Certificate Verification:', 'domainmap' ) ?></h4>
+		<div>
+			<p><?php
+				printf(
+					__( "If you have a list of %scertificate authorities%s installed on your web server, then it is strongly recommended to enable SSL certificate verification (for communications between eNom and your server) for security reasons.", 'domainmap' ),
+					'<a href="http://en.wikipedia.org/wiki/Certificate_authority" target="_blank">',
+					'</a>'
+				)
+			?></p>
+			<ul class="domainmapping-compressed-list"><?php
+				foreach ( $options as $key => $label ) :
+					?><li>
+						<label>
+							<input type="radio" class="domainmapping-radio" name="map_reseller_enom_sslverification" value="<?php echo $key ?>"<?php checked( $key, $selected ) ?>>
 							<?php echo $label ?>
 						</label>
 					</li><?php
@@ -158,6 +195,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 		$this->_render_notifications();
 		$this->_render_account_settings();
 		$this->_render_environment_settings();
+		$this->_render_sslverification_settings();
 		$this->_render_payment_settings();
 	}
 

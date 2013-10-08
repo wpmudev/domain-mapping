@@ -69,15 +69,15 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
 	 */
 	private function _exec_command( $command, $args = array() ) {
-		if ( !isset( $args['uid'] ) || !isset( $args['pw'] ) ) {
-			$options = Domainmap_Plugin::instance()->get_options();
+		$options = Domainmap_Plugin::instance()->get_options();
 
+		if ( !isset( $args['uid'] ) || !isset( $args['pw'] ) ) {
 			if ( !isset( $args['uid'] ) ) {
-				$args['uid'] = isset( $options['enom']['uid'] ) ? $options['enom']['uid'] : '';
+				$args['uid'] = isset( $options[self::RESELLER_ID]['uid'] ) ? $options[self::RESELLER_ID]['uid'] : '';
 			}
 
 			if ( !isset( $args['pw'] ) ) {
-				$args['pw'] = isset( $options['enom']['pwd'] ) ? $options['enom']['pwd'] : '';
+				$args['pw'] = isset( $options[self::RESELLER_ID]['pwd'] ) ? $options[self::RESELLER_ID]['pwd'] : '';
 			}
 		}
 
@@ -87,10 +87,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$args['command'] = $command;
 
+		$sslverify = !isset( $options[self::RESELLER_ID]['sslverification'] ) || $options[self::RESELLER_ID]['sslverification'] == 1;
 		$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION
 			? self::ENDPOINT_PRODUCTION
 			: self::ENDPOINT_TEST;
-		$response = wp_remote_get( $endpoint . http_build_query( $args ) );
+
+		$response = wp_remote_get( $endpoint . http_build_query( $args ), array( 'sslverify' => $sslverify ) );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -176,6 +178,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		if ( in_array( $environment, array( self::ENVIRONMENT_PRODUCTION, self::ENVIRONMENT_TEST ) ) ) {
 			$options[self::RESELLER_ID]['environment'] = $environment;
 		}
+
+		// ssl verification
+		$options[self::RESELLER_ID]['sslverification'] = (int)filter_input( INPUT_POST, 'map_reseller_enom_sslverification', FILTER_VALIDATE_BOOLEAN );
 
 		// validate credentials
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
