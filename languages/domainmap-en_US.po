@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-03 18:12+0300\n"
-"PO-Revision-Date: 2013-10-03 18:12+0300\n"
+"POT-Creation-Date: 2013-10-09 01:12+0300\n"
+"PO-Revision-Date: 2013-10-09 01:13+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -92,7 +92,7 @@ msgstr "Search"
 
 #: classes/Domainmap/Render/Network.php:60
 #: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:70
-#: classes/Domainmap/Module/Pages.php:161
+#: classes/Domainmap/Module/Pages.php:139
 msgid "Domain Mapping"
 msgstr "Domain Mapping"
 
@@ -156,6 +156,41 @@ msgstr "Production environment"
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:134
 msgid "Select environment:"
 msgstr "Select environment:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:136
+msgid ""
+"Select an environment which you want to use. Use test environment to test "
+"your reseller account and production one when you will be ready to sell "
+"domains to your users."
+msgstr ""
+"Select an environment which you want to use. Use test environment to test "
+"your reseller account and production one when you will be ready to sell "
+"domains to your users."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:161
+msgid "Enable SSL verification"
+msgstr "Enable SSL verification"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:162
+msgid "Disable SSL verification"
+msgstr "Disable SSL verification"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:165
+msgid "SSL Certificate Verification:"
+msgstr "SSL Certificate Verification:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:169
+#, php-format
+msgid ""
+"If you have a list of %scertificate authorities%s installed on your web "
+"server, then it is strongly recommended to enable SSL certificate "
+"verification (for communications between eNom and your server) for security "
+"reasons."
+msgstr ""
+"If you have a list of %scertificate authorities%s installed on your web "
+"server, then it is strongly recommended to enable SSL certificate "
+"verification (for communications between eNom and your server) for security "
+"reasons."
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:52
 #, php-format
@@ -268,74 +303,76 @@ msgstr "Fax:"
 msgid "Additional Registrar Information"
 msgstr "Additional Registrar Information"
 
-#: classes/Domainmap/Render/Site/Map.php:48
+#: classes/Domainmap/Render/Site/Map.php:42
 msgid ""
-"You need to add a DNS CNAME record pointing at this server domain name: "
+"If your domain name includes a sub-domain such as \"blog\" then you can add "
+"a CNAME for that hostname in your DNS pointing at this blog URL."
 msgstr ""
-"You need to add a DNS CNAME record pointing at this server domain name: "
+"If your domain name includes a sub-domain such as \"blog\" then you can add "
+"a CNAME for that hostname in your DNS pointing at this blog URL."
 
-#: classes/Domainmap/Render/Site/Map.php:56
+#: classes/Domainmap/Render/Site/Map.php:47
 msgid ""
-"You need to add multiple DNS \"A\" records pointing at the IP addresses of "
-"this server: "
+"If you want to redirect a domain you will need to add multiple DNS \"A\" "
+"records pointing at the IP addresses of this server: "
 msgstr ""
-"You need to add multiple DNS \"A\" records pointing at the IP addresses of "
-"this server: "
+"If you want to redirect a domain you will need to add multiple DNS \"A\" "
+"records pointing at the IP addresses of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:57
+#: classes/Domainmap/Render/Site/Map.php:49
 msgid ""
-"You need to add a DNS \"A\" record pointing at the IP address of this "
-"server: "
+"If you want to redirect a domain you will need to add a DNS \"A\" record "
+"pointing at the IP address of this server: "
 msgstr ""
-"You need to add a DNS \"A\" record pointing at the IP address of this "
-"server: "
+"If you want to redirect a domain you will need to add a DNS \"A\" record "
+"pointing at the IP address of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:80
+#: classes/Domainmap/Render/Site/Map.php:73
 msgid "Domain(s) mapped to"
 msgstr "Domain(s) mapped to"
 
-#: classes/Domainmap/Render/Site/Map.php:87
+#: classes/Domainmap/Render/Site/Map.php:80
 msgid "Mapped domain"
 msgstr "Mapped domain"
 
-#: classes/Domainmap/Render/Site/Map.php:88
+#: classes/Domainmap/Render/Site/Map.php:81
 msgid "Health status"
 msgstr "Health status"
 
-#: classes/Domainmap/Render/Site/Map.php:89
+#: classes/Domainmap/Render/Site/Map.php:82
 msgid "Actions"
 msgstr "Actions"
 
-#: classes/Domainmap/Render/Site/Map.php:103
+#: classes/Domainmap/Render/Site/Map.php:96
 #: classes/Domainmap/Module/Pages.php:86
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:137
+#: classes/Domainmap/Render/Site/Map.php:130
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:141
+#: classes/Domainmap/Render/Site/Map.php:134
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:141
+#: classes/Domainmap/Render/Site/Map.php:134
 msgid "Remove"
 msgstr "Remove"
 
-#: classes/Domainmap/Render/Site/Map.php:162
+#: classes/Domainmap/Render/Site/Map.php:155
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:167
+#: classes/Domainmap/Render/Site/Map.php:160
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:170
+#: classes/Domainmap/Render/Site/Map.php:163
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:174
+#: classes/Domainmap/Render/Site/Map.php:167
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -387,7 +424,7 @@ msgid "Don't use any"
 msgstr "Don't use any"
 
 #: classes/Domainmap/Render/Network/Resellers.php:106
-#: classes/Domainmap/Render/Network/Options.php:106
+#: classes/Domainmap/Render/Network/Options.php:107
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -441,27 +478,27 @@ msgstr ""
 "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
 "these lines in place."
 
-#: classes/Domainmap/Render/Network/Options.php:124
+#: classes/Domainmap/Render/Network/Options.php:125
 msgid "Domain mapping Configuration"
 msgstr "Domain mapping Configuration"
 
-#: classes/Domainmap/Render/Network/Options.php:126
-msgid ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
-msgstr ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
-
 #: classes/Domainmap/Render/Network/Options.php:127
 msgid ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+msgstr ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this blog to get the IP address."
+
+#: classes/Domainmap/Render/Network/Options.php:128
+msgid ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 msgstr ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 
-#: classes/Domainmap/Render/Network/Options.php:133
+#: classes/Domainmap/Render/Network/Options.php:134
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
@@ -471,15 +508,15 @@ msgstr ""
 "and fetch the IP address(es) assigned to it. You can use the following IP "
 "address(es) to enter in the <b>Server IP Address</b> field below:"
 
-#: classes/Domainmap/Render/Network/Options.php:142
+#: classes/Domainmap/Render/Network/Options.php:143
 msgid "Server IP Address: "
 msgstr "Server IP Address: "
 
-#: classes/Domainmap/Render/Network/Options.php:157
+#: classes/Domainmap/Render/Network/Options.php:158
 msgid "Administration mapping"
 msgstr "Administration mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:159
+#: classes/Domainmap/Render/Network/Options.php:160
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
@@ -489,11 +526,11 @@ msgstr ""
 "through the domain they enter, you can also restrict it to the Mapped domain "
 "or the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:182
+#: classes/Domainmap/Render/Network/Options.php:183
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:184
+#: classes/Domainmap/Render/Network/Options.php:185
 msgid ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
@@ -503,19 +540,21 @@ msgstr ""
 "through the domain they enter, or restrict it to either the Mapped domain or "
 "the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:209
+#: classes/Domainmap/Render/Network/Options.php:210
+#: classes/Domainmap/Render/Network/Options.php:241
 msgid "Yes"
 msgstr "Yes"
 
-#: classes/Domainmap/Render/Network/Options.php:210
+#: classes/Domainmap/Render/Network/Options.php:211
+#: classes/Domainmap/Render/Network/Options.php:242
 msgid "No"
 msgstr "No"
 
-#: classes/Domainmap/Render/Network/Options.php:213
+#: classes/Domainmap/Render/Network/Options.php:214
 msgid "Cross-domain autologin"
 msgstr "Cross-domain autologin"
 
-#: classes/Domainmap/Render/Network/Options.php:215
+#: classes/Domainmap/Render/Network/Options.php:216
 msgid ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
@@ -523,11 +562,23 @@ msgstr ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
 
-#: classes/Domainmap/Render/Network/Options.php:242
+#: classes/Domainmap/Render/Network/Options.php:245
+msgid "Verify domain availability"
+msgstr "Verify domain availability"
+
+#: classes/Domainmap/Render/Network/Options.php:247
+msgid ""
+"Would you like to verify domain availability before they will be mapped by "
+"your members:"
+msgstr ""
+"Would you like to verify domain availability before they will be mapped by "
+"your members:"
+
+#: classes/Domainmap/Render/Network/Options.php:274
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:243
+#: classes/Domainmap/Render/Network/Options.php:275
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
@@ -535,23 +586,23 @@ msgstr "Make this functionality only available to certain Pro Site levels"
 msgid "Log records were deleted."
 msgstr "Log records were deleted."
 
-#: classes/Domainmap/Reseller/Enom.php:205
+#: classes/Domainmap/Reseller/Enom.php:224
 msgid "eNom credit card processing services"
 msgstr "eNom credit card processing services"
 
-#: classes/Domainmap/Reseller/Enom.php:206
+#: classes/Domainmap/Reseller/Enom.php:225
 msgid "Pro Sites PayPal payment gateway"
 msgstr "Pro Sites PayPal payment gateway"
 
-#: classes/Domainmap/Reseller/Enom.php:547
+#: classes/Domainmap/Reseller/Enom.php:560
 msgid "Your name"
 msgstr "Your name"
 
-#: classes/Domainmap/Reseller/Enom.php:631
+#: classes/Domainmap/Reseller/Enom.php:644
 msgid "Purchase this domain with PayPal Express Checkout."
 msgstr "Purchase this domain with PayPal Express Checkout."
 
-#: classes/Domainmap/Reseller/Enom.php:673
+#: classes/Domainmap/Reseller/Enom.php:686
 msgid "Payment for 1 year usage of the domain name."
 msgstr "Payment for 1 year usage of the domain name."
 
@@ -559,19 +610,19 @@ msgstr "Payment for 1 year usage of the domain name."
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:361
+#: classes/Domainmap/Module/Pages.php:340
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:362
+#: classes/Domainmap/Module/Pages.php:341
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:367
+#: classes/Domainmap/Module/Pages.php:346
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:397
+#: classes/Domainmap/Module/Pages.php:376
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
