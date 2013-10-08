@@ -167,8 +167,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 */
 	private function _validate_health_status( $domain ) {
 		$check = sha1( time() );
+
+		switch_to_blog( 1 );
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
+		restore_current_blog();
 
 		$response = wp_remote_request( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,

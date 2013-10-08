@@ -473,8 +473,11 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$dedicated = false;
 		if ( !empty( $ips ) ) {
 			$check = sha1( time() );
+
+			switch_to_blog( 1 );
 			$ajax_url = admin_url( 'admin-ajax.php' );
 			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
+			restore_current_blog();
 
 			$response = wp_remote_request( add_query_arg( array(
 				'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
