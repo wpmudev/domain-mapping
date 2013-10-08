@@ -91,12 +91,20 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			? self::ENDPOINT_PRODUCTION
 			: self::ENDPOINT_TEST;
 		$response = wp_remote_get( $endpoint . http_build_query( $args ) );
-		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
-			return false;
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		if ( $response_code != 200 ) {
+			$error = new WP_Error();
+			$error->add( $response_code, strip_tags( $response_body ) );
+			return $error;
 		}
 
 		libxml_use_internal_errors( true );
-		return simplexml_load_string( wp_remote_retrieve_body( $response ) );
+		return simplexml_load_string( $response_body );
 	}
 
 	/**
@@ -113,10 +121,16 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			return;
 		}
 
-		$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
-		$errors = array();
-		if ( !$valid && isset( $xml->errors ) ) {
-			$errors = json_decode( json_encode( $xml->errors ), true );
+		$valid = false;
+		if ( is_wp_error( $xml ) ) {
+			$errors = $xml->get_error_messages();
+			$xml = array();
+		} else {
+			$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
+			$errors = array();
+			if ( !$valid && isset( $xml->errors ) ) {
+				$errors = json_decode( json_encode( $xml->errors ), true );
+			}
 		}
 
 		$this->_log_request( $type, $valid, $errors, $xml );
