@@ -108,14 +108,14 @@ class Domainmap_Module_System extends Domainmap_Module {
 	 * @access private
 	 */
 	private function _upgrade() {
-		$filter = 'domainmap_upgrade';
-		$option = 'domainmap_version';
+		$filter = 'domainmaping_database_upgrade';
+		$option = 'domainmaping_database_version';
 
 		// fetch current database version
 		$db_version = get_site_option( $option );
-		if ( $db_version === false || !preg_match( '/^\d+(\.\d+){2,3}$/', $db_version ) ) {
+		if ( $db_version === false ) {
 			$db_version = '0.0.0';
-			update_option( $option, $db_version );
+			update_site_option( $option, $db_version );
 		}
 
 		// check if current version is equal to database version, then there is nothing to upgrade
