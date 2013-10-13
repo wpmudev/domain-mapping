@@ -31,8 +31,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	const NAME = __CLASS__;
 
-	const KEY_DISABLE_CDSSO = 'domainmapping_disable_cdsso';
-	const KEY_AUTH_CDSSO    = 'domainmapping_auth_cdsso';
+	const KEY_DISABLE_CDSSO   = 'domainmapping_disable_cdsso';
+	const KEY_AUTH_CDSSO      = 'domainmapping_auth_cdsso';
+	const KEY_PROPAGATE_CDSSO = 'domainmapping_cdsso_propagate';
 
 	/**
 	 * CDSSO key
@@ -64,8 +65,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'plugins_loaded', 'check_authentication' );
 		$this->_add_action( 'wp_login', 'set_cdsso_propagation', 10, 2 );
 
+		if ( filter_input( INPUT_COOKIE, self::KEY_PROPAGATE_CDSSO ) ) {
+			$this->_add_action( 'wp_enqueue_scripts', 'propagate_cdsso' );
+			$this->_add_action( 'admin_enqueue_scripts', 'propagate_cdsso' );
+			$this->_add_action( 'login_enqueue_scripts', 'propagate_cdsso' );
+		}
+
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGIN, 'authorize_user', true, false );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGIN, 'send_back_user', false, true );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_PROPAGATE, 'propagate_user', true, true );
 	}
 
 	/**
@@ -147,6 +155,25 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
+	 * Returns admin ajax URL for main site.
+	 *
+	 * @since 4.0.2
+	 *
+	 * @access private
+	 * @return string The admin ajax URL for main site.
+	 */
+	private function _get_ajax_url() {
+		$ajax_url = admin_url( 'admin-ajax.php' );
+		if ( $this->_wpdb->blogid != 1 ) {
+			switch_to_blog( 1 );
+			$ajax_url = admin_url( 'admin-ajax.php' );
+			restore_current_blog();
+		}
+
+		return $ajax_url;
+	}
+
+	/**
 	 * Sets CDSSO propagation needs.
 	 *
 	 * @since 4.0.2
@@ -162,8 +189,27 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$value = hash_hmac( 'sha256', $user_login . time(), AUTH_SALT );
-		$this->_set_cookie( 'domainmapping_cdsso_propagate', $value );
+		$this->_set_cookie( self::KEY_PROPAGATE_CDSSO, $value );
 		update_user_meta( $user->ID, $this->_cdsso, $value );
+	}
+
+	/**
+	 * Propagate CDSSO on the main site.
+	 *
+	 * @since 4.0.2
+	 * @action wp_enqueue_scripts
+	 * @access admin_enqueue_scripts
+	 * @action login_enqueue_scripts
+	 *
+	 * @access public
+	 */
+	public function propagate_cdsso() {
+		wp_enqueue_style( 'domainmapping-cdsso', add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_CDSSO_PROPAGATE,
+			'item'   => $_COOKIE[self::KEY_PROPAGATE_CDSSO],
+		), $this->_get_ajax_url() ), null, null );
+
+		$this->_unset_cookie( self::KEY_PROPAGATE_CDSSO );
 	}
 
 	/**
@@ -175,7 +221,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function check_authentication() {
-		if ( is_user_logged_in() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || filter_input( INPUT_COOKIE, self::KEY_DISABLE_CDSSO, FILTER_VALIDATE_BOOLEAN ) ) {
+		$doing_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$disable_cdsso = filter_input( INPUT_COOKIE, self::KEY_DISABLE_CDSSO, FILTER_VALIDATE_BOOLEAN );
+		if ( is_user_logged_in() || $doing_ajax || $disable_cdsso || $this->_wpdb->blog_id == 1 ) {
 			return;
 		}
 
@@ -217,18 +265,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		// redirect to main site and try to get credentials
-		$ajax_url = admin_url( 'admin-ajax.php' );
-		if ( $this->_wpdb->blogid != 1 ) {
-			switch_to_blog( 1 );
-			$ajax_url = admin_url( 'admin-ajax.php' );
-			restore_current_blog();
-		}
-
 		wp_redirect( add_query_arg( array(
 			'action'  => Domainmap_Plugin::ACTION_CDSSO_LOGIN,
 			'blog_id' => $this->_wpdb->blogid,
 			'backref' => urlencode( sprintf( '%s://%s%s', is_ssl() ? 'https' : 'http', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'] ) ),
-		), $ajax_url ) );
+		), $this->_get_ajax_url() ) );
 		exit;
 	}
 
@@ -266,6 +307,29 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function send_back_user() {
 		wp_redirect( add_query_arg( self::KEY_DISABLE_CDSSO, 'true', filter_input( INPUT_GET, 'backref', FILTER_VALIDATE_URL ) ) );
+		exit;
+	}
+
+	/**
+	 * Propagate user login on main site.
+	 *
+	 * @since 4.0.2
+	 *
+	 * @access public
+	 */
+	public function propagate_user() {
+		$query = new WP_User_Query( array(
+			'meta_key'   => $this->_cdsso,
+			'meta_value' => filter_input( INPUT_GET, 'item' ),
+		) );
+
+		if ( count( $query->results ) == 1 && is_user_member_of_blog( $query->results[0]->ID ) ) {
+			wp_set_auth_cookie( $query->results[0]->ID );
+			delete_user_meta( $query->results[0]->ID, $this->_cdsso );
+		}
+
+		header( "Content-type: text/css" );
+		echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
 		exit;
 	}
 

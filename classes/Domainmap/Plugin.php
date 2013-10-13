@@ -40,6 +40,8 @@ class Domainmap_Plugin {
 	const ACTION_HEALTH_CHECK               = 'domainmapping_check_health';
 	const ACTION_HEARTBEAT_CHECK            = 'domainmapping_heartbeat_check';
 	const ACTION_CDSSO_LOGIN                = 'domainmapping_cdsso_login';
+	const ACTION_CDSSO_LOGOUT               = 'domainmapping_cdsso_logout';
+	const ACTION_CDSSO_PROPAGATE            = 'domainmapping_cdsso_propagate';
 
 	/**
 	 * Singletone instance of the plugin.
