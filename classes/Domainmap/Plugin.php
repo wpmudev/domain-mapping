@@ -39,6 +39,7 @@ class Domainmap_Plugin {
 	const ACTION_UNMAP_DOMAIN               = 'domainmapping_unmap_domain';
 	const ACTION_HEALTH_CHECK               = 'domainmapping_check_health';
 	const ACTION_HEARTBEAT_CHECK            = 'domainmapping_heartbeat_check';
+	const ACTION_CDSSO_LOGIN                = 'domainmapping_cdsso_login';
 
 	/**
 	 * Singletone instance of the plugin.
