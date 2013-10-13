@@ -33,7 +33,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	const KEY_DISABLE_CDSSO   = 'domainmapping_disable_cdsso';
 	const KEY_AUTH_CDSSO      = 'domainmapping_auth_cdsso';
-	const KEY_PROPAGATE_CDSSO = 'domainmapping_cdsso_propagate';
+	const KEY_PROPAGATE_CDSSO = 'domainmapping_propagate_cdsso';
+	const KEY_DESTROY_CDSSO   = 'domainmapping_destroy_cdsso';
 
 	/**
 	 * CDSSO key
@@ -64,6 +65,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$this->_add_action( 'plugins_loaded', 'check_authentication' );
 		$this->_add_action( 'wp_login', 'set_cdsso_propagation', 10, 2 );
+		$this->_add_action( 'wp_logout', 'set_cdsso_destroy' );
 
 		if ( filter_input( INPUT_COOKIE, self::KEY_PROPAGATE_CDSSO ) ) {
 			$this->_add_action( 'wp_enqueue_scripts', 'propagate_cdsso' );
@@ -71,9 +73,16 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			$this->_add_action( 'login_enqueue_scripts', 'propagate_cdsso' );
 		}
 
+		if ( filter_input( INPUT_COOKIE, self::KEY_DESTROY_CDSSO, FILTER_VALIDATE_BOOLEAN ) ) {
+			$this->_add_action( 'wp_enqueue_scripts', 'destroy_cdsso' );
+			$this->_add_action( 'admin_enqueue_scripts', 'destroy_cdsso' );
+			$this->_add_action( 'login_enqueue_scripts', 'destroy_cdsso' );
+		}
+
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGIN, 'authorize_user', true, false );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGIN, 'send_back_user', false, true );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_PROPAGATE, 'propagate_user', true, true );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGOUT, 'destroy_user', true, true );
 	}
 
 	/**
@@ -194,6 +203,36 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
+	 * Sets command to destroy CDSSO on the main site.
+	 *
+	 * @since 4.0.2
+	 * @action wp_logout
+	 *
+	 * @access public
+	 */
+	public function set_cdsso_destroy() {
+		$this->_set_cookie( self::KEY_DESTROY_CDSSO, 1 );
+	}
+
+	/**
+	 * Destroys CDSSO on the main site.
+	 *
+	 * @since 4.0.2
+	 * @action wp_enqueue_scripts
+	 * @access admin_enqueue_scripts
+	 * @action login_enqueue_scripts
+	 *
+	 * @access public
+	 */
+	public function destroy_cdsso() {
+		wp_enqueue_style( 'domainmapping-cdsso', add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_CDSSO_LOGOUT,
+		), $this->_get_ajax_url() ), null, null );
+
+		$this->_unset_cookie( self::KEY_DESTROY_CDSSO );
+	}
+
+	/**
 	 * Propagate CDSSO on the main site.
 	 *
 	 * @since 4.0.2
@@ -223,7 +262,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function check_authentication() {
 		$doing_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$disable_cdsso = filter_input( INPUT_COOKIE, self::KEY_DISABLE_CDSSO, FILTER_VALIDATE_BOOLEAN );
-		if ( is_user_logged_in() || $doing_ajax || $disable_cdsso || $this->_wpdb->blogid == 1 ) {
+		$destroy_cdsso = filter_input( INPUT_COOKIE, self::KEY_DESTROY_CDSSO, FILTER_VALIDATE_BOOLEAN );
+		if ( is_user_logged_in() || $doing_ajax || $disable_cdsso || $destroy_cdsso || $this->_wpdb->blogid == 1 ) {
 			return;
 		}
 
@@ -328,6 +368,20 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			delete_user_meta( $query->results[0]->ID, $this->_cdsso );
 		}
 
+		header( "Content-type: text/css" );
+		echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
+		exit;
+	}
+
+	/**
+	 * Logs out current user from main site.
+	 *
+	 * @since 4.0.2
+	 *
+	 * @access public
+	 */
+	public function destroy_user() {
+		wp_clear_auth_cookie();
 		header( "Content-type: text/css" );
 		echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
 		exit;
