@@ -223,7 +223,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function check_authentication() {
 		$doing_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$disable_cdsso = filter_input( INPUT_COOKIE, self::KEY_DISABLE_CDSSO, FILTER_VALIDATE_BOOLEAN );
-		if ( is_user_logged_in() || $doing_ajax || $disable_cdsso || $this->_wpdb->blog_id == 1 ) {
+		if ( is_user_logged_in() || $doing_ajax || $disable_cdsso || $this->_wpdb->blogid == 1 ) {
 			return;
 		}
 
