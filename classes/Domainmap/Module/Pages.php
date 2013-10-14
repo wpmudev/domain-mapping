@@ -113,7 +113,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 			// looks like server ip addresses are not set, then try to read it automatically
 			if ( empty( $ips ) && function_exists( 'dns_get_record' ) ) {
-				$ips = wp_list_pluck( dns_get_record( $basedomain, DNS_A ), 'ip' );
+				$ips = wp_list_pluck( @dns_get_record( $basedomain, DNS_A ), 'ip' );
 			}
 
 			$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );

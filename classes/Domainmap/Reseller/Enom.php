@@ -485,7 +485,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			// fetch unchanged domain name from database, because get_option function could return mapped domain name
 			$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
 			// fetch domain DNS A records
-			$ips = wp_list_pluck( dns_get_record( $basedomain, DNS_A ), 'ip' );
+			$ips = wp_list_pluck( @dns_get_record( $basedomain, DNS_A ), 'ip' );
 		}
 
 		// if we have an ip address to populate DNS record, then try to detect if we use shared or dedicated hosting

@@ -119,7 +119,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_domain_configuration() {
 		$ips = false;
 		if ( function_exists( 'dns_get_record' ) && !empty( $this->basedomain ) ) {
-			$ips = wp_list_pluck( dns_get_record( $this->basedomain, DNS_A ), 'ip' );
+			$ips = wp_list_pluck( @dns_get_record( $this->basedomain, DNS_A ), 'ip' );
 		}
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Domain mapping Configuration', 'domainmap' ) ?></h4>
