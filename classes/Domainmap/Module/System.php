@@ -124,27 +124,48 @@ class Domainmap_Module_System extends Domainmap_Module {
 		}
 
 		// add upgrade functions
-		$this->_add_filter( $filter, 'upgrade_to_4_0_0', 1 );
+		$this->_add_filter( $filter, 'setup_database', 1 );
 
 		// upgrade database version to current plugin version
-		update_site_option( $option, apply_filters( $filter, $db_version ) );
+		update_site_option( $option, apply_filters( $filter, Domainmap_Plugin::VERSION ) );
 	}
 
 	/**
-	 * Upgrades plugin environment to 4.0.0 version
+	 * Creates tables if they are not exists.
 	 *
-	 * @since 4.0.0
+	 * @since 4.0.2
 	 *
 	 * @access public
 	 * @param string $current_version The current plugin version.
-	 * @return string The upgraded version.
+	 * @return string Unchanged version.
 	 */
-	public function upgrade_to_4_0_0( $current_version ) {
-		$this_version = '4.0.0';
-		if ( version_compare( $current_version, $this_version, '>=' ) ) {
-			return $current_version;
+	public function setup_database( $current_version ) {
+		// check if old table exists
+		$exists = false;
+		$old_table = ( isset( $this->_wpdb->base_prefix ) ? $this->_wpdb->base_prefix : $this->_wpdb->prefix ) . 'domain_map';
+		if ( is_a( $this->_wpdb, 'm_wpdb' ) && isset( $this->_wpdb->dbhglobal ) ) {
+			// multi db is used, so we need to use bare functions to escape m_wpdb compatibility issues
+			$result = @mysql_query( 'SHOW TABLES', $this->_wpdb->dbhglobal );
+			if ( $result ) {
+				while ( ( $row = @mysql_fetch_array( $result, MYSQL_NUM ) ) ) {
+					if ( $row[0] == $old_table ) {
+						$exists = true;
+						break;
+					}
+				}
+				@mysql_free_result( $result );
+			}
+		} else {
+			// standard wpdb is used
+			$exists = in_array( $old_table, $this->_wpdb->get_col( 'SHOW TABLES' ) );
 		}
 
+		// if old table exists, rename it
+		if ( $exists ) {
+			$this->_wpdb->query( sprintf( 'RENAME TABLE %s TO %s', $old_table, DOMAINMAP_TABLE_MAP ) );
+		}
+
+		// create tables if not exists
 		$this->_exec_queries( array(
 			$this->_create_table( DOMAINMAP_TABLE_MAP, array(
 				'`id` BIGINT NOT NULL AUTO_INCREMENT',
@@ -169,7 +190,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 			) ),
 		) );
 
-		return $this_version;
+		return $current_version;
 	}
 
 }
