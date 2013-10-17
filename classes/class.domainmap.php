@@ -408,9 +408,6 @@ class domain_map {
 	function build_cookie( $action = 'login', $user = false, $redirect_to = false ) {
 		global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls, $user;
 
-		// hardcode deactivation
-		return;
-
 		// return if cross domain autologin is disabled
 		if ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) {
 			return;
