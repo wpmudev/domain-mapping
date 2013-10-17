@@ -72,7 +72,10 @@
     background-color: rgba(204, 255, 255, 0.4);
     color: #444;
     padding: 10px 15px;
-    margin: 1em 0
+    margin: 1em 0;
+	-moz-box-shadow: 0 0 5px #e5e5e5;
+    -webkit-box-shadow: 0 0 5px #e5e5e5;
+    box-shadow: 0 0 5px #e5e5e5;
 }
 
 .domainmapping-info-error {
@@ -88,6 +91,12 @@
 .domainmapping-info-warning {
     border-left-color: #cc0;
     background-color: #ffc
+}
+
+.domainmapping-info code {
+	font-family: monospace !important;
+	font-size: 12px;
+	padding: 2px 5px;
 }
 
 #domainmapping-content .updated {
@@ -186,6 +195,11 @@
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0
+}
+
+.domainmapping-form input.domainmapping-input-sufix,
+.domainmapping-form input.domainmapping-input-prefix {
+	border: 1px solid #dfdfdf;
 }
 
 .domainmapping-form input.domainmapping-input-domain:active,

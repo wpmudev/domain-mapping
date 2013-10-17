@@ -56,7 +56,13 @@ class Domainmap_Module_System extends Domainmap_Module {
 		if ( defined( 'SUNRISE' ) ) {
 			$dest = WP_CONTENT_DIR . '/sunrise.php';
 			$source = DOMAINMAP_ABSPATH . '/sunrise.php';
-			if ( !file_exists( $dest ) && is_writable( WP_CONTENT_DIR ) && is_readable( $source ) ) {
+
+			$need_update = false;
+			$need_update |= !file_exists( $dest );
+			$need_update |= !defined( 'DOMAINMAPPING_SUNRISE_VERSION' );
+			$need_update |= version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' );
+
+			if ( $need_update && is_writable( WP_CONTENT_DIR ) && is_readable( $source ) ) {
 				@copy( $source, $dest );
 			}
 		}

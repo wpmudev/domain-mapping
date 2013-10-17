@@ -62,20 +62,45 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	}
 
 	/**
-	 * Renders tab content.
+	 * Renders messages.
 	 *
-	 * @since 4.0.0
+	 * @since 4.0.2
 	 *
-	 * @access protected
+	 * @access private
 	 */
-	protected function _render_tab() {
-		$msg = array();
+	private function _render_messages() {
+		// sunrise.php notification
 		if ( !file_exists( WP_CONTENT_DIR . '/sunrise.php' ) ) {
-			$msg[] = "<p><strong>" . __( "Please copy the sunrise.php to ", 'domainmap' ) . WP_CONTENT_DIR . __( "/sunrise.php and uncomment the SUNRISE setting in the ", 'domainmap' ) . ABSPATH . __( "wp-config.php file", 'domainmap' ) . "</strong></p>";
+			echo '<div class="domainmapping-info domainmapping-info-error">';
+				printf(
+					__( "Please copy the sunrise.php to %s and uncomment the %s setting in the %s file", 'domainmap' ),
+					'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
+					'<code>SUNRISE</code>',
+					'<b>' . ABSPATH . 'wp-config.php</b>'
+				);
+			echo '</div>';
+		} else {
+			if ( !defined( 'DOMAINMAPPING_SUNRISE_VERSION' ) || version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' ) ) {
+				echo '<div class="domainmapping-info domainmapping-info-error">';
+					printf(
+						__( 'You use old version of %s file. Please, replace that file with new version which is located by following path: %s.', 'domainmap' ),
+						'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
+						'<b>' . DOMAINMAP_ABSPATH . '/sunrise.php</b>'
+					);
+				echo '</div>';
+			}
 		}
 
+		// SUNRISE constant notification
 		if ( !defined( 'SUNRISE' ) ) {
-			$msg[] = "<p><strong>" . __( "If you've not already added define( 'SUNRISE', 'on' ); then please do so. If you added the constant be sure to uncomment this line: //define( 'SUNRISE', 'on' ); in the wp-config.php file.", 'domainmap' ) . "</strong></p>";
+			echo '<div class="domainmapping-info domainmapping-info-warning">';
+				printf(
+					__( "If you've not already added %s then please do so. If you added the constant be sure to uncomment this line: %s in the %s file.", 'domainmap' ),
+					"<code>define('SUNRISE', 'on');</code>",
+					"<code>//define('SUNRISE', 'on');</code>",
+					'<b>wp-config.php</b>'
+				);
+			echo '</div>';
 		}
 
 		if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
@@ -88,13 +113,22 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			$str .= "</ul>";
 			$str .= "<p><strong>" . __( "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place.", 'domainmap' ) . "</strong></p>";
 
-			$msg[] = $str;
+			echo '<div class="domainmapping-info">', $str, '</div>';
 		}
+	}
 
-		if ( !empty( $msg ) ) {
-			echo '<div class="domainmapping-info">', implode( '</div><div class="domainmapping-info">', $msg ), '</div>';
-		}
+	/**
+	 * Renders tab content.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 */
+	protected function _render_tab() {
+		// messages
+		$this->_render_messages();
 
+		// options
 		$this->_render_domain_configuration();
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();

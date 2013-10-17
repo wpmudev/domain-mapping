@@ -1,16 +1,10 @@
 <?php
-// Compatibility mode
-define( 'DM_COMPATIBILITY', 'yes' );
+
+define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.0' );
 
 // domain mapping plugin to handle VHOST and non VHOST installation
 global $wpdb;
-
-// No if statement needed as the code was the same for both VHOST and non VHOST installations
-if ( defined( 'DM_COMPATIBILITY' ) && DM_COMPATIBILITY == 'yes' ) {
-	$wpdb->dmtable = ( isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix ) . 'domain_mapping';
-} else {
-	$wpdb->dmtable = ( isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix ) . 'domain_map';
-}
+$wpdb->dmtable = ( isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix ) . 'domain_mapping';
 
 if ( defined( 'COOKIE_DOMAIN' ) ) {
 	define( 'COOKIE_DOMAIN_ERROR', true );
