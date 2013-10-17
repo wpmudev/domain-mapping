@@ -66,6 +66,18 @@ function domainmap_autoloader( $class ) {
 }
 
 /**
+ * Suppresses all errors and exceptions. This function used for AJAX requests to
+ * prevent sending unexpected response text instead of JSON response.
+ *
+ * @since 4.0.2
+ *
+ * @return boolean TRUE value only to stop execute PHP internal error handler.
+ */
+function domainmap_suppress_errors() {
+	return true;
+}
+
+/**
  * Instantiates the plugin and setup all modules.
  *
  * @since 4.0.0
@@ -104,6 +116,10 @@ function domainmap_launch() {
 	}
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		// suppresses errors rendering to prevent unexpected issues
+		set_error_handler( 'domainmap_suppress_errors' );
+		set_exception_handler( 'domainmap_suppress_errors' );
+
 		// set ajax modules
 		$plugin->set_module( Domainmap_Module_Ajax_Map::NAME );
 		$plugin->set_module( Domainmap_Module_Ajax_Purchase::NAME );
