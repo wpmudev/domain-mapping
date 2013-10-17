@@ -412,7 +412,7 @@ class domain_map {
 		return;
 
 		// return if cross domain autologin is disabled
-		if ( isset( $this->options['map_cdsso'] ) && $this->options['map_cdsso'] == 0 ) {
+		if ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) {
 			return;
 		}
 

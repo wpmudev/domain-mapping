@@ -185,7 +185,7 @@ class Domainmap_Plugin {
 				$this->_options['map_logindomain'] = get_site_option( 'map_logindomain', 'user' );
 				$this->_options['map_reseller'] = array();
 				$this->_options['map_reseller_log'] = Domainmap_Reseller::LOG_LEVEL_DISABLED;
-				$this->_options['map_cdsso'] = 0;
+				$this->_options['map_crossautologin'] = 0;
 				$this->_options['map_verifydomain'] = 1;
 
 				update_site_option('domain_mapping', $this->_options);
