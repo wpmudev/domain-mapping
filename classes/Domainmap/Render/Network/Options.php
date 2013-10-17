@@ -242,7 +242,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access private
 	 */
 	private function _render_cross_autologin() {
-		$selected = isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
+		$selected = isset( $this->map_cdsso ) ? (int)$this->map_cdsso : 1;
 		$options = array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
@@ -257,7 +257,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			foreach ( $options as $option => $label ) :
 				?><li>
 					<label>
-						<input type="radio" class="domainmapping-radio" name="map_crossautologin" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
+						<input type="radio" class="domainmapping-radio" name="map_cdsso" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
 						<?php echo $label ?>
 					</label>
 				</li><?php

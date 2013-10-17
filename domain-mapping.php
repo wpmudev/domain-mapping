@@ -99,7 +99,7 @@ function domainmap_launch() {
 	$plugin->set_module( Domainmap_Module_System::NAME );
 	$plugin->set_module( Domainmap_Module_Setup::NAME );
 
-	if ( $plugin->get_option( 'map_crossautologin' ) ) {
+	if ( $plugin->get_option( 'map_cdsso' ) ) {
 		$plugin->set_module( Domainmap_Module_Cdsso::NAME );
 	}
 
