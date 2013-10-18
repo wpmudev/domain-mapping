@@ -129,13 +129,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @param int $expire The time when the cookie will be expired. Use 0 to set session cookie.
 	 */
 	private function _set_cookie( $cookie_name, $cookie_value, $expire = 0 ) {
-		$secure = is_ssl();
+		if ( !headers_sent() ) {
+			$secure = is_ssl();
 
-		setcookie( $cookie_name, $cookie_value, $expire, PLUGINS_COOKIE_PATH, COOKIE_DOMAIN, $secure );
-		setcookie( $cookie_name, $cookie_value, $expire, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, $secure );
-		setcookie( $cookie_name, $cookie_value, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
-		if ( COOKIEPATH != SITECOOKIEPATH ) {
-			setcookie( $cookie_name, $cookie_value, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, $cookie_value, $expire, PLUGINS_COOKIE_PATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, $cookie_value, $expire, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, $cookie_value, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
+			if ( COOKIEPATH != SITECOOKIEPATH ) {
+				setcookie( $cookie_name, $cookie_value, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
+			}
 		}
 	}
 
