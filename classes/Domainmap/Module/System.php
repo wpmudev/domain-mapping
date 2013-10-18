@@ -59,8 +59,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 
 			$need_update = false;
 			$need_update |= !file_exists( $dest );
-			$need_update |= !defined( 'DOMAINMAPPING_SUNRISE_VERSION' );
-			$need_update |= version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' );
+			$need_update |= !defined( 'DOMAINMAPPING_SUNRISE_VERSION' ) || version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' );
 
 			if ( $need_update && is_writable( WP_CONTENT_DIR ) && is_readable( $source ) ) {
 				@copy( $source, $dest );
