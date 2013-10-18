@@ -111,10 +111,9 @@ function domainmap_launch() {
 	$plugin->set_module( Domainmap_Module_System::NAME );
 	$plugin->set_module( Domainmap_Module_Setup::NAME );
 
-	// temporary disabled
-	//if ( $plugin->get_option( 'map_crossautologin' ) ) {
-	//	$plugin->set_module( Domainmap_Module_Cdsso::NAME );
-	//}
+	if ( defined( 'DOMAINMAPPING_USE_CDSSO' ) && $plugin->get_option( 'map_crossautologin' ) ) {
+		$plugin->set_module( Domainmap_Module_Cdsso::NAME );
+	}
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// suppresses errors rendering to prevent unexpected issues

@@ -409,7 +409,7 @@ class domain_map {
 		global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls, $user;
 
 		// return if cross domain autologin is disabled
-		if ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) {
+		if ( defined( 'DOMAINMAPPING_USE_CDSSO' ) || ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) ) {
 			return;
 		}
 
