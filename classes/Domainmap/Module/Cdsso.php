@@ -68,15 +68,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'wp_logout', 'set_cdsso_destroy' );
 
 		if ( filter_input( INPUT_COOKIE, self::KEY_PROPAGATE_CDSSO ) ) {
-			$this->_add_action( 'wp_enqueue_scripts', 'propagate_cdsso' );
-			$this->_add_action( 'admin_enqueue_scripts', 'propagate_cdsso' );
-			$this->_add_action( 'login_enqueue_scripts', 'propagate_cdsso' );
+			$this->_add_action( 'init', 'propagate_cdsso' );
 		}
 
 		if ( filter_input( INPUT_COOKIE, self::KEY_DESTROY_CDSSO, FILTER_VALIDATE_BOOLEAN ) ) {
-			$this->_add_action( 'wp_enqueue_scripts', 'destroy_cdsso' );
-			$this->_add_action( 'admin_enqueue_scripts', 'destroy_cdsso' );
-			$this->_add_action( 'login_enqueue_scripts', 'destroy_cdsso' );
+			$this->_add_action( 'init', 'destroy_cdsso' );
 		}
 
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CDSSO_LOGIN, 'authorize_user', true, false );
@@ -152,14 +148,16 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @param string $cookie_name The name of the cookie to unset.
 	 */
 	private function _unset_cookie( $cookie_name ) {
-		$secure = is_ssl();
-		$expire = time() - YEAR_IN_SECONDS;
+		if ( !headers_sent() ) {
+			$secure = is_ssl();
+			$expire = time() - YEAR_IN_SECONDS;
 
-		setcookie( $cookie_name, '', $expire, PLUGINS_COOKIE_PATH, COOKIE_DOMAIN, $secure );
-		setcookie( $cookie_name, '', $expire, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, $secure );
-		setcookie( $cookie_name, '', $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
-		if ( COOKIEPATH != SITECOOKIEPATH ) {
-			setcookie( $cookie_name, '', $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, '', $expire, PLUGINS_COOKIE_PATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, '', $expire, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, $secure );
+			setcookie( $cookie_name, '', $expire, COOKIEPATH, COOKIE_DOMAIN, $secure );
+			if ( COOKIEPATH != SITECOOKIEPATH ) {
+				setcookie( $cookie_name, '', $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
+			}
 		}
 	}
 
