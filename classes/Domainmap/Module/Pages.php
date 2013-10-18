@@ -66,7 +66,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_site_options_page() {
-		if ( $this->_plugin->is_site_permitted() ) {
+		if ( $this->_wpdb->blogid > 1 && $this->_plugin->is_site_permitted() ) {
 			$title = __( 'Domain Mapping', 'domainmap' );
 			$this->_admin_page = add_management_page( $title, $title, 'manage_options', 'domainmapping', array( $this, 'render_site_options_page' ) );
 		}
