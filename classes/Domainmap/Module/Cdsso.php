@@ -269,7 +269,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		// disable CDSSO for current sesion if user is not logged in at main site
 		if ( filter_input( INPUT_GET, self::KEY_DISABLE_CDSSO, FILTER_VALIDATE_BOOLEAN ) ) {
-			$this->_set_cookie( self::KEY_DISABLE_CDSSO, 1 );
+			$this->_set_cookie( self::KEY_DISABLE_CDSSO, 1, 5 * MINUTE_IN_SECONDS );
 			wp_redirect( add_query_arg( self::KEY_DISABLE_CDSSO, false ) );
 			exit;
 		}
