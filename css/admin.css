@@ -147,9 +147,11 @@
     position: relative
 }
 
-.domainmapping-mapped, .domainmapping-map-remove {
+.domainmapping-mapped,
+.domainmapping-map-primary,
+.domainmapping-map-remove {
     position: absolute;
-    top: 8px
+    top: 12px
 }
 
 .domainmapping-mapped {
@@ -160,6 +162,10 @@
     color: black
 }
 
+.domainmapping-map-primary {
+	right: 26px;
+}
+
 .domainmapping-map-remove {
     right: 0;
     color: red
@@ -167,6 +173,7 @@
 
 .domainmapping-mapped,
 .domainmapping-map-state,
+.domainmapping-map-primary,
 .domainmapping-map-remove {
     text-decoration: none
 }
@@ -653,14 +660,4 @@ input.domainmapping-radio {
 
 .domainmapping-form-buttons {
     margin-top: 50px;
-}
-
-.domainmappin-icon-remove {
-	background-position: left center;
-	background-repeat: no-repeat;
-	padding-left: 20px;
-}
-
-.domainmappin-icon-remove {
-	background-image: url('../images/remove.png');
 }

@@ -81,8 +81,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						<span class="domainmapping-map-state"><?php _e( 'Health status', 'domainmap' ) ?></span>
 						<span class="domainmapping-map-remove"><?php _e( 'Actions', 'domainmap' ) ?></span>
 					</li>
-					<?php foreach( $this->domains as $domain ) : ?>
-						<?php self::render_mapping_row( $domain, $schema ) ?>
+					<?php foreach( $this->domains as $row ) : ?>
+						<?php self::render_mapping_row( $row, $schema ) ?>
 					<?php endforeach; ?>
 					<li class="domainmapping-form">
 						<form id="domainmapping-form-map-domain" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
@@ -110,28 +110,38 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @static
 	 * @access public
 	 * @global stdClass $current_site Current site object.
-	 * @param string $domain The mapped domain name.
+	 * @param object $row The mapped domain name.
 	 * @param string $schema The current schema.
 	 */
-	public static function render_mapping_row( $domain, $schema = false ) {
+	public static function render_mapping_row( $row, $schema = false ) {
 		global $current_site;
 
 		if ( !$schema ) {
 			$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';;
 		}
 
+		$admin_ajax = admin_url( 'admin-ajax.php' );
+
 		$remove_link = add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_UNMAP_DOMAIN,
 			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_UNMAP_DOMAIN ),
-			'domain' => $domain,
-		), admin_url( 'admin-ajax.php' ) );
+			'domain' => $row->domain,
+		), $admin_ajax );
+
+		$primary_class = $row->is_primary == 1 ? 'icon-star' : 'icon-star-empty';
+		$primary_link = add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_MAKE_PRIMARY_DOMAIN,
+			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_MAKE_PRIMARY_DOMAIN ),
+			'domain' => $row->domain,
+		), $admin_ajax );
 
 		?><li>
-			<a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				<?php echo $schema ?>://<?php echo $domain, $current_site->path ?>
+			<a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+				<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>
 			</a>
-			<?php self::render_health_column( $domain ) ?>
-			<a class="domainmapping-map-remove domainmappin-icon-remove" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>">&nbsp;</a>
+			<?php self::render_health_column( $row->domain ) ?>
+			<a class="domainmapping-map-remove icon-trash" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
+			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="<?php echo esc_url( $primary_link ) ?>" title="<?php _e( 'Select primary domain', 'domainmap' ) ?>"></a>
 		</li><?php
 	}
 

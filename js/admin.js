@@ -130,6 +130,17 @@
 			return false;
 		});
 
+		$domains.on('click', 'a.domainmapping-map-primary.icon-star-empty', function() {
+			var $this = $(this);
+
+			$domains.find('a.domainmapping-map-primary.icon-star').toggleClass('icon-star icon-star-empty');
+			$this.toggleClass('icon-star icon-star-empty');
+
+			$.get($this.attr('href'));
+
+			return false;
+		});
+
 		$('a.domainmapping-need-revalidate').click();
 
 		$('.domainmapping-reseller-switch').change(function() {

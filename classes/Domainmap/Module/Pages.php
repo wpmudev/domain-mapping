@@ -120,8 +120,9 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			}
 
 			$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
+			
 			$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $this->_wpdb->blogid ) );
-			$page->domains = (array)$this->_wpdb->get_col( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->_wpdb->blogid ) .  " ORDER BY id ASC" );
+			$page->domains = (array)$this->_wpdb->get_results( "SELECT domain, is_primary FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->_wpdb->blogid ) .  " ORDER BY domain ASC" );
 			$page->ips = $ips;
 		}
 
