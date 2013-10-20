@@ -106,6 +106,20 @@ class Domainmap_Module_System extends Domainmap_Module {
 	}
 
 	/**
+	 * Builds alter table script for provided table.
+	 *
+	 * @since 4.0.3
+	 *
+	 * @access private
+	 * @param string $name The name of a table.
+	 * @param array $alters The array  of alters.
+	 * @return string The sql script to alter a table.
+	 */
+	private function _alter_table( $name, array $alters ) {
+		return sprintf( 'ALTER TABLE `%s` %s', $name, implode( ', ', $alters ) );
+	}
+
+	/**
 	 * Performs upgrade plugin evnironment to up to date version.
 	 *
 	 * @since 4.0.0
@@ -130,9 +144,15 @@ class Domainmap_Module_System extends Domainmap_Module {
 
 		// add upgrade functions
 		$this->_add_filter( $filter, 'setup_database', 1 );
+		$this->_add_filter( $filter, 'upgrade_to_4_0_3', 10 );
 
 		// upgrade database version to current plugin version
-		update_site_option( $option, apply_filters( $filter, Domainmap_Plugin::VERSION ) );
+		$db_version = apply_filters( $filter, $db_version );
+		$db_version = version_compare( $db_version, Domainmap_Plugin::VERSION, '>=' )
+			? $db_version
+			: Domainmap_Plugin::VERSION;
+
+		update_site_option( $option, $db_version );
 	}
 
 	/**
@@ -196,6 +216,31 @@ class Domainmap_Module_System extends Domainmap_Module {
 		) );
 
 		return $current_version;
+	}
+
+	/**
+	 * Upgrades database to version 4.0.3
+	 *
+	 * @since 4.0.3
+	 *
+	 * @access public
+	 * @param string $current_version The current plugin version.
+	 * @return string Upgraded version if the current version is less, otherwise current version.
+	 */
+	public function upgrade_to_4_0_3( $current_version ) {
+		$this_version = '4.0.3';
+		if ( version_compare( $current_version, $this_version, '>=' ) ) {
+			return $current_version;
+		}
+
+		$this->_exec_queries( array(
+			$this->_alter_table( DOMAINMAP_TABLE_MAP, array(
+				'CHANGE COLUMN `active` `active` TINYINT(4) UNSIGNED NOT NULL DEFAULT 1',
+				'ADD COLUMN `primary` TINYINT UNSIGNED NOT NULL DEFAULT 0  AFTER `blog_id`',
+			) ),
+		) );
+
+		return $this_version;
 	}
 
 }
