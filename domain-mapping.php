@@ -90,16 +90,23 @@ function domainmap_launch() {
 
 	// setup environment
 	define( 'DOMAINMAP_BASEFILE', __FILE__ );
-	define( 'DOMAINMAP_ABSURL', plugins_url( '/', __FILE__ ) );
-	define( 'DOMAINMAP_ABSPATH', dirname( __FILE__ ) );
+	define( 'DOMAINMAP_ABSURL',   plugins_url( '/', __FILE__ ) );
+	define( 'DOMAINMAP_ABSPATH',  dirname( __FILE__ ) );
 
 	if( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
 		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
 	}
 
 	$prefix = isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix;
+	define( 'DOMAINMAP_TABLE_MAP',          "{$prefix}domain_mapping" );
 	define( 'DOMAINMAP_TABLE_RESELLER_LOG', "{$prefix}domain_mapping_reseller_log" );
-	define( 'DOMAINMAP_TABLE_MAP', "{$prefix}domain_mapping" );
+
+	// MultiDB compatibility
+	// register global tables
+	if ( defined( 'MULTI_DB_VERSION' ) && function_exists( 'add_global_table' ) ) {
+		add_global_table( 'domain_mapping' );
+		add_global_table( 'domain_mapping_reseller_log' );
+	}
 
 	// set up the plugin core class
 	$dm_map = new domain_map();
