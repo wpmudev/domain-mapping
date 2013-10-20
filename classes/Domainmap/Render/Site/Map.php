@@ -93,7 +93,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
 							</div>
 							<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-							<button type="submit" class="button button-primary"><i class="icon-globe"></i> <?php _e( 'Map domain', 'domainmap' ) ?></button>
+							<button type="submit" class="button button-primary domainmapping-button"><i class="icon-globe icon-white"></i><?php _e( 'Map domain', 'domainmap' ) ?></button>
 							<div class="domainmapping-clear"></div>
 						</form>
 					</li>
@@ -131,7 +131,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 				<?php echo $schema ?>://<?php echo $domain, $current_site->path ?>
 			</a>
 			<?php self::render_health_column( $domain ) ?>
-			<a class="domainmapping-map-remove" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"><i class="icon-remove"></i> <?php _e( 'Remove', 'domainmap' ) ?></a>
+			<a class="domainmapping-map-remove domainmappin-icon-remove" href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>">&nbsp;</a>
 		</li><?php
 	}
 

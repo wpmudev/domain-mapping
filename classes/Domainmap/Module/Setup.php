@@ -105,6 +105,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 		) );
 
 		// enqueue styles
+		wp_register_style( 'bootstrap-glyphs', $baseurl . 'css/bootstrap-glyphs.min.css', array(), '2.3.2' );
 		wp_register_style( 'font-awesome', $baseurl . 'css/font-awesome.min.css', array(), '3.2.1' );
 		wp_register_style( 'font-awesome-ie', $baseurl . 'css/font-awesome-ie7.min.css', array( 'font-awesome' ), '3.2.1' );
 		wp_register_style( 'google-font-lato', '//fonts.googleapis.com/css?family=Lato:300,400,700,400italic', array(), Domainmap_Plugin::VERSION );

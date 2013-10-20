@@ -102,8 +102,8 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 		endforeach;
 
 		?><p class="submit">
-			<button type="submit" class="button button-primary">
-				<i class="icon-save"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
+			<button type="submit" class="button button-primary domainmapping-button">
+				<i class="icon-ok icon-white"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
 			</button>
 		</p><?php
 	}

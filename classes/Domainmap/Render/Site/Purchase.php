@@ -67,8 +67,8 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 							<?php endforeach; ?>
 						</select>
 					</div>
-					<input type="text" class="domainmapping-input-sufix domainmapping-input-empty" readonly disabled value="">
-					<button type="submit" class="button-primary button domainmapping-button"><i class="icon-search"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>
+					<input type="text" class="domainmapping-input-sufix domainmapping-input-empty" readonly disabled>
+					<button type="submit" class="button-primary button domainmapping-button"><i class="icon-search icon-white"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>
 					<div class="domainmapping-clear"></div>
 				</form>
 

@@ -409,8 +409,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		wp_enqueue_script( 'domainmapping-admin' );
 
 		// enqueue styles
-		wp_enqueue_style( 'font-awesome' );
-		wp_enqueue_style( 'font-awesome-ie' );
+		wp_enqueue_style( 'bootstrap-glyphs' );
 		wp_enqueue_style( 'google-font-lato' );
 		wp_enqueue_style( 'domainmapping-admin' );
 	}

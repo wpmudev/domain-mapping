@@ -311,7 +311,8 @@
 
 .wp-core-ui .domainmapping-button i,
 .domainmapping-form-submit i {
-    margin-right: 5px
+    margin-right: 3px;
+	margin-top: 2px;
 }
 
 .domainmapping-invalid-domain,
@@ -652,4 +653,14 @@ input.domainmapping-radio {
 
 .domainmapping-form-buttons {
     margin-top: 50px;
+}
+
+.domainmappin-icon-remove {
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}
+
+.domainmappin-icon-remove {
+	background-image: url('../images/remove.png');
 }
