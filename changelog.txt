@@ -1,1 +1,3 @@
 == 4.0.3 ==
+
+* Implemented front end redirect to primary domain

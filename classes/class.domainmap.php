@@ -284,7 +284,6 @@ class domain_map {
 			add_action( 'wp_logout', array( $this, 'wp_logout' ), 10 );
 			add_action( 'admin_head', array( $this, 'build_cookie' ) );
 			add_action( 'customize_preview_init', array( $this, 'set_access_control_rules' ) );
-			add_action( 'template_redirect', array( $this, 'redirect_to_mapped_domain' ) );
 		}
 	}
 

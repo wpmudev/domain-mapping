@@ -129,6 +129,9 @@ function domainmap_launch() {
 			// set admin modules
 			$plugin->set_module( Domainmap_Module_Pages::NAME );
 			$plugin->set_module( Domainmap_Module_Admin::NAME );
+		} else {
+			// set front end modules
+			$plugin->set_module( Domainmap_Module_Mapping::NAME );
 		}
 	}
 }
