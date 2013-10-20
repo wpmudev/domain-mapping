@@ -99,7 +99,7 @@
 				wrapper = $self.parents('.domainmapping-domains-wrapper');
 
 			if (confirm(domainmapping.message.unmap)) {
-				$.get($self.attr('href'), {}, function(response) {
+				$.get($self.attr('data-href'), {}, function(response) {
 					parent.fadeOut(300, function() {
 						parent.remove();
 						if (response && response.data && response.data.show_form) {
@@ -130,13 +130,14 @@
 			return false;
 		});
 
-		$domains.on('click', 'a.domainmapping-map-primary.icon-star-empty', function() {
+		$domains.on('click', 'a.domainmapping-map-primary', function() {
 			var $this = $(this);
 
-			$domains.find('a.domainmapping-map-primary.icon-star').toggleClass('icon-star icon-star-empty');
-			$this.toggleClass('icon-star icon-star-empty');
-
-			$.get($this.attr('href'));
+			if ($this.hasClass('icon-star-empty')) {
+				$domains.find('a.domainmapping-map-primary.icon-star').toggleClass('icon-star icon-star-empty');
+				$this.toggleClass('icon-star icon-star-empty');
+				$.get($this.attr('data-href'));
+			}
 
 			return false;
 		});
