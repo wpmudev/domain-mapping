@@ -1,3 +1,4 @@
 == 4.0.3 ==
 
 * Implemented front end redirect to primary domain
+* Improved MultiDB compatibility by registering domain mapping tables as global
