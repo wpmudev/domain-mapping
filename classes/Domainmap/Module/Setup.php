@@ -89,14 +89,18 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 				'close' => __( 'OK', 'domainmap' ),
 			),
 			'message' => array(
-				'unmap'   => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
-				'empty'   => __( 'Please, enter not empty domain name.', 'domainmap' ),
+				'unmap'             => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
+				'empty'             => __( 'Please, enter not empty domain name.', 'domainmap' ),
+				'valid_selection'   => __( 'You are about to select domain as primary. Do you really want to proceed?', 'domainmap' ),
+				'invalid_selection' => __( 'You are about to select invalid domain as primary. It could cause unexpected issues at your front end. Do you really want to proceed?', 'domainmap' ),
+
 				'invalid' => array(
 					'card_number' => __( 'Credit card number is invalid.', 'domainmap' ),
 					'card_type'   => __( 'Credit card type is invalid.', 'domainmap' ),
 					'card_expiry' => __( 'Credit card expiry date is invalid.', 'domainmap' ),
 					'card_cvv'    => __( 'Credit card CVV2 code is invalid.', 'domainmap' ),
 				),
+
 				'purchase' => array(
 					'success' => __( 'Domain name has been purchased successfully.', 'domainmap' ),
 					'failed'  => __( 'Domain name purchase has failed.', 'domainmap' ),

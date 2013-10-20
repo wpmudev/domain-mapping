@@ -105,6 +105,10 @@
 						if (response && response.data && response.data.show_form) {
 							wrapper.removeClass('domainmapping-form-hidden');
 						}
+
+						if ($domains.find('a.domainmapping-map-primary.icon-star').length == 0) {
+							$domains.find('a.domainmapping-map-primary:first').toggleClass('icon-star icon-star-empty');
+						}
 					});
 				});
 			}
@@ -131,9 +135,13 @@
 		});
 
 		$domains.on('click', 'a.domainmapping-map-primary', function() {
-			var $this = $(this);
+			var $this = $(this), message;
 
-			if ($this.hasClass('icon-star-empty')) {
+			message = $this.parents('li').find('a.domainmapping-map-state').hasClass('domainmapping-valid-domain')
+				? domainmapping.message.valid_selection
+				: domainmapping.message.invalid_selection;
+
+			if ($this.hasClass('icon-star-empty') && confirm(message)) {
 				$domains.find('a.domainmapping-map-primary.icon-star').toggleClass('icon-star icon-star-empty');
 				$this.toggleClass('icon-star icon-star-empty');
 				$.get($this.attr('data-href'));

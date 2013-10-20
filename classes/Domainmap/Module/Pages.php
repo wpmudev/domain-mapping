@@ -119,10 +119,19 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				}
 			}
 
+			// prepare domains list
+			$domains = (array)$this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+			if ( count( $domains ) > 0 ) {
+				$has_primary = count( array_filter( wp_list_pluck( $domains, 'is_primary' ) ) ) > 0;
+				if ( !$has_primary ) {
+					$domains[0]->is_primary = 1;
+				}
+			}
+
+			// prepare template
 			$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
-			
 			$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $this->_wpdb->blogid ) );
-			$page->domains = (array)$this->_wpdb->get_results( "SELECT domain, is_primary FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->_wpdb->blogid ) .  " ORDER BY domain ASC" );
+			$page->domains = $domains;
 			$page->ips = $ips;
 		}
 

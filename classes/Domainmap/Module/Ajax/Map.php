@@ -99,7 +99,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 						// send success response
 						ob_start();
-						$row = array( 'domain' => $domain, 'is_primary' => 0 );
+						$row = array( 'domain' => $domain, 'is_primary' => $count == 0 ? 1 : 0 );
 						Domainmap_Render_Site_Map::render_mapping_row( (object)$row );
 						wp_send_json_success( array(
 							'html'      => ob_get_clean(),

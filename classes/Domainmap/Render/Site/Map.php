@@ -141,7 +141,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			</a>
 			<?php self::render_health_column( $row->domain ) ?>
 			<a class="domainmapping-map-remove icon-trash" href="#" data-href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
-			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="#" data-href="<?php echo esc_url( $primary_link ) ?>" title="<?php _e( 'Select primary domain', 'domainmap' ) ?>"></a>
+			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="#" data-href="<?php echo esc_url( $primary_link ) ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
 		</li><?php
 	}
 
