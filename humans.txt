@@ -1,0 +1,10 @@
+/* TEAM */
+	Developer: Barry
+	Contact:
+	Twitter: @caffeinatedwp
+	Location:
+
+	Developer: Eugene Manuilov
+	Location: Kiev, Ukraine
+	Contact: eugene[at]incsub[dot]com
+	Twitter: @eugene_manuilov
