@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-17 22:34+0300\n"
-"PO-Revision-Date: 2013-10-17 22:34+0300\n"
+"POT-Creation-Date: 2013-10-20 15:34+0300\n"
+"PO-Revision-Date: 2013-10-20 15:34+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: classes\n"
 
-#: classes/class.domainmap.php:336 classes/class.domainmap.php:373
-#: classes/class.domainmap.php:638
+#: classes/class.domainmap.php:335 classes/class.domainmap.php:372
+#: classes/class.domainmap.php:634
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
-#: classes/class.domainmap.php:354 classes/class.domainmap.php:387
-#: classes/class.domainmap.php:645
+#: classes/class.domainmap.php:353 classes/class.domainmap.php:386
+#: classes/class.domainmap.php:641
 msgid "Please wait..."
 msgstr "Please wait..."
 
-#: classes/class.domainmap.php:355 classes/class.domainmap.php:388
+#: classes/class.domainmap.php:354 classes/class.domainmap.php:387
 #, php-format
 msgid ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:646
+#: classes/class.domainmap.php:642
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -92,7 +92,7 @@ msgstr "Search"
 
 #: classes/Domainmap/Render/Network.php:60
 #: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:70
-#: classes/Domainmap/Module/Pages.php:142
+#: classes/Domainmap/Module/Pages.php:143
 msgid "Domain Mapping"
 msgstr "Domain Mapping"
 
@@ -348,31 +348,31 @@ msgstr "Actions"
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:130
+#: classes/Domainmap/Render/Site/Map.php:139
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:134
+#: classes/Domainmap/Render/Site/Map.php:143
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:134
-msgid "Remove"
-msgstr "Remove"
+#: classes/Domainmap/Render/Site/Map.php:144
+msgid "Select primary domain"
+msgstr "Select primary domain"
 
-#: classes/Domainmap/Render/Site/Map.php:155
+#: classes/Domainmap/Render/Site/Map.php:165
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:160
+#: classes/Domainmap/Render/Site/Map.php:170
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:163
+#: classes/Domainmap/Render/Site/Map.php:173
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:167
+#: classes/Domainmap/Render/Site/Map.php:177
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -613,19 +613,19 @@ msgstr "Payment for 1 year usage of the domain name."
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:343
+#: classes/Domainmap/Module/Pages.php:344
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:344
+#: classes/Domainmap/Module/Pages.php:345
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:349
+#: classes/Domainmap/Module/Pages.php:350
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:379
+#: classes/Domainmap/Module/Pages.php:380
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
@@ -666,11 +666,11 @@ msgstr "Domain name has been purchased successfully."
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:110
+#: classes/Domainmap/Module/Ajax/Map.php:112
 msgid "Domain name is unavailable to access."
 msgstr "Domain name is unavailable to access."
 
-#: classes/Domainmap/Module/Ajax/Map.php:111
+#: classes/Domainmap/Module/Ajax/Map.php:113
 msgid ""
 "We can't access the new domain. If you've just purchased it, please, wait "
 "while it will be propagated. If it is already propagated, please, check your "
@@ -680,15 +680,15 @@ msgstr ""
 "while it will be propagated. If it is already propagated, please, check your "
 "DNS records to be sure that the domain is configured correctly."
 
-#: classes/Domainmap/Module/Ajax/Map.php:115
+#: classes/Domainmap/Module/Ajax/Map.php:117
 msgid "Domain is already mapped."
 msgstr "Domain is already mapped."
 
-#: classes/Domainmap/Module/Ajax/Map.php:118
+#: classes/Domainmap/Module/Ajax/Map.php:120
 msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:122
+#: classes/Domainmap/Module/Ajax/Map.php:124
 #: classes/Domainmap/Module/Ajax/Purchase.php:104
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
