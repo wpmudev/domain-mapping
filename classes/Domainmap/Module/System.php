@@ -236,7 +236,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$this->_exec_queries( array(
 			$this->_alter_table( DOMAINMAP_TABLE_MAP, array(
 				'CHANGE COLUMN `active` `active` TINYINT(4) UNSIGNED NOT NULL DEFAULT 1',
-				'ADD COLUMN `primary` TINYINT UNSIGNED NOT NULL DEFAULT 0  AFTER `blog_id`',
+				'ADD COLUMN `is_primary` TINYINT UNSIGNED NOT NULL DEFAULT 0  AFTER `blog_id`',
 			) ),
 		) );
 
