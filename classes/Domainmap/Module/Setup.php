@@ -91,7 +91,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 			'message' => array(
 				'unmap'             => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
 				'empty'             => __( 'Please, enter not empty domain name.', 'domainmap' ),
-				'valid_selection'   => __( 'You are about to select domain as primary. Do you really want to proceed?', 'domainmap' ),
+				'valid_selection'   => __( 'You are about to change your primary domain. Do you really want to proceed?', 'domainmap' ),
 				'invalid_selection' => __( 'You are about to select invalid domain as primary. It could cause unexpected issues at your front end. Do you really want to proceed?', 'domainmap' ),
 
 				'invalid' => array(
