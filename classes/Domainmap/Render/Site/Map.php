@@ -129,11 +129,16 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		), $admin_ajax );
 
 		$primary_class = $row->is_primary == 1 ? 'icon-star' : 'icon-star-empty';
-		$primary_link = add_query_arg( array(
-			'action' => Domainmap_Plugin::ACTION_MAKE_PRIMARY_DOMAIN,
-			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_MAKE_PRIMARY_DOMAIN ),
+		$select_primary = esc_url( add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN,
+			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN ),
 			'domain' => $row->domain,
-		), $admin_ajax );
+		), $admin_ajax ) );
+		$deselect_primary = esc_url( add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN,
+			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN ),
+			'domain' => $row->domain,
+		), $admin_ajax ) );
 
 		?><li>
 			<a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
@@ -141,7 +146,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			</a>
 			<?php self::render_health_column( $row->domain ) ?>
 			<a class="domainmapping-map-remove icon-trash" href="#" data-href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
-			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="#" data-href="<?php echo esc_url( $primary_link ) ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
+			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
 		</li><?php
 	}
 

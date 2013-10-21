@@ -38,7 +38,8 @@ class Domainmap_Plugin {
 	const ACTION_PAYPAL_PURCHASE            = 'domainmapping_purchase_with_paypal';
 	const ACTION_MAP_DOMAIN                 = 'domainmapping_map_domain';
 	const ACTION_UNMAP_DOMAIN               = 'domainmapping_unmap_domain';
-	const ACTION_MAKE_PRIMARY_DOMAIN        = 'domainmapping_make_primary_domain';
+	const ACTION_SELECT_PRIMARY_DOMAIN      = 'domainmapping_select_primary_domain';
+	const ACTION_DESELECT_PRIMARY_DOMAIN    = 'domainmapping_deselect_primary_domain';
 	const ACTION_HEALTH_CHECK               = 'domainmapping_check_health';
 	const ACTION_HEARTBEAT_CHECK            = 'domainmapping_heartbeat_check';
 	const ACTION_CDSSO_LOGIN                = 'domainmapping_cdsso_login';

@@ -107,7 +107,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$query = $this->_wpdb->prepare( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = %d AND domain = %s AND is_primary = 1 LIMIT 1", $this->_wpdb->blogid, $_SERVER['HTTP_HOST'] );
 			$domain = $this->_wpdb->get_var( $query );
 			if ( empty( $domain ) ) {
-				$domain = $this->_wpdb->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+				$domains = $this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 2", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+				// if only one mapped domain or a mapped domain is primary
+				if ( !empty( $domains ) && ( count( $domains ) == 1 || $domains[0]->is_primary == 1 ) ) {
+					$domain = $domains[0]->domain;
+				}
 			}
 
 			$this->_wpdb->suppress_errors( $errors_suppression );
