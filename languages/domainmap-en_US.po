@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-21 09:16+0300\n"
-"PO-Revision-Date: 2013-10-21 09:16+0300\n"
+"POT-Creation-Date: 2013-10-21 11:58+0300\n"
+"PO-Revision-Date: 2013-10-21 11:58+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -92,7 +92,7 @@ msgstr "Search"
 
 #: classes/Domainmap/Render/Network.php:60
 #: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:70
-#: classes/Domainmap/Module/Pages.php:152
+#: classes/Domainmap/Module/Pages.php:143
 msgid "Domain Mapping"
 msgstr "Domain Mapping"
 
@@ -348,31 +348,31 @@ msgstr "Actions"
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:139
+#: classes/Domainmap/Render/Site/Map.php:144
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:143
+#: classes/Domainmap/Render/Site/Map.php:148
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:144
+#: classes/Domainmap/Render/Site/Map.php:149
 msgid "Select as primary domain"
 msgstr "Select as primary domain"
 
-#: classes/Domainmap/Render/Site/Map.php:165
+#: classes/Domainmap/Render/Site/Map.php:170
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:170
+#: classes/Domainmap/Render/Site/Map.php:175
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:173
+#: classes/Domainmap/Render/Site/Map.php:178
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:177
+#: classes/Domainmap/Render/Site/Map.php:182
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -613,19 +613,19 @@ msgstr "Payment for 1 year usage of the domain name."
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:353
+#: classes/Domainmap/Module/Pages.php:344
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:354
+#: classes/Domainmap/Module/Pages.php:345
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:359
+#: classes/Domainmap/Module/Pages.php:350
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:389
+#: classes/Domainmap/Module/Pages.php:380
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
@@ -644,47 +644,53 @@ msgstr "Please, enter not empty domain name."
 
 #: classes/Domainmap/Module/Setup.php:94
 msgid ""
-"You are about to change your primary domain. Do you really want to proceed?"
+"You are about to deselect your primary domain. Do you really want to proceed?"
 msgstr ""
-"You are about to change your primary domain. Do you really want to proceed?"
+"You are about to deselect your primary domain. Do you really want to proceed?"
 
 #: classes/Domainmap/Module/Setup.php:95
 msgid ""
+"You are about to change your primary domain. Do you really want to proceed?"
+msgstr ""
+"You are about to change your primary domain. Do you really want to proceed?"
+
+#: classes/Domainmap/Module/Setup.php:96
+msgid ""
 "You are about to select invalid domain as primary. It could cause unexpected "
 "issues at your front end. Do you really want to proceed?"
 msgstr ""
 "You are about to select invalid domain as primary. It could cause unexpected "
 "issues at your front end. Do you really want to proceed?"
 
-#: classes/Domainmap/Module/Setup.php:98
+#: classes/Domainmap/Module/Setup.php:99
 msgid "Credit card number is invalid."
 msgstr "Credit card number is invalid."
 
-#: classes/Domainmap/Module/Setup.php:99
+#: classes/Domainmap/Module/Setup.php:100
 msgid "Credit card type is invalid."
 msgstr "Credit card type is invalid."
 
-#: classes/Domainmap/Module/Setup.php:100
+#: classes/Domainmap/Module/Setup.php:101
 msgid "Credit card expiry date is invalid."
 msgstr "Credit card expiry date is invalid."
 
-#: classes/Domainmap/Module/Setup.php:101
+#: classes/Domainmap/Module/Setup.php:102
 msgid "Credit card CVV2 code is invalid."
 msgstr "Credit card CVV2 code is invalid."
 
-#: classes/Domainmap/Module/Setup.php:105
+#: classes/Domainmap/Module/Setup.php:106
 msgid "Domain name has been purchased successfully."
 msgstr "Domain name has been purchased successfully."
 
-#: classes/Domainmap/Module/Setup.php:106
+#: classes/Domainmap/Module/Setup.php:107
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:112
+#: classes/Domainmap/Module/Ajax/Map.php:113
 msgid "Domain name is unavailable to access."
 msgstr "Domain name is unavailable to access."
 
-#: classes/Domainmap/Module/Ajax/Map.php:113
+#: classes/Domainmap/Module/Ajax/Map.php:114
 msgid ""
 "We can't access the new domain. If you've just purchased it, please, wait "
 "while it will be propagated. If it is already propagated, please, check your "
@@ -694,15 +700,15 @@ msgstr ""
 "while it will be propagated. If it is already propagated, please, check your "
 "DNS records to be sure that the domain is configured correctly."
 
-#: classes/Domainmap/Module/Ajax/Map.php:117
+#: classes/Domainmap/Module/Ajax/Map.php:118
 msgid "Domain is already mapped."
 msgstr "Domain is already mapped."
 
-#: classes/Domainmap/Module/Ajax/Map.php:120
+#: classes/Domainmap/Module/Ajax/Map.php:121
 msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:124
+#: classes/Domainmap/Module/Ajax/Map.php:125
 #: classes/Domainmap/Module/Ajax/Purchase.php:104
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
