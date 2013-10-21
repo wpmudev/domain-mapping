@@ -104,11 +104,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( !isset( self::$_mapped_urls[$this->_wpdb->blogid] ) ) {
 			$errors_suppression = $this->_wpdb->suppress_errors();
 
-			$query = $this->_wpdb->prepare( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = %d AND domain = %s AND is_primary = 1 LIMIT 1", $_SERVER['HTTP_HOST'], $this->_wpdb->blogid );
+			$query = $this->_wpdb->prepare( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = %d AND domain = %s AND is_primary = 1 LIMIT 1", $this->_wpdb->blogid, $_SERVER['HTTP_HOST'] );
 			$domain = $this->_wpdb->get_var( $query );
 			if ( empty( $domain ) ) {
-				$query = $this->_wpdb->prepare( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", $this->_wpdb->blogid );
-				$domain = $this->_wpdb->get_var( $query );
+				$domain = $this->_wpdb->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
 			}
 
 			$this->_wpdb->suppress_errors( $errors_suppression );
