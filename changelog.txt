@@ -1,4 +1,5 @@
 == 4.0.3 ==
 
+* Fixed ProSites compatibility issue
 * Implemented front end redirect to primary domain
 * Improved MultiDB compatibility by registering domain mapping tables as global

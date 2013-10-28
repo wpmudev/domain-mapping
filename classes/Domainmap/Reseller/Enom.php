@@ -253,11 +253,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		// if paypal gateway is selected, then check if it is available
 		if ( $gateway == self::GATEWAY_PROSITES ) {
+			// if prosites or paypal gateway is not activated, then use eNom gateway
 			$paypal_class = 'ProSites_Gateway_PayPalExpressPro';
-			$pro_gateways = $psts->get_setting( 'gateways_enabled' ) ;
-
-			// if prosites is not activated or paypal gateway is not activated, then use eNom gateway
-			if ( !$psts || !in_array( $paypal_class, (array)$pro_gateways ) || !class_exists( $paypal_class ) ) {
+			if ( !$psts || !in_array( $paypal_class, (array)$psts->get_setting( 'gateways_enabled' ) ) || !class_exists( $paypal_class ) ) {
 				$gateway = self::GATEWAY_ENOM;
 			}
 		}
