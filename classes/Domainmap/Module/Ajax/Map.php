@@ -229,24 +229,26 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	public function select_primary_domain() {
 		self::_check_premissions( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN );
 
-		// unset all domains
-		$this->_wpdb->update(
-			DOMAINMAP_TABLE_MAP,
-			array( 'is_primary' => 0 ),
-			array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1 ),
-			array( '%d' ),
-			array( '%d', '%d' )
-		);
+		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
+			// unset all domains
+			$this->_wpdb->update(
+				DOMAINMAP_TABLE_MAP,
+				array( 'is_primary' => 0 ),
+				array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1 ),
+				array( '%d' ),
+				array( '%d', '%d' )
+			);
 
-		// set primary domain
-		$domain = filter_input( INPUT_GET, 'domain' );
-		$this->_wpdb->update(
-			DOMAINMAP_TABLE_MAP,
-			array( 'is_primary' => 1 ),
-			array( 'blog_id' => $this->_wpdb->blogid, 'domain' => $domain ),
-			array( '%d' ),
-			array( '%d', '%s' )
-		);
+			// set primary domain
+			$domain = filter_input( INPUT_GET, 'domain' );
+			$this->_wpdb->update(
+				DOMAINMAP_TABLE_MAP,
+				array( 'is_primary' => 1 ),
+				array( 'blog_id' => $this->_wpdb->blogid, 'domain' => $domain ),
+				array( '%d' ),
+				array( '%d', '%s' )
+			);
+		}
 
 		wp_send_json_success();
 		exit;
@@ -262,14 +264,16 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	public function deselect_primary_domain() {
 		self::_check_premissions( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN );
 
-		// deselect primary domains
-		$this->_wpdb->update(
-			DOMAINMAP_TABLE_MAP,
-			array( 'is_primary' => 0 ),
-			array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1, 'domain' => filter_input( INPUT_GET, 'domain' ) ),
-			array( '%d' ),
-			array( '%d', '%d', '%s' )
-		);
+		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
+			// deselect primary domains
+			$this->_wpdb->update(
+				DOMAINMAP_TABLE_MAP,
+				array( 'is_primary' => 0 ),
+				array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1, 'domain' => filter_input( INPUT_GET, 'domain' ) ),
+				array( '%d' ),
+				array( '%d', '%d', '%s' )
+			);
+		}
 
 		wp_send_json_success();
 		exit;

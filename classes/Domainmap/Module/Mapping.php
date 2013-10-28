@@ -32,17 +32,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	const NAME = __CLASS__;
 
 	/**
-	 * The array of mapped urls.
-	 *
-	 * @since 4.0.3
-	 *
-	 * @static
-	 * @access private
-	 * @var array
-	 */
-	private static $_mapped_urls = array();
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.3
@@ -52,7 +41,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
-
 		$this->_add_action( 'template_redirect', 'redirect_to_mapped_domain' );
 	}
 
@@ -101,32 +89,72 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private function _get_mapped_url() {
 		global $current_site;
 
-		if ( !isset( self::$_mapped_urls[$this->_wpdb->blogid] ) ) {
-			$errors_suppression = $this->_wpdb->suppress_errors();
+		$suppress_errors = $this->_wpdb->suppress_errors();
 
-			$query = $this->_wpdb->prepare( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = %d AND domain = %s AND is_primary = 1 LIMIT 1", $this->_wpdb->blogid, $_SERVER['HTTP_HOST'] );
-			$domain = $this->_wpdb->get_var( $query );
-			if ( empty( $domain ) ) {
-				$domains = $this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 2", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
-				// if only one mapped domain or a mapped domain is primary
-				if ( !empty( $domains ) && ( count( $domains ) == 1 || $domains[0]->is_primary == 1 ) ) {
-					$domain = $domains[0]->domain;
-				}
-			}
+		$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN ) && is_ssl()
+			? 'https://'
+			: 'http://';
 
-			$this->_wpdb->suppress_errors( $errors_suppression );
+		$domain = defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
+			? $this->_get_mapped_domain_with_multi()
+			: $this->_get_mapped_domain_without_multi();
 
-			$protocol = 'http://';
-			if ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) {
-				$protocol = 'https://';
-			}
+		$this->_wpdb->suppress_errors( $suppress_errors );
 
-			self::$_mapped_urls[$this->_wpdb->blogid] = !empty( $domain )
-				? untrailingslashit( $protocol . $domain . $current_site->path )
-				: false;
+		return !empty( $domain )
+			? untrailingslashit( $protocol . $domain . $current_site->path )
+			: false;
+	}
+
+	/**
+	 * Returns proper domain name mapped to this blog in case when multi mapping is enabled.
+	 *
+	 * @since 4.0.3
+	 *
+	 * @access private
+	 * @return string Proper domain name if mapping exists, otherwise FALSE.
+	 */
+	private function _get_mapped_domain_with_multi() {
+		$domains = $this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+		if ( empty( $domains ) ) {
+			// we don't have any mapped domains, so return FALSE
+			return false;
 		}
 
-		return self::$_mapped_urls[$this->_wpdb->blogid];
+		$primaries = wp_list_filter( $domains, array( 'is_primary' => 1 ) );
+		if ( empty( $primaries ) ) {
+			// no primary domain is selected, so return FALSE
+			return false;
+		}
+
+		// check if we have current host in the list of primaries, if not, then return first primary domain
+		return count( wp_list_filter( $primaries, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) == 0
+			? current( $primaries )->domain
+			: false;
+	}
+
+	/**
+	 * Returns proper domain name mapped to this blog in case when multi mapping is disabled.
+	 *
+	 * @since 4.0.3
+	 *
+	 * @access private
+	 * @return string Proper domain name if mapping exists, otherwise FALSE.
+	 */
+	private function _get_mapped_domain_without_multi() {
+		$results = $this->_wpdb->get_results( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+		if ( empty( $results ) ) {
+			// we don't have any mapped domains, so return FALSE
+			return false;
+		}
+
+		if ( count( wp_list_filter( $results, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) > 0 ) {
+			// current HTTP HOST is mapped to current blog, so we don't need to redirect
+			return false;
+		}
+
+		// current host is not mapped, then return first mapped domain
+		return $results[0]->domain;
 	}
 
 }
