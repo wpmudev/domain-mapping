@@ -279,9 +279,9 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			0 => __( 'No', 'domainmap' ),
 		);
 
-		?><h4 class="domainmapping-block-header"><?php _e( 'Verify domain availability', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( "Verify domain's DNS settings", 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "Would you like to verify domain availability before they will be mapped by your members:", 'domainmap' ) ?><br>
+			<?php _e( "Would you like to verify domain's DNS settings before they will be mapped by your members:", 'domainmap' ) ?><br>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php

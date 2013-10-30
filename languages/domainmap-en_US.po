@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-21 11:58+0300\n"
-"PO-Revision-Date: 2013-10-21 11:58+0300\n"
+"POT-Creation-Date: 2013-10-30 15:18+0300\n"
+"PO-Revision-Date: 2013-10-30 15:18+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -303,7 +303,7 @@ msgstr "Fax:"
 msgid "Additional Registrar Information"
 msgstr "Additional Registrar Information"
 
-#: classes/Domainmap/Render/Site/Map.php:42
+#: classes/Domainmap/Render/Site/Map.php:55
 msgid ""
 "If your domain name includes a sub-domain such as \"blog\" then you can add "
 "a CNAME for that hostname in your DNS pointing at this blog URL."
@@ -311,7 +311,7 @@ msgstr ""
 "If your domain name includes a sub-domain such as \"blog\" then you can add "
 "a CNAME for that hostname in your DNS pointing at this blog URL."
 
-#: classes/Domainmap/Render/Site/Map.php:47
+#: classes/Domainmap/Render/Site/Map.php:60
 msgid ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
@@ -319,7 +319,7 @@ msgstr ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:49
+#: classes/Domainmap/Render/Site/Map.php:62
 msgid ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
@@ -327,52 +327,52 @@ msgstr ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:73
+#: classes/Domainmap/Render/Site/Map.php:86
 msgid "Domain(s) mapped to"
 msgstr "Domain(s) mapped to"
 
-#: classes/Domainmap/Render/Site/Map.php:80
+#: classes/Domainmap/Render/Site/Map.php:93
 msgid "Mapped domain"
 msgstr "Mapped domain"
 
-#: classes/Domainmap/Render/Site/Map.php:81
+#: classes/Domainmap/Render/Site/Map.php:94
 msgid "Health status"
 msgstr "Health status"
 
-#: classes/Domainmap/Render/Site/Map.php:82
+#: classes/Domainmap/Render/Site/Map.php:95
 msgid "Actions"
 msgstr "Actions"
 
-#: classes/Domainmap/Render/Site/Map.php:96
+#: classes/Domainmap/Render/Site/Map.php:109
 #: classes/Domainmap/Module/Pages.php:86
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:144
+#: classes/Domainmap/Render/Site/Map.php:161
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:148
+#: classes/Domainmap/Render/Site/Map.php:165
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:149
+#: classes/Domainmap/Render/Site/Map.php:167
 msgid "Select as primary domain"
 msgstr "Select as primary domain"
 
-#: classes/Domainmap/Render/Site/Map.php:170
+#: classes/Domainmap/Render/Site/Map.php:189
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:175
+#: classes/Domainmap/Render/Site/Map.php:194
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:178
+#: classes/Domainmap/Render/Site/Map.php:197
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:182
+#: classes/Domainmap/Render/Site/Map.php:201
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -566,15 +566,15 @@ msgstr ""
 "network regardless of domain name:"
 
 #: classes/Domainmap/Render/Network/Options.php:282
-msgid "Verify domain availability"
-msgstr "Verify domain availability"
+msgid "Verify domain's DNS settings"
+msgstr "Verify domain's DNS settings"
 
 #: classes/Domainmap/Render/Network/Options.php:284
 msgid ""
-"Would you like to verify domain availability before they will be mapped by "
+"Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 msgstr ""
-"Would you like to verify domain availability before they will be mapped by "
+"Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 
 #: classes/Domainmap/Render/Network/Options.php:311
@@ -597,15 +597,15 @@ msgstr "eNom credit card processing services"
 msgid "Pro Sites PayPal payment gateway"
 msgstr "Pro Sites PayPal payment gateway"
 
-#: classes/Domainmap/Reseller/Enom.php:563
+#: classes/Domainmap/Reseller/Enom.php:561
 msgid "Your name"
 msgstr "Your name"
 
-#: classes/Domainmap/Reseller/Enom.php:647
+#: classes/Domainmap/Reseller/Enom.php:645
 msgid "Purchase this domain with PayPal Express Checkout."
 msgstr "Purchase this domain with PayPal Express Checkout."
 
-#: classes/Domainmap/Reseller/Enom.php:689
+#: classes/Domainmap/Reseller/Enom.php:687
 msgid "Payment for 1 year usage of the domain name."
 msgstr "Payment for 1 year usage of the domain name."
 
