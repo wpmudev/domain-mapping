@@ -3,7 +3,7 @@
 Plugin Name: Domain Mapping plugin
 Plugin URI: http://premium.wpmudev.org/project/domain-mapping
 Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 4.0.3.beta.1
+Version: 4.0.3
 Author: Incsub
 Author URI: http://premium.wpmudev.org
 WDP ID: 99
@@ -66,18 +66,6 @@ function domainmap_autoloader( $class ) {
 }
 
 /**
- * Suppresses all errors and exceptions. This function used for AJAX requests to
- * prevent sending unexpected response text instead of JSON response.
- *
- * @since 4.0.2
- *
- * @return boolean TRUE value only to stop execute PHP internal error handler.
- */
-function domainmap_suppress_errors() {
-	return true;
-}
-
-/**
  * Instantiates the plugin and setup all modules.
  *
  * @since 4.0.0
@@ -101,8 +89,7 @@ function domainmap_launch() {
 	define( 'DOMAINMAP_TABLE_MAP',          "{$prefix}domain_mapping" );
 	define( 'DOMAINMAP_TABLE_RESELLER_LOG', "{$prefix}domain_mapping_reseller_log" );
 
-	// MultiDB compatibility
-	// register global tables
+	// MultiDB compatibility, register global tables
 	if ( defined( 'MULTI_DB_VERSION' ) && function_exists( 'add_global_table' ) ) {
 		add_global_table( 'domain_mapping' );
 		add_global_table( 'domain_mapping_reseller_log' );
@@ -125,8 +112,8 @@ function domainmap_launch() {
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// suppresses errors rendering to prevent unexpected issues
-		set_error_handler( 'domainmap_suppress_errors' );
-		set_exception_handler( 'domainmap_suppress_errors' );
+		set_error_handler( '__return_true' );
+		set_exception_handler( '__return_true' );
 
 		// set ajax modules
 		$plugin->set_module( Domainmap_Module_Ajax_Map::NAME );
