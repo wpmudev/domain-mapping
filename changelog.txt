@@ -1,3 +1,7 @@
+== 4.1 ==
+
+* Fixed SSL verification issue for health check validation
+
 == 4.0.3 ==
 
 * Fixed dedicated IP determination

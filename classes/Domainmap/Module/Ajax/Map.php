@@ -179,7 +179,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$response = wp_remote_request( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
-		), $ajax_url ) );
+		), $ajax_url ), array( 'sslverify' => false ) );
 
 		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check ? 1 : 0;
 	}
