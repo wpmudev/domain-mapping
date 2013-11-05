@@ -81,7 +81,7 @@ function domainmap_launch() {
 	define( 'DOMAINMAP_ABSURL',   plugins_url( '/', __FILE__ ) );
 	define( 'DOMAINMAP_ABSPATH',  dirname( __FILE__ ) );
 
-	if( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
+	if ( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
 		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
 	}
 

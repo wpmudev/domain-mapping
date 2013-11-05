@@ -89,13 +89,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				return false;
 			}
 
-			// load WPEngine API
+			include_once WPE_PLUGIN_DIR . '/class-wpeapi.php';
+			// chec whether class has been loaded
 			if ( !class_exists( 'WPE_API' ) ) {
-				include_once WPE_PLUGIN_DIR . '/class-wpeapi.php';
-				// if we were not able to load WPE_API class, then return
-				if ( !class_exists( 'WPE_API' ) ) {
-					return false;
-				}
+				return false;
 			}
 		}
 
