@@ -1,6 +1,7 @@
-== 4.1 ==
+== 4.0.4 ==
 
 * Fixed SSL verification issue for health check validation
+* Fixed WPEngine compatibility issue
 
 == 4.0.3 ==
 

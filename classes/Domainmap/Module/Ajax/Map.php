@@ -50,6 +50,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', false, true );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN, 'select_primary_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN, 'deselect_primary_domain' );
+
+		// add wpengine compatibility
+		if ( !has_action( 'domainmapping_added_domain' ) ) {
+			$this->_add_action( 'domainmapping_added_domain', 'add_domain_to_wpengine' );
+		}
+
+		if ( !has_action( 'domainmapping_deleted_domain' ) ) {
+			$this->_add_action( 'domainmapping_deleted_domain', 'remove_domain_from_wpengine' );
+		}
 	}
 
 	/**
@@ -62,6 +71,88 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 */
 	private function _get_domains_count() {
 		return $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . intval( $this->_wpdb->blogid ) );
+	}
+
+	/**
+	 * Locates WPEngine API and loads it.
+	 *
+	 * @since 4.0.4
+	 *
+	 * @access private
+	 * @return boolean TRUE if WPE_API has been located, otherwise FALSE.
+	 */
+	private function _locate_wpengine_api() {
+		// if WPE_API doesn't exist, then try to locate it
+		if ( !class_exists( 'WPE_API' ) ) {
+			// if WPEngine is not defined, then return
+			if ( !defined( 'WPE_PLUGIN_DIR' ) || !is_readable( WPE_PLUGIN_DIR . '/class-wpeapi.php' ) ) {
+				return false;
+			}
+
+			// load WPEngine API
+			if ( !class_exists( 'WPE_API' ) ) {
+				include_once WPE_PLUGIN_DIR . '/class-wpeapi.php';
+				// if we were not able to load WPE_API class, then return
+				if ( !class_exists( 'WPE_API' ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Adds domain to WPEngine domains list when this domain is mapped to a blog.
+	 *
+	 * @since 4.0.4
+	 * @action domainmapping_added_domain
+	 *
+	 * @access public
+	 * @param string $domain The domain name to add.
+	 */
+	public function add_domain_to_wpengine( $domain ) {
+		// return if we can't locate WPEngine API class
+		if ( !$this->_locate_wpengine_api() ) {
+			return;
+		}
+
+		// add domain to WPEngine
+		$api = new WPE_API();
+
+		// set the method and domain
+		$api->set_arg( 'method', 'domain' );
+		$api->set_arg( 'domain', $domain );
+
+		// do the api request
+		$api->get();
+	}
+
+	/**
+	 * Removes domain from WPEngine domains list when this domain is unmapped
+	 * from a blog.
+	 *
+	 * @since 4.0.4
+	 * @action domainmapping_deleted_domain
+	 *
+	 * @access public
+	 * @param string $domain The domain name to remove.
+	 */
+	public function remove_domain_from_wpengine( $domain ) {
+		// return if we can't locate WPEngine API class
+		if ( !$this->_locate_wpengine_api() ) {
+			return;
+		}
+
+		// add domain to WPEngine
+		$api = new WPE_API();
+
+		// set the method and domain
+		$api->set_arg( 'method', 'domain-remove' );
+		$api->set_arg( 'domain', $domain );
+
+		// do the api request
+		$api->get();
 	}
 
 	/**
@@ -200,7 +291,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		}
 
 		$valid = $this->_validate_health_status( $domain );
-		set_site_transient( "domainmapping-{$domain}-health", $valid, WEEK_IN_SECONDS );
+		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? WEEK_IN_SECONDS : 10 * MINUTE_IN_SECONDS );
 
 		ob_start();
 		Domainmap_Render_Site_Map::render_health_column( $domain );
