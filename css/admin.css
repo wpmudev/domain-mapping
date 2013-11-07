@@ -369,8 +369,18 @@
 }
 
 .domainmapping-label {
-    width: 150px;
-    display: inline-block
+    width: 200px;
+    display: inline-block;
+	margin-top: -4px;
+}
+
+.domainmapping-descr {
+	display: block;
+	margin-left: 205px;
+	width: 600px;
+	font-size: 85%;
+	font-style: italic;
+	color: gray;
 }
 
 .domainmapping-resellers-switch {
@@ -417,28 +427,30 @@ input.domainmapping-radio {
 }
 
 #domainmapping-check-domain-form,
-#domainmapping-purchase-domain-form {
+#domainmapping-iframe-form {
     margin-bottom: 10px;
 }
 
-#domainmapping-purchase-domain-form h4 {
+#domainmapping-iframe-form h4 {
     margin-top: 40px;
     padding-bottom: 5px;
     border-bottom: 1px dashed #ccc;
     font-size: 16px;
 }
 
-#domainmapping-purchase-domain-form h4:first-child {
+#domainmapping-iframe-form h4:first-child {
     margin-top: 0;
 }
 
-#domainmapping-purchase-domain-form h4 i {
-    margin-right: 7px;
+#domainmapping-iframe-form h4 i {
+    margin-right: 5px;
+	margin-top: 3px;
 }
 
-#domainmapping-purchase-domain-form input[type="text"],
-#domainmapping-purchase-domain-form input[type="email"],
-#domainmapping-purchase-domain-form select {
+#domainmapping-iframe-form input[type="text"],
+#domainmapping-iframe-form input[type="password"],
+#domainmapping-iframe-form input[type="email"],
+#domainmapping-iframe-form select {
     float: none;
     width: 500px;
 }

@@ -77,7 +77,16 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = sha1( $pwd );
 
-		?><h4 class="domainmapping-block-header"><?php _e( 'Enter your account id and password:', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
+		<div>
+			<p><?php
+				printf(
+					__( "Enter your eNom account id and password in fields below. Don't have eNom account? Create new %seNom account%s.", 'domainmap' ),
+					'<a href="' . $this->register_link . '">',
+					'</a>'
+				)
+			?></p>
+		</div>
 		<div>
 			<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
 			<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">

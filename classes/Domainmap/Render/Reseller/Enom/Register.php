@@ -20,39 +20,36 @@
 // +----------------------------------------------------------------------+
 
 /**
- * eNom credit card processing form template class.
+ * eNom account registration form template class.
  *
- * @since 4.0.0
+ * @since 4.1.0
  * @category Domainmap
  * @package Render
  * @subpackage Reseller
  */
-class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_Iframe {
+class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_Iframe {
 
 	/**
-	 * Renders purchase form.
+	 * Render registration form template content.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.0
 	 *
 	 * @access protected
 	 */
 	protected function _render_page() {
-		$cancel = filter_input( INPUT_GET, 'cancel', FILTER_VALIDATE_URL );
+		$backref = add_query_arg( array(
+			'page' => 'domainmapping_options',
+			'tab'  => 'reseller-options',
+		), network_admin_url( 'settings.php', 'http' ) );
 
 		?><div id="domainmapping-box-iframe" class="domainmapping-box">
-			<h3><?php _e( 'Purchase domain', 'domainmap' ) ?></h3>
+			<h3><?php _e( 'Register new eNom account', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
 				<form id="domainmapping-iframe-form" method="post">
-					<input type="hidden" name="sld" value="<?php echo esc_attr( $this->sld ) ?>">
-					<input type="hidden" name="tld" value="<?php echo esc_attr( $this->tld ) ?>">
 					<input type="hidden" id="card_type" name="card_type">
 
-					<p class="domainmapping-info"><?php printf(
-						__( 'You are about to purchase domain name %s and pay %s for 1 year of usage. Please, fill in the form below and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
-						'<b>' . esc_html( strtoupper( $this->domain ) ) . '</b>',
-						'<b>' . esc_html( $this->price ) . '</b>'
-					) ?></p>
+					<p class="domainmapping-info"><?php esc_html_e( 'You are about to register new eNom account. Please, fill in the form below and click on register button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ) ?></p>
 
 					<?php if ( is_wp_error( $this->errors ) ) : ?>
 						<?php foreach ( $this->errors->get_error_messages() as $error ) : ?>
@@ -60,16 +57,14 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 						<?php endforeach; ?>
 					<?php endif; ?>
 
+					<?php $this->_render_account_fields() ?>
 					<?php $this->_render_card_fields() ?>
 					<?php $this->_render_billing_fields() ?>
 					<?php $this->_render_registrant_fields() ?>
-					<?php $this->_render_extra_fields() ?>
 
 					<div class="domainmapping-form-buttons">
-						<?php if ( $cancel ) : ?>
-						<a class="button domainmapping-button domainmapping-push-right" href="<?php echo esc_url( $cancel ) ?>"><?php _e( 'Cancel', 'domainmap' ) ?></a>
-						<?php endif; ?>
-						<button type="submit" class="button button-primary domainmapping-button"><i class="icon-shopping-cart icon-white"></i> <?php _e( 'Purchase domain', 'domainmap' ) ?></button>
+						<a class="button domainmapping-button domainmapping-push-right" href="<?php echo esc_url( $backref ) ?>"><?php _e( 'Cancel', 'domainmap' ) ?></a>
+						<button type="submit" class="button button-primary domainmapping-button"><i class="icon-ok icon-white"></i> <?php _e( 'Register account', 'domainmap' ) ?></button>
 					</div>
 					<div class="domainmapping-clear"></div>
 				</form>
@@ -80,7 +75,7 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 	/**
 	 * Renders credit card fields.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.0
 	 *
 	 * @access private
 	 */
@@ -117,9 +112,73 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 	}
 
 	/**
+	 * Renders account fields.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 */
+	private function _render_account_fields() {
+		$selected_question = filter_input( INPUT_POST, 'account_question_type' );
+		$questions = array(
+			'smaiden' => esc_html__( "What is your mother's maiden name?", 'domainmap' ),
+			'sbirth'  => esc_html__( 'What is your city of born?', 'domainmap' ),
+			'ssocial' => esc_html__( 'What is your last 4 digits of SSN?', 'domainmap' ),
+			'shigh'   => esc_html__( 'What is your high school?', 'domainmap' ),
+			'fteach'  => esc_html__( 'What is your favorite teacher?', 'domainmap' ),
+			'fvspot'  => esc_html__( 'What is your favorite vacation spot?', 'domainmap' ),
+			'fpet'    => esc_html__( 'What is your favorite pet?', 'domainmap' ),
+			'fmovie'  => esc_html__( 'What is your favorite movie?', 'domainmap' ),
+			'fbook'   => esc_html__( 'What is your favorite book?', 'domainmap' ),
+		);
+
+		?><h4><i class="icon-user"></i> <?php _e( 'Account Information', 'domainmap' ) ?></h4>
+
+		<p>
+			<label for="account_login" class="domainmapping-label"><?php _e( 'Login:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="text" id="account_login" name="account_login" autofocus required maxlength="20" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_login' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Permitted values are 6 to 20 characters in length; permitted characters include letters, numbers, hyphen, and underscore.', 'domainmap' ) ?></span>
+		</p>
+
+		<p>
+			<label for="account_password" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="password" id="account_password" required name="account_password" maxlength="20">
+			<span class="domainmapping-descr"><?php  esc_html_e( 'Permitted characters are letters, numbers, hyphen, and underscore. The maximum length is 20 characters.', 'domainmap' ) ?></span>
+		</p>
+
+		<p>
+			<label for="account_password_confirm" class="domainmapping-label"><?php _e( 'Confirm Password:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="password" id="account_password_confirm" required name="account_password_confirm" maxlength="20">
+			<span class="domainmapping-descr"><?php  esc_html_e( 'Confirm your password by entering it again. Permitted characters and maximum length are the same.', 'domainmap' ) ?></span>
+		</p>
+
+		<p>
+			<label for="account_email" class="domainmapping-label"><?php _e( 'Contact Email:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="email" id="account_email" required name="account_email" maxlength="128" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_email' ) ) ?>">
+			<span class="domainmapping-descr"><?php  esc_html_e( 'Email address to contact you about your domain name account. The maximum length is 128 characters.', 'domainmap' ) ?></span>
+		</p>
+
+		<p>
+			<label for="account_question_type" class="domainmapping-label"><?php _e( 'Security Question:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<select id="account_question_type" name="account_question_type" required>
+				<?php foreach ( $questions as $code => $question ) : ?>
+				<option value="<?php echo esc_attr( $code ) ?>"<?php selected( $code, $selected_question ) ?>><?php echo $question ?></option>
+				<?php endforeach; ?>
+			</select>
+			<span class="domainmapping-descr"><?php  esc_html_e( 'Select your security question, which will be used for identity verification.', 'domainmap' ) ?></span>
+		</p>
+
+		<p>
+			<label for="account_question_answer" class="domainmapping-label"><?php _e( 'Security Answer:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="text" id="account_question_answer" required name="account_question_answer" maxlength="50" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_question_answer' ) ) ?>">
+			<span class="domainmapping-descr"><?php  esc_html_e( 'Enter your answer to the security question. The maximum length is 50 characters.', 'domainmap' ) ?></span>
+		</p><?php
+	}
+
+	/**
 	 * Renders billing fields.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.0
 	 *
 	 * @access private
 	 */
@@ -173,7 +232,7 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 	/**
 	 * Renders registrant information fields.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.0
 	 *
 	 * @access private
 	 */
@@ -195,15 +254,15 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 		</p>
 
 		<p>
-			<label for="registrant_organization" class="domainmapping-label"><?php _e( 'Organization Name:', 'domainmap' ) ?></label>
-			<input type="text" id="registrant_organization" name="registrant_organization" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_organization' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant organization name, this field is optional. The maximum length is 60 characters.', 'domainmap' ) ?></span>
+			<label for="registrant_organization" class="domainmapping-label"><?php _e( 'Organization Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
+			<input type="text" id="registrant_organization" required name="registrant_organization" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_organization' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant organization name. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
-			<label for="registrant_job_title" class="domainmapping-label"><?php _e( 'Job Title:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_job_title" required name="registrant_job_title" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_job_title' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant job title. The maximum length is 60 characters.', 'domainmap' ) ?></span>
+			<label for="registrant_job_title" class="domainmapping-label"><?php _e( 'Job Title:', 'domainmap' ) ?></label>
+			<input type="text" id="registrant_job_title" name="registrant_job_title" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_job_title' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant job title, this field is optional. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
@@ -226,25 +285,25 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 
 		<p>
 			<label for="registrant_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_zip" required name="registrant_zip" maxlength="15" x-autocompletetype="postal-code" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_zip' ) ) ?>">
+			<input type="text" id="registrant_zip" required name="registrant_zip" maxlength="16" x-autocompletetype="postal-code" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_zip' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant zip or postal code. The maximum length is 16 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
-			<label for="registrant_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_state" required name="registrant_state" maxlength="60" x-autocompletetype="administrative-area" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_state' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant state or province. The maximum length is 60 characters.', 'domainmap' ) ?></span>
+			<label for="registrant_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?></label>
+			<input type="text" id="registrant_state" name="registrant_state" maxlength="60" x-autocompletetype="administrative-area" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_state' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant state or province, this field is optional. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
-			<label for="registrant_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<select id="registrant_country" required name="registrant_country">
+			<label for="registrant_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?></label>
+			<select id="registrant_country" name="registrant_country">
 				<option></option>
 				<?php foreach ( $this->countries as $code => $country ) : ?>
 				<option value="<?php echo esc_attr( $code ) ?>"<?php selected( $code, $registrant_country ) ?>><?php echo esc_html( $country ) ?></option>
 				<?php endforeach; ?>
 			</select>
-			<span class="domainmapping-descr"><?php esc_html_e( 'Select registrant country.', 'domainmap' ) ?></span>
+			<span class="domainmapping-descr"><?php esc_html_e( 'Select registrant country, this field is optional.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
@@ -255,90 +314,15 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 
 		<p>
 			<label for="registrant_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_phone" required name="registrant_phone" maxlength="20" x-autocompletetype="tel" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_phone' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant phone number. Required format is +CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. The maximum length is 20 characters.', 'domainmap' ) ?></span>
+			<input type="text" id="registrant_phone" required name="registrant_phone" maxlength="17" x-autocompletetype="tel" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_phone' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant phone number. Required format is +CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. The maximum length is 17 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
 			<label for="registrant_fax" class="domainmapping-label"><?php _e( 'Fax:', 'domainmap' ) ?></label>
-			<input type="text" id="registrant_fax" name="registrant_fax" maxlength="20" x-autocompletetype="fax" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_fax' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant fax number, this field is optional. Required format is +CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. The maximum length is 20 characters.', 'domainmap' ) ?></span>
+			<input type="text" id="registrant_fax" name="registrant_fax" maxlength="17" x-autocompletetype="fax" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_fax' ) ) ?>">
+			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant fax number, this field is optional. Required format is +CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. The maximum length is 17 characters.', 'domainmap' ) ?></span>
 		</p><?php
-	}
-
-	/**
-	 * Compares extra attributes by attribute ID.
-	 *
-	 * @since 4.1.0
-	 *
-	 * @access public
-	 * @param array $a The array of first attribute to compare.
-	 * @param array $b The array of second attribute to compare.
-	 * @return int 0 if IDs equal, -1 if $b ID is more then $a ID, otherwise 1
-	 */
-	public function sort_ext_attributes( $a, $b ) {
-		if ( !isset( $a['ID'] ) || !isset( $b['ID'] ) || $a['ID'] == $b['ID'] ) {
-			return 0;
-		}
-
-		return (int)$a['ID'] < (int)$b['ID'] ? -1 : 1;
-	}
-
-	/**
-	 * Renders extra attributes fields.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access private
-	 */
-	private function _render_extra_fields() {
-		if ( empty( $this->ext_attributes ) ) {
-			return;
-		}
-
-		$attributes = $this->ext_attributes;
-		usort( $attributes, array( $this, 'sort_ext_attributes' ) );
-
-		?><h4><i class="icon-asterisk"></i> <?php _e( 'Additional Registrar Information', 'domainmap' ) ?></h4><?php
-
-		foreach ( $attributes as $attribute ) :
-			$e_att_name = esc_attr( $attribute['Name'] );
-			$isset = isset( $_POST['ExtendedAttributes'][$e_att_name] );
-			$value = $isset ? $_POST['ExtendedAttributes'][$e_att_name] : '';
-
-			$required = $required_ast = '';
-			if ( $attribute['Required'] > 0 ) :
-				$required = ' required';
-				$required_ast = ' <span class="domainmapping-field-required">*</span>';
-			endif;
-
-			?><p>
-				<label for="extendedettributes_<?php echo $e_att_name ?>" class="domainmapping-label">
-					<?php echo esc_html( $attribute['Description'] ) ?>:<?php echo $required_ast ?>
-				</label>
-
-				<?php if ( !empty( $attribute['Options'] ) ) : ?>
-					<select id="extendedettributes_<?php echo $e_att_name ?>" name="ExtendedAttributes[<?php echo $e_att_name ?>]"<?php echo $required ?>>
-						<?php foreach ( $attribute['Options'] as $option ) : ?>
-						<option value="<?php echo esc_attr( $option['Value'] ) ?>"<?php echo $isset ? selected( $option['Value'], $value, false ) : '' ?>>
-							<?php echo esc_html( $option['Title'] ) ?>
-						</option>
-						<?php endforeach; ?>
-					</select>
-					<ul class="domainmapping-descr">
-						<?php foreach ( $attribute['Options'] as $option ) : ?>
-							<?php if ( !empty( $option['Description'] ) ) : ?>
-								<li>
-									<b><?php echo esc_html( $option['Title'] ) ?></b> - <?php echo esc_html( $option['Description'] ) ?>
-								</li>
-							<?php endif; ?>
-						<?php endforeach; ?>
-					</ul>
-				<?php else : ?>
-				<input type="text" id="extendedettributes_<?php echo $e_att_name ?>" name="ExtendedAttributes[<?php echo $e_att_name ?>]"<?php echo $required ?> value="<?php echo esc_attr( $value ) ?>">
-				<?php endif; ?>
-			</p><?php
-		endforeach;
 	}
 
 }

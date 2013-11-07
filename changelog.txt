@@ -1,3 +1,8 @@
+== 4.1 ==
+
+* Implemented ability to register eNom accounts via admin dashboard
+* Improved eNom domain purchase form
+
 == 4.0.4 ==
 
 * Fixed SSL verification issue for health check validation

@@ -43,6 +43,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	const COMMAND_PURCHASE           = 'Purchase';
 	const COMMAND_SET_HOSTS          = 'SetHosts';
 	const COMMAND_GET_EXT_ATTRIBUTES = 'GetExtAttributes';
+	const COMMAND_REGISTER_ACCOUNT   = 'CreateAccount';
 
 	const GATEWAY_ENOM     = 'enom';
 	const GATEWAY_PROSITES = 'prosites';
@@ -305,11 +306,20 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$options = Domainmap_Plugin::instance()->get_options();
 		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 
-		$render = new Domainmap_Render_Reseller_Enom_Settings( $options );
-		$render->gateways = $this->_get_gateways();
-		$render->gateway = $this->_get_gateway( $options );
-		$render->environment = $this->_get_environment( $options );
-		$render->render();
+		$register_link = add_query_arg( array(
+			'action'   => Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM,
+			'nonce'    => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM ),
+			'reseller' => self::encode_reseller_class( __CLASS__ ),
+		), admin_url( 'admin-ajax.php' ) );
+
+		$template = new Domainmap_Render_Reseller_Enom_Settings( $options );
+
+		$template->gateways = $this->_get_gateways();
+		$template->gateway = $this->_get_gateway( $options );
+		$template->environment = $this->_get_environment( $options );
+		$template->register_link = $register_link;
+
+		$template->render();
 	}
 
 	/**
@@ -550,7 +560,6 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @access public
 	 * @global WP_User $current_user The current user object.
 	 * @param array $domain_info The information about a domain to purchase.
-	 * @return string The purchase form html.
 	 */
 	public function render_purchase_form( $domain_info ) {
 		global $current_user;
@@ -827,6 +836,104 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determines whether reseller supports accounts registration.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if reseller supports account registration, otherwise FALSE.
+	 */
+	public function support_account_registration() {
+		return true;
+	}
+
+	/**
+	 * Renders registration form.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @global WP_User $current_user The current user object.
+	 */
+	public function render_registration_form() {
+		global $current_user;
+
+		get_currentuserinfo();
+		$cardholder = trim( $current_user->user_firstname . ' ' . $current_user->user_lastname );
+		if ( empty( $cardholder ) ) {
+			$cardholder = __( 'Your name', 'domainmap' );
+		}
+
+		$template = new Domainmap_Render_Reseller_Enom_Register();
+
+		$template->errors = $this->get_last_errors();
+		$template->cardtypes = $this->get_card_types();
+		$template->cardholder = $cardholder;
+		$template->countries = Domainmap_Plugin::instance()->get_countries();
+
+		$template->render();
+	}
+
+	/**
+	 * Registers new account.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
+	 */
+	public function regiser_account() {
+		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
+
+		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
+		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
+		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
+
+		$response = $this->_exec_command( self::COMMAND_REGISTER_ACCOUNT, array(
+			// account information
+			'NewUID'                         => filter_input( INPUT_POST, 'account_login' ),
+			'NewPW'                          => filter_input( INPUT_POST, 'account_password' ),
+			'ConfirmPW'                      => filter_input( INPUT_POST, 'account_password_confirm' ),
+			'RegistrantEmailAddress_Contact' => filter_input( INPUT_POST, 'account_email' ),
+			'AuthQuestionType'               => filter_input( INPUT_POST, 'account_question_type' ),
+			'AuthQuestionAnswer'             => filter_input( INPUT_POST, 'account_question_answer' ),
+
+			// credit card information
+			'CardType'                       => filter_input( INPUT_POST, 'card_type' ),
+			'CCName'                         => filter_input( INPUT_POST, 'card_cardholder' ),
+			'CreditCardNumber'               => preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'card_number' ) ),
+			'CreditCardExpMonth'             => $expiry[0],
+			'CreditCardExpYear'              => isset( $expiry[1] ) ? "20{$expiry[1]}" : '',
+			'CVV2'                           => filter_input( INPUT_POST, 'card_cvv2' ),
+
+			// billing information
+			'CCAddress'                      => filter_input( INPUT_POST, 'billing_address' ),
+			'CCCity'                         => filter_input( INPUT_POST, 'billing_city' ),
+			'CCStateProvince'                => filter_input( INPUT_POST, 'billing_state' ),
+			'CCZip'                          => filter_input( INPUT_POST, 'billing_zip' ),
+			'CCPhone'                        => $billing_phone,
+			'CCCountry'                      => filter_input( INPUT_POST, 'billing_country' ),
+
+			// registrant information
+			'RegistrantFirstName'            => filter_input( INPUT_POST, 'registrant_first_name' ),
+			'RegistrantLastName'             => filter_input( INPUT_POST, 'registrant_last_name' ),
+			'RegistrantOrganizationName'     => filter_input( INPUT_POST, 'registrant_organization' ),
+			'RegistrantJobTitle'             => filter_input( INPUT_POST, 'registrant_job_title' ),
+			'RegistrantAddress1'             => filter_input( INPUT_POST, 'registrant_address1' ),
+			'RegistrantAddress2'             => filter_input( INPUT_POST, 'registrant_address2' ),
+			'RegistrantCity'                 => filter_input( INPUT_POST, 'registrant_city' ),
+			'RegistrantStateProvince'        => filter_input( INPUT_POST, 'registrant_state' ),
+			'RegistrantPostalCode'           => filter_input( INPUT_POST, 'registrant_zip' ),
+			'RegistrantCountry'              => filter_input( INPUT_POST, 'registrant_country' ),
+			'RegistrantEmailAddress'         => filter_input( INPUT_POST, 'registrant_email' ),
+			'RegistrantPhone'                => $registrant_phone,
+			'RegistrantFax'                  => $registrant_fax,
+		) );
+
+		return $response && isset( $response->ErrCount ) && $response->ErrCount == 0;
 	}
 
 }

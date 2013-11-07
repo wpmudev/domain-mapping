@@ -144,8 +144,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		wp_enqueue_script( 'domainmapping-admin' );
 
 		// enqueue styles
-		wp_enqueue_style( 'font-awesome' );
-		wp_enqueue_style( 'font-awesome-ie' );
+		wp_enqueue_style( 'bootstrap-glyphs' );
 		wp_enqueue_style( 'google-font-lato' );
 		wp_enqueue_style( 'domainmapping-admin' );
 

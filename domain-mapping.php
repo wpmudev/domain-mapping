@@ -118,6 +118,7 @@ function domainmap_launch() {
 		// set ajax modules
 		$plugin->set_module( Domainmap_Module_Ajax_Map::NAME );
 		$plugin->set_module( Domainmap_Module_Ajax_Purchase::NAME );
+		$plugin->set_module( Domainmap_Module_Ajax_Register::NAME );
 	} else {
 		if ( is_admin() ) {
 			// set admin modules

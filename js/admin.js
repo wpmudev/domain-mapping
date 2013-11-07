@@ -189,7 +189,7 @@
 			return false;
 		});
 
-		$('.domainmapping-tab').on('submit', '#domainmapping-purchase-domain-form', function() {
+		$('.domainmapping-tab').on('submit', '#domainmapping-iframe-form', function() {
 			var $this = $(this),
 				wrapper = $this.parents('.domainmapping-domains-wrapper'),
 				card_number = $this.find('#card_number').val(),
@@ -224,9 +224,9 @@
 		});
 
 		if ($.payment != undefined) {
-			$('#domainmapping-box-purchase-domain #card_number').payment('restrictNumeric').payment('formatCardNumber');
-			$('#domainmapping-box-purchase-domain #card_expiration').payment('formatCardExpiry');
-			$('#domainmapping-box-purchase-domain #card_cvv2').payment('formatCardCVC');
+			$('#domainmapping-box-iframe #card_number').payment('restrictNumeric').payment('formatCardNumber');
+			$('#domainmapping-box-iframe #card_expiration').payment('formatCardExpiry');
+			$('#domainmapping-box-iframe #card_cvv2').payment('formatCardCVC');
 		}
 	});
 })(jQuery);

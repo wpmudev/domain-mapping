@@ -33,6 +33,7 @@ class Domainmap_Plugin {
 	const SUNRISE = '1.0.1';
 
 	const ACTION_CHECK_DOMAIN_AVAILABILITY  = 'domainmapping_check_domain';
+	const ACTION_SHOW_REGISTRATION_FORM     = 'domainmapping_show_registration_form';
 	const ACTION_SHOW_PURCHASE_FORM         = 'domainmapping_show_purchase_form';
 	const ACTION_PAYPAL_DO_EXPRESS_CHECKOUT = 'domainmapping_do_express_checkout';
 	const ACTION_PAYPAL_PURCHASE            = 'domainmapping_purchase_with_paypal';
@@ -259,7 +260,7 @@ class Domainmap_Plugin {
 			$resellers = apply_filters( 'domainmapping_resellers', array() );
 			foreach ( $resellers as $reseller ) {
 				if ( is_object( $reseller ) && is_a( $reseller, 'Domainmap_Reseller' ) ) {
-					$this->_resellers[dechex( crc32( get_class( $reseller ) ) )] = $reseller;
+					$this->_resellers[Domainmap_Reseller::encode_reseller_class( get_class( $reseller ) )] = $reseller;
 				}
 			}
 		}

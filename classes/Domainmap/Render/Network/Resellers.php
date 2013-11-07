@@ -40,8 +40,12 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 	protected function _render_header() {
 		parent::_render_header();
 
-		 if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
+		if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
 			echo '<div id="message" class="updated fade">', __( 'Options updated.', 'domainmap' ), '</div>';
+		endif;
+
+		if ( filter_input( INPUT_GET, 'registered', FILTER_VALIDATE_BOOLEAN ) ) :
+			echo '<div id="message" class="updated fade">', __( 'Account was registered successfully.', 'domainmap' ), '</div>';
 		endif;
 	}
 

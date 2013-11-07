@@ -20,14 +20,15 @@
 // +----------------------------------------------------------------------+
 
 /**
- * Base template class for purchase form IFrame.
+ * Base template class for resellers IFrame forms.
  *
  * @abstract
  * @since 4.0.0
  * @category Domainmap
  * @package Render
+ * @subpackage Reseller
  */
-abstract class Domainmap_Render_Purchase extends Domainmap_Render {
+abstract class Domainmap_Render_Reseller_Iframe extends Domainmap_Render {
 
 	/**
 	 * Renders template.

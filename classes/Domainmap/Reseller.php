@@ -400,4 +400,51 @@ abstract class Domainmap_Reseller {
 		return false;
 	}
 
+	/**
+	 * Determines whether reseller supports accounts registration.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if reseller supports account registration, otherwise FALSE.
+	 */
+	public function support_account_registration() {
+		return false;
+	}
+
+	/**
+	 * Renders registration form.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 */
+	public function render_registration_form() {}
+
+	/**
+	 * Registers new account.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
+	 */
+	public function regiser_account() {
+		return false;
+	}
+
+	/**
+	 * Encodes reseller class.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @static
+	 * @access public
+	 * @param string $class The class name of a reseller to encode.
+	 * @return string Encoded class name.
+	 */
+	public static function encode_reseller_class( $class ) {
+		return dechex( crc32( $class ) );
+	}
+
 }
