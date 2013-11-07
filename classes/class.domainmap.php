@@ -38,6 +38,9 @@ class domain_map {
 	// For caching swapped urls later on
 	var $swapped_url = array();
 
+	// Determines whether we are in customize mode or not
+	var $customize = false;
+
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
@@ -56,6 +59,7 @@ class domain_map {
 		add_filter( 'allowed_redirect_hosts' , array(&$this, 'allowed_redirect_hosts'), 10);
 
 		add_action( 'login_head', array(&$this, 'build_logout_cookie') );
+		add_action( 'customize_controls_init', array( $this, 'set_access_control_rules' ) );
 
 		// Add in the filters for domain mapping early on to get any information covered before the init action is hit
 		$this->add_domain_mapping_filters();
@@ -149,6 +153,11 @@ class domain_map {
 
 	function domain_mapping_mappedurl( $setting ) {
 		global $current_blog, $current_site, $mapped_id;
+
+		// do not change urls if we are in customize mode
+		if ( $this->customize ) {
+			return $setting;
+		}
 
 		// To reduce the number of database queries, save the results the first time we encounter each blog ID.
 		static $return_url = array();
@@ -283,11 +292,12 @@ class domain_map {
 		if ( $permitted ) {
 			add_action( 'wp_logout', array( $this, 'wp_logout' ), 10 );
 			add_action( 'admin_head', array( $this, 'build_cookie' ) );
-			add_action( 'customize_preview_init', array( $this, 'set_access_control_rules' ) );
 		}
 	}
 
 	function set_access_control_rules() {
+		$this->customize = true;
+
 		// set access control credentials to make theme preview working properly
 		@header( 'Access-Control-Allow-Credentials: true' );
 
@@ -658,6 +668,10 @@ class domain_map {
 	}
 
 	function swap_mapped_url($url, $path = '', $plugin = false, $bid = null) {
+		// do not change urls if we are in customize mode
+		if ( $this->customize ) {
+			return $url;
+		}
 
 		// This function swaps the url to the mapped one
 

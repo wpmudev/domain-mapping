@@ -34,6 +34,11 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
    return;
 }
 
+// do not run the plugin if previewing a theme
+if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
+	return;
+}
+
 // UnComment out the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 

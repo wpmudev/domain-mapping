@@ -1,5 +1,6 @@
 == 4.1 ==
 
+* Fixed theme preview compatibility issue
 * Implemented ability to register eNom accounts via admin dashboard
 * Improved eNom domain purchase form
 
