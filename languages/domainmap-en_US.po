@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-08 13:11+0300\n"
-"PO-Revision-Date: 2013-11-08 13:12+0300\n"
+"POT-Creation-Date: 2013-11-08 13:57+0300\n"
+"PO-Revision-Date: 2013-11-08 13:57+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -788,12 +788,14 @@ msgstr "Reseller provider:"
 #: classes/Domainmap/Render/Network/Resellers.php:87
 msgid ""
 "Want to sell domains to your users? Select reseller provider and you will be "
-"able to register an account (if you do not have it yet) and setup an ability "
-"to purchase domains via admin dashboard in your network."
+"able to register an account (if you do not yet have a domain reseller "
+"account) and setup an ability to purchase domains via the dashboard in your "
+"network site's admin."
 msgstr ""
 "Want to sell domains to your users? Select reseller provider and you will be "
-"able to register an account (if you do not have it yet) and setup an ability "
-"to purchase domains via admin dashboard in your network."
+"able to register an account (if you do not yet have a domain reseller "
+"account) and setup an ability to purchase domains via the dashboard in your "
+"network site's admin."
 
 #: classes/Domainmap/Render/Network/Resellers.php:104
 msgid "Don't use any"
@@ -1086,15 +1088,15 @@ msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
 #: classes/Domainmap/Module/Ajax/Map.php:213
-#: classes/Domainmap/Module/Ajax/Purchase.php:104
+#: classes/Domainmap/Module/Ajax/Purchase.php:105
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
 
-#: classes/Domainmap/Module/Ajax/Register.php:121
+#: classes/Domainmap/Module/Ajax/Register.php:109
 msgid "The reseller doesn't support account registration."
 msgstr "The reseller doesn't support account registration."
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:101
+#: classes/Domainmap/Module/Ajax/Purchase.php:102
 msgid "is not available to purchase"
 msgstr "is not available to purchase"
 
@@ -1180,9 +1182,3 @@ msgstr ""
 "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
 "\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
 "strong>."
-
-#~ msgid "Enter your account id and password:"
-#~ msgstr "Enter your account id and password:"
-
-#~ msgid "Select reseller provider if you want to sell domains to your users:"
-#~ msgstr "Select reseller provider if you want to sell domains to your users:"

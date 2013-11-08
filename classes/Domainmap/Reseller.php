@@ -360,7 +360,7 @@ abstract class Domainmap_Reseller {
 					'sld' => $sld,
 					'tld' => $tld,
 				), wp_get_referer() ) ) ),
-			), network_site_url( 'wp-admin/admin-ajax.php', 'https' ) );
+			), network_site_url( 'wp-admin/admin-ajax.php' ) );
 
 			$purchase_link = sprintf(
 				'<a class="domainmapping-purchase-link" href="%s"><b>%s</b></a>',

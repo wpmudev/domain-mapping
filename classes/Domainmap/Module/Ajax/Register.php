@@ -48,18 +48,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 	}
 
 	/**
-	 * Redirects user to login form if he is not logged in.
-	 *
-	 * @since 4.1.0
-	 *
-	 * @access public
-	 */
-	public function redirect_to_login_form() {
-		wp_redirect( wp_login_url( add_query_arg() ) );
-		exit;
-	}
-
-	/**
 	 * Checks SSL connection and user permissions before render or process
 	 * registration form.
 	 *

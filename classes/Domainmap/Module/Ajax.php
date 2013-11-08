@@ -74,4 +74,16 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 		}
 	}
 
+	/**
+	 * Redirects user to login form if he is not logged in.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 */
+	public function redirect_to_login_form() {
+		wp_redirect( wp_login_url( add_query_arg() ) );
+		exit;
+	}
+
 }

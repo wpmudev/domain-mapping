@@ -43,11 +43,12 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		// add ajax actions
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CHECK_DOMAIN_AVAILABILITY, 'check_domain' );
-		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_PAYPAL_PURCHASE, 'purchase_with_paypal' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_PAYPAL_DO_EXPRESS_CHECKOUT, 'complete_paypal_checkout' );
+
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'redirect_to_login_form', false, true );
 	}
 
 	/**
@@ -108,6 +109,40 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	}
 
 	/**
+	 * Checks SSL connection and user permissions before render or process
+	 * purchase form.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 */
+	private function _check_ssl_and_security() {
+		// check if ssl connection is not used
+		if ( !is_ssl() ) {
+			// ssl connection is not used, so if you logged in then redirect him
+			// to https page, otherwise redirect him to login page
+			$user_id = get_current_user_id();
+			if ( $user_id ) {
+				// propagate SSL auth cookie
+				wp_set_auth_cookie( $user_id, true, true );
+
+				// redirect to https version of this page
+				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), network_site_url( 'wp-admin/admin-ajax.php', 'https' ) ) );
+				exit;
+			} else {
+				// redirect to login form
+				$this->redirect_to_login_form();
+			}
+		}
+
+		// check if user has permissions
+		if ( !check_admin_referer( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'nonce' ) || !current_user_can( 'manage_options' ) ) {
+			status_header( 403 );
+			exit;
+		}
+	}
+
+	/**
 	 * Renders purchase form.
 	 *
 	 * @since 4.0.0
@@ -115,11 +150,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function render_purchase_form() {
-		// check if user has permissions
-		if ( !check_admin_referer( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'nonce' ) || !current_user_can( 'manage_options' ) ) {
-			status_header( 403 );
-			exit;
-		}
+		$this->_check_ssl_and_security();
 
 		$reseller = $this->_plugin->get_reseller();
 		$info = get_site_transient( $this->_get_transient_name( 'checkdomain' ) );

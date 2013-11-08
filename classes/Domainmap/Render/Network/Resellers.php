@@ -84,7 +84,7 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 			<h4 class="domainmapping-block-header"><?php _e( 'Reseller provider:', 'domainmap' ) ?></h4>
 
 			<p><?php
-				esc_html_e( 'Want to sell domains to your users? Select reseller provider and you will be able to register an account (if you do not have it yet) and setup an ability to purchase domains via admin dashboard in your network.', 'domainmap' )
+				esc_html_e( "Want to sell domains to your users? Select reseller provider and you will be able to register an account (if you do not yet have a domain reseller account) and setup an ability to purchase domains via the dashboard in your network site's admin.", 'domainmap' )
 			?></p>
 
 			<ul class="domainmapping-resellers-switch"><?php
