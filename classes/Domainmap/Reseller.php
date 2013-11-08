@@ -267,18 +267,6 @@ abstract class Domainmap_Reseller {
 	protected function _log_request( $type, $valid, $errors, $response ) {
 		global $wpdb;
 
-		// get logging level option
-		$options = Domainmap_Plugin::instance()->get_options();
-		$level = isset( $options['map_reseller_log'] )
-			? (int)$options['map_reseller_log']
-			: self::LOG_LEVEL_DISABLED;
-
-		// don't log request if logging is disabled or request is valid,
-		// but only errors should be logged
-		if ( !$level || ( $valid && $level == self::LOG_LEVEL_ERRORS ) ) {
-			return;
-		}
-
 		// sets last errors if request failed
 		if ( !$valid ) {
 			$this->_last_errors = new WP_Error();
@@ -287,6 +275,18 @@ abstract class Domainmap_Reseller {
 			}
 		} else {
 			$this->_last_errors = null;
+		}
+
+		// get logging level option
+		$options = Domainmap_Plugin::instance()->get_options();
+		$level = isset( $options['map_reseller_log'] )
+			? (int)$options['map_reseller_log']
+			: self::LOG_LEVEL_DISABLED;
+
+		// don't log request if logging is disabled or request is valid,
+		// but only errors should be logged
+		if ( !$type || !$level || ( $valid && $level == self::LOG_LEVEL_ERRORS ) ) {
+			return;
 		}
 
 		// save requests into the log

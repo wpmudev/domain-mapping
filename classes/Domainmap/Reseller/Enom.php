@@ -31,8 +31,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 	const RESELLER_ID = 'enom';
 
-	const ENDPOINT_PRODUCTION  = 'https://reseller.enom.com/interface.asp?';
-	const ENDPOINT_TEST        = 'https://resellertest.enom.com/interface.asp?';
+	const ENDPOINT_PRODUCTION       = 'https://reseller.enom.com/interface.asp?';
+	const ENDPOINT_TEST             = 'https://resellertest.enom.com/interface.asp?';
+	const ENDPOINT_PROXY_PRODUCTION = '';
+	const ENDPOINT_PROXY_TEST       = '';
 
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
@@ -67,9 +69,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @access private
 	 * @param string $command The command name.
 	 * @param array $args Additional optional arguments.
+	 * @param boolean $proxy Determines whether to use proxy server or not.
 	 * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
 	 */
-	private function _exec_command( $command, $args = array() ) {
+	private function _exec_command( $command, $args = array(), $proxy = false ) {
 		$options = Domainmap_Plugin::instance()->get_options();
 
 		if ( !isset( $args['uid'] ) || !isset( $args['pw'] ) ) {
@@ -89,9 +92,15 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$args['command'] = $command;
 
 		$sslverify = !isset( $options[self::RESELLER_ID]['sslverification'] ) || $options[self::RESELLER_ID]['sslverification'] == 1;
-		$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION
-			? self::ENDPOINT_PRODUCTION
-			: self::ENDPOINT_TEST;
+
+		$ep_prod = self::ENDPOINT_PRODUCTION;
+		$ep_test = self::ENDPOINT_TEST;
+		if ( $proxy ) {
+			$ep_prod = self::ENDPOINT_PROXY_PRODUCTION;
+			$ep_test = self::ENDPOINT_PROXY_TEST;
+		}
+
+		$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION ? $ep_prod : $ep_test;
 
 		$response = wp_remote_get( $endpoint . http_build_query( $args ), array( 'sslverify' => $sslverify ) );
 		if ( is_wp_error( $response ) ) {
@@ -416,9 +425,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$tld = trim( filter_input( INPUT_POST, 'tld' ) );
 		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
 
-		$billing_phone = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
-		$registrant_phone = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
-		$registrant_fax = '+' . preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
+		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
+		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
+		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
 
 		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
 			'sld'                        => $sld,
@@ -931,7 +940,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantEmailAddress'         => filter_input( INPUT_POST, 'registrant_email' ),
 			'RegistrantPhone'                => $registrant_phone,
 			'RegistrantFax'                  => $registrant_fax,
-		) );
+		), true );
+
+		// pass FALSE as request type to process errors only
+		$this->_log_enom_request( false, $response );
 
 		return $response && isset( $response->ErrCount ) && $response->ErrCount == 0;
 	}
