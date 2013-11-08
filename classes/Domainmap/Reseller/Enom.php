@@ -31,10 +31,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 	const RESELLER_ID = 'enom';
 
-	const ENDPOINT_PRODUCTION       = 'https://reseller.enom.com/interface.asp?';
-	const ENDPOINT_TEST             = 'https://resellertest.enom.com/interface.asp?';
-	const ENDPOINT_PROXY_PRODUCTION = '';
-	const ENDPOINT_PROXY_TEST       = '';
+	const ENDPOINT_PRODUCTION = 'https://reseller.enom.com/interface.asp?';
+	const ENDPOINT_TEST       = 'https://resellertest.enom.com/interface.asp?';
+	const ENDPOINT_PROXY      = '';
 
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
@@ -69,10 +68,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @access private
 	 * @param string $command The command name.
 	 * @param array $args Additional optional arguments.
-	 * @param boolean $proxy Determines whether to use proxy server or not.
+	 * @param string $endpoint The concrete endpoint to use for the request.
 	 * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
 	 */
-	private function _exec_command( $command, $args = array(), $proxy = false ) {
+	private function _exec_command( $command, $args = array(), $endpoint = false ) {
 		$options = Domainmap_Plugin::instance()->get_options();
 
 		if ( !isset( $args['uid'] ) || !isset( $args['pw'] ) ) {
@@ -91,17 +90,11 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$args['command'] = $command;
 
-		$sslverify = !isset( $options[self::RESELLER_ID]['sslverification'] ) || $options[self::RESELLER_ID]['sslverification'] == 1;
-
-		$ep_prod = self::ENDPOINT_PRODUCTION;
-		$ep_test = self::ENDPOINT_TEST;
-		if ( $proxy ) {
-			$ep_prod = self::ENDPOINT_PROXY_PRODUCTION;
-			$ep_test = self::ENDPOINT_PROXY_TEST;
+		if ( !$endpoint ) {
+			$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION ? self::ENDPOINT_PRODUCTION : self::ENDPOINT_TEST;
 		}
 
-		$endpoint = $this->_get_environment() == self::ENVIRONMENT_PRODUCTION ? $ep_prod : $ep_test;
-
+		$sslverify = !isset( $options[self::RESELLER_ID]['sslverification'] ) || $options[self::RESELLER_ID]['sslverification'] == 1;
 		$response = wp_remote_get( $endpoint . http_build_query( $args ), array( 'sslverify' => $sslverify ) );
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -134,14 +127,20 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		$valid = false;
+		$errors = array();
+
 		if ( is_wp_error( $xml ) ) {
 			$errors = $xml->get_error_messages();
 			$xml = array();
-		} else {
+		} elseif ( is_a( $xml, 'SimpleXMLElement' ) ) {
 			$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
-			$errors = array();
 			if ( !$valid && isset( $xml->errors ) ) {
 				$errors = json_decode( json_encode( $xml->errors ), true );
+			}
+		} else {
+			$errors[] = __( 'Unexpected error appears during request processing. Please, try again later.', 'domainmap' );
+			if ( filter_input( INPUT_GET, 'debug' ) ) {
+				$errors[] = $xml;
 			}
 		}
 
@@ -441,7 +440,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'tld'                        => $tld,
 			'UseDNS'                     => 'default',
 			'ChargeAmount'               => $this->get_tld_price( $tld ),
-			'EndUserIP'                  => $_SERVER['REMOTE_ADDR'],
+			'EndUserIP'                  => self::_get_remote_ip(),
 			'CardType'                   => filter_input( INPUT_POST, 'card_type' ),
 			'CCName'                     => filter_input( INPUT_POST, 'card_cardholder' ),
 			'CreditCardNumber'           => preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'card_number' ) ),
@@ -902,6 +901,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
 	 */
 	public function regiser_account() {
+		$force_production = !defined( 'DOMAINMAPPING_FORCE_PRODUCTION' ) || filter_var( DOMAINMAPPING_FORCE_PRODUCTION, FILTER_VALIDATE_BOOLEAN );
+
 		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
 
 		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
@@ -916,6 +917,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantEmailAddress_Contact' => filter_input( INPUT_POST, 'account_email' ),
 			'AuthQuestionType'               => filter_input( INPUT_POST, 'account_question_type' ),
 			'AuthQuestionAnswer'             => filter_input( INPUT_POST, 'account_question_answer' ),
+			'Reseller'                       => 1,
+			'EndUserIP'                      => self::_get_remote_ip(),
 
 			// credit card information
 			'CardType'                       => filter_input( INPUT_POST, 'card_type' ),
@@ -947,7 +950,17 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'RegistrantEmailAddress'         => filter_input( INPUT_POST, 'registrant_email' ),
 			'RegistrantPhone'                => $registrant_phone,
 			'RegistrantFax'                  => $registrant_fax,
-		), true );
+
+			// proxy stuff
+			'LiveEnvironment'                => $force_production ? 1 : 0,
+			'UserAgent'                      => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '',
+		), self::ENDPOINT_PROXY );
+
+		// check if we received invalid xml and was not able to parse it
+		if ( !$response ) {
+			$response = new WP_Error();
+			$response->add( 'invalid_xml', __( 'We received unexpected result from eNom server. Try to resubmit your form again and if you receive information that such login is already exists, then it means that current request was processed successfully.', 'domainmap' ) );
+		}
 
 		// pass FALSE as request type to process errors only
 		$this->_log_enom_request( false, $response );

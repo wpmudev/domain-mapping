@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-08 13:57+0300\n"
-"PO-Revision-Date: 2013-11-08 13:57+0300\n"
+"POT-Creation-Date: 2013-11-08 18:24+0300\n"
+"PO-Revision-Date: 2013-11-08 18:24+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -967,26 +967,42 @@ msgstr "Make this functionality only available to certain Pro Site levels"
 msgid "Log records were deleted."
 msgstr "Log records were deleted."
 
-#: classes/Domainmap/Reseller/Enom.php:236
+#: classes/Domainmap/Reseller/Enom.php:141
+msgid ""
+"Unexpected error appears during request processing. Please, try again later."
+msgstr ""
+"Unexpected error appears during request processing. Please, try again later."
+
+#: classes/Domainmap/Reseller/Enom.php:235
 msgid "eNom credit card processing services"
 msgstr "eNom credit card processing services"
 
-#: classes/Domainmap/Reseller/Enom.php:240
+#: classes/Domainmap/Reseller/Enom.php:239
 msgid "Pro Sites PayPal payment gateway"
 msgstr "Pro Sites PayPal payment gateway"
 
-#: classes/Domainmap/Reseller/Enom.php:586
-#: classes/Domainmap/Reseller/Enom.php:883
+#: classes/Domainmap/Reseller/Enom.php:585
+#: classes/Domainmap/Reseller/Enom.php:882
 msgid "Your name"
 msgstr "Your name"
 
-#: classes/Domainmap/Reseller/Enom.php:670
+#: classes/Domainmap/Reseller/Enom.php:669
 msgid "Purchase this domain with PayPal Express Checkout."
 msgstr "Purchase this domain with PayPal Express Checkout."
 
-#: classes/Domainmap/Reseller/Enom.php:712
+#: classes/Domainmap/Reseller/Enom.php:711
 msgid "Payment for 1 year usage of the domain name."
 msgstr "Payment for 1 year usage of the domain name."
+
+#: classes/Domainmap/Reseller/Enom.php:962
+msgid ""
+"We received unexpected result from eNom server. Try to resubmit your form "
+"again and if you receive information that such login is already exists, then "
+"it means that current request was processed successfully."
+msgstr ""
+"We received unexpected result from eNom server. Try to resubmit your form "
+"again and if you receive information that such login is already exists, then "
+"it means that current request was processed successfully."
 
 #: classes/Domainmap/Module/Admin.php:73
 msgid "Mapped Domain"

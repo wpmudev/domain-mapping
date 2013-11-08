@@ -447,4 +447,40 @@ abstract class Domainmap_Reseller {
 		return dechex( crc32( $class ) );
 	}
 
+	/**
+	 * Returns user IP address.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @static
+	 * @access protected
+	 * @return string Remote IP address on success, otherwise FALSE.
+	 */
+	protected static function _get_remote_ip() {
+		$flag = !WP_DEBUG ? FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE : null;
+		$keys = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+
+		$remote_ip = false;
+		foreach ( $keys as $key ) {
+			if ( array_key_exists( $key, $_SERVER ) === true ) {
+				foreach ( array_filter( array_map( 'trim', explode( ',', $_SERVER[$key] ) ) ) as $ip ) {
+					if ( filter_var( $ip, FILTER_VALIDATE_IP, $flag ) !== false ) {
+						$remote_ip = $ip;
+						break;
+					}
+				}
+			}
+		}
+
+		return $remote_ip;
+	}
+
 }
