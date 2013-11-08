@@ -227,13 +227,20 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @since 4.0.0
 	 *
 	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
 	 * @return array The associative array of payment gateways.
 	 */
 	private function _get_gateways() {
-		return array(
-			self::GATEWAY_ENOM     => __( 'eNom credit card processing services', 'domainmap' ),
-			self::GATEWAY_PROSITES => __( 'Pro Sites PayPal payment gateway', 'domainmap' ),
-		);
+		global $psts;
+
+		$gateways = array( self::GATEWAY_ENOM => esc_html__( 'eNom credit card processing services', 'domainmap' ) );
+
+		// add ProSites paypal gateway if the plugin is activated
+		if ( $psts && in_array( 'ProSites_Gateway_PayPalExpressPro', $psts->get_setting( 'gateways_enabled' ) ) ) {
+			$gateways[self::GATEWAY_PROSITES] = esc_html__( 'Pro Sites PayPal payment gateway', 'domainmap' );
+		}
+
+		return $gateways;
 	}
 
 	/**

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-30 15:18+0300\n"
-"PO-Revision-Date: 2013-10-30 15:18+0300\n"
+"POT-Creation-Date: 2013-11-08 13:11+0300\n"
+"PO-Revision-Date: 2013-11-08 13:12+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: classes\n"
 
-#: classes/class.domainmap.php:335 classes/class.domainmap.php:372
-#: classes/class.domainmap.php:634
+#: classes/class.domainmap.php:345 classes/class.domainmap.php:382
+#: classes/class.domainmap.php:644
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
-#: classes/class.domainmap.php:353 classes/class.domainmap.php:386
-#: classes/class.domainmap.php:641
+#: classes/class.domainmap.php:363 classes/class.domainmap.php:396
+#: classes/class.domainmap.php:651
 msgid "Please wait..."
 msgstr "Please wait..."
 
-#: classes/class.domainmap.php:354 classes/class.domainmap.php:387
+#: classes/class.domainmap.php:364 classes/class.domainmap.php:397
 #, php-format
 msgid ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:642
+#: classes/class.domainmap.php:652
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -96,27 +96,411 @@ msgstr "Search"
 msgid "Domain Mapping"
 msgstr "Domain Mapping"
 
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:46
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:55
+msgid "Register new eNom account"
+msgstr "Register new eNom account"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:52
+msgid ""
+"You are about to register new eNom account. Please, fill in the form below "
+"and click on register button. Pay attention that all fields marked with red "
+"asterisk are required and has to be filled with appropriate information."
+msgstr ""
+"You are about to register new eNom account. Please, fill in the form below "
+"and click on register button. Pay attention that all fields marked with red "
+"asterisk are required and has to be filled with appropriate information."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:66
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:70
+msgid "Cancel"
+msgstr "Cancel"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:67
+msgid "Register account"
+msgstr "Register account"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:83
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:88
+msgid "Credit Card"
+msgstr "Credit Card"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:86
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:91
+msgid "Supported card types are:"
+msgstr "Supported card types are:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:90
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:95
+msgid "Card Number:"
+msgstr "Card Number:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:92
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:97
+msgid "Enter credit card number."
+msgstr "Enter credit card number."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:96
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:101
+msgid "Card Expiration:"
+msgstr "Card Expiration:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:98
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:103
+msgid "Enter credit card expiration date."
+msgstr "Enter credit card expiration date."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:102
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:107
+msgid "CVV2:"
+msgstr "CVV2:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:104
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:109
+msgid "Enter credit card security code."
+msgstr "Enter credit card security code."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:108
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:113
+msgid "Cardholder's Name:"
+msgstr "Cardholder's Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:110
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:115
+msgid "Enter cardholder's name."
+msgstr "Enter cardholder's name."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:124
+msgid "What is your mother's maiden name?"
+msgstr "What is your mother's maiden name?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:125
+msgid "What is your city of born?"
+msgstr "What is your city of born?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:126
+msgid "What is your last 4 digits of SSN?"
+msgstr "What is your last 4 digits of SSN?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:127
+msgid "What is your high school?"
+msgstr "What is your high school?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:128
+msgid "What is your favorite teacher?"
+msgstr "What is your favorite teacher?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:129
+msgid "What is your favorite vacation spot?"
+msgstr "What is your favorite vacation spot?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:130
+msgid "What is your favorite pet?"
+msgstr "What is your favorite pet?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:131
+msgid "What is your favorite movie?"
+msgstr "What is your favorite movie?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:132
+msgid "What is your favorite book?"
+msgstr "What is your favorite book?"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:135
+msgid "Account Information"
+msgstr "Account Information"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:138
+msgid "Login:"
+msgstr "Login:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:140
+msgid ""
+"Permitted values are 6 to 20 characters in length; permitted characters "
+"include letters, numbers, hyphen, and underscore."
+msgstr ""
+"Permitted values are 6 to 20 characters in length; permitted characters "
+"include letters, numbers, hyphen, and underscore."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:144
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:86
+msgid "Password:"
+msgstr "Password:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:146
+msgid ""
+"Permitted characters are letters, numbers, hyphen, and underscore. The "
+"maximum length is 20 characters."
+msgstr ""
+"Permitted characters are letters, numbers, hyphen, and underscore. The "
+"maximum length is 20 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:150
+msgid "Confirm Password:"
+msgstr "Confirm Password:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:152
+msgid ""
+"Confirm your password by entering it again. Permitted characters and maximum "
+"length are the same."
+msgstr ""
+"Confirm your password by entering it again. Permitted characters and maximum "
+"length are the same."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:156
+msgid "Contact Email:"
+msgstr "Contact Email:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:158
+msgid ""
+"Email address to contact you about your domain name account. The maximum "
+"length is 128 characters."
+msgstr ""
+"Email address to contact you about your domain name account. The maximum "
+"length is 128 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:162
+msgid "Security Question:"
+msgstr "Security Question:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:168
+msgid ""
+"Select your security question, which will be used for identity verification."
+msgstr ""
+"Select your security question, which will be used for identity verification."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:172
+msgid "Security Answer:"
+msgstr "Security Answer:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:174
+msgid ""
+"Enter your answer to the security question. The maximum length is 50 "
+"characters."
+msgstr ""
+"Enter your answer to the security question. The maximum length is 50 "
+"characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:188
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:129
+msgid "Billing Information"
+msgstr "Billing Information"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:191
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:269
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:132
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:210
+msgid "Address:"
+msgstr "Address:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:193
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:134
+msgid "Enter credit card billing address. The maximum length is 60 characters."
+msgstr ""
+"Enter credit card billing address. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:197
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:281
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:138
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:222
+msgid "City:"
+msgstr "City:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:199
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:140
+msgid "Enter credit card billing city. The maximum length is 60 characters."
+msgstr "Enter credit card billing city. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:203
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:287
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:144
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:228
+msgid "Zip/Postal Code:"
+msgstr "Zip/Postal Code:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:205
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:146
+msgid ""
+"Enter credit card billing zip or postal code. The maximum length is 15 "
+"characters."
+msgstr ""
+"Enter credit card billing zip or postal code. The maximum length is 15 "
+"characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:209
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:293
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:150
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:234
+msgid "State/Province:"
+msgstr "State/Province:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:211
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:152
+msgid ""
+"Enter credit card billing state or province. The maximum length is 60 "
+"characters."
+msgstr ""
+"Enter credit card billing state or province. The maximum length is 60 "
+"characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:215
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:299
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:156
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:240
+msgid "Country:"
+msgstr "Country:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:222
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:163
+msgid "Select credit card billing country."
+msgstr "Select credit card billing country."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:226
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:316
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:167
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:257
+msgid "Phone:"
+msgstr "Phone:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:228
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:169
+msgid ""
+"Enter credit card billing phone number. Required format is +CountryCode."
+"PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. "
+"The maximum length is 15 characters."
+msgstr ""
+"Enter credit card billing phone number. Required format is +CountryCode."
+"PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. "
+"The maximum length is 15 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:242
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:183
+msgid "Registrant Information"
+msgstr "Registrant Information"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:245
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:186
+msgid "First Name:"
+msgstr "First Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:247
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:188
+msgid "Enter registrant first name. The maximum length is 60 characters."
+msgstr "Enter registrant first name. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:251
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:192
+msgid "Last Name:"
+msgstr "Last Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:253
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:194
+msgid "Enter registrant last name. The maximum length is 60 characters."
+msgstr "Enter registrant last name. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:257
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:198
+msgid "Organization Name:"
+msgstr "Organization Name:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:259
+msgid ""
+"Enter registrant organization name. The maximum length is 60 characters."
+msgstr ""
+"Enter registrant organization name. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:263
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:204
+msgid "Job Title:"
+msgstr "Job Title:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:265
+msgid ""
+"Enter registrant job title, this field is optional. The maximum length is 60 "
+"characters."
+msgstr ""
+"Enter registrant job title, this field is optional. The maximum length is 60 "
+"characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:271
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:212
+msgid "Enter registrant address. The maximum length is 60 characters."
+msgstr "Enter registrant address. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:275
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:216
+msgid "Alternative Address:"
+msgstr "Alternative Address:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:277
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:218
+msgid ""
+"Enter registrant alternative address, this field is optional. The maximum "
+"length is 60 characters."
+msgstr ""
+"Enter registrant alternative address, this field is optional. The maximum "
+"length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:283
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:224
+msgid "Enter registrant city. The maximum length is 60 characters."
+msgstr "Enter registrant city. The maximum length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:289
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:230
+msgid ""
+"Enter registrant zip or postal code. The maximum length is 16 characters."
+msgstr ""
+"Enter registrant zip or postal code. The maximum length is 16 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:295
+msgid ""
+"Enter registrant state or province, this field is optional. The maximum "
+"length is 60 characters."
+msgstr ""
+"Enter registrant state or province, this field is optional. The maximum "
+"length is 60 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:306
+msgid "Select registrant country, this field is optional."
+msgstr "Select registrant country, this field is optional."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:310
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:251
+msgid "Email:"
+msgstr "Email:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:312
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:253
+msgid "Enter email address for Whois. The maximum length is 128 characters."
+msgstr "Enter email address for Whois. The maximum length is 128 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:318
+msgid ""
+"Enter registrant phone number. Required format is +CountryCode.PhoneNumber, "
+"where CountryCode and PhoneNumber use only numeric characters. The maximum "
+"length is 17 characters."
+msgstr ""
+"Enter registrant phone number. Required format is +CountryCode.PhoneNumber, "
+"where CountryCode and PhoneNumber use only numeric characters. The maximum "
+"length is 17 characters."
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:322
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:263
+msgid "Fax:"
+msgstr "Fax:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Register.php:324
+msgid ""
+"Enter registrant fax number, this field is optional. Required format is "
+"+CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric "
+"characters. The maximum length is 17 characters."
+msgstr ""
+"Enter registrant fax number, this field is optional. Required format is "
+"+CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric "
+"characters. The maximum length is 17 characters."
+
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:47
-msgid ""
-"Looks like your credentials are invalid. Please, enter valid credentials and "
-"resave the form."
-msgstr ""
-"Looks like your credentials are invalid. Please, enter valid credentials and "
-"resave the form."
-
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:53
-msgid ""
-"You use eNom credit card processing service. Pay attention that this service "
-"is available only to resellers who have entered into a credit card "
-"processing agreement with eNom. Additionally you have to configure HTTPS "
-"connection on your server to make such payments working."
-msgstr ""
-"You use eNom credit card processing service. Pay attention that this service "
-"is available only to resellers who have entered into a credit card "
-"processing agreement with eNom. Additionally you have to configure HTTPS "
-"connection on your server to make such payments working."
-
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:59
 #, php-format
 msgid ""
 "Keep in mind that to start using eNom API you have to add your server IP "
@@ -129,35 +513,65 @@ msgstr ""
 "\" button and submit a new ticket. In the new ticket set \"Add IP\" subject, "
 "type the IP address(es) you wish to add and select API category."
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:80
-msgid "Enter your account id and password:"
-msgstr "Enter your account id and password:"
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:53
+msgid "Signup for a free eNom sub-reseller account."
+msgstr "Signup for a free eNom sub-reseller account."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:54
+msgid ""
+"By signing up here as a sub-reseller you will avoid the high setup fees of "
+"direct accounts. You can of course switch to a direct eNom account later and "
+"change the credentials here to that."
+msgstr ""
+"By signing up here as a sub-reseller you will avoid the high setup fees of "
+"direct accounts. You can of course switch to a direct eNom account later and "
+"change the credentials here to that."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:73
+msgid "Account credentials:"
+msgstr "Account credentials:"
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:77
+msgid ""
+"Looks like your credentials are invalid. Please, enter valid credentials and "
+"resave the form."
+msgstr ""
+"Looks like your credentials are invalid. Please, enter valid credentials and "
+"resave the form."
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:82
 msgid "Account id:"
 msgstr "Account id:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:86
-msgid "Password:"
-msgstr "Password:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:106
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:100
 msgid "Select payment gateway:"
 msgstr "Select payment gateway:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:130
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:104
+msgid ""
+"You use eNom credit card processing service. Pay attention that this service "
+"is available only to resellers who have entered into a credit card "
+"processing agreement with eNom. Additionally you have to configure HTTPS "
+"connection on your server to make such payments working."
+msgstr ""
+"You use eNom credit card processing service. Pay attention that this service "
+"is available only to resellers who have entered into a credit card "
+"processing agreement with eNom. Additionally you have to configure HTTPS "
+"connection on your server to make such payments working."
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:131
 msgid "Test environment"
 msgstr "Test environment"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:131
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:132
 msgid "Production environment"
 msgstr "Production environment"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:134
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:135
 msgid "Select environment:"
 msgstr "Select environment:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:136
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:137
 msgid ""
 "Select an environment which you want to use. Use test environment to test "
 "your reseller account and production one when you will be ready to sell "
@@ -167,19 +581,19 @@ msgstr ""
 "your reseller account and production one when you will be ready to sell "
 "domains to your users."
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:161
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:162
 msgid "Enable SSL verification"
 msgstr "Enable SSL verification"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:162
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:163
 msgid "Disable SSL verification"
 msgstr "Disable SSL verification"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:165
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:166
 msgid "SSL Certificate Verification:"
 msgstr "SSL Certificate Verification:"
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:169
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:170
 #, php-format
 msgid ""
 "If you have a list of %scertificate authorities%s installed on your web "
@@ -205,101 +619,49 @@ msgstr ""
 "that all fields marked with red asterisk are required and has to be filled "
 "with appropriate information."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:70
-msgid "Cancel"
-msgstr "Cancel"
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:200
+msgid ""
+"Enter registrant organization name, this field is optional. The maximum "
+"length is 60 characters."
+msgstr ""
+"Enter registrant organization name, this field is optional. The maximum "
+"length is 60 characters."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:88
-msgid "Credit Card"
-msgstr "Credit Card"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:91
-msgid "Supported card types are:"
-msgstr "Supported card types are:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:95
-msgid "Card Number:"
-msgstr "Card Number:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:100
-msgid "Card Expiration:"
-msgstr "Card Expiration:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:105
-msgid "CVV2:"
-msgstr "CVV2:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:110
-msgid "Cardholder's Name:"
-msgstr "Cardholder's Name:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:125
-msgid "Billing Information"
-msgstr "Billing Information"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:128
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:196
-msgid "Address:"
-msgstr "Address:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:133
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:206
-msgid "City:"
-msgstr "City:"
+msgid "Enter registrant job title. The maximum length is 60 characters."
+msgstr "Enter registrant job title. The maximum length is 60 characters."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:138
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:211
-msgid "State/Province:"
-msgstr "State/Province:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:143
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:216
-msgid "Zip/Postal Code:"
-msgstr "Zip/Postal Code:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:148
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:236
-msgid "Phone:"
-msgstr "Phone:"
+msgid ""
+"Enter registrant state or province. The maximum length is 60 characters."
+msgstr ""
+"Enter registrant state or province. The maximum length is 60 characters."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:153
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:221
-msgid "Country:"
-msgstr "Country:"
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:247
+msgid "Select registrant country."
+msgstr "Select registrant country."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:173
-msgid "Registrant Information"
-msgstr "Registrant Information"
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:259
+msgid ""
+"Enter registrant phone number. Required format is +CountryCode.PhoneNumber, "
+"where CountryCode and PhoneNumber use only numeric characters. The maximum "
+"length is 20 characters."
+msgstr ""
+"Enter registrant phone number. Required format is +CountryCode.PhoneNumber, "
+"where CountryCode and PhoneNumber use only numeric characters. The maximum "
+"length is 20 characters."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:176
-msgid "First Name:"
-msgstr "First Name:"
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:265
+msgid ""
+"Enter registrant fax number, this field is optional. Required format is "
+"+CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric "
+"characters. The maximum length is 20 characters."
+msgstr ""
+"Enter registrant fax number, this field is optional. Required format is "
+"+CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric "
+"characters. The maximum length is 20 characters."
 
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:181
-msgid "Last Name:"
-msgstr "Last Name:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:186
-msgid "Organization Name:"
-msgstr "Organization Name:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:191
-msgid "Job Title:"
-msgstr "Job Title:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:201
-msgid "Alternative Address:"
-msgstr "Alternative Address:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:231
-msgid "Email:"
-msgstr "Email:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:241
-msgid "Fax:"
-msgstr "Fax:"
-
-#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:258
+#: classes/Domainmap/Render/Reseller/Enom/Purchase.php:302
 msgid "Additional Registrar Information"
 msgstr "Additional Registrar Information"
 
@@ -399,31 +761,45 @@ msgstr "Check domain"
 msgid "Options updated."
 msgstr "Options updated."
 
-#: classes/Domainmap/Render/Network/Resellers.php:59
+#: classes/Domainmap/Render/Network/Resellers.php:48
+msgid "Account was registered successfully."
+msgstr "Account was registered successfully."
+
+#: classes/Domainmap/Render/Network/Resellers.php:63
 msgid "All requests"
 msgstr "All requests"
 
-#: classes/Domainmap/Render/Network/Resellers.php:60
+#: classes/Domainmap/Render/Network/Resellers.php:64
 msgid "Failed requests"
 msgstr "Failed requests"
 
-#: classes/Domainmap/Render/Network/Resellers.php:61
+#: classes/Domainmap/Render/Network/Resellers.php:65
 msgid "Disable loggin"
 msgstr "Disable loggin"
 
-#: classes/Domainmap/Render/Network/Resellers.php:64
+#: classes/Domainmap/Render/Network/Resellers.php:69
 msgid "Select reseller API requests log level:"
 msgstr "Select reseller API requests log level:"
 
-#: classes/Domainmap/Render/Network/Resellers.php:77
-msgid "Select reseller provider if you want to sell domains to your users:"
-msgstr "Select reseller provider if you want to sell domains to your users:"
+#: classes/Domainmap/Render/Network/Resellers.php:84
+msgid "Reseller provider:"
+msgstr "Reseller provider:"
 
-#: classes/Domainmap/Render/Network/Resellers.php:93
+#: classes/Domainmap/Render/Network/Resellers.php:87
+msgid ""
+"Want to sell domains to your users? Select reseller provider and you will be "
+"able to register an account (if you do not have it yet) and setup an ability "
+"to purchase domains via admin dashboard in your network."
+msgstr ""
+"Want to sell domains to your users? Select reseller provider and you will be "
+"able to register an account (if you do not have it yet) and setup an ability "
+"to purchase domains via admin dashboard in your network."
+
+#: classes/Domainmap/Render/Network/Resellers.php:104
 msgid "Don't use any"
 msgstr "Don't use any"
 
-#: classes/Domainmap/Render/Network/Resellers.php:106
+#: classes/Domainmap/Render/Network/Resellers.php:118
 #: classes/Domainmap/Render/Network/Options.php:141
 msgid "Save Changes"
 msgstr "Save Changes"
@@ -589,23 +965,24 @@ msgstr "Make this functionality only available to certain Pro Site levels"
 msgid "Log records were deleted."
 msgstr "Log records were deleted."
 
-#: classes/Domainmap/Reseller/Enom.php:224
+#: classes/Domainmap/Reseller/Enom.php:236
 msgid "eNom credit card processing services"
 msgstr "eNom credit card processing services"
 
-#: classes/Domainmap/Reseller/Enom.php:225
+#: classes/Domainmap/Reseller/Enom.php:240
 msgid "Pro Sites PayPal payment gateway"
 msgstr "Pro Sites PayPal payment gateway"
 
-#: classes/Domainmap/Reseller/Enom.php:561
+#: classes/Domainmap/Reseller/Enom.php:586
+#: classes/Domainmap/Reseller/Enom.php:883
 msgid "Your name"
 msgstr "Your name"
 
-#: classes/Domainmap/Reseller/Enom.php:645
+#: classes/Domainmap/Reseller/Enom.php:670
 msgid "Purchase this domain with PayPal Express Checkout."
 msgstr "Purchase this domain with PayPal Express Checkout."
 
-#: classes/Domainmap/Reseller/Enom.php:687
+#: classes/Domainmap/Reseller/Enom.php:712
 msgid "Payment for 1 year usage of the domain name."
 msgstr "Payment for 1 year usage of the domain name."
 
@@ -630,67 +1007,67 @@ msgstr "Reseller API log"
 msgid "Delete"
 msgstr "Delete"
 
-#: classes/Domainmap/Module/Setup.php:89
+#: classes/Domainmap/Module/Setup.php:86
 msgid "OK"
 msgstr "OK"
 
-#: classes/Domainmap/Module/Setup.php:92
+#: classes/Domainmap/Module/Setup.php:89
 msgid "You are about to unmap selected domain. Do you really want to proceed?"
 msgstr "You are about to unmap selected domain. Do you really want to proceed?"
 
-#: classes/Domainmap/Module/Setup.php:93
+#: classes/Domainmap/Module/Setup.php:90
 msgid "Please, enter not empty domain name."
 msgstr "Please, enter not empty domain name."
 
-#: classes/Domainmap/Module/Setup.php:94
+#: classes/Domainmap/Module/Setup.php:91
 msgid ""
 "You are about to deselect your primary domain. Do you really want to proceed?"
 msgstr ""
 "You are about to deselect your primary domain. Do you really want to proceed?"
 
-#: classes/Domainmap/Module/Setup.php:95
+#: classes/Domainmap/Module/Setup.php:92
 msgid ""
 "You are about to change your primary domain. Do you really want to proceed?"
 msgstr ""
 "You are about to change your primary domain. Do you really want to proceed?"
+
+#: classes/Domainmap/Module/Setup.php:93
+msgid ""
+"You are about to select invalid domain as primary. It could cause unexpected "
+"issues at your front end. Do you really want to proceed?"
+msgstr ""
+"You are about to select invalid domain as primary. It could cause unexpected "
+"issues at your front end. Do you really want to proceed?"
 
 #: classes/Domainmap/Module/Setup.php:96
-msgid ""
-"You are about to select invalid domain as primary. It could cause unexpected "
-"issues at your front end. Do you really want to proceed?"
-msgstr ""
-"You are about to select invalid domain as primary. It could cause unexpected "
-"issues at your front end. Do you really want to proceed?"
-
-#: classes/Domainmap/Module/Setup.php:99
 msgid "Credit card number is invalid."
 msgstr "Credit card number is invalid."
 
-#: classes/Domainmap/Module/Setup.php:100
+#: classes/Domainmap/Module/Setup.php:97
 msgid "Credit card type is invalid."
 msgstr "Credit card type is invalid."
 
-#: classes/Domainmap/Module/Setup.php:101
+#: classes/Domainmap/Module/Setup.php:98
 msgid "Credit card expiry date is invalid."
 msgstr "Credit card expiry date is invalid."
 
-#: classes/Domainmap/Module/Setup.php:102
+#: classes/Domainmap/Module/Setup.php:99
 msgid "Credit card CVV2 code is invalid."
 msgstr "Credit card CVV2 code is invalid."
 
-#: classes/Domainmap/Module/Setup.php:106
+#: classes/Domainmap/Module/Setup.php:103
 msgid "Domain name has been purchased successfully."
 msgstr "Domain name has been purchased successfully."
 
-#: classes/Domainmap/Module/Setup.php:107
+#: classes/Domainmap/Module/Setup.php:104
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:113
+#: classes/Domainmap/Module/Ajax/Map.php:201
 msgid "Domain name is unavailable to access."
 msgstr "Domain name is unavailable to access."
 
-#: classes/Domainmap/Module/Ajax/Map.php:114
+#: classes/Domainmap/Module/Ajax/Map.php:202
 msgid ""
 "We can't access the new domain. If you've just purchased it, please, wait "
 "while it will be propagated. If it is already propagated, please, check your "
@@ -700,18 +1077,22 @@ msgstr ""
 "while it will be propagated. If it is already propagated, please, check your "
 "DNS records to be sure that the domain is configured correctly."
 
-#: classes/Domainmap/Module/Ajax/Map.php:118
+#: classes/Domainmap/Module/Ajax/Map.php:206
 msgid "Domain is already mapped."
 msgstr "Domain is already mapped."
 
-#: classes/Domainmap/Module/Ajax/Map.php:121
+#: classes/Domainmap/Module/Ajax/Map.php:209
 msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:125
+#: classes/Domainmap/Module/Ajax/Map.php:213
 #: classes/Domainmap/Module/Ajax/Purchase.php:104
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
+
+#: classes/Domainmap/Module/Ajax/Register.php:121
+msgid "The reseller doesn't support account registration."
+msgstr "The reseller doesn't support account registration."
 
 #: classes/Domainmap/Module/Ajax/Purchase.php:101
 msgid "is not available to purchase"
@@ -799,3 +1180,9 @@ msgstr ""
 "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
 "\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
 "strong>."
+
+#~ msgid "Enter your account id and password:"
+#~ msgstr "Enter your account id and password:"
+
+#~ msgid "Select reseller provider if you want to sell domains to your users:"
+#~ msgstr "Select reseller provider if you want to sell domains to your users:"

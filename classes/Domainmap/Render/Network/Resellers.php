@@ -65,39 +65,47 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 			Domainmap_Reseller::LOG_LEVEL_DISABLED => __( 'Disable loggin', 'domainmap' ),
 		);
 
-		?><h4 class="domainmapping-block-header"><?php _e( 'Select reseller API requests log level:', 'domainmap' ) ?></h4>
+		?><div>
+			<h4 class="domainmapping-block-header"><?php _e( 'Select reseller API requests log level:', 'domainmap' ) ?></h4>
 
-		<ul><?php
-			foreach ( $log_levels as $level => $label ) :
+			<ul><?php
+				foreach ( $log_levels as $level => $label ) :
+					?><li>
+						<label>
+							<input type="radio" class="domainmapping-radio" name="map_reseller_log"<?php checked( $level, (int)$this->map_reseller_log ) ?> value="<?php echo esc_attr( $level ) ?>">
+							<?php echo esc_html( $label ) ?>
+						</label>
+					</li><?php
+				endforeach;
+			?></ul>
+		</div>
+
+		<div>
+			<h4 class="domainmapping-block-header"><?php _e( 'Reseller provider:', 'domainmap' ) ?></h4>
+
+			<p><?php
+				esc_html_e( 'Want to sell domains to your users? Select reseller provider and you will be able to register an account (if you do not have it yet) and setup an ability to purchase domains via admin dashboard in your network.', 'domainmap' )
+			?></p>
+
+			<ul class="domainmapping-resellers-switch"><?php
+				foreach ( $this->resellers as $hash => $reseller ) :
 				?><li>
 					<label>
-						<input type="radio" class="domainmapping-radio" name="map_reseller_log"<?php checked( $level, (int)$this->map_reseller_log ) ?> value="<?php echo esc_attr( $level ) ?>">
-						<?php echo esc_html( $label ) ?>
+						<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
+						<?php echo esc_html( $reseller->get_title() ) ?>
+						<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
 					</label>
 				</li><?php
-			endforeach;
-		?></ul>
+				endforeach;
 
-		<h4 class="domainmapping-block-header"><?php _e( 'Select reseller provider if you want to sell domains to your users:', 'domainmap' ) ?></h4>
-
-		<ul class="domainmapping-resellers-switch"><?php
-			foreach ( $this->resellers as $hash => $reseller ) :
-			?><li>
-				<label>
-					<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
-					<?php echo esc_html( $reseller->get_title() ) ?>
-					<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
-				</label>
-			</li><?php
-			endforeach;
-
-			?><li>
-				<label>
-					<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked( empty( $selected ) ) ?>>
-					<?php _e( "Don't use any", 'domainmap' ) ?>
-				</label>
-			</li>
-		</ul><?php
+				?><li>
+					<label>
+						<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked( empty( $selected ) ) ?>>
+						<?php _e( "Don't use any", 'domainmap' ) ?>
+					</label>
+				</li>
+			</ul>
+		</div><?php
 
 		foreach ( $this->resellers as $hash => $reseller ) :
 			?><div id="reseller-<?php echo $hash ?>" class="domainmapping-reseller-settings<?php echo $selected == $hash ? ' active' :'' ?>">

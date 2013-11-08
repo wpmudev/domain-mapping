@@ -42,24 +42,18 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 			<div id="domainmapping-enom-logo"></div>
 		</div>
 
-		<?php if ( $this->valid === false ) : ?>
-		<div class="domainmapping-info domainmapping-info-error">
-			<?php _e( 'Looks like your credentials are invalid. Please, enter valid credentials and resave the form.', 'domainmap' ) ?>
-		</div>
-		<?php endif; ?>
-
-		<?php if ( $this->gateway == Domainmap_Reseller_Enom::GATEWAY_ENOM ) : ?>
-		<div class="domainmapping-info domainmapping-info-warning"><?php
-			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom. Additionally you have to configure HTTPS connection on your server to make such payments working.', 'domainmap' )
-		?></div>
-		<?php endif; ?>
-
 		<div class="domainmapping-info"><?php
 			printf(
 				__( 'Keep in mind that to start using eNom API you have to add your server IP address in the live environment. Go to %s, click "Launch the Support Center" button and submit a new ticket. In the new ticket set "Add IP" subject, type the IP address(es) you wish to add and select API category.', 'domainmap' ),
 				'<a href="http://www.enom.com/help/" target="_blank">eNom Help Center</a>'
 			)
-		?></div><?php
+		?></div>
+
+		<div class="domainmapping-info">
+			<b><?php esc_html_e( 'Signup for a free eNom sub-reseller account.', 'domainmap' ) ?></b><br>
+			<?php esc_html_e( 'By signing up here as a sub-reseller you will avoid the high setup fees of direct accounts. You can of course switch to a direct eNom account later and change the credentials here to that.', 'domainmap' ) ?>
+			<a href="<?php echo esc_url( $this->register_link ) ?>"><?php esc_html_e( 'Register new eNom account', 'domainmap' ) ?></a>.
+		</div><?php
 	}
 
 	/**
@@ -70,23 +64,20 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 	 * @access private
 	 */
 	private function _render_account_settings() {
-		// it is a bad habit to show raw password even withing password input field
-		// so lets hash suffle it and render in the password field
+		// it is a bad habit to show raw password even if we use password input field
+		// so lets suffle it and render in the password field
 		$pwd = str_shuffle( (string)$this->pwd );
-
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = sha1( $pwd );
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
-		<div>
-			<p><?php
-				printf(
-					__( "Enter your eNom account id and password in fields below. Don't have eNom account? Create new %seNom account%s.", 'domainmap' ),
-					'<a href="' . $this->register_link . '">',
-					'</a>'
-				)
-			?></p>
+
+		<?php if ( $this->valid === false ) : ?>
+		<div class="domainmapping-info domainmapping-info-error">
+			<?php _e( 'Looks like your credentials are invalid. Please, enter valid credentials and resave the form.', 'domainmap' ) ?>
 		</div>
+		<?php endif; ?>
+
 		<div>
 			<label for="enom-uid" class="domainmapping-label"><?php _e( 'Account id:', 'domainmap' ) ?></label>
 			<input type="text" id="enom-uid" class="regular-text" name="map_reseller_enom_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
@@ -104,15 +95,16 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 	 * @sine 4.0.0
 	 *
 	 * @access private
-	 * @global ProSites $psts The instance of ProSites plugin class.
 	 */
 	private function _render_payment_settings() {
-		global $psts;
-		if ( !$psts || !in_array( 'ProSites_Gateway_PayPalExpressPro', $psts->get_setting( 'gateways_enabled' ) ) ) {
-			return;
-		}
-
 		?><h4 class="domainmapping-block-header"><?php _e( 'Select payment gateway:', 'domainmap' ) ?></h4>
+
+		<?php if ( $this->gateway == Domainmap_Reseller_Enom::GATEWAY_ENOM ) : ?>
+		<div class="domainmapping-info domainmapping-info-warning"><?php
+			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom. Additionally you have to configure HTTPS connection on your server to make such payments working.', 'domainmap' )
+		?></div>
+		<?php endif; ?>
+
 		<div>
 			<ul>
 				<?php foreach ( $this->gateways as $key => $label ) : ?>

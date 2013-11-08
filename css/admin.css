@@ -66,29 +66,33 @@
 }
 
 .domainmapping-info {
+	border: 1px solid #c0f0f0;
     border-left: 3px solid #01b1f3;
     border-left-color: rgba(1, 177, 243, 0.7);
     background-color: #cff;
     background-color: rgba(204, 255, 255, 0.4);
     color: #444;
-    padding: 10px 15px;
+    padding: 1em 1.5em;
     margin: 1em 0;
-	-moz-box-shadow: 0 0 5px #e5e5e5;
-    -webkit-box-shadow: 0 0 5px #e5e5e5;
-    box-shadow: 0 0 5px #e5e5e5;
+	-moz-box-shadow: 0 0 3px #ddd;
+    -webkit-box-shadow: 0 0 3px #ddd;
+    box-shadow: 0 0 3px #ddd;
 }
 
 .domainmapping-info-error {
+	border-color: #f0b0b0;
     border-left-color: #f33;
     background-color: #fbb
 }
 
 .domainmapping-info-success {
+	border-color: #c0f0c0;
     border-left-color: #093;
     background-color: #cfc
 }
 
 .domainmapping-info-warning {
+	border-color: #f0f0c0;
     border-left-color: #cc0;
     background-color: #ffc
 }
@@ -97,6 +101,14 @@
 	font-family: monospace !important;
 	font-size: 12px;
 	padding: 2px 5px;
+}
+
+.domainmapping-info p {
+	margin-top: 0;
+}
+
+.domainmapping-info p:last-child {
+	margin-bottom: 0;
 }
 
 #domainmapping-content .updated {
@@ -407,6 +419,10 @@ input.domainmapping-radio {
 
 .domainmapping-reseller-settings.active {
     display: block
+}
+
+.domainmapping-reseller-settings .domainmapping-label {
+	width: 100px;
 }
 
 #domainmapping-enom-header {
