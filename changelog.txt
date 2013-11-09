@@ -1,5 +1,7 @@
 == 4.1 ==
 
+* Fixed home domain mapping in case when primary domain is selected
+* Fixed allowed redirect hosts filtering issue
 * Fixed theme preview compatibility issue
 * Implemented ability to register eNom accounts via admin dashboard
 * Improved eNom domain purchase form

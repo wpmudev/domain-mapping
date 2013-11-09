@@ -54,11 +54,11 @@ class domain_map {
 		// Set up the plugin
 		add_action( 'init', array( $this, 'setup_plugin' ) );
 		// Add in the cross domain logins
-		add_action( 'init', array(&$this, 'build_stylesheet_for_cookie'));
+		add_action( 'init', array( &$this, 'build_stylesheet_for_cookie' ) );
 
-		add_filter( 'allowed_redirect_hosts' , array(&$this, 'allowed_redirect_hosts'), 10);
+		add_filter( 'allowed_redirect_hosts', array( $this, 'allowed_redirect_hosts' ), 10 );
 
-		add_action( 'login_head', array(&$this, 'build_logout_cookie') );
+		add_action( 'login_head', array( $this, 'build_logout_cookie' ) );
 		add_action( 'customize_controls_init', array( $this, 'set_access_control_rules' ) );
 
 		// Add in the filters for domain mapping early on to get any information covered before the init action is hit
@@ -151,8 +151,35 @@ class domain_map {
 		return $admin_url;
 	}
 
+	function _get_mapped_domain() {
+		$s = $this->db->suppress_errors();
+
+		$domain = false;
+		if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) || !filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
+			// Get the mapped domain
+			$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
+			if ( empty( $domain ) ) {
+				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d LIMIT 1", $this->db->blogid ) );
+			}
+		} else {
+			$domains = $this->db->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->db->blogid ) );
+			if ( !empty( $domains ) ) {
+				$primaries = wp_list_filter( $domains, array( 'is_primary' => 1 ) );
+				if ( !empty( $primaries ) ) {
+					if ( count( wp_list_filter( $primaries, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) == 0 ) {
+						$domain = current( $primaries )->domain;
+					}
+				}
+			}
+		}
+
+		$this->db->suppress_errors( $s );
+
+		return $domain;
+	}
+
 	function domain_mapping_mappedurl( $setting ) {
-		global $current_blog, $current_site, $mapped_id;
+		global $current_site;
 
 		// do not change urls if we are in customize mode
 		if ( $this->customize ) {
@@ -162,29 +189,21 @@ class domain_map {
 		// To reduce the number of database queries, save the results the first time we encounter each blog ID.
 		static $return_url = array();
 
-		if ( !isset( $return_url[ $this->db->blogid ] ) ) {
-			$s = $this->db->suppress_errors();
-
-			$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
-
-			if ( empty( $domain ) ) {
-				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
-			}
-
-			$this->db->suppress_errors( $s );
+		if ( !isset( $return_url[$this->db->blogid] ) ) {
 			$protocol = 'http://';
-			if( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) {
+			if ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) {
 				$protocol = 'https://';
 			}
 
-			if ( !empty($domain) ) {
-				$return_url[ $this->db->blogid ] = untrailingslashit( $protocol . $domain . $current_site->path );
-				$setting = $return_url[ $this->db->blogid ];
+			$domain = $this->_get_mapped_domain();
+			if ( !empty( $domain ) ) {
+				$return_url[$this->db->blogid] = untrailingslashit( $protocol . $domain . $current_site->path );
+				$setting = $return_url[$this->db->blogid];
 			} else {
-				$return_url[ $this->db->blogid ] = false;
+				$return_url[$this->db->blogid] = false;
 			}
-		} elseif ( $return_url[ $this->db->blogid ] !== false) {
-			$setting = $return_url[ $this->db->blogid ];
+		} elseif ( $return_url[$this->db->blogid] !== false ) {
+			$setting = $return_url[$this->db->blogid];
 		}
 
 		return $setting;
@@ -575,28 +594,26 @@ class domain_map {
 	}
 
 	function allowed_redirect_hosts( $allowed_hosts ) {
-		if ( empty( $_REQUEST['redirect_to'] ) ) {
-			return $allowed_hosts;
-		}
+		if ( !empty( $_REQUEST['redirect_to'] ) ) {
+			$redirect_url = parse_url( $_REQUEST['redirect_to'] );
+			if ( isset( $redirect_url['host'] ) ) {
+				$network_home_url = parse_url( network_home_url() );
+				if ( $redirect_url['host'] != $network_home_url['host'] ) {
+					$pos = strpos( $redirect_url['host'], '.' );
+					if ( ($pos !== false) && (substr( $redirect_url['host'], $pos + 1 ) === $network_home_url['host']) ) {
+						$allowed_hosts[] = $redirect_url['host'];
+					}
 
-		$redirect_url = parse_url( $_REQUEST['redirect_to'] );
-		if ( !isset( $redirect_url['host'] ) ) {
-			return $allowed_hosts;
-		}
-
-		$network_home_url = parse_url( network_home_url() );
-		if ( $redirect_url['host'] === $network_home_url['host'] ) {
-			return $allowed_hosts;
-		}
-
-		$pos = strpos( $redirect_url['host'], '.' );
-		if ( ($pos !== false) && (substr( $redirect_url['host'], $pos + 1 ) === $network_home_url['host']) ) {
-			$allowed_hosts[] = $redirect_url['host'];
-		}
-
-		$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1 /* domain mapping */" );
-		if ( $bid ) {
-			$allowed_hosts[] = $redirect_url['host'];
+					$bid = $this->db->get_var( "SELECT blog_id FROM {$this->dmtable} WHERE domain = '{$redirect_url['host']}' ORDER BY id LIMIT 1" );
+					if ( $bid ) {
+						$allowed_hosts[] = $redirect_url['host'];
+					}
+				}
+			}
+		} else {
+			$domains = (array)$this->db->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->db->blogid ) );
+			$original = $this->db->get_var( "SELECT domain FROM {$this->db->blogs} WHERE blog_id = " . intval( $this->db->blogid ) );
+			$allowed_hosts = array_unique( array_merge( $allowed_hosts, $domains, array( $original ) ) );
 		}
 
 		return $allowed_hosts;
@@ -667,74 +684,61 @@ class domain_map {
 		return $return;
 	}
 
-	function swap_mapped_url($url, $path = '', $plugin = false, $bid = null) {
+	function swap_mapped_url( $url, $path = '', $plugin = false, $bid = null ) {
+		global $current_blog, $current_site, $current_blog;
+
 		// do not change urls if we are in customize mode
 		if ( $this->customize ) {
 			return $url;
 		}
 
-		// This function swaps the url to the mapped one
-
-		global $current_blog, $current_site, $mapped_id, $current_blog;
-
-		if ($plugin == 'relative') {
+		if ( $plugin == 'relative' ) {
 			return "{$current_blog->path}{$path}";
-		}
-
-		if ($plugin == 'login_post' || $plugin == 'login') {
-			return $this->domain_mapping_login_url($url);
-		}
-
-		if ($plugin == 'admin') {
-			return $this->domain_mapping_admin_url($url);
+		} elseif ( $plugin == 'login_post' || $plugin == 'login' ) {
+			return $this->domain_mapping_login_url( $url );
+		} elseif ( $plugin == 'admin' ) {
+			return $this->domain_mapping_admin_url( $url );
 		}
 
 		if ( !isset( $this->swapped_url[$this->db->blogid] ) ) {
-			$s = $this->db->suppress_errors();
-
-			// Get the mapped domain
-			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
-			if ( empty( $newdomain ) ) {
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d LIMIT 1 /* domain mapping */", $this->db->blogid ) );
-			}
-			// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
-			$olddomain = $this->db->get_var( "SELECT option_value FROM {$this->db->options} WHERE option_name = 'siteurl'" );
-
-			$this->db->suppress_errors( $s );
-
-			$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https://' : 'http://';
+			$newdomain = $this->_get_mapped_domain();
 			if ( !empty( $newdomain ) ) {
+				// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
+				$olddomain = $this->db->get_var( "SELECT option_value FROM {$this->db->options} WHERE option_name = 'siteurl'" );
+
 				// Get the domain and path we want to swap to
+				$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https://' : 'http://';
 				$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
+
 				// replace any occurance of the old domain with the new one
 				$newurl = str_replace( $olddomain, $innerurl, $url );
+
 				// store the olddomain and the new one in a cache
 				$this->swapped_url[$this->db->blogid] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl );
+
 				// get ready to return our new url
 				$url = $newurl;
 			} else {
 				// we can't find a map for this domain so record a false in the cache
 				$this->swapped_url[$this->db->blogid] = false;
 			}
-		} elseif ( $this->swapped_url[$this->db->blogid] !== false) {
+		} elseif ( $this->swapped_url[$this->db->blogid] !== false ) {
 			// get the information from the cache for the old domain
 			$olddomain = untrailingslashit( $this->swapped_url[$this->db->blogid]['olddomain'] );
 			// replace the old domain with the new one and set the url for returning
-			$url = str_replace( $olddomain, untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $url);
+			$url = str_replace( $olddomain, untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $url );
 		}
 
 		return $url;
 	}
 
-	function unswap_mapped_url($url, $path = '') {
-		global $current_blog, $current_site, $mapped_id;
+	function unswap_mapped_url( $url, $path = '' ) {
+		global $current_site;
 
-
-		if ( !isset( $this->swapped_url[ $this->db->blogid ] ) ) {
-
+		if ( !isset( $this->swapped_url[$this->db->blogid] ) ) {
 			$s = $this->db->suppress_errors();
 			// Try to get the mapped domain from the domain table
-			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER[ 'HTTP_HOST' ], $this->db->blogid ) );
+			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
 			if ( empty( $newdomain ) ) {
 				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
 			}
@@ -743,30 +747,30 @@ class domain_map {
 
 			$this->db->suppress_errors( $s );
 
-			if( defined('DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN') && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
-				$protocol = ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) ? 'https://' : 'http://';
+			if ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
+				$protocol = ( ( isset( $_SERVER['HTTPS'] ) && 'on' == strtolower( $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && '443' == $_SERVER['SERVER_PORT'] ) ) ? 'https://' : 'http://';
 			} else {
 				$protocol = 'http://';
 			}
 
-			if ( !empty($newdomain) ) {
+			if ( !empty( $newdomain ) ) {
 				// Work out the mapped domain
 				$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
 				// swap any mapped domains with the original domain in the passed url
-				$newurl = str_replace($innerurl, $olddomain, $url);
+				$newurl = str_replace( $innerurl, $olddomain, $url );
 				// Cache the information for later use
-				$this->swapped_url[ $this->db->blogid ] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl);
+				$this->swapped_url[$this->db->blogid] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl );
 				// Return the new url
 				$url = $newurl;
 			} else {
 				// No mapped domain so set the cache to false
-				$this->swapped_url[ $this->db->blogid ] = false;
+				$this->swapped_url[$this->db->blogid] = false;
 			}
-		} elseif ( $this->swapped_url[ $this->db->blogid ] !== false) {
+		} elseif ( $this->swapped_url[$this->db->blogid] !== false ) {
 			// get the information from the cache for the old domain
-			$olddomain = untrailingslashit( $this->swapped_url[ $this->db->blogid ]['olddomain'] );
+			$olddomain = untrailingslashit( $this->swapped_url[$this->db->blogid]['olddomain'] );
 			// replace the new domain with the old one
-			$url = str_replace( untrailingslashit( $this->swapped_url[ $this->db->blogid ]['newdomain'] ), $olddomain, $url);
+			$url = str_replace( untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $olddomain, $url );
 		}
 
 		return $url;
