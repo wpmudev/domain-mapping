@@ -33,7 +33,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 	const ENDPOINT_PRODUCTION = 'https://reseller.enom.com/interface.asp?';
 	const ENDPOINT_TEST       = 'https://resellertest.enom.com/interface.asp?';
-	const ENDPOINT_PROXY      = '';
+	const ENDPOINT_PROXY      = 'http://premium.wpmudev.org/enom-proxy.php?';
 
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
