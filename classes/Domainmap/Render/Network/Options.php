@@ -115,6 +115,16 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 
 			echo '<div class="domainmapping-info">', $str, '</div>';
 		}
+
+		if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
+			echo '<div class="domainmapping-info">';
+				printf(
+					__( "If you want to allow your users to map multiple domains, then please add %s in the %s file.", 'domainmap' ),
+					"<code>define( 'DOMAINMAPPING_ALLOWMULTI', 1 );</code>",
+					'<b>wp-config.php</b>'
+				);
+			echo '</div>';
+		}
 	}
 
 	/**

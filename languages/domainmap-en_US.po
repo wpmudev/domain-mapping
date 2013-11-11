@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-08 18:24+0300\n"
-"PO-Revision-Date: 2013-11-08 18:24+0300\n"
+"POT-Creation-Date: 2013-11-11 14:45+0300\n"
+"PO-Revision-Date: 2013-11-11 14:45+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-SearchPath-0: classes\n"
 
-#: classes/class.domainmap.php:345 classes/class.domainmap.php:382
-#: classes/class.domainmap.php:644
+#: classes/class.domainmap.php:364 classes/class.domainmap.php:401
+#: classes/class.domainmap.php:661
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
-#: classes/class.domainmap.php:363 classes/class.domainmap.php:396
-#: classes/class.domainmap.php:651
+#: classes/class.domainmap.php:382 classes/class.domainmap.php:415
+#: classes/class.domainmap.php:668
 msgid "Please wait..."
 msgstr "Please wait..."
 
-#: classes/class.domainmap.php:364 classes/class.domainmap.php:397
+#: classes/class.domainmap.php:383 classes/class.domainmap.php:416
 #, php-format
 msgid ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:652
+#: classes/class.domainmap.php:669
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -802,7 +802,7 @@ msgid "Don't use any"
 msgstr "Don't use any"
 
 #: classes/Domainmap/Render/Network/Resellers.php:118
-#: classes/Domainmap/Render/Network/Options.php:141
+#: classes/Domainmap/Render/Network/Options.php:151
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -859,11 +859,20 @@ msgstr ""
 "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
 "these lines in place."
 
-#: classes/Domainmap/Render/Network/Options.php:162
+#: classes/Domainmap/Render/Network/Options.php:122
+#, php-format
+msgid ""
+"If you want to allow your users to map multiple domains, then please add %s "
+"in the %s file."
+msgstr ""
+"If you want to allow your users to map multiple domains, then please add %s "
+"in the %s file."
+
+#: classes/Domainmap/Render/Network/Options.php:172
 msgid "Domain mapping Configuration"
 msgstr "Domain mapping Configuration"
 
-#: classes/Domainmap/Render/Network/Options.php:164
+#: classes/Domainmap/Render/Network/Options.php:174
 msgid ""
 "Enter the IP address users need to point their DNS A records at. If you "
 "don't know what it is, ping this blog to get the IP address."
@@ -871,7 +880,7 @@ msgstr ""
 "Enter the IP address users need to point their DNS A records at. If you "
 "don't know what it is, ping this blog to get the IP address."
 
-#: classes/Domainmap/Render/Network/Options.php:165
+#: classes/Domainmap/Render/Network/Options.php:175
 msgid ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
@@ -879,7 +888,7 @@ msgstr ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 
-#: classes/Domainmap/Render/Network/Options.php:171
+#: classes/Domainmap/Render/Network/Options.php:181
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
@@ -889,15 +898,15 @@ msgstr ""
 "and fetch the IP address(es) assigned to it. You can use the following IP "
 "address(es) to enter in the <b>Server IP Address</b> field below:"
 
-#: classes/Domainmap/Render/Network/Options.php:180
+#: classes/Domainmap/Render/Network/Options.php:190
 msgid "Server IP Address: "
 msgstr "Server IP Address: "
 
-#: classes/Domainmap/Render/Network/Options.php:195
+#: classes/Domainmap/Render/Network/Options.php:205
 msgid "Administration mapping"
 msgstr "Administration mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:197
+#: classes/Domainmap/Render/Network/Options.php:207
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
@@ -907,11 +916,11 @@ msgstr ""
 "through the domain they enter, you can also restrict it to the Mapped domain "
 "or the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:220
+#: classes/Domainmap/Render/Network/Options.php:230
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:222
+#: classes/Domainmap/Render/Network/Options.php:232
 msgid ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
@@ -921,21 +930,21 @@ msgstr ""
 "through the domain they enter, or restrict it to either the Mapped domain or "
 "the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:247
-#: classes/Domainmap/Render/Network/Options.php:278
+#: classes/Domainmap/Render/Network/Options.php:257
+#: classes/Domainmap/Render/Network/Options.php:288
 msgid "Yes"
 msgstr "Yes"
 
-#: classes/Domainmap/Render/Network/Options.php:248
-#: classes/Domainmap/Render/Network/Options.php:279
+#: classes/Domainmap/Render/Network/Options.php:258
+#: classes/Domainmap/Render/Network/Options.php:289
 msgid "No"
 msgstr "No"
 
-#: classes/Domainmap/Render/Network/Options.php:251
+#: classes/Domainmap/Render/Network/Options.php:261
 msgid "Cross-domain autologin"
 msgstr "Cross-domain autologin"
 
-#: classes/Domainmap/Render/Network/Options.php:253
+#: classes/Domainmap/Render/Network/Options.php:263
 msgid ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
@@ -943,11 +952,11 @@ msgstr ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
 
-#: classes/Domainmap/Render/Network/Options.php:282
+#: classes/Domainmap/Render/Network/Options.php:292
 msgid "Verify domain's DNS settings"
 msgstr "Verify domain's DNS settings"
 
-#: classes/Domainmap/Render/Network/Options.php:284
+#: classes/Domainmap/Render/Network/Options.php:294
 msgid ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
@@ -955,11 +964,11 @@ msgstr ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 
-#: classes/Domainmap/Render/Network/Options.php:311
+#: classes/Domainmap/Render/Network/Options.php:321
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:312
+#: classes/Domainmap/Render/Network/Options.php:322
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
