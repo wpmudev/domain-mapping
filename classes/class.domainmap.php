@@ -38,9 +38,6 @@ class domain_map {
 	// For caching swapped urls later on
 	var $swapped_url = array();
 
-	// Determines whether we are in customize mode or not
-	var $customize = false;
-
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
@@ -59,7 +56,6 @@ class domain_map {
 		add_filter( 'allowed_redirect_hosts', array( $this, 'allowed_redirect_hosts' ), 10 );
 
 		add_action( 'login_head', array( $this, 'build_logout_cookie' ) );
-		add_action( 'customize_controls_init', array( $this, 'set_access_control_rules' ) );
 
 		// Add in the filters for domain mapping early on to get any information covered before the init action is hit
 		$this->add_domain_mapping_filters();
@@ -69,38 +65,33 @@ class domain_map {
 		return $initiator_url;
 	}
 
-	function domain_mapping_login_url($login_url, $redirect='') {
-
-		switch($this->options['map_logindomain']) {
+	function domain_mapping_login_url( $login_url, $redirect = '' ) {
+		switch ( $this->options['map_logindomain'] ) {
 			case 'user':
 				break;
 			case 'mapped':
 				break;
 			case 'original':
 				// Get the mapped url using our filter
-				$mapped_url = site_url('/');
+				$mapped_url = site_url( '/' );
 				// remove the http and https parts of the url
-				$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
-				// remove the filter we added to swap the url
-				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
 				// get the original url now with our filter removed
-				$url = trailingslashit( get_option('siteurl') );
+				$url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
 				// again remove the http and https parts of the url
-				$url = str_replace(array('https://', 'http://'), '', $url);
-				// put our filter back in place
-				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				$url = str_replace( array( 'https://', 'http://' ), '', $url );
 
 				// replace the mapped url with the original one
-				$login_url = str_replace($mapped_url, $url, $login_url);
+				$login_url = str_replace( $mapped_url, $url, $login_url );
 
 				/*
-				if( !isset($_POST['postpass']) ) {
+				  if( !isset($_POST['postpass']) ) {
 
-				} else {
-					// keep the mapped url as we need to just process and return
-					$login_url = str_replace($url, $mapped_url, $login_url);
-				}
-				*/
+				  } else {
+				  // keep the mapped url as we need to just process and return
+				  $login_url = str_replace($url, $mapped_url, $login_url);
+				  }
+				 */
 
 				break;
 		}
@@ -108,40 +99,36 @@ class domain_map {
 		return $login_url;
 	}
 
-	function domain_mapping_admin_url($admin_url, $path = '/', $_blog_id = false) {
+	function domain_mapping_admin_url( $admin_url, $path = '/', $_blog_id = false ) {
 		global $blog_id;
 
-		if (!$_blog_id) {
+		if ( !$_blog_id ) {
 			$_blog_id = $blog_id;
 		}
 
-		switch($this->options['map_admindomain']) {
+		switch ( $this->options['map_admindomain'] ) {
 			case 'user':
 				break;
 			case 'mapped':
 				break;
 			case 'original':
 				// get the mapped url using our filter
-				$mapped_url = site_url('/');
+				$mapped_url = site_url( '/' );
 				// remove the http and https parts of the url
-				$mapped_url = str_replace(array('https://', 'http://'), '', $mapped_url);
-				// remove the filter we added to swap the url
-				remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
 				// get the original url now with our filter removed
-				$url = trailingslashit( get_option('siteurl') );
+				$url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
 				// remove the http and https parts of the original url
-				$url = str_replace(array('https://', 'http://'), '', $url);
-				// put our filter back in place
-				add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+				$url = str_replace( array( 'https://', 'http://' ), '', $url );
 
 				// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
-				if( $path != 'admin-ajax.php' ) {
+				if ( $path != 'admin-ajax.php' ) {
 					// swap the mapped url with the original one
-					$admin_url = str_replace($mapped_url, $url, $admin_url);
+					$admin_url = str_replace( $mapped_url, $url, $admin_url );
 				} else {
-					if( !is_admin() ) {
+					if ( !is_admin() ) {
 						// swap the original url with the mapped one
-						$admin_url = str_replace($url, $mapped_url, $admin_url);
+						$admin_url = str_replace( $url, $mapped_url, $admin_url );
 					}
 				}
 
@@ -151,81 +138,13 @@ class domain_map {
 		return $admin_url;
 	}
 
-	function _get_mapped_domain() {
-		$s = $this->db->suppress_errors();
-
-		$domain = false;
-		if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) || !filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
-			// Get the mapped domain
-			$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
-			if ( empty( $domain ) ) {
-				$domain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d LIMIT 1", $this->db->blogid ) );
-			}
-		} else {
-			$domains = $this->db->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->db->blogid ) );
-			if ( !empty( $domains ) ) {
-				$primaries = wp_list_filter( $domains, array( 'is_primary' => 1 ) );
-				if ( !empty( $primaries ) ) {
-					if ( count( wp_list_filter( $primaries, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) == 0 ) {
-						$domain = current( $primaries )->domain;
-					}
-				}
-			}
-		}
-
-		$this->db->suppress_errors( $s );
-
-		return $domain;
-	}
-
-	function domain_mapping_mappedurl( $setting ) {
-		global $current_site;
-
-		// do not change urls if we are in customize mode
-		if ( $this->customize ) {
-			return $setting;
-		}
-
-		// To reduce the number of database queries, save the results the first time we encounter each blog ID.
-		static $return_url = array();
-
-		if ( !isset( $return_url[$this->db->blogid] ) ) {
-			$protocol = 'http://';
-			if ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) {
-				$protocol = 'https://';
-			}
-
-			$domain = $this->_get_mapped_domain();
-			if ( !empty( $domain ) ) {
-				$return_url[$this->db->blogid] = untrailingslashit( $protocol . $domain . $current_site->path );
-				$setting = $return_url[$this->db->blogid];
-			} else {
-				$return_url[$this->db->blogid] = false;
-			}
-		} elseif ( $return_url[$this->db->blogid] !== false ) {
-			$setting = $return_url[$this->db->blogid];
-		}
-
-		return $setting;
-	}
-
 	function add_domain_mapping_filters() {
 
 		if ( defined( 'DOMAIN_MAPPING' ) ) {
-			// replace the siteurl with the mapped domain
-			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-			// replace the home url with the mapped url
-			add_filter( 'pre_option_home', array(&$this, 'domain_mapping_mappedurl') );
 			// filter the content with any original urls and change them to the mapped urls
 			add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
 			// Jump in just before header output to change base_url - until a neater method can be found
 			add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
-
-			add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
-			add_filter( 'site_url', array(&$this, 'swap_mapped_url'), 10, 4);
-			add_filter( 'includes_url', array(&$this, 'swap_mapped_url'), 10, 2);
-			add_filter( 'content_url', array(&$this, 'swap_mapped_url'), 10, 2);
-			add_filter( 'plugins_url', array(&$this, 'swap_mapped_url'), 10, 3);
 
 			add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
 
@@ -245,11 +164,8 @@ class domain_map {
 			// We are assuming that we are on the original domain - so if we check if we are in the admin area, we need to only map those links that
 			// point to the front end of the site
 			if(is_admin()) {
-				// replace the hom url with the mapped url
-				add_filter( 'pre_option_home', array(&$this, 'domain_mapping_mappedurl') );
 				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-				add_filter( 'home_url', array(&$this, 'swap_mapped_url'), 10, 4);
 				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
 				add_filter( 'authenticate', array(&$this, 'authenticate'), 999, 3);
 			}
@@ -259,36 +175,6 @@ class domain_map {
 
 	function setup_plugin() {
 		$this->options = Domainmap_Plugin::instance()->get_options();
-
-		if ( is_admin() ) {
-			// We are in the admin area, so check for the redirects here
-			switch( $this->options['map_admindomain'] ) {
-				case 'mapped':
-					$this->redirect_to_mapped_domain();
-					break;
-				case 'original':
-					if ( defined( 'DOMAIN_MAPPING' ) ) {
-						// put in the code to send me to the original domain
-						$this->redirect_to_orig_domain();
-					}
-					break;
-			}
-		} else {
-			if ( strpos( addslashes( $_SERVER["SCRIPT_NAME"] ), '/wp-login.php' ) !== false ) {
-				// We are in the login area, so check for the redirects here
-				switch( $this->options['map_logindomain'] ) {
-					case 'mapped':
-						$this->redirect_to_mapped_domain();
-						break;
-					case 'original':
-						if ( defined( 'DOMAIN_MAPPING' ) && empty( $_POST ) ) {
-							// put in the code to send me to the original domain unless we are submitting to the form
-							$this->redirect_to_orig_domain();
-						}
-						break;
-				}
-			}
-		}
 
 		$permitted = true;
 		if ( function_exists( 'is_pro_site' ) && !empty( $this->options['map_supporteronly'] ) ) {
@@ -312,22 +198,6 @@ class domain_map {
 			add_action( 'wp_logout', array( $this, 'wp_logout' ), 10 );
 			add_action( 'admin_head', array( $this, 'build_cookie' ) );
 		}
-	}
-
-	function set_access_control_rules() {
-		$this->customize = true;
-
-		// set access control credentials to make theme preview working properly
-		@header( 'Access-Control-Allow-Credentials: true' );
-
-		$schema = is_ssl() ? 'https' : 'http';
-		$domains = (array)$this->db->get_col( "SELECT domain FROM " . DOMAINMAP_TABLE_MAP . " WHERE blog_id = " . intval( $this->db->blogid ) .  " ORDER BY id ASC" );
-		foreach ( $domains as $domain ) {
-			@header( "Access-Control-Allow-Origin: {$schema}://{$domain}" );
-		}
-
-		$origin = $this->db->get_row( "SELECT * FROM {$this->db->blogs} WHERE blog_id = " . intval( $this->db->blogid ) );
-		@header( "Access-Control-Allow-Origin: {$schema}://{$origin->domain}" );
 	}
 
 	function authenticate($user) {
@@ -684,175 +554,34 @@ class domain_map {
 		return $return;
 	}
 
-	function swap_mapped_url( $url, $path = '', $plugin = false, $bid = null ) {
-		global $current_blog, $current_site, $current_blog;
-
-		// do not change urls if we are in customize mode
-		if ( $this->customize ) {
-			return $url;
-		}
-
-		if ( $plugin == 'relative' ) {
-			return "{$current_blog->path}{$path}";
-		} elseif ( $plugin == 'login_post' || $plugin == 'login' ) {
-			return $this->domain_mapping_login_url( $url );
-		} elseif ( $plugin == 'admin' ) {
-			return $this->domain_mapping_admin_url( $url );
-		}
-
-		if ( !isset( $this->swapped_url[$this->db->blogid] ) ) {
-			$newdomain = $this->_get_mapped_domain();
-			if ( !empty( $newdomain ) ) {
-				// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
-				$olddomain = $this->db->get_var( "SELECT option_value FROM {$this->db->options} WHERE option_name = 'siteurl'" );
-
-				// Get the domain and path we want to swap to
-				$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https://' : 'http://';
-				$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
-
-				// replace any occurance of the old domain with the new one
-				$newurl = str_replace( $olddomain, $innerurl, $url );
-
-				// store the olddomain and the new one in a cache
-				$this->swapped_url[$this->db->blogid] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl );
-
-				// get ready to return our new url
-				$url = $newurl;
-			} else {
-				// we can't find a map for this domain so record a false in the cache
-				$this->swapped_url[$this->db->blogid] = false;
-			}
-		} elseif ( $this->swapped_url[$this->db->blogid] !== false ) {
-			// get the information from the cache for the old domain
-			$olddomain = untrailingslashit( $this->swapped_url[$this->db->blogid]['olddomain'] );
-			// replace the old domain with the new one and set the url for returning
-			$url = str_replace( $olddomain, untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $url );
-		}
-
-		return $url;
-	}
-
-	function unswap_mapped_url( $url, $path = '' ) {
-		global $current_site;
-
-		if ( !isset( $this->swapped_url[$this->db->blogid] ) ) {
-			$s = $this->db->suppress_errors();
-			// Try to get the mapped domain from the domain table
-			$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE domain = %s AND blog_id = %d LIMIT 1 /* domain mapping */", $_SERVER['HTTP_HOST'], $this->db->blogid ) );
-			if ( empty( $newdomain ) ) {
-				$newdomain = $this->db->get_var( $this->db->prepare( "SELECT domain FROM {$this->dmtable} WHERE blog_id = %d /* domain mapping */", $this->db->blogid ) );
-			}
-			// We have to grab the old domain this way because we are filtering the options table and using get_option would return the mapped one
-			$olddomain = $this->db->get_var( $this->db->prepare( "SELECT option_value FROM {$this->db->options} WHERE option_name='siteurl' LIMIT %d /* domain mapping */", 1 ) );
-
-			$this->db->suppress_errors( $s );
-
-			if ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN == true ) {
-				$protocol = ( ( isset( $_SERVER['HTTPS'] ) && 'on' == strtolower( $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && '443' == $_SERVER['SERVER_PORT'] ) ) ? 'https://' : 'http://';
-			} else {
-				$protocol = 'http://';
-			}
-
-			if ( !empty( $newdomain ) ) {
-				// Work out the mapped domain
-				$innerurl = trailingslashit( $protocol . $newdomain . $current_site->path );
-				// swap any mapped domains with the original domain in the passed url
-				$newurl = str_replace( $innerurl, $olddomain, $url );
-				// Cache the information for later use
-				$this->swapped_url[$this->db->blogid] = array( 'olddomain' => $olddomain, 'newdomain' => $innerurl );
-				// Return the new url
-				$url = $newurl;
-			} else {
-				// No mapped domain so set the cache to false
-				$this->swapped_url[$this->db->blogid] = false;
-			}
-		} elseif ( $this->swapped_url[$this->db->blogid] !== false ) {
-			// get the information from the cache for the old domain
-			$olddomain = untrailingslashit( $this->swapped_url[$this->db->blogid]['olddomain'] );
-			// replace the new domain with the old one
-			$url = str_replace( untrailingslashit( $this->swapped_url[$this->db->blogid]['newdomain'] ), $olddomain, $url );
-		}
-
-		return $url;
-	}
-
 	function domain_mapping_post_content( $post_content ) {
-
 		static $orig_urls = array();
-		if ( ! isset( $orig_urls[ $this->db->blogid ] ) ) {
-			// remove the filter from the site url so that we can get the original url
-			remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+
+		if ( !isset( $orig_urls[$this->db->blogid] ) ) {
 			// get the original url
-			$orig_url = get_option( 'siteurl' );
+			$orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
 			// switch the url to use the correct http or https
-			if ( ( isset( $_SERVER[ 'HTTPS' ] ) && 'on' == strtolower( $_SERVER[ 'HTTPS' ] ) ) || ( isset( $_SERVER[ 'SERVER_PORT' ] ) && '443' == $_SERVER[ 'SERVER_PORT' ] ) ) {
+			if ( is_ssl() ) {
 				$orig_url = str_replace( "http://", "https://", $orig_url );
 			} else {
 				$orig_url = str_replace( "https://", "http://", $orig_url );
 			}
 			// store the url in the cache
-			$orig_urls[ $this->db->blogid ] = $orig_url;
-			// put our filter back in place
-			add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+			$orig_urls[$this->db->blogid] = $orig_url;
 		} else {
 			// we have a cached entry so just return that
-			$orig_url = $orig_urls[ $this->db->blogid ];
+			$orig_url = $orig_urls[$this->db->blogid];
 		}
+
 		// Get the new mapped url
-		$url = $this->domain_mapping_mappedurl( 'NA' );
+		$url = apply_filters( 'pre_option_siteurl', 'NA' );
 		if ( $url == 'NA' ) {
 			// If we don't have a mapped url then just return the content unchanged
 			return $post_content;
-		} else {
-			// replace all the original urls with the new ones and then return the content
-			return str_replace( trailingslashit($orig_url), trailingslashit($url), $post_content );
 		}
 
-	}
-
-	function redirect_to_mapped_domain() {
-		global $current_blog, $current_site;
-
-		// do redirect
-		$protocol = is_ssl()  ? 'https://' : 'http://';
-		$url = $this->domain_mapping_mappedurl( false );
-		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
-			// strip out any subdirectory blog names
-			$request = str_replace("/a" . $current_blog->path, "/", "/a" . $_SERVER[ 'REQUEST_URI' ]);
-			if($request != $_SERVER[ 'REQUEST_URI' ]) {
-				header("HTTP/1.1 301 Moved Permanently", true, 301);
-				header( "Location: " . $url . $request, true, 301);
-			} else {
-				header("HTTP/1.1 301 Moved Permanently", true, 301);
-				header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], true, 301 );
-			}
-			exit;
-		}
-	}
-
-	function redirect_to_orig_domain() {
-		global $current_blog, $current_site;
-
-		// don't redirect AJAX requests
-		if ( defined( 'DOING_AJAX' ) )
-			return;
-
-		$protocol = is_ssl()  ? 'https://' : 'http://';
-		remove_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
-		$url = get_option( 'siteurl' );
-		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
-			// strip out any subdirectory blog names
-			$request = str_replace("/a" . $current_blog->path, "/", "/a" . $_SERVER[ 'REQUEST_URI' ]);
-			if($request != $_SERVER[ 'REQUEST_URI' ]) {
-				header("HTTP/1.1 301 Moved Permanently", true, 301);
-				header( "Location: " . $url . $request,  true, 301);
-			} else {
-				header("HTTP/1.1 301 Moved Permanently", true, 301);
-				header( "Location: " . $url . $_SERVER[ 'REQUEST_URI' ], true, 301 );
-			}
-			exit;
-		}
-		add_filter( 'pre_option_siteurl', array(&$this, 'domain_mapping_mappedurl') );
+		// replace all the original urls with the new ones and then return the content
+		return str_replace( trailingslashit( $orig_url ), trailingslashit( $url ), $post_content );
 	}
 
 }

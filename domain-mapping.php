@@ -34,11 +34,6 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
    return;
 }
 
-// do not run the plugin if previewing a theme
-if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
-	return;
-}
-
 // UnComment out the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 
@@ -109,12 +104,15 @@ function domainmap_launch() {
 	// set general modules
 	$plugin->set_module( Domainmap_Module_System::NAME );
 	$plugin->set_module( Domainmap_Module_Setup::NAME );
+	$plugin->set_module( Domainmap_Module_Mapping::NAME );
 
+	// CDSSO module
 	$sunrise = defined( 'SUNRISE' ) && filter_var( SUNRISE, FILTER_VALIDATE_BOOLEAN );
 	if ( $sunrise && defined( 'DOMAINMAPPING_USE_CDSSO' ) && $plugin->get_option( 'map_crossautologin' ) ) {
 		$plugin->set_module( Domainmap_Module_Cdsso::NAME );
 	}
 
+	// conditional modules
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		// suppresses errors rendering to prevent unexpected issues
 		set_error_handler( '__return_true' );
@@ -129,9 +127,6 @@ function domainmap_launch() {
 			// set admin modules
 			$plugin->set_module( Domainmap_Module_Pages::NAME );
 			$plugin->set_module( Domainmap_Module_Admin::NAME );
-		} else {
-			// set front end modules
-			$plugin->set_module( Domainmap_Module_Mapping::NAME );
 		}
 	}
 }

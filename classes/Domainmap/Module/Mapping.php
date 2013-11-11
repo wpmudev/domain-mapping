@@ -32,6 +32,46 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	const NAME = __CLASS__;
 
 	/**
+	 * The array of mapped domains.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @var array
+	 */
+	private $_mapped_domains = array();
+
+	/**
+	 * The array of original domains.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @var array
+	 */
+	private $_original_domains = array();
+
+	/**
+	 * Determines whether we need to suppress swapping or not.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @var boolean
+	 */
+	private $_suppress_swapping = false;
+
+	/**
+	 * Determines whether we need to force protocol on mapped domain or not.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @var boolean
+	 */
+	private $_force_protocol = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.3
@@ -41,31 +81,57 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
-		$this->_add_action( 'template_redirect', 'redirect_to_mapped_domain' );
+
+		$this->_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
+
+		$this->_add_action( 'template_redirect',       'redirect_front_area' );
+		$this->_add_action( 'admin_init',              'redirect_admin_area' );
+		$this->_add_action( 'login_init',              'redirect_login_area' );
+		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
+
+		// URLs swapping
+		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
+		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
+			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
+			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
+			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
+			$this->_add_filter( 'site_url',           'swap_mapped_url', 10, 4 );
+			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
+			$this->_add_filter( 'content_url',        'swap_mapped_url', 10, 2 );
+			$this->_add_filter( 'plugins_url',        'swap_mapped_url', 10, 3 );
+		} elseif ( is_admin() ) {
+			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
+			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
+		}
 	}
 
 	/**
-	 * Redirects to mapped domain.
+	 * Redirects to original domain.
 	 *
-	 * @since 4.0.3
-	 * @action template_redirect
+	 * @since 4.1.0
 	 *
 	 * @access public
+	 * @global object $current_blog Current blog object.
+	 * @global object $current_site Current site object.
 	 */
-	public function redirect_to_mapped_domain() {
+	public function redirect_to_orig_domain() {
 		global $current_blog, $current_site;
 
-		// do not redirect if headers were sent
-		if ( headers_sent() || !$this->_plugin->is_site_permitted() ) {
+		// don't redirect AJAX requests
+		if ( defined( 'DOING_AJAX' ) ) {
 			return;
 		}
 
-		// do redirect
 		$protocol = is_ssl() ? 'https://' : 'http://';
-		$url = $this->_get_mapped_url();
+
+		$swapping = $this->_suppress_swapping;
+		$this->_suppress_swapping = true;
+		$url = get_option( 'siteurl' );
+		$this->_suppress_swapping = $swapping;
+
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
-			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
+			$request = str_replace( "/a{$current_blog->path}", "/", "/a{$_SERVER['REQUEST_URI']}" );
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $url . $request, true, 301 );
@@ -78,32 +144,182 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/**
-	 * Returns mapped url for current domain.
+	 * Redirects to mapped or original domain.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @param string $redirect_to The direction to redirect to.
+	 */
+	private function _redirect_to_area( $redirect_to ) {
+		switch ( $redirect_to ) {
+			case 'mapped':
+				$this->redirect_to_mapped_domain();
+				break;
+			case 'original':
+				if ( defined( 'DOMAIN_MAPPING' ) ) {
+					$this->redirect_to_orig_domain();
+				}
+				break;
+		}
+	}
+
+	/**
+	 * Redirects admin area to mapped or original domain depending on options settings.
+	 *
+	 * @since 4.1.0
+	 * @action admin_init
+	 *
+	 * @access public
+	 */
+	public function redirect_admin_area() {
+		$this->_redirect_to_area( $this->_plugin->get_option( 'map_admindomain' ) );
+	}
+
+	/**
+	 * Redirects login area to mapped or original domain depending on options settings.
+	 *
+	 * @since 4.1.0
+	 * @action login_init
+	 *
+	 * @access public
+	 */
+	public function redirect_login_area() {
+		$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ) );
+	}
+
+	/**
+	 * Redirects frontend to mapped or original.
+	 *
+	 * @since 4.1.0
+	 * @action template_redirect
+	 *
+	 * @access public
+	 */
+	public function redirect_front_area() {
+		$redirect_to = 'mapped';
+		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
+			if ( $this->_get_current_mapping_type( 'map_admindomain' ) == 'original' ) {
+				$redirect_to = 'original';
+			}
+		}
+
+		$this->_redirect_to_area( $redirect_to );
+	}
+
+	/**
+	 * Sets customizer flag which determines to not map URLs.
+	 *
+	 * @since 4.1.0
+	 * @action customize_controls_init
+	 *
+	 * @access public
+	 */
+	public function set_customizer_flag() {
+		$this->_suppress_swapping = $this->_get_current_mapping_type( 'map_admindomain' ) == 'original';
+	}
+
+	/**
+	 * Returns current mapping type.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access private
+	 * @param string $option The option name to check.
+	 * @return string Mapping type.
+	 */
+	private function _get_current_mapping_type( $option ) {
+		$mapping = $this->_plugin->get_option( $option );
+		if ( $mapping != 'original' && $mapping != 'mapped' ) {
+			$original = $this->_wpdb->get_var( sprintf(
+				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
+				$this->_wpdb->options
+			) );
+
+			if ( $original ) {
+				$components = self::_parse_mb_url( $original );
+				$mapping = isset( $components['host'] ) && $_SERVER['HTTP_HOST'] == $components['host']
+					? 'original'
+					: 'mapped';
+			}
+		}
+
+		return $mapping;
+	}
+
+	/**
+	 * Redirects to mapped domain.
+	 *
+	 * @since 4.0.3
+	 *
+	 * @access public
+	 */
+	public function redirect_to_mapped_domain() {
+		global $current_blog, $current_site;
+
+		// do not redirect if headers were sent or site is not permitted to use
+		// domain mapping
+		if ( headers_sent() || !$this->_plugin->is_site_permitted() ) {
+			return;
+		}
+
+		// do not redirect if there is no mapped domain
+		$mapped_domain = $this->_get_mapped_domain();
+		if ( !$mapped_domain ) {
+			return;
+		}
+
+		$is_ssl = is_ssl();
+		$protocol = $is_ssl ? 'https://' : 'http://';
+		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
+
+		$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN ) && $is_ssl ? 'https://' : 'http://';
+		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
+
+		if ( $mapped_url != $current_url ) {
+			// strip out any subdirectory blog names
+			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
+			if ( $request != $_SERVER['REQUEST_URI'] ) {
+				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
+				header( "Location: " . $mapped_url . $request, true, 301 );
+			} else {
+				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
+				header( "Location: " . $mapped_url . $_SERVER['REQUEST_URI'], true, 301 );
+			}
+			exit;
+		}
+	}
+
+	/**
+	 * Returns mapped domain for current blog.
 	 *
 	 * @since 4.0.3
 	 *
 	 * @access private
-	 * @global object $current_site Current site information object.
-	 * @return string|boolean Mapped URL on success, otherwise FALSE.
+	 * @param int $blog_id The id of a blog to get mapped domain for.
+	 * @return string|boolean Mapped domain on success, otherwise FALSE.
 	 */
-	private function _get_mapped_url() {
-		global $current_site;
+	private function _get_mapped_domain( $blog_id = false ) {
+		// use current blog id if $blog_id is empty
+		if ( !$blog_id ) {
+			$blog_id = get_current_blog_id();
+		}
 
-		$suppress_errors = $this->_wpdb->suppress_errors();
+		// if we have already found mapped domain, then return it
+		if ( isset( $this->_mapped_domains[$blog_id] ) ) {
+			return $this->_mapped_domains[$blog_id];
+		}
 
-		$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN ) && is_ssl()
-			? 'https://'
-			: 'http://';
+		// fetch mapped domain
+		$errors = $this->_wpdb->suppress_errors();
+		$multi = defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN );
+		$domain = $multi ? $this->_get_mapped_domain_with_multi( $blog_id ) : $this->_get_mapped_domain_without_multi( $blog_id );
+		$this->_wpdb->suppress_errors( $errors );
 
-		$domain = defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
-			? $this->_get_mapped_domain_with_multi()
-			: $this->_get_mapped_domain_without_multi();
+		// save mapped domain into local cache
+		$this->_mapped_domains[$blog_id] = $domain;
 
-		$this->_wpdb->suppress_errors( $suppress_errors );
-
-		return !empty( $domain )
-			? untrailingslashit( $protocol . $domain . $current_site->path )
-			: false;
+		return $domain;
 	}
 
 	/**
@@ -112,25 +328,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @since 4.0.3
 	 *
 	 * @access private
+	 * @param int $blog_id The blog ID to get mapped domain for.
 	 * @return string Proper domain name if mapping exists, otherwise FALSE.
 	 */
-	private function _get_mapped_domain_with_multi() {
-		$domains = $this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
-		if ( empty( $domains ) ) {
-			// we don't have any mapped domains, so return FALSE
-			return false;
-		}
-
-		$primaries = wp_list_filter( $domains, array( 'is_primary' => 1 ) );
-		if ( empty( $primaries ) ) {
-			// no primary domain is selected, so return FALSE
-			return false;
-		}
-
-		// check if we have current host in the list of primaries, if not, then return first primary domain
-		return count( wp_list_filter( $primaries, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) == 0
-			? current( $primaries )->domain
-			: false;
+	private function _get_mapped_domain_with_multi( $blog_id ) {
+		$domains = $this->_wpdb->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC", DOMAINMAP_TABLE_MAP, $blog_id ) );
+		return !empty( $domains ) ? $domains[0] : false;
 	}
 
 	/**
@@ -139,22 +342,190 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @since 4.0.3
 	 *
 	 * @access private
+	 * @param int $blog_id The blog ID to get mapped domain for.
 	 * @return string Proper domain name if mapping exists, otherwise FALSE.
 	 */
-	private function _get_mapped_domain_without_multi() {
-		$results = $this->_wpdb->get_results( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
-		if ( empty( $results ) ) {
-			// we don't have any mapped domains, so return FALSE
-			return false;
+	private function _get_mapped_domain_without_multi( $blog_id ) {
+		$domain = $this->_wpdb->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id ) );
+		return !empty( $domain ) ? $domain : false;
+	}
+
+
+	/**
+	 * Encodes URL component. This method is used in preg_replace_callback call.
+	 *
+	 * @see self::_parse_mb_url()
+	 * @since 4.1.0
+	 *
+	 * @static
+	 * @access private
+	 * @param array $matches The array of matched elements.
+	 * @return string
+	 */
+	private static function _parse_mb_url_urlencode( $matches ) {
+		return urlencode( $matches[0] );
+	}
+
+	/**
+	 * Parses a URL and returns an associative array containing any of the
+	 * various components of the URL that are present. This implementation
+	 * supports UTF-8 URLs and parses them properly.
+	 *
+	 * @since 4.1.0
+	 * @link http://www.php.net/manual/en/function.parse-url.php#108787
+	 *
+	 * @static
+	 * @access private
+	 * @param string $url The URL to parse.
+	 * @return array The array of URL components.
+	 */
+	private static function _parse_mb_url( $url ) {
+		return array_map( 'urldecode', parse_url( preg_replace_callback( '%[^:/?#&=\.]+%usD', __CLASS__ . '::_parse_mb_url_urlencode', $url ) ) );
+	}
+
+	/**
+	 * Builds URL from components received after parsing a URL.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @static
+	 * @access private
+	 * @param array $components The array of URL components.
+	 * @return string Built URL.
+	 */
+	private static function _build_url( $components ) {
+		$scheme = isset( $components['scheme'] ) ? $components['scheme'] . '://' : '';
+		$host = isset( $components['host'] ) ? $components['host'] : '';
+		$port = isset( $components['port'] ) ? ':' . $components['port'] : '';
+
+		$user = isset( $components['user'] ) ? $components['user'] : '';
+		$pass = isset( $components['pass'] ) ? ':' . $components['pass'] : '';
+		$pass = $user || $pass ? $pass . '@' : '';
+
+		$path = isset( $components['path'] ) ? $components['path'] : '';
+		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
+		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
+
+		return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
+	}
+
+	/**
+	 * Swaps URL from original to mapped one.
+	 *
+	 * @since 4.1.0
+	 * @filter home_url 10 4
+	 * @filter site_url 10 4
+	 * @filter includes_url 10 2
+	 * @filter content_url 10 2
+	 * @filter plugins_url 10 3
+	 *
+	 * @access public
+	 * @param string $url Current URL to swap.
+	 * @param string $path The path related to domain.
+	 * @param type $orig_scheme The scheme to use 'http', 'https', or 'relative'.
+	 * @param string $blog_id The blog ID to which URL is related to.
+	 */
+	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
+		// do not swap URL if customizer is running
+		if ( $this->_suppress_swapping ) {
+			return $url;
 		}
 
-		if ( count( wp_list_filter( $results, array( 'domain' => $_SERVER['HTTP_HOST'] ) ) ) > 0 ) {
-			// current HTTP HOST is mapped to current blog, so we don't need to redirect
-			return false;
+		// parse current url
+		$components = self::_parse_mb_url( $url );
+		if ( empty( $components['host'] ) ) {
+			return $url;
 		}
 
-		// current host is not mapped, then return first mapped domain
-		return $results[0]->domain;
+		// find mapped domain
+		$mapped_domain = $this->_get_mapped_domain( $blog_id );
+		if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
+			return $url;
+		}
+
+		$components['host'] = $mapped_domain;
+
+		return self::_build_url( $components );
+	}
+
+	/**
+	 * Returns swapped root URL.
+	 *
+	 * @since 4.1.0
+	 * @filter pre_option_home
+	 * @filter pre_option_siteurl
+	 *
+	 * @access public
+	 * @global object $current_site The current site object.
+	 * @param string $url The current root URL.
+	 * @return string Swapped root URL on success, otherwise inital value.
+	 */
+	public function swap_root_url( $url ) {
+		global $current_site;
+
+		// do not swap URL if customizer is running
+		if ( $this->_suppress_swapping ) {
+			return $url;
+		}
+
+		$domain = $this->_get_mapped_domain();
+		if ( !$domain ) {
+			return $url;
+		}
+
+		$protocol = 'http://';
+		if ( $this->_force_protocol && is_ssl() ) {
+			$protocol = 'https://';
+		}
+
+		return untrailingslashit( $protocol . $domain . $current_site->path );
+	}
+
+	/**
+	 * Unswaps URL to use original domain.
+	 *
+	 * @since 4.1.0
+	 * @filter unswap_url
+	 *
+	 * @access public
+	 * @global object $current_site Current site object.
+	 * @param string $url Current URL to unswap.
+	 * @param int $blog_id The blog ID to which current URL is related to.
+	 * @return string Unswapped URL.
+	 */
+	public function unswap_mapped_url( $url, $blog_id = false ) {
+		global $current_site;
+
+		// if no blog id is passed, then take current one
+		if ( !$blog_id ) {
+			$blog_id = get_current_blog_id();
+		}
+
+		// check if we have already found original domain for the blog
+		if ( !array_key_exists( $blog_id, $this->_original_domains ) ) {
+			$this->_original_domains[$blog_id] = $this->_wpdb->get_var( sprintf(
+				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
+				$this->_wpdb->options
+			) );
+		}
+
+		if ( empty( $this->_original_domains[$blog_id] ) ) {
+			return $url;
+		}
+
+		$url_components = self::_parse_mb_url( $url );
+		$orig_components = self::_parse_mb_url( $this->_original_domains[$blog_id] );
+
+		if ( $this->_force_protocol ) {
+			$url_components['scheme'] = is_ssl() ? 'htts' : 'http';
+		}
+
+		$url_components['host'] = $orig_components['host'];
+		if ( isset( $url_components['path'] ) ) {
+			$url_components['path'] = $current_site->path . $url_components['path'];
+		}
+
+		return self::_build_url( $url_components );
 	}
 
 }
