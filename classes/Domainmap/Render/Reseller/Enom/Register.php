@@ -58,8 +58,6 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 					<?php endif; ?>
 
 					<?php $this->_render_account_fields() ?>
-					<?php $this->_render_card_fields() ?>
-					<?php $this->_render_billing_fields() ?>
 					<?php $this->_render_registrant_fields() ?>
 
 					<div class="domainmapping-form-buttons">
@@ -70,45 +68,6 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 				</form>
 			</div>
 		</div><?php
-	}
-
-	/**
-	 * Renders credit card fields.
-	 *
-	 * @since 4.1.0
-	 *
-	 * @access private
-	 */
-	private function _render_card_fields() {
-		?><h4><i class="icon-list-alt"></i> <?php _e( 'Credit Card', 'domainmap' ) ?></h4>
-
-		<p class="domainmapping-info">
-			<?php _e( 'Supported card types are:', 'domainmap' ) ?> <b><?php echo implode( '</b>, <b>', (array)$this->cardtypes ) ?></b>
-		</p>
-
-		<p>
-			<label for="card_number" class="domainmapping-label"><?php _e( 'Card Number:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="card_number" required name="card_number" maxlength="19" x-autocompletetype="cc-number" placeholder="0000 0000 0000 0000" value="<?php echo esc_attr( filter_input( INPUT_POST, 'card_number' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter credit card number.', 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="card_expiration" class="domainmapping-label"><?php _e( 'Card Expiration:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="card_expiration" required name="card_expiration" x-autocompletetype="cc-exp" placeholder="mm / yy" value="<?php echo esc_attr( filter_input( INPUT_POST, 'card_expiration' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter credit card expiration date.', 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="card_cvv2" class="domainmapping-label"><?php _e( 'CVV2:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="card_cvv2" required name="card_cvv2" maxlength="4" autocomplete="off" placeholder="xxx" value="<?php echo esc_attr( filter_input( INPUT_POST, 'card_cvv2' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( 'Enter credit card security code.', 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="card_cardholder" class="domainmapping-label"><?php _e( "Cardholder's Name:", 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="card_cardholder" required name="card_cardholder" maxlength="60" x-autocompletetype="cc-name" placeholder="<?php echo esc_attr( $this->cardholder ) ?>" value="<?php echo esc_attr( filter_input( INPUT_POST, 'card_cardholder' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter cardholder's name.", 'domainmap' ) ?></span>
-		</p><?php
 	}
 
 	/**
@@ -172,60 +131,6 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 			<label for="account_question_answer" class="domainmapping-label"><?php _e( 'Security Answer:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
 			<input type="text" id="account_question_answer" required name="account_question_answer" maxlength="50" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_question_answer' ) ) ?>">
 			<span class="domainmapping-descr"><?php  esc_html_e( 'Enter your answer to the security question. The maximum length is 50 characters.', 'domainmap' ) ?></span>
-		</p><?php
-	}
-
-	/**
-	 * Renders billing fields.
-	 *
-	 * @since 4.1.0
-	 *
-	 * @access private
-	 */
-	private function _render_billing_fields() {
-		$billing_country = filter_input( INPUT_POST, 'billing_country' );
-
-		?><h4><i class="icon-home"></i> <?php _e( 'Billing Information', 'domainmap' ) ?></h4>
-
-		<p>
-			<label for="billing_address" class="domainmapping-label"><?php _e( 'Address:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="billing_address" required name="billing_address" maxlength="60" x-autocompletetype="address-line1" value="<?php echo esc_attr( filter_input( INPUT_POST, 'billing_address' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter credit card billing address. The maximum length is 60 characters.", 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="billing_city" class="domainmapping-label"><?php _e( 'City:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="billing_city" required name="billing_city" maxlength="60" x-autocompletetype="city" value="<?php echo esc_attr( filter_input( INPUT_POST, 'billing_city' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter credit card billing city. The maximum length is 60 characters.", 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="billing_zip" class="domainmapping-label"><?php _e( 'Zip/Postal Code:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="billing_zip" required name="billing_zip" maxlength="15" x-autocompletetype="postal-code" value="<?php echo esc_attr( filter_input( INPUT_POST, 'billing_zip' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter credit card billing zip or postal code. The maximum length is 15 characters.", 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="billing_state" class="domainmapping-label"><?php _e( 'State/Province:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="billing_state" required name="billing_state" maxlength="60" x-autocompletetype="administrative-area" value="<?php echo esc_attr( filter_input( INPUT_POST, 'billing_state' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter credit card billing state or province. The maximum length is 60 characters.", 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="billing_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<select id="billing_country" required name="billing_country">
-				<option></option>
-				<?php foreach ( $this->countries as $code => $country ) : ?>
-				<option value="<?php echo esc_attr( $code ) ?>"<?php selected( $code, $billing_country ) ?>><?php echo esc_html( $country ) ?></option>
-				<?php endforeach; ?>
-			</select>
-			<span class="domainmapping-descr"><?php esc_html_e( "Select credit card billing country.", 'domainmap' ) ?></span>
-		</p>
-
-		<p>
-			<label for="billing_phone" class="domainmapping-label"><?php _e( 'Phone:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="billing_phone" required name="billing_phone" maxlength="15" x-autocompletetype="tel" value="<?php echo esc_attr( filter_input( INPUT_POST, 'billing_phone' ) ) ?>">
-			<span class="domainmapping-descr"><?php esc_html_e( "Enter credit card billing phone number. Required format is +CountryCode.PhoneNumber, where CountryCode and PhoneNumber use only numeric characters. The maximum length is 15 characters.", 'domainmap' ) ?></span>
 		</p><?php
 	}
 

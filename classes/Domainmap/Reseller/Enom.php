@@ -903,13 +903,13 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	public function regiser_account() {
 		$force_production = !defined( 'DOMAINMAPPING_FORCE_PRODUCTION' ) || filter_var( DOMAINMAPPING_FORCE_PRODUCTION, FILTER_VALIDATE_BOOLEAN );
 
-		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
-
-		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
 		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
 		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
 
 		$response = $this->_exec_command( self::COMMAND_REGISTER_ACCOUNT, array(
+			'uid'                            => '',
+			'pw'                             => '',
+
 			// account information
 			'NewUID'                         => filter_input( INPUT_POST, 'account_login' ),
 			'NewPW'                          => filter_input( INPUT_POST, 'account_password' ),
@@ -919,22 +919,6 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'AuthQuestionAnswer'             => filter_input( INPUT_POST, 'account_question_answer' ),
 			'Reseller'                       => 1,
 			'EndUserIP'                      => self::_get_remote_ip(),
-
-			// credit card information
-			'CardType'                       => filter_input( INPUT_POST, 'card_type' ),
-			'CCName'                         => filter_input( INPUT_POST, 'card_cardholder' ),
-			'CreditCardNumber'               => preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'card_number' ) ),
-			'CreditCardExpMonth'             => $expiry[0],
-			'CreditCardExpYear'              => isset( $expiry[1] ) ? "20{$expiry[1]}" : '',
-			'CVV2'                           => filter_input( INPUT_POST, 'card_cvv2' ),
-
-			// billing information
-			'CCAddress'                      => filter_input( INPUT_POST, 'billing_address' ),
-			'CCCity'                         => filter_input( INPUT_POST, 'billing_city' ),
-			'CCStateProvince'                => filter_input( INPUT_POST, 'billing_state' ),
-			'CCZip'                          => filter_input( INPUT_POST, 'billing_zip' ),
-			'CCPhone'                        => $billing_phone,
-			'CCCountry'                      => filter_input( INPUT_POST, 'billing_country' ),
 
 			// registrant information
 			'RegistrantFirstName'            => filter_input( INPUT_POST, 'registrant_first_name' ),

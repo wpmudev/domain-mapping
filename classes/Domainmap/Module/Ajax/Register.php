@@ -54,10 +54,17 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 	 * @since 4.1.0
 	 *
 	 * @access private
+	 * @param Domainmap_Reseller $reseller Current reseller.
 	 */
-	private function _check_ssl_and_security() {
+	private function _check_ssl_and_security( $reseller ) {
+		// check if user has permissions
+		if ( !check_admin_referer( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM, 'nonce' ) || !current_user_can( 'manage_network_options' ) ) {
+			status_header( 403 );
+			exit;
+		}
+
 		// check if ssl connection is not used
-		if ( !is_ssl() ) {
+		if ( $reseller->registration_over_ssl() && !is_ssl() ) {
 			// ssl connection is not used, so if you logged in then redirect him
 			// to https page, otherwise redirect him to login page
 			$user_id = get_current_user_id();
@@ -77,12 +84,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 				$this->redirect_to_login_form();
 			}
 		}
-
-		// check if user has permissions
-		if ( !check_admin_referer( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM, 'nonce' ) || !current_user_can( 'manage_network_options' ) ) {
-			status_header( 403 );
-			exit;
-		}
 	}
 
 	/**
@@ -93,8 +94,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function render_registration_form() {
-		$this->_check_ssl_and_security();
-
 		// check reseller
 		$reseller = filter_input( INPUT_GET, 'reseller' );
 		$resellers = $this->_plugin->get_resellers();
@@ -108,6 +107,9 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 		if ( !$reseller->support_account_registration() ) {
 			_default_wp_die_handler( __( "The reseller doesn't support account registration.", 'domainmap' ) );
 		}
+
+		// check ssl and security
+		$this->_check_ssl_and_security( $reseller );
 
 		// process post request
 		if ( $_SERVER['REQUEST_METHOD'] == 'POST' && $reseller->regiser_account() ) {

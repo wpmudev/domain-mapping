@@ -422,6 +422,18 @@ abstract class Domainmap_Reseller {
 	public function render_registration_form() {}
 
 	/**
+	 * Determines whether registration form should be displayed on HTTPS page or not.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if SSL is required, otherwise is FALSE.
+	 */
+	public function registration_over_ssl() {
+		return false;
+	}
+
+	/**
 	 * Registers new account.
 	 *
 	 * @since 4.1.0
