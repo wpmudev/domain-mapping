@@ -74,7 +74,14 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		<?php if ( $this->valid === false ) : ?>
 		<div class="domainmapping-info domainmapping-info-error">
-			<?php _e( 'Looks like your credentials are invalid. Please, enter valid credentials and resave the form.', 'domainmap' ) ?>
+			<p><?php _e( 'Looks like your credentials are invalid. Please, check errors sent by eNom server:', 'domainmap' ) ?></p>
+			<?php if ( is_wp_error( $this->errors ) ) : ?>
+				<ul>
+					<li>
+						<b><?php echo implode( '</b></li><li><b>', array_map( 'esc_html', $this->errors->get_error_messages() ) ) ?></b>
+					</li>
+				</ul>
+			<?php endif; ?>
 		</div>
 		<?php endif; ?>
 

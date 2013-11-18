@@ -103,12 +103,21 @@
 	padding: 2px 5px;
 }
 
-.domainmapping-info p {
+.domainmapping-info > * {
 	margin-top: 0;
 }
 
-.domainmapping-info p:last-child {
+.domainmapping-info > *:last-child {
 	margin-bottom: 0;
+}
+
+#reseller-options-tab .domainmapping-info > ul {
+	list-style: circle;
+	padding-left: 20px;
+}
+
+#reseller-options-tab .domainmapping-info > ul li {
+	list-style: disc;
 }
 
 #domainmapping-content .updated {

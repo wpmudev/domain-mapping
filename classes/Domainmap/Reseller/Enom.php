@@ -38,6 +38,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
 
+	const COMMAND_CHECK_LOGIN        = 'CheckLogin';
 	const COMMAND_CHECK              = 'Check';
 	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
 	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
@@ -193,7 +194,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		// validate credentials
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
-			? $this->_validate_credentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] )
+			? $this->_validate_credentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'], $options[self::RESELLER_ID]['environment'] )
 			: true;
 	}
 
@@ -205,19 +206,30 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @access private
 	 * @param string $uid The user id.
 	 * @param string $pwd The user password.
+	 * @param string $environment Current environment.
 	 * @return boolean TRUE if API credentials are valid, otherwise FALSE.
 	 */
-	private function _validate_credentials( $uid, $pwd ) {
-		$xml = $this->_exec_command( self::COMMAND_CHECK, array(
+	private function _validate_credentials( $uid, $pwd, $environment ) {
+		$endpoint = $environment == self::ENVIRONMENT_PRODUCTION
+			? self::ENDPOINT_PRODUCTION
+			: self::ENDPOINT_TEST;
+
+		$xml = $this->_exec_command( self::COMMAND_CHECK_LOGIN, array(
 			'uid' => $uid,
 			'pw'  => $pwd,
-			'sld' => 'example',
-			'tld' => 'com',
-		) );
+		), $endpoint );
 
 		$this->_log_enom_request( self::REQUEST_VALIDATE_CREDENTIALS, $xml );
 
-		return !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
+		$transient = 'enom_errors_' . get_current_user_id();
+		$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
+		if ( !$valid ) {
+			set_site_transient( $transient, $this->get_last_errors() );
+		} else {
+			delete_site_transient( $transient );
+		}
+
+		return $valid;
 	}
 
 	/**
@@ -333,6 +345,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$template->gateway = $this->_get_gateway( $options );
 		$template->environment = $this->_get_environment( $options );
 		$template->register_link = $register_link;
+		$template->errors = get_site_transient( 'enom_errors_' . get_current_user_id() );
 
 		$template->render();
 	}
