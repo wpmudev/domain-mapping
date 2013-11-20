@@ -327,12 +327,13 @@ class domain_map {
 		}
 
 		// build cookies only each five minutes
-		$transient = 'domainmapping-sso-' . $user_id;
-		if ( get_site_transient( $transient ) ) {
-			return;
+		if ( $action != 'logout' ) {
+			$transient = 'domainmapping-sso-' . $user_id;
+			if ( get_site_transient( $transient ) ) {
+				return;
+			}
+			set_site_transient( $transient, 1, 10 * MINUTE_IN_SECONDS );
 		}
-
-		set_site_transient( $transient, 1, 5 * MINUTE_IN_SECONDS );
 
 		/**
 		 * Cookie building order:
