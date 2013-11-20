@@ -304,12 +304,35 @@ class domain_map {
 	}
 
 	function build_cookie( $action = 'login', $user = false, $redirect_to = false ) {
-		global $blog_id, $current_site, $dm_cookie_style_printed, $current_blog, $dm_logout, $dm_csc_building_urls, $user;
+		global $dm_cookie_style_printed, $dm_csc_building_urls;
 
-		// return if cross domain autologin is disabled
-		if ( defined( 'DOMAINMAPPING_USE_CDSSO' ) || ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) ) {
+		// don't build cookie for visitors
+		if ( !is_user_logged_in() ) {
 			return;
 		}
+
+		// return if cross domain autologin is disabled
+		$use_cdsso = defined( 'DOMAINMAPPING_USE_CDSSO' );
+		$crossautologin = isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0;
+		if ( $use_cdsso || $crossautologin ) {
+			return;
+		}
+
+		// set user id
+		$user_id = $user;
+		if ( is_a( $user, 'WP_User' ) ) {
+			$user_id = $user->ID;
+		} elseif ( !is_int( $user ) ) {
+			$user_id = get_current_user_id();
+		}
+
+		// build cookies only each five minutes
+		$transient = 'domainmapping-sso-' . $user_id;
+		if ( get_site_transient( $transient ) ) {
+			return;
+		}
+
+		set_site_transient( $transient, 1, 5 * MINUTE_IN_SECONDS );
 
 		/**
 		 * Cookie building order:
@@ -329,7 +352,7 @@ class domain_map {
 			$action = 'login';
 		}
 
-		$urls = array();
+		$urls = $blog_ids = array();
 		$schema = is_ssl() ? 'https://' : 'http://';
 
 		// Main site url
@@ -345,13 +368,21 @@ class domain_map {
 		}
 
 		// Unmapped site
-		$domain = $this->db->get_row( "SELECT domain, path FROM {$this->db->blogs} WHERE blog_id = '{$blog_id}' LIMIT 1", ARRAY_A);
-		if ( !isset( $urls[$domain['domain']] ) ) {
-			$urls[$domain['domain']] = $schema . $domain['domain'] . $domain['path'];
+		$blogs = get_blogs_of_user( $user_id );
+		foreach ( $blogs as $id => $blog ) {
+			$blog_ids[] = $id;
+			if ( !isset( $urls[$blog->domain] ) ) {
+				$urls[$blog->domain] = $schema . $blog->domain . $blog->path;
+			}
 		}
 
 		// Mapped site
-		$domains = $this->db->get_results( "SELECT domain FROM {$this->dmtable} WHERE blog_id = '{$blog_id}' ORDER BY id", ARRAY_A);
+		$domains = $this->db->get_results( sprintf(
+			"SELECT domain FROM %s WHERE blog_id IN (%s) ORDER BY id",
+			DOMAINMAP_TABLE_MAP,
+			implode( ', ', $blog_ids )
+		), ARRAY_A );
+
 		if ( $domains && is_array( $domains ) ) {
 			foreach ( $domains as $domain ) {
 				if ( !isset( $urls[$domain['domain']] ) ) {
@@ -417,49 +448,44 @@ class domain_map {
 		}
 
 		if ( count( $urls ) > 0 ) {
-			if ( !$user ) {
-				$user = wp_get_current_user();
-			}
+			$key = array();
+			$is_admin = is_admin();
+			$minus24_date = date( "Ymd", strtotime( '-24 days' ) );
 
-			if( !is_wp_error( $user ) ) {
-				$key = array();
-				$is_admin = is_admin();
-				$minus24_date = date( "Ymd", strtotime( '-24 days' ) );
-
-				$keys = get_user_meta( $user->ID, 'cross_domain', true );
-				if ( !empty( $keys ) && is_array( $keys ) ) {
-					foreach( $keys as $hash => $meta ) {
-						if ( isset( $meta['built'] ) && $meta['built'] == $minus24_date ) {
-							$key[$hash] = $meta;
-						}
+			$keys = get_user_meta( $user_id, 'cross_domain', true );
+			if ( !empty( $keys ) && is_array( $keys ) ) {
+				foreach( $keys as $hash => $meta ) {
+					if ( isset( $meta['built'] ) && $meta['built'] == $minus24_date ) {
+						$key[$hash] = $meta;
 					}
 				}
+			}
 
-				foreach ( $urls as $url ) {
-					$parsed_url = parse_url( $url );
-					if ( !isset( $parsed_url['host'] ) || empty( $parsed_url['host'] ) ) {
-						continue;
-					}
-
-					$hash = md5( AUTH_KEY . $minus24_date . 'COOKIEMONSTER' . $url . $action );
-					$key[$hash] = array (
-						'domain'  => $url,
-						'hash'    => $hash,
-						'user_id' => $user->ID,
-						'action'  => $action,
-						'built'   => $minus24_date,
-					);
-
-					if ( $is_admin ) {
-						$dm_cookie_style_printed = true;
-						echo '<link rel="stylesheet" href="', $url, $hash, '?action=', $action, '&uid=', $user->ID, '&build=', $minus24_date, '" type="text/css" media="screen">';
-					}
-
-					$dm_csc_building_urls[] = rawurlencode( $url . $hash . '?action=' .  $action . '&uid=' . $user->ID . '&build=' . $minus24_date );
+			foreach ( $urls as $url ) {
+				$parsed_url = parse_url( $url );
+				if ( !isset( $parsed_url['host'] ) || empty( $parsed_url['host'] ) ) {
+					continue;
 				}
 
-				update_user_meta( $user->ID, 'cross_domain', $key );
+				$hash = md5( AUTH_KEY . $minus24_date . 'COOKIEMONSTER' . $url . $action );
+				$key[$hash] = array (
+					'domain'  => $url,
+					'hash'    => $hash,
+					'user_id' => $user_id,
+					'action'  => $action,
+					'built'   => $minus24_date,
+				);
+
+				$css_url = $url . $hash . '?action=' .  $action . '&uid=' . $user_id . '&build=' . $minus24_date;
+				if ( $is_admin ) {
+					$dm_cookie_style_printed = true;
+					echo '<link rel="stylesheet" href="', $css_url, '" type="text/css" media="screen">';
+				}
+
+				$dm_csc_building_urls[] = rawurlencode( $css_url );
 			}
+
+			update_user_meta( $user_id, 'cross_domain', $key );
 		}
 	}
 

@@ -1,10 +1,12 @@
 == 4.1 ==
 
+* Fixed incorrect work of SSO via stylesheets
 * Fixed home domain mapping in case when primary domain is selected
 * Fixed allowed redirect hosts filtering issue
 * Fixed theme preview compatibility issue
 * Implemented ability to register eNom accounts via admin dashboard
 * Improved eNom domain purchase form
+* Improved stylesheets SSO
 * Added instruction how to enabled multiple domains mapping
 
 == 4.0.4 ==
