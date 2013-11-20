@@ -298,7 +298,6 @@ class Domainmap_Plugin {
 	 */
 	public function get_countries() {
 		return array(
-			'US' => "United States",
 			'AF' => "Afghanistan",
 			'AL' => "Albania",
 			'DZ' => "Algeria",
@@ -379,7 +378,7 @@ class Domainmap_Plugin {
 			'GA' => "Gabon",
 			'GM' => "Gambia",
 			'GE' => "Georgia",
-			'DE" selected="' => "Germany",
+			'DE' => "Germany",
 			'GH' => "Ghana",
 			'GI' => "Gibraltar",
 			'GR' => "Greece",
@@ -522,6 +521,7 @@ class Domainmap_Plugin {
 			'UA' => "Ukraine",
 			'AE' => "United Arab Emirates",
 			'GB' => "United Kingdom",
+			'US' => "United States",
 			'UM' => "United States Minor Outlying Islands",
 			'UY' => "Uruguay",
 			'UZ' => "Uzbekistan",
@@ -534,7 +534,6 @@ class Domainmap_Plugin {
 			'WF' => "Wallis and Futuna Islands",
 			'EH' => "Western Sahara",
 			'YE' => "Yemen",
-			'YU' => "Yugoslavia",
 			'ZR' => "Zaire",
 			'ZM' => "Zambia",
 			'ZW' => "Zimbabwe",
