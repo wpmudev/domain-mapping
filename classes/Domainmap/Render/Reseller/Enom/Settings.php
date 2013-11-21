@@ -74,7 +74,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		<?php if ( $this->valid === false ) : ?>
 		<div class="domainmapping-info domainmapping-info-error">
-			<p><?php _e( 'Looks like your credentials are invalid. Please, check errors sent by eNom server:', 'domainmap' ) ?></p>
+			<p><?php _e( 'Looks like your credentials are invalid. Please, check the errors sent by eNom server:', 'domainmap' ) ?></p>
 			<?php if ( is_wp_error( $this->errors ) ) : ?>
 				<ul>
 					<li>
@@ -108,7 +108,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		<?php if ( $this->gateway == Domainmap_Reseller_Enom::GATEWAY_ENOM ) : ?>
 		<div class="domainmapping-info domainmapping-info-warning"><?php
-			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom. Additionally you have to configure HTTPS connection on your server to make such payments working.', 'domainmap' )
+			_e( 'You use eNom credit card processing service. Pay attention that this service is available only to resellers who have entered into a credit card processing agreement with eNom. Additionally you must configure SSL support on your server to enable these payments.', 'domainmap' )
 		?></div>
 		<?php endif; ?>
 
