@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-18 20:55+0300\n"
-"PO-Revision-Date: 2013-11-18 20:55+0300\n"
+"POT-Creation-Date: 2013-11-21 23:01+0300\n"
+"PO-Revision-Date: 2013-11-21 23:01+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -19,12 +19,12 @@ msgstr ""
 "X-Poedit-SearchPath-0: classes\n"
 
 #: classes/class.domainmap.php:234 classes/class.domainmap.php:271
-#: classes/class.domainmap.php:531
+#: classes/class.domainmap.php:558
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
 #: classes/class.domainmap.php:252 classes/class.domainmap.php:285
-#: classes/class.domainmap.php:538
+#: classes/class.domainmap.php:565
 msgid "Please wait..."
 msgstr "Please wait..."
 
@@ -35,7 +35,7 @@ msgid ""
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:539
+#: classes/class.domainmap.php:566
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -103,13 +103,11 @@ msgstr "Register new eNom account"
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:52
 msgid ""
-"You are about to register new eNom account. Please, fill in the form below "
-"and click on register button. Pay attention that all fields marked with red "
-"asterisk are required and has to be filled with appropriate information."
-msgstr ""
-"You are about to register new eNom account. Please, fill in the form below "
-"and click on register button. Pay attention that all fields marked with red "
-"asterisk are required and has to be filled with appropriate information."
+"You are about to register for a new eNom account. Please, fill in the form "
+"below and click on the register button. Pay attention that all fields marked "
+"with a red asterisk are required and must be filled with appropriate "
+"information."
+msgstr "Authenticating..."
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:64
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:70
@@ -427,11 +425,11 @@ msgstr "Account credentials:"
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:77
 msgid ""
-"Looks like your credentials are invalid. Please, check errors sent by eNom "
-"server:"
+"Looks like your credentials are invalid. Please, check the errors sent by "
+"eNom server:"
 msgstr ""
-"Looks like your credentials are invalid. Please, check errors sent by eNom "
-"server:"
+"Looks like your credentials are invalid. Please, check the errors sent by "
+"eNom server:"
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:89
 msgid "Account id:"
@@ -445,13 +443,13 @@ msgstr "Select payment gateway:"
 msgid ""
 "You use eNom credit card processing service. Pay attention that this service "
 "is available only to resellers who have entered into a credit card "
-"processing agreement with eNom. Additionally you have to configure HTTPS "
-"connection on your server to make such payments working."
+"processing agreement with eNom. Additionally you must configure SSL support "
+"on your server to enable these payments."
 msgstr ""
 "You use eNom credit card processing service. Pay attention that this service "
 "is available only to resellers who have entered into a credit card "
-"processing agreement with eNom. Additionally you have to configure HTTPS "
-"connection on your server to make such payments working."
+"processing agreement with eNom. Additionally you must configure SSL support "
+"on your server to enable these payments."
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:138
 msgid "Test environment"
