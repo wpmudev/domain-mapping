@@ -523,9 +523,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$url_components['host'] = $orig_components['host'];
-		if ( isset( $url_components['path'] ) ) {
-			$url_components['path'] = $current_site->path . $url_components['path'];
-		}
+
+		$orig_path = isset( $orig_components['path'] ) ? $orig_components['path'] : '';
+		$url_path = isset( $url_components['path'] ) ? $url_components['path'] : '';
+
+		$url_components['path'] = str_replace( '//', '/', $current_site->path . $orig_path . $url_path );
 
 		return self::_build_url( $url_components );
 	}

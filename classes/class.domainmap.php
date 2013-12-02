@@ -587,14 +587,10 @@ class domain_map {
 		if ( !isset( $orig_urls[$this->db->blogid] ) ) {
 			// get the original url
 			$orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
-			// switch the url to use the correct http or https
-			if ( is_ssl() ) {
-				$orig_url = str_replace( "http://", "https://", $orig_url );
-			} else {
-				$orig_url = str_replace( "https://", "http://", $orig_url );
-			}
-			// store the url in the cache
-			$orig_urls[$this->db->blogid] = $orig_url;
+			// switch the url to use the correct http or https and store the url in the cache
+			$orig_urls[$this->db->blogid] = is_ssl()
+				? str_replace( "http://", "https://", $orig_url )
+				: str_replace( "https://", "http://", $orig_url );
 		} else {
 			// we have a cached entry so just return that
 			$orig_url = $orig_urls[$this->db->blogid];
