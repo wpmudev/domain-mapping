@@ -185,7 +185,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_login_area() {
-		$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ) );
+		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
+			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ) );
+		}
 	}
 
 	/**
