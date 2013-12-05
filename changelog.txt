@@ -2,6 +2,7 @@
 
 * Fixed issue with password protected pages.
 * Fixed issue with wrongly replaced links a post/page content.
+* Fixed database query issue related to cookies building which appear on sign up page.
 
 == 4.1 ==
 

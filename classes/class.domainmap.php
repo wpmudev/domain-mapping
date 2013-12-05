@@ -377,6 +377,11 @@ class domain_map {
 			}
 		}
 
+		// do nothing if blog ids are empty
+		if ( empty( $blog_ids ) ) {
+			return;
+		}
+
 		// Mapped site
 		$domains = $this->db->get_results( sprintf(
 			"SELECT domain FROM %s WHERE blog_id IN (%s) ORDER BY id",
