@@ -37,6 +37,9 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
 // UnComment out the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 
+// WPMUDev Dashboard Notices
+require_once 'extra/wpmudev-dash-notification.php';
+
 // main domain mapping class
 require_once 'classes/class.domainmap.php';
 
@@ -51,7 +54,7 @@ require_once 'classes/class.domainmap.php';
  */
 function domainmap_autoloader( $class ) {
 	$basedir = dirname( __FILE__ );
-	$namespaces = array( 'Domainmap', 'WPMUDEV' );
+	$namespaces = array( 'Domainmap' );
 	foreach ( $namespaces as $namespace ) {
 		if ( substr( $class, 0, strlen( $namespace ) ) == $namespace ) {
 			$filename = $basedir . str_replace( '_', DIRECTORY_SEPARATOR, "_classes_{$class}.php" );

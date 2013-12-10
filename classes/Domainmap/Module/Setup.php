@@ -45,9 +45,6 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 		$this->_add_action( 'init', 'register_scripts' );
 		$this->_add_action( 'plugins_loaded', 'load_text_domain' );
 		$this->_add_filter( 'domainmapping_resellers', 'setup_resellers' );
-
-		// load the WPMUDEV dashboard notification library
-		$notices = new WPMUDEV_Dashboard_Notice();
 	}
 
 	/**
