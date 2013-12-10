@@ -1,16 +1,18 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Domain Mapping 4.0\n"
+"Project-Id-Version: Domain Mapping 4.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-21 23:01+0300\n"
-"PO-Revision-Date: 2013-11-21 23:01+0300\n"
-"Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
+"POT-Creation-Date: 2013-12-10 10:13+0300\n"
+"PO-Revision-Date: 2013-12-10 10:13+0300\n"
+"Last-Translator: Eugene Manuilov <eugene@incsub.com>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: esc_html__;esc_html_e;esc_attr__;__;_e;esc_attr_e;_n;"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c;_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
 "_n_noop;_nc;_nx;_nx_noop\n"
 "X-Poedit-Basepath: ./../\n"
 "X-Generator: Poedit 1.5.4\n"
@@ -19,12 +21,12 @@ msgstr ""
 "X-Poedit-SearchPath-0: classes\n"
 
 #: classes/class.domainmap.php:234 classes/class.domainmap.php:271
-#: classes/class.domainmap.php:558
+#: classes/class.domainmap.php:563
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
 #: classes/class.domainmap.php:252 classes/class.domainmap.php:285
-#: classes/class.domainmap.php:565
+#: classes/class.domainmap.php:570
 msgid "Please wait..."
 msgstr "Please wait..."
 
@@ -35,7 +37,7 @@ msgid ""
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:566
+#: classes/class.domainmap.php:571
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -66,7 +68,7 @@ msgstr "Get extended attributes"
 #: classes/Domainmap/Reseller.php:320
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:43
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:72
-#: classes/Domainmap/Module/Pages.php:88
+#: classes/Domainmap/Module/Pages.php:107
 msgid "Purchase domain"
 msgstr "Purchase domain"
 
@@ -91,8 +93,8 @@ msgid "Search"
 msgstr "Search"
 
 #: classes/Domainmap/Render/Network.php:60
-#: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:70
-#: classes/Domainmap/Module/Pages.php:143
+#: classes/Domainmap/Render/Site.php:42 classes/Domainmap/Module/Pages.php:88
+#: classes/Domainmap/Module/Pages.php:162
 msgid "Domain Mapping"
 msgstr "Domain Mapping"
 
@@ -681,7 +683,7 @@ msgid "Actions"
 msgstr "Actions"
 
 #: classes/Domainmap/Render/Site/Map.php:109
-#: classes/Domainmap/Module/Pages.php:86
+#: classes/Domainmap/Module/Pages.php:105
 msgid "Map domain"
 msgstr "Map domain"
 
@@ -992,76 +994,76 @@ msgstr ""
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:344
+#: classes/Domainmap/Module/Pages.php:364
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:345
+#: classes/Domainmap/Module/Pages.php:365
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:350
+#: classes/Domainmap/Module/Pages.php:370
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:380
+#: classes/Domainmap/Module/Pages.php:400
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
 
-#: classes/Domainmap/Module/Setup.php:86
+#: classes/Domainmap/Module/Setup.php:83
 msgid "OK"
 msgstr "OK"
 
-#: classes/Domainmap/Module/Setup.php:89
+#: classes/Domainmap/Module/Setup.php:86
 msgid "You are about to unmap selected domain. Do you really want to proceed?"
 msgstr "You are about to unmap selected domain. Do you really want to proceed?"
 
-#: classes/Domainmap/Module/Setup.php:90
+#: classes/Domainmap/Module/Setup.php:87
 msgid "Please, enter not empty domain name."
 msgstr "Please, enter not empty domain name."
 
-#: classes/Domainmap/Module/Setup.php:91
+#: classes/Domainmap/Module/Setup.php:88
 msgid ""
 "You are about to deselect your primary domain. Do you really want to proceed?"
 msgstr ""
 "You are about to deselect your primary domain. Do you really want to proceed?"
 
-#: classes/Domainmap/Module/Setup.php:92
+#: classes/Domainmap/Module/Setup.php:89
 msgid ""
 "You are about to change your primary domain. Do you really want to proceed?"
 msgstr ""
 "You are about to change your primary domain. Do you really want to proceed?"
+
+#: classes/Domainmap/Module/Setup.php:90
+msgid ""
+"You are about to select invalid domain as primary. It could cause unexpected "
+"issues at your front end. Do you really want to proceed?"
+msgstr ""
+"You are about to select invalid domain as primary. It could cause unexpected "
+"issues at your front end. Do you really want to proceed?"
 
 #: classes/Domainmap/Module/Setup.php:93
-msgid ""
-"You are about to select invalid domain as primary. It could cause unexpected "
-"issues at your front end. Do you really want to proceed?"
-msgstr ""
-"You are about to select invalid domain as primary. It could cause unexpected "
-"issues at your front end. Do you really want to proceed?"
-
-#: classes/Domainmap/Module/Setup.php:96
 msgid "Credit card number is invalid."
 msgstr "Credit card number is invalid."
 
-#: classes/Domainmap/Module/Setup.php:97
+#: classes/Domainmap/Module/Setup.php:94
 msgid "Credit card type is invalid."
 msgstr "Credit card type is invalid."
 
-#: classes/Domainmap/Module/Setup.php:98
+#: classes/Domainmap/Module/Setup.php:95
 msgid "Credit card expiry date is invalid."
 msgstr "Credit card expiry date is invalid."
 
-#: classes/Domainmap/Module/Setup.php:99
+#: classes/Domainmap/Module/Setup.php:96
 msgid "Credit card CVV2 code is invalid."
 msgstr "Credit card CVV2 code is invalid."
 
-#: classes/Domainmap/Module/Setup.php:103
+#: classes/Domainmap/Module/Setup.php:100
 msgid "Domain name has been purchased successfully."
 msgstr "Domain name has been purchased successfully."
 
-#: classes/Domainmap/Module/Setup.php:104
+#: classes/Domainmap/Module/Setup.php:101
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
 
@@ -1157,28 +1159,26 @@ msgstr "Show all actions"
 msgid "Filter"
 msgstr "Filter"
 
-#: classes/WPMUDEV/Dashboard/Notice.php:74
-#, php-format
-msgid ""
-"Easily get updates, support, and one-click WPMU DEV plugin/theme "
-"installations right from in your dashboard - <strong><a href=\"%s\" title="
-"\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
-"strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/wpmu-"
-"dev/update-notifications-plugin-information/\">(find out more)</a></small>"
-msgstr ""
-"Easily get updates, support, and one-click WPMU DEV plugin/theme "
-"installations right from in your dashboard - <strong><a href=\"%s\" title="
-"\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
-"strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/wpmu-"
-"dev/update-notifications-plugin-information/\">(find out more)</a></small>"
+#~ msgid ""
+#~ "Easily get updates, support, and one-click WPMU DEV plugin/theme "
+#~ "installations right from in your dashboard - <strong><a href=\"%s\" title="
+#~ "\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
+#~ "strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/"
+#~ "wpmu-dev/update-notifications-plugin-information/\">(find out more)</a></"
+#~ "small>"
+#~ msgstr ""
+#~ "Easily get updates, support, and one-click WPMU DEV plugin/theme "
+#~ "installations right from in your dashboard - <strong><a href=\"%s\" title="
+#~ "\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
+#~ "strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/"
+#~ "wpmu-dev/update-notifications-plugin-information/\">(find out more)</a></"
+#~ "small>"
 
-#: classes/WPMUDEV/Dashboard/Notice.php:78
-#, php-format
-msgid ""
-"Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
-"\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
-"strong>."
-msgstr ""
-"Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" title="
-"\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin now</a></"
-"strong>."
+#~ msgid ""
+#~ "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" "
+#~ "title=\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin "
+#~ "now</a></strong>."
+#~ msgstr ""
+#~ "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" "
+#~ "title=\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin "
+#~ "now</a></strong>."
