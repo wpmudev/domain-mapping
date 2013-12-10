@@ -29,7 +29,7 @@
 class Domainmap_Plugin {
 
 	const NAME    = 'domainmap';
-	const VERSION = '4.1.0';
+	const VERSION = '4.1.1';
 	const SUNRISE = '1.0.1';
 
 	const ACTION_CHECK_DOMAIN_AVAILABILITY  = 'domainmapping_check_domain';
