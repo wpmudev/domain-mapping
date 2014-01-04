@@ -1,3 +1,7 @@
+== 4.1.2 ==
+
+* Fixed domain health status check process
+
 == 4.1.1 ==
 
 * Fixed issue with password protected pages.

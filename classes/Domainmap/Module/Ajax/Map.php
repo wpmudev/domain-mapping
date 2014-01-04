@@ -47,7 +47,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'map_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_UNMAP_DOMAIN, 'unmap_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEALTH_CHECK, 'check_health_status', true, true );
-		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', false, true );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', true, true );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN, 'select_primary_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN, 'deselect_primary_domain' );
 
@@ -269,7 +269,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			'check'  => $check,
 		), $ajax_url ), array( 'sslverify' => false ) );
 
-		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check ? 1 : 0;
+		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && trim( wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 	}
 
 	/**
