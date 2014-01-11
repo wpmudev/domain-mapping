@@ -1,6 +1,7 @@
 == 4.1.2 ==
 
 * Fixed domain health status check process
+* Fixed front end SSL mapping issue
 
 == 4.1.1 ==
 

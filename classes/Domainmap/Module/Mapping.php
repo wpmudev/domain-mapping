@@ -274,8 +274,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$is_ssl = is_ssl();
 		$protocol = $is_ssl ? 'https://' : 'http://';
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
-
-		$protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN ) && $is_ssl ? 'https://' : 'http://';
 		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
 
 		if ( $mapped_url != $current_url ) {
