@@ -95,7 +95,7 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 
 		<p>
 			<label for="account_login" class="domainmapping-label"><?php _e( 'Login:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="account_login" name="account_login" autofocus required maxlength="20" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_login' ) ) ?>">
+			<input type="text" id="account_login" name="account_login" autofocus required x-autocompletetype="nickname" maxlength="20" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_login' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Permitted values are 6 to 20 characters in length; permitted characters include letters, numbers, hyphen, and underscore.', 'domainmap' ) ?></span>
 		</p>
 
@@ -148,25 +148,25 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 
 		<p>
 			<label for="registrant_first_name" class="domainmapping-label"><?php _e( 'First Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_first_name" required name="registrant_first_name" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_first_name' ) ) ?>">
+			<input type="text" id="registrant_first_name" required name="registrant_first_name" maxlength="60" x-autocompletetype="given-name" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_first_name' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant first name. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
 			<label for="registrant_last_name" class="domainmapping-label"><?php _e( 'Last Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_last_name" required name="registrant_last_name" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_last_name' ) ) ?>">
+			<input type="text" id="registrant_last_name" required name="registrant_last_name" maxlength="60" x-autocompletetype="family-name" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_last_name' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant last name. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
 			<label for="registrant_organization" class="domainmapping-label"><?php _e( 'Organization Name:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="registrant_organization" required name="registrant_organization" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_organization' ) ) ?>">
+			<input type="text" id="registrant_organization" name="registrant_organization" maxlength="60" x-autocompletetype="org" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_organization' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant organization name. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
 		<p>
 			<label for="registrant_job_title" class="domainmapping-label"><?php _e( 'Job Title:', 'domainmap' ) ?></label>
-			<input type="text" id="registrant_job_title" name="registrant_job_title" maxlength="60" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_job_title' ) ) ?>">
+			<input type="text" id="registrant_job_title" required name="registrant_job_title" maxlength="60" x-autocompletetype="organization-title" value="<?php echo esc_attr( filter_input( INPUT_POST, 'registrant_job_title' ) ) ?>">
 			<span class="domainmapping-descr"><?php esc_html_e( 'Enter registrant job title, this field is optional. The maximum length is 60 characters.', 'domainmap' ) ?></span>
 		</p>
 
@@ -202,7 +202,7 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 
 		<p>
 			<label for="registrant_country" class="domainmapping-label"><?php _e( 'Country:', 'domainmap' ) ?></label>
-			<select id="registrant_country" name="registrant_country">
+			<select id="registrant_country" name="registrant_country" x-autocompletetype="country-name">
 				<option></option>
 				<?php foreach ( $this->countries as $code => $country ) : ?>
 				<option value="<?php echo esc_attr( $code ) ?>"<?php selected( $code, $registrant_country ) ?>><?php echo esc_html( $country ) ?></option>

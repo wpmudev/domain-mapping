@@ -2,6 +2,7 @@
 
 * Fixed domain health status check process
 * Fixed front end SSL mapping issue
+* Fixed x-autocomplete fields for eNom forms
 
 == 4.1.1 ==
 
