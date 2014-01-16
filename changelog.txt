@@ -3,6 +3,7 @@
 * Fixed domain health status check process
 * Fixed front end SSL mapping issue
 * Fixed x-autocomplete fields for eNom forms
+* Implemeted ability to overrider standard domain mapping instructions
 
 == 4.1.1 ==
 

@@ -51,6 +51,11 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access private
 	 */
 	private function _render_instructions() {
+		if ( trim( $this->map_instructions ) != '' ) {
+			?><p class="domainmapping-info"><?php echo $this->map_instructions ?></p><?php
+			return;
+		}
+
 		$descriptions = array();
 		$descriptions[] = __( 'If your domain name includes a sub-domain such as "blog" then you can add a CNAME for that hostname in your DNS pointing at this blog URL.', 'domainmap' );
 
@@ -63,9 +68,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			}
 		}
 
-		foreach ( $descriptions as $description ) :
-			?><p class="domainmapping-info"><?php echo $description ?></p><?php
-		endforeach;
+		?><p class="domainmapping-info"><?php echo implode( '<br>', $descriptions ) ?></p><?php
 	}
 
 	/**

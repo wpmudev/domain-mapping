@@ -202,6 +202,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
 			$options['map_crossautologin'] = filter_input( INPUT_POST, 'map_crossautologin', FILTER_VALIDATE_BOOLEAN );
 			$options['map_verifydomain'] = filter_input( INPUT_POST, 'map_verifydomain', FILTER_VALIDATE_BOOLEAN );
+			$options['map_instructions'] = wp_kses( filter_input( INPUT_POST, 'map_instructions' ), current_filter() );
 
 			// update options
 			update_site_option( 'domain_mapping', $options );

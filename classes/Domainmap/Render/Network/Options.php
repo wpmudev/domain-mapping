@@ -169,9 +169,9 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			}
 		}
 
-		?><h4 class="domainmapping-block-header"><?php _e( 'Domain mapping Configuration', 'domainmap' ) ?></h4>
+		?><h4 class="domainmapping-block-header"><?php _e( 'Domain mapping configuration', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this blog to get the IP address.", 'domainmap' ) ?><br>
+			<?php _e( "Enter the IP address users need to point their DNS A records at. If you don't know what it is, ping this site to get the IP address.", 'domainmap' ) ?>
 			<?php _e( "If you have more than one IP address, separate them with a comma. This message is displayed on the Domain mapping page for your users.", 'domainmap' ) ?>
 		</p>
 
@@ -191,7 +191,11 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			<div>
 				<input type="text" name="map_ipaddress" class="regular-text" value="<?php echo esc_attr( $this->map_ipaddress ) ?>">
 			</div>
-		</div><?php
+		</div>
+
+		<p><?php _e( 'In case if you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show default ones.' ) ?></p>
+
+		<textarea name="map_instructions" class="widefat" cols="150" rows="5"><?php echo esc_textarea( $this->map_instructions ) ?></textarea><?php
 	}
 
 	/**
