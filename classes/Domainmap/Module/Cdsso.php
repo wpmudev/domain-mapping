@@ -30,9 +30,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	const NAME = __CLASS__;
 
-	const ACTION_SETUP_CDSSO    = 'setup-cdsso';
-	const ACTION_AUTHORIZE_USER = 'authorize-user';
-	const ACTION_PROPAGATE_USER = 'propagate-user';
+	const ACTION_KEY = '__domainmap_action';
+
+	const ACTION_SETUP_CDSSO    = 'domainmap-setup-cdsso';
+	const ACTION_AUTHORIZE_USER = 'domainmap-authorize-user';
+	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
+	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 
 	/**
 	 * Determines whether we need to propagate user to the original blog or not.
@@ -43,6 +46,16 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @var boolean
 	 */
 	private $_do_propagation = false;
+
+	/**
+	 * Determines whether we do logout process or not.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @access private
+	 * @var boolean
+	 */
+	private $_do_logout = false;
 
 	/**
 	 * Constructor.
@@ -56,14 +69,94 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		parent::__construct( $plugin );
 
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
+		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 
 		$this->_add_action( 'wp_head', 'add_auth_script', 0 );
+		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
+		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
+		$this->_add_action( 'wp_logout', 'set_logout_var' );
 		$this->_add_action( 'plugins_loaded', 'authorize_user' );
 
 		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
+		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+	}
+
+	/**
+	 * Sets logout var to determine logout process.
+	 *
+	 * @since 4.1.2
+	 * @access wp_logout
+	 *
+	 * @access public
+	 */
+	public function set_logout_var() {
+		$this->_do_logout = true;
+	}
+
+	/**
+	 * Adds logout marker if need be.
+	 *
+	 * @since 4.1.2
+	 * @filter wp_redirect
+	 *
+	 * @access public
+	 * @param string $redirect_to The initial redirect URL.
+	 * @return string Updated redirect URL.
+	 */
+	public function add_logout_marker( $redirect_to ) {
+		if ( $this->_do_logout ) {
+			$redirect_to = add_query_arg( self::ACTION_KEY, self::ACTION_LOGOUT_USER, $redirect_to );
+		}
+
+		return $redirect_to;
+	}
+
+	/**
+	 * Adds logout propagation script if need be.
+	 *
+	 * @since 4.1.2
+	 * @action wp_head 0
+	 * @action login_head 0
+	 *
+	 * @access public
+	 */
+	public function add_logout_propagation_script() {
+		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, self::ACTION_KEY ) != self::ACTION_LOGOUT_USER ) {
+			return;
+		}
+
+		switch_to_blog( 1 );
+		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, admin_url( 'admin-ajax.php' ) );
+		echo '<script type="text/javascript" src="', $url, '"></script>';
+		restore_current_blog();
+	}
+
+	/**
+	 * Do logout from the main blog.
+	 *
+	 * @since 4.1.2
+	 * @action wp_ajax_domainmap-logout-user
+	 * @action wp_ajax_no_priv_domainmap-logout-user
+	 *
+	 * @access public
+	 */
+	public function logout_user() {
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
+
+		if ( !is_user_logged_in() || empty( $_SERVER['HTTP_REFERER'] ) ) {
+			header( "Vary: Accept-Encoding" ); // Handle proxies
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + MINUTE_IN_SECONDS ) . " GMT" );
+			exit;
+		}
+
+		wp_clear_auth_cookie();
+		$url = add_query_arg( self::ACTION_KEY, false, $_SERVER['HTTP_REFERER'] );
+
+		echo 'window.location = "', $url, '";';
+		exit;
 	}
 
 	/**
@@ -96,14 +189,13 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @filter login_message
 	 *
 	 * @access public
+	 * @param string $message The original message.
 	 * @return string The new extended login message.
 	 */
-	public function get_login_message() {
-		if ( !$this->_do_propagation ) {
-			return;
-		}
-
-		return '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>';
+	public function get_login_message( $message ) {
+		return $this->_do_propagation
+			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
+			: $message;
 	}
 
 	/**
@@ -159,7 +251,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_auth_script() {
-		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, 'action' ) == self::ACTION_AUTHORIZE_USER ) {
+		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
 
@@ -173,8 +265,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * Setups CDSSO for logged in user.
 	 *
 	 * @since 4.1.2
-	 * @action wp_ajax_setup-cdsso
-	 * @action wp_ajax_nopriv_setup-cdsso
+	 * @action wp_ajax_domainmap-setup-cdsso
+	 * @action wp_ajax_nopriv_domainmap-setup-cdsso
 	 *
 	 * @access public
 	 */
@@ -188,8 +280,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$url = add_query_arg( array(
-			'action' => self::ACTION_AUTHORIZE_USER,
-			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
+			self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
+			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
 		), $_SERVER['HTTP_REFERER'] );
 
 		echo 'window.location = "', $url, '";';
@@ -205,11 +297,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function authorize_user() {
-		if ( filter_input( INPUT_GET, 'action' ) == self::ACTION_AUTHORIZE_USER ) {
+		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 			if ( $user_id ) {
 				wp_set_auth_cookie( $user_id );
-				wp_redirect( add_query_arg( array( 'action' => false, 'auth' => false ) ) );
+				wp_redirect( add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) ) );
 				exit;
 			} else {
 				wp_die( __( "Incorrect or out of date login key", 'domainmap' ) );
@@ -221,8 +313,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * Propagates user to the network root block.
 	 *
 	 * @since 4.1.2
-	 * @action wp_ajax_propagate-user
-	 * @action wp_ajax_nopriv_propagate-user
+	 * @action wp_ajax_domainmap-propagate-user
+	 * @action wp_ajax_nopriv_domainmap-propagate-user
 	 *
 	 * @access public
 	 */
