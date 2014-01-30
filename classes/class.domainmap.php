@@ -304,6 +304,9 @@ class domain_map {
 	}
 
 	function build_cookie( $action = 'login', $user = false, $redirect_to = false ) {
+		// this method is disabled!
+		return;
+
 		global $dm_cookie_style_printed, $dm_csc_building_urls;
 
 		// don't build cookie for visitors
@@ -312,9 +315,7 @@ class domain_map {
 		}
 
 		// return if cross domain autologin is disabled
-		$use_cdsso = defined( 'DOMAINMAPPING_USE_CDSSO' );
-		$crossautologin = isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0;
-		if ( $use_cdsso || $crossautologin ) {
+		if ( isset( $this->options['map_crossautologin'] ) && $this->options['map_crossautologin'] == 0 ) {
 			return;
 		}
 

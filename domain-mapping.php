@@ -110,8 +110,7 @@ function domainmap_launch() {
 	$plugin->set_module( Domainmap_Module_Mapping::NAME );
 
 	// CDSSO module
-	$sunrise = defined( 'SUNRISE' ) && filter_var( SUNRISE, FILTER_VALIDATE_BOOLEAN );
-	if ( $sunrise && defined( 'DOMAINMAPPING_USE_CDSSO' ) && $plugin->get_option( 'map_crossautologin' ) ) {
+	if ( defined( 'SUNRISE' ) && filter_var( SUNRISE, FILTER_VALIDATE_BOOLEAN ) && $plugin->get_option( 'map_crossautologin' ) ) {
 		$plugin->set_module( Domainmap_Module_Cdsso::NAME );
 	}
 
