@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-10 10:13+0300\n"
-"PO-Revision-Date: 2013-12-10 10:13+0300\n"
-"Last-Translator: Eugene Manuilov <eugene@incsub.com>\n"
+"POT-Creation-Date: 2014-01-30 14:16+0300\n"
+"PO-Revision-Date: 2014-01-30 14:16+0300\n"
+"Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
@@ -21,12 +21,12 @@ msgstr ""
 "X-Poedit-SearchPath-0: classes\n"
 
 #: classes/class.domainmap.php:234 classes/class.domainmap.php:271
-#: classes/class.domainmap.php:563
+#: classes/class.domainmap.php:564
 msgid "Authenticating..."
 msgstr "Authenticating..."
 
 #: classes/class.domainmap.php:252 classes/class.domainmap.php:285
-#: classes/class.domainmap.php:570
+#: classes/class.domainmap.php:571
 msgid "Please wait..."
 msgstr "Please wait..."
 
@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
 
-#: classes/class.domainmap.php:571
+#: classes/class.domainmap.php:572
 #, php-format
 msgid ""
 "If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
@@ -642,23 +642,23 @@ msgstr ""
 msgid "Additional Registrar Information"
 msgstr "Additional Registrar Information"
 
-#: classes/Domainmap/Render/Site/Map.php:55
-msgid ""
-"If your domain name includes a sub-domain such as \"blog\" then you can add "
-"a CNAME for that hostname in your DNS pointing at this blog URL."
-msgstr ""
-"If your domain name includes a sub-domain such as \"blog\" then you can add "
-"a CNAME for that hostname in your DNS pointing at this blog URL."
-
 #: classes/Domainmap/Render/Site/Map.php:60
 msgid ""
+"If your domain name includes a sub-domain such as \"blog\" then you can add "
+"a CNAME for that hostname in your DNS pointing at this blog URL."
+msgstr ""
+"If your domain name includes a sub-domain such as \"blog\" then you can add "
+"a CNAME for that hostname in your DNS pointing at this blog URL."
+
+#: classes/Domainmap/Render/Site/Map.php:65
+msgid ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
 msgstr ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:62
+#: classes/Domainmap/Render/Site/Map.php:67
 msgid ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
@@ -666,52 +666,52 @@ msgstr ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
 
-#: classes/Domainmap/Render/Site/Map.php:86
+#: classes/Domainmap/Render/Site/Map.php:89
 msgid "Domain(s) mapped to"
 msgstr "Domain(s) mapped to"
 
-#: classes/Domainmap/Render/Site/Map.php:93
+#: classes/Domainmap/Render/Site/Map.php:96
 msgid "Mapped domain"
 msgstr "Mapped domain"
 
-#: classes/Domainmap/Render/Site/Map.php:94
+#: classes/Domainmap/Render/Site/Map.php:97
 msgid "Health status"
 msgstr "Health status"
 
-#: classes/Domainmap/Render/Site/Map.php:95
+#: classes/Domainmap/Render/Site/Map.php:98
 msgid "Actions"
 msgstr "Actions"
 
-#: classes/Domainmap/Render/Site/Map.php:109
+#: classes/Domainmap/Render/Site/Map.php:112
 #: classes/Domainmap/Module/Pages.php:105
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:161
+#: classes/Domainmap/Render/Site/Map.php:164
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:165
+#: classes/Domainmap/Render/Site/Map.php:168
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:167
+#: classes/Domainmap/Render/Site/Map.php:170
 msgid "Select as primary domain"
 msgstr "Select as primary domain"
 
-#: classes/Domainmap/Render/Site/Map.php:189
+#: classes/Domainmap/Render/Site/Map.php:192
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:194
+#: classes/Domainmap/Render/Site/Map.php:197
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:197
+#: classes/Domainmap/Render/Site/Map.php:200
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:201
+#: classes/Domainmap/Render/Site/Map.php:204
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -846,16 +846,16 @@ msgstr ""
 "in the %s file."
 
 #: classes/Domainmap/Render/Network/Options.php:172
-msgid "Domain mapping Configuration"
-msgstr "Domain mapping Configuration"
+msgid "Domain mapping configuration"
+msgstr "Domain mapping configuration"
 
 #: classes/Domainmap/Render/Network/Options.php:174
 msgid ""
 "Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
+"don't know what it is, ping this site to get the IP address."
 msgstr ""
 "Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this blog to get the IP address."
+"don't know what it is, ping this site to get the IP address."
 
 #: classes/Domainmap/Render/Network/Options.php:175
 msgid ""
@@ -879,11 +879,21 @@ msgstr ""
 msgid "Server IP Address: "
 msgstr "Server IP Address: "
 
-#: classes/Domainmap/Render/Network/Options.php:205
+#: classes/Domainmap/Render/Network/Options.php:196
+msgid ""
+"In case if you want to display your own instructions on the Domain Mapping "
+"page, then use the text area below to enter your instructions or leave it "
+"blank to show default ones."
+msgstr ""
+"In case if you want to display your own instructions on the Domain Mapping "
+"page, then use the text area below to enter your instructions or leave it "
+"blank to show default ones."
+
+#: classes/Domainmap/Render/Network/Options.php:209
 msgid "Administration mapping"
 msgstr "Administration mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:207
+#: classes/Domainmap/Render/Network/Options.php:211
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
@@ -893,11 +903,11 @@ msgstr ""
 "through the domain they enter, you can also restrict it to the Mapped domain "
 "or the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:230
+#: classes/Domainmap/Render/Network/Options.php:234
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:232
+#: classes/Domainmap/Render/Network/Options.php:236
 msgid ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
@@ -907,21 +917,21 @@ msgstr ""
 "through the domain they enter, or restrict it to either the Mapped domain or "
 "the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:257
-#: classes/Domainmap/Render/Network/Options.php:288
+#: classes/Domainmap/Render/Network/Options.php:261
+#: classes/Domainmap/Render/Network/Options.php:292
 msgid "Yes"
 msgstr "Yes"
 
-#: classes/Domainmap/Render/Network/Options.php:258
-#: classes/Domainmap/Render/Network/Options.php:289
+#: classes/Domainmap/Render/Network/Options.php:262
+#: classes/Domainmap/Render/Network/Options.php:293
 msgid "No"
 msgstr "No"
 
-#: classes/Domainmap/Render/Network/Options.php:261
+#: classes/Domainmap/Render/Network/Options.php:265
 msgid "Cross-domain autologin"
 msgstr "Cross-domain autologin"
 
-#: classes/Domainmap/Render/Network/Options.php:263
+#: classes/Domainmap/Render/Network/Options.php:267
 msgid ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
@@ -929,11 +939,11 @@ msgstr ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
 
-#: classes/Domainmap/Render/Network/Options.php:292
+#: classes/Domainmap/Render/Network/Options.php:296
 msgid "Verify domain's DNS settings"
 msgstr "Verify domain's DNS settings"
 
-#: classes/Domainmap/Render/Network/Options.php:294
+#: classes/Domainmap/Render/Network/Options.php:298
 msgid ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
@@ -941,11 +951,11 @@ msgstr ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 
-#: classes/Domainmap/Render/Network/Options.php:321
+#: classes/Domainmap/Render/Network/Options.php:325
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:322
+#: classes/Domainmap/Render/Network/Options.php:326
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
@@ -994,19 +1004,19 @@ msgstr ""
 msgid "Mapped Domain"
 msgstr "Mapped Domain"
 
-#: classes/Domainmap/Module/Pages.php:364
+#: classes/Domainmap/Module/Pages.php:365
 msgid "Mapping options"
 msgstr "Mapping options"
 
-#: classes/Domainmap/Module/Pages.php:365
+#: classes/Domainmap/Module/Pages.php:366
 msgid "Reseller options"
 msgstr "Reseller options"
 
-#: classes/Domainmap/Module/Pages.php:370
+#: classes/Domainmap/Module/Pages.php:371
 msgid "Reseller API log"
 msgstr "Reseller API log"
 
-#: classes/Domainmap/Module/Pages.php:400
+#: classes/Domainmap/Module/Pages.php:401
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr "Delete"
@@ -1066,6 +1076,18 @@ msgstr "Domain name has been purchased successfully."
 #: classes/Domainmap/Module/Setup.php:101
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
+
+#: classes/Domainmap/Module/Cdsso.php:106
+msgid ""
+"You have logged in successfully. You will be redirected to desired page "
+"during next 5 seconds."
+msgstr ""
+"You have logged in successfully. You will be redirected to desired page "
+"during next 5 seconds."
+
+#: classes/Domainmap/Module/Cdsso.php:215
+msgid "Incorrect or out of date login key"
+msgstr "Incorrect or out of date login key"
 
 #: classes/Domainmap/Module/Ajax/Map.php:201
 msgid "Domain name is unavailable to access."
