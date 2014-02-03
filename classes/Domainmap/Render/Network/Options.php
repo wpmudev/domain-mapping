@@ -103,18 +103,19 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			echo '</div>';
 		}
 
-		if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
-			$str = "<p><strong>" . __( "If you are having problems with domain mapping you should try removing the following lines from your wp-config.php file:.", 'domainmap' ) . "</strong></p>";
-			$str .= "<ul>";
-			$str .= "<li>" . "define( 'DOMAIN_CURRENT_SITE', '" . DOMAIN_CURRENT_SITE . "' );" . "</li>";
-			$str .= "<li>" . "define( 'PATH_CURRENT_SITE', '" . PATH_CURRENT_SITE . "' );" . "</li>";
-			$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
-			$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
-			$str .= "</ul>";
-			$str .= "<p><strong>" . __( "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place.", 'domainmap' ) . "</strong></p>";
-
-			echo '<div class="domainmapping-info">', $str, '</div>';
-		}
+		// soft deleted
+//		if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
+//			$str = "<p><strong>" . __( "If you are having problems with domain mapping you should try removing the following lines from your wp-config.php file:.", 'domainmap' ) . "</strong></p>";
+//			$str .= "<ul>";
+//			$str .= "<li>" . "define( 'DOMAIN_CURRENT_SITE', '" . DOMAIN_CURRENT_SITE . "' );" . "</li>";
+//			$str .= "<li>" . "define( 'PATH_CURRENT_SITE', '" . PATH_CURRENT_SITE . "' );" . "</li>";
+//			$str .= "<li>" . "define( 'SITE_ID_CURRENT_SITE', 1 );" . "</li>";
+//			$str .= "<li>" . "define( 'BLOG_ID_CURRENT_SITE', 1 );" . "</li>";
+//			$str .= "</ul>";
+//			$str .= "<p><strong>" . __( "Note: If your domain mapping plugin is WORKING correctly, then please LEAVE these lines in place.", 'domainmap' ) . "</strong></p>";
+//
+//			echo '<div class="domainmapping-info">', $str, '</div>';
+//		}
 
 		if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
 			echo '<div class="domainmapping-info">';
