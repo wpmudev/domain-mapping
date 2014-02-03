@@ -74,6 +74,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
 
 		$this->_add_action( 'wp_head', 'add_auth_script', 0 );
+		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
@@ -83,6 +84,18 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+	}
+
+	/**
+	 * Adds hook for login_head action if user tries to login.
+	 *
+	 * @since 4.1.2
+	 * @action login_form_login
+	 *
+	 * @access public
+	 */
+	public function set_auth_script_for_login() {
+		$this->_add_action( 'login_head', 'add_auth_script', 0 );
 	}
 
 	/**
@@ -197,8 +210,13 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
 		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
-			$interim_login = true;
-			$this->_do_propagation = true;
+			$home = home_url( '/' );
+			$current_domain = parse_url( $home, PHP_URL_HOST );
+			$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
+
+			if ( $current_domain != $original_domain ) {
+				$interim_login = $this->_do_propagation = true;
+			}
 		}
 
 		return $redirect_to;
@@ -269,6 +287,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 * @since 4.1.2
 	 * @action wp_head 0
+	 * @action login_head 0
 	 *
 	 * @access public
 	 */
@@ -323,7 +342,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 			if ( $user_id ) {
 				wp_set_auth_cookie( $user_id );
-				wp_redirect( add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) ) );
+
+				$redirect_to = in_array( $GLOBALS['pagenow'], array( 'wp-login.php' ) ) && filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL )
+					? $_GET['redirect_to']
+					: add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) );
+
+				wp_redirect( $redirect_to );
 				exit;
 			} else {
 				wp_die( __( "Incorrect or out of date login key", 'domainmap' ) );
