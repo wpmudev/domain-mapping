@@ -68,9 +68,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
+		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
+		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
 
 		$this->_add_action( 'wp_head', 'add_auth_script', 0 );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
@@ -82,6 +83,27 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+	}
+
+	/**
+	 * Equalizes redirect_to domain name with login URL domain.
+	 *
+	 * @since 4.1.2
+	 * @filter login_url 10 2
+	 *
+	 * @param string $login_url The login URL.
+	 * @param string $redirect_to The redirect URL.
+	 * @return string Updated login URL.
+	 */
+	public function update_login_url( $login_url, $redirect_to ) {
+		$login_domain = parse_url( $login_url, PHP_URL_HOST );
+		$redirect_domain = parse_url( $redirect_to, PHP_URL_HOST );
+		if ( $login_domain != $redirect_domain ) {
+			$redirect_to = str_replace( "://{$redirect_domain}", "://{$login_domain}", $redirect_to );
+			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_url );
+		}
+
+		return $login_url;
 	}
 
 	/**
