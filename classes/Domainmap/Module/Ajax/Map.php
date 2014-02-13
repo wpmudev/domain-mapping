@@ -269,7 +269,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			'check'  => $check,
 		), $ajax_url ), array( 'sslverify' => false ) );
 
-		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && trim( wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
+		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 	}
 
 	/**
