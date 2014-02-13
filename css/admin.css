@@ -698,3 +698,14 @@ input.domainmapping-radio {
 .domainmapping-form-buttons {
     margin-top: 50px;
 }
+
+#domainmapping-front-mapping {
+	float: right;
+}
+
+#domainmapping-front-mapping > span {
+	float: left;
+	display: block;
+	padding-top: 4px;
+	margin-right: 5px;
+}

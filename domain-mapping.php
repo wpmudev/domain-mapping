@@ -69,15 +69,14 @@ function domainmap_autoloader( $class ) {
 }
 
 /**
- * Instantiates the plugin and setup all modules.
+ * Setups domain mapping constants.
  *
- * @since 4.0.0
+ * @since 4.1.2
  *
  * @global wpdb $wpdb The instance of database connection.
- * @global domain_map $dm_map The instance of domain_map class.
  */
-function domainmap_launch() {
-	global $wpdb, $dm_map;
+function domainmap_setup_constants() {
+	global $wpdb;
 
 	// setup environment
 	define( 'DOMAINMAP_BASEFILE', __FILE__ );
@@ -88,6 +87,11 @@ function domainmap_launch() {
 		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
 	}
 
+	if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
+		define( 'DOMAINMAPPING_ALLOWMULTI', false );
+	}
+
+	// setup db tables
 	$prefix = isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix;
 	define( 'DOMAINMAP_TABLE_MAP',          "{$prefix}domain_mapping" );
 	define( 'DOMAINMAP_TABLE_RESELLER_LOG', "{$prefix}domain_mapping_reseller_log" );
@@ -97,6 +101,19 @@ function domainmap_launch() {
 		add_global_table( 'domain_mapping' );
 		add_global_table( 'domain_mapping_reseller_log' );
 	}
+}
+
+/**
+ * Instantiates the plugin and setup all modules.
+ *
+ * @since 4.0.0
+ *
+ * @global domain_map $dm_map The instance of domain_map class.
+ */
+function domainmap_launch() {
+	global $dm_map;
+
+	domainmap_setup_constants();
 
 	// set up the plugin core class
 	$dm_map = new domain_map();

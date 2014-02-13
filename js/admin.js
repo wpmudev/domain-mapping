@@ -56,6 +56,11 @@
 	$(document).ready(function() {
 		var $domains = $('.domainmapping-domains');
 
+		$('#domainmapping-front-mapping select').change(function() {
+			var form = $(this).parents('form');
+			$.post(form.attr('action'), form.serialize());
+		});
+
 		$('#domainmapping-form-map-domain').submit(function() {
 			var self = this,
 				$self = $(self),

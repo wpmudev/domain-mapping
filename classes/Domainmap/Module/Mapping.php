@@ -199,14 +199,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
-		$redirect_to = 'mapped';
+		$redirect_to = get_option( 'domainmap_frontend_mapping', 'mapped' );
 		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
 			if ( $this->_get_current_mapping_type( 'map_admindomain' ) == 'original' ) {
 				$redirect_to = 'original';
 			}
 		}
 
-		$this->_redirect_to_area( $redirect_to );
+		if ( $redirect_to != 'user' ) {
+			$this->_redirect_to_area( $redirect_to );
+		}
 	}
 
 	/**
@@ -271,8 +273,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return;
 		}
 
-		$is_ssl = is_ssl();
-		$protocol = $is_ssl ? 'https://' : 'http://';
+		$protocol = is_ssl() ? 'https://' : 'http://';
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
 		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
 
@@ -312,50 +313,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// fetch mapped domain
 		$errors = $this->_wpdb->suppress_errors();
-		$multi = defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN );
-		$domain = $multi ? $this->_get_mapped_domain_with_multi( $blog_id ) : $this->_get_mapped_domain_without_multi( $blog_id );
+		$sql = filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
+			? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
+			: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
+		$domain = $this->_wpdb->get_var( $sql );
 		$this->_wpdb->suppress_errors( $errors );
 
 		// save mapped domain into local cache
-		$this->_mapped_domains[$blog_id] = $domain;
+		$this->_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
 
 		return $domain;
 	}
 
 	/**
-	 * Returns proper domain name mapped to this blog in case when multi mapping is enabled.
-	 *
-	 * @since 4.0.3
-	 *
-	 * @access private
-	 * @param int $blog_id The blog ID to get mapped domain for.
-	 * @return string Proper domain name if mapping exists, otherwise FALSE.
-	 */
-	private function _get_mapped_domain_with_multi( $blog_id ) {
-		$domains = $this->_wpdb->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC", DOMAINMAP_TABLE_MAP, $blog_id ) );
-		return !empty( $domains ) ? $domains[0] : false;
-	}
-
-	/**
-	 * Returns proper domain name mapped to this blog in case when multi mapping is disabled.
-	 *
-	 * @since 4.0.3
-	 *
-	 * @access private
-	 * @param int $blog_id The blog ID to get mapped domain for.
-	 * @return string Proper domain name if mapping exists, otherwise FALSE.
-	 */
-	private function _get_mapped_domain_without_multi( $blog_id ) {
-		$domain = $this->_wpdb->get_var( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id ) );
-		return !empty( $domain ) ? $domain : false;
-	}
-
-
-	/**
 	 * Encodes URL component. This method is used in preg_replace_callback call.
 	 *
-	 * @see self::_parse_mb_url()
 	 * @since 4.1.0
+	 * @see self::_parse_mb_url()
 	 *
 	 * @static
 	 * @access private

@@ -4,6 +4,7 @@
 * Fixed front end SSL mapping issue
 * Fixed x-autocomplete fields for eNom forms
 * Implemented ability to override standard domain mapping instructions
+* Implemented ability to set front end mapping for a certain blog
 * Reworked cross domain single sign on implementation
 
 == 4.1.1 ==

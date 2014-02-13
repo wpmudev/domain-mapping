@@ -81,6 +81,14 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	protected function _render_tab() {
 		$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';
 		$form_class = count( $this->domains ) > 0 && !self::_is_multi_enabled() ? ' domainmapping-form-hidden' : '';
+		$admin_ajax = esc_url( admin_url( 'admin-ajax.php' ) );
+
+		$mapping = get_option( 'domainmap_frontend_mapping', 'mapped' );
+		$mapping_types = array(
+			'user'     => __( 'disabled and entered domain should be used', 'domainmap' ),
+			'mapped'   => __( 'directed to mapped (primary) domain', 'domainmap' ),
+			'original' => __( 'directed to original domain', 'domainmap' ),
+		);
 
 		$this->_render_instructions();
 
@@ -101,7 +109,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						<?php self::render_mapping_row( $row, $schema ) ?>
 					<?php endforeach; ?>
 					<li class="domainmapping-form">
-						<form id="domainmapping-form-map-domain" action="<?php echo admin_url( 'admin-ajax.php' ) ?>" method="post">
+						<form id="domainmapping-front-mapping" action="<?php echo $admin_ajax ?>" method="post">
+							<?php wp_nonce_field( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'nonce' ) ?>
+							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT ?>">
+							<span><?php esc_html_e( 'Front end redirect should be', 'domainmap' ) ?></span>
+							<select name="mapping">
+								<?php foreach ( $mapping_types as $key => $label ) : ?>
+								<option value="<?php echo $key ?>"<?php selected( $key, $mapping ) ?>><?php echo esc_html( $label ) ?></option>
+								<?php endforeach; ?>
+							</select>
+						</form>
+						<form id="domainmapping-form-map-domain" action="<?php echo $admin_ajax ?>" method="post">
 							<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
 							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
 							<input type="text" class="domainmapping-input-prefix" readonly disabled value="<?php echo $schema ?>://">

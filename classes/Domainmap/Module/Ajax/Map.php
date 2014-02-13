@@ -50,6 +50,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', true, true );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN, 'select_primary_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN, 'deselect_primary_domain' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'change_frontend_mapping' );
 
 		// add wpengine compatibility
 		if ( !has_action( 'domainmapping_added_domain' ) ) {
@@ -363,6 +364,26 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			);
 		}
 
+		wp_send_json_success();
+		exit;
+	}
+
+	/**
+	 * Changes frotn end mapping for current blog.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @access public
+	 */
+	public function change_frontend_mapping() {
+		self::_check_premissions( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT );
+
+		$mapping = strtolower( filter_input( INPUT_POST, 'mapping' ) );
+		if ( !in_array( $mapping, array( 'user', 'mapped', 'original' ) ) ) {
+			wp_send_json_error();
+		}
+
+		update_option( 'domainmap_frontend_mapping', $mapping );
 		wp_send_json_success();
 		exit;
 	}
