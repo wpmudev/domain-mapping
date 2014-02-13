@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping 4.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-30 14:16+0300\n"
-"PO-Revision-Date: 2014-01-30 14:16+0300\n"
+"POT-Creation-Date: 2014-02-13 17:51+0300\n"
+"PO-Revision-Date: 2014-02-13 17:51+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <devs@incsub.com>\n"
 "Language: en_US\n"
@@ -666,52 +666,68 @@ msgstr ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
 
+#: classes/Domainmap/Render/Site/Map.php:88
+msgid "disabled and entered domain should be used"
+msgstr "disabled and entered domain should be used"
+
 #: classes/Domainmap/Render/Site/Map.php:89
+msgid "directed to mapped (primary) domain"
+msgstr "directed to mapped (primary) domain"
+
+#: classes/Domainmap/Render/Site/Map.php:90
+msgid "directed to original domain"
+msgstr "directed to original domain"
+
+#: classes/Domainmap/Render/Site/Map.php:97
 msgid "Domain(s) mapped to"
 msgstr "Domain(s) mapped to"
 
-#: classes/Domainmap/Render/Site/Map.php:96
+#: classes/Domainmap/Render/Site/Map.php:104
 msgid "Mapped domain"
 msgstr "Mapped domain"
 
-#: classes/Domainmap/Render/Site/Map.php:97
+#: classes/Domainmap/Render/Site/Map.php:105
 msgid "Health status"
 msgstr "Health status"
 
-#: classes/Domainmap/Render/Site/Map.php:98
+#: classes/Domainmap/Render/Site/Map.php:106
 msgid "Actions"
 msgstr "Actions"
 
-#: classes/Domainmap/Render/Site/Map.php:112
+#: classes/Domainmap/Render/Site/Map.php:115
+msgid "Front end redirect should be"
+msgstr "Front end redirect should be"
+
+#: classes/Domainmap/Render/Site/Map.php:130
 #: classes/Domainmap/Module/Pages.php:105
 msgid "Map domain"
 msgstr "Map domain"
 
-#: classes/Domainmap/Render/Site/Map.php:164
+#: classes/Domainmap/Render/Site/Map.php:182
 msgid "Go to this domain"
 msgstr "Go to this domain"
 
-#: classes/Domainmap/Render/Site/Map.php:168
+#: classes/Domainmap/Render/Site/Map.php:186
 msgid "Remove the domain"
 msgstr "Remove the domain"
 
-#: classes/Domainmap/Render/Site/Map.php:170
+#: classes/Domainmap/Render/Site/Map.php:188
 msgid "Select as primary domain"
 msgstr "Select as primary domain"
 
-#: classes/Domainmap/Render/Site/Map.php:192
+#: classes/Domainmap/Render/Site/Map.php:210
 msgid "need revalidate"
 msgstr "need revalidate"
 
-#: classes/Domainmap/Render/Site/Map.php:197
+#: classes/Domainmap/Render/Site/Map.php:215
 msgid "valid"
 msgstr "valid"
 
-#: classes/Domainmap/Render/Site/Map.php:200
+#: classes/Domainmap/Render/Site/Map.php:218
 msgid "invalid"
 msgstr "invalid"
 
-#: classes/Domainmap/Render/Site/Map.php:204
+#: classes/Domainmap/Render/Site/Map.php:222
 msgid "Refresh health status"
 msgstr "Refresh health status"
 
@@ -779,7 +795,7 @@ msgid "Don't use any"
 msgstr "Don't use any"
 
 #: classes/Domainmap/Render/Network/Resellers.php:118
-#: classes/Domainmap/Render/Network/Options.php:151
+#: classes/Domainmap/Render/Network/Options.php:152
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -820,23 +836,7 @@ msgstr ""
 "If you've not already added %s then please do so. If you added the constant "
 "be sure to uncomment this line: %s in the %s file."
 
-#: classes/Domainmap/Render/Network/Options.php:107
-msgid ""
-"If you are having problems with domain mapping you should try removing the "
-"following lines from your wp-config.php file:."
-msgstr ""
-"If you are having problems with domain mapping you should try removing the "
-"following lines from your wp-config.php file:."
-
-#: classes/Domainmap/Render/Network/Options.php:114
-msgid ""
-"Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
-"these lines in place."
-msgstr ""
-"Note: If your domain mapping plugin is WORKING correctly, then please LEAVE "
-"these lines in place."
-
-#: classes/Domainmap/Render/Network/Options.php:122
+#: classes/Domainmap/Render/Network/Options.php:123
 #, php-format
 msgid ""
 "If you want to allow your users to map multiple domains, then please add %s "
@@ -845,27 +845,27 @@ msgstr ""
 "If you want to allow your users to map multiple domains, then please add %s "
 "in the %s file."
 
-#: classes/Domainmap/Render/Network/Options.php:172
+#: classes/Domainmap/Render/Network/Options.php:173
 msgid "Domain mapping configuration"
 msgstr "Domain mapping configuration"
 
-#: classes/Domainmap/Render/Network/Options.php:174
-msgid ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this site to get the IP address."
-msgstr ""
-"Enter the IP address users need to point their DNS A records at. If you "
-"don't know what it is, ping this site to get the IP address."
-
 #: classes/Domainmap/Render/Network/Options.php:175
 msgid ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this site to get the IP address."
+msgstr ""
+"Enter the IP address users need to point their DNS A records at. If you "
+"don't know what it is, ping this site to get the IP address."
+
+#: classes/Domainmap/Render/Network/Options.php:176
+msgid ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 msgstr ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 
-#: classes/Domainmap/Render/Network/Options.php:181
+#: classes/Domainmap/Render/Network/Options.php:182
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
@@ -875,11 +875,11 @@ msgstr ""
 "and fetch the IP address(es) assigned to it. You can use the following IP "
 "address(es) to enter in the <b>Server IP Address</b> field below:"
 
-#: classes/Domainmap/Render/Network/Options.php:190
+#: classes/Domainmap/Render/Network/Options.php:191
 msgid "Server IP Address: "
 msgstr "Server IP Address: "
 
-#: classes/Domainmap/Render/Network/Options.php:196
+#: classes/Domainmap/Render/Network/Options.php:197
 msgid ""
 "In case if you want to display your own instructions on the Domain Mapping "
 "page, then use the text area below to enter your instructions or leave it "
@@ -889,11 +889,11 @@ msgstr ""
 "page, then use the text area below to enter your instructions or leave it "
 "blank to show default ones."
 
-#: classes/Domainmap/Render/Network/Options.php:209
+#: classes/Domainmap/Render/Network/Options.php:210
 msgid "Administration mapping"
 msgstr "Administration mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:211
+#: classes/Domainmap/Render/Network/Options.php:212
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
@@ -903,11 +903,11 @@ msgstr ""
 "through the domain they enter, you can also restrict it to the Mapped domain "
 "or the original domain (your website url):"
 
-#: classes/Domainmap/Render/Network/Options.php:234
+#: classes/Domainmap/Render/Network/Options.php:235
 msgid "Login mapping"
 msgstr "Login mapping"
 
-#: classes/Domainmap/Render/Network/Options.php:236
+#: classes/Domainmap/Render/Network/Options.php:237
 msgid ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
@@ -916,22 +916,22 @@ msgstr ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
 "the original domain (your website url):"
-
-#: classes/Domainmap/Render/Network/Options.php:261
-#: classes/Domainmap/Render/Network/Options.php:292
-msgid "Yes"
-msgstr "Yes"
 
 #: classes/Domainmap/Render/Network/Options.php:262
 #: classes/Domainmap/Render/Network/Options.php:293
+msgid "Yes"
+msgstr "Yes"
+
+#: classes/Domainmap/Render/Network/Options.php:263
+#: classes/Domainmap/Render/Network/Options.php:294
 msgid "No"
 msgstr "No"
 
-#: classes/Domainmap/Render/Network/Options.php:265
+#: classes/Domainmap/Render/Network/Options.php:266
 msgid "Cross-domain autologin"
 msgstr "Cross-domain autologin"
 
-#: classes/Domainmap/Render/Network/Options.php:267
+#: classes/Domainmap/Render/Network/Options.php:268
 msgid ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
@@ -939,11 +939,11 @@ msgstr ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
 
-#: classes/Domainmap/Render/Network/Options.php:296
+#: classes/Domainmap/Render/Network/Options.php:297
 msgid "Verify domain's DNS settings"
 msgstr "Verify domain's DNS settings"
 
-#: classes/Domainmap/Render/Network/Options.php:298
+#: classes/Domainmap/Render/Network/Options.php:299
 msgid ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
@@ -951,11 +951,11 @@ msgstr ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 
-#: classes/Domainmap/Render/Network/Options.php:325
+#: classes/Domainmap/Render/Network/Options.php:326
 msgid "Select Pro Sites Levels:"
 msgstr "Select Pro Sites Levels:"
 
-#: classes/Domainmap/Render/Network/Options.php:326
+#: classes/Domainmap/Render/Network/Options.php:327
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr "Make this functionality only available to certain Pro Site levels"
 
@@ -1077,7 +1077,7 @@ msgstr "Domain name has been purchased successfully."
 msgid "Domain name purchase has failed."
 msgstr "Domain name purchase has failed."
 
-#: classes/Domainmap/Module/Cdsso.php:106
+#: classes/Domainmap/Module/Cdsso.php:237
 msgid ""
 "You have logged in successfully. You will be redirected to desired page "
 "during next 5 seconds."
@@ -1085,15 +1085,15 @@ msgstr ""
 "You have logged in successfully. You will be redirected to desired page "
 "during next 5 seconds."
 
-#: classes/Domainmap/Module/Cdsso.php:215
+#: classes/Domainmap/Module/Cdsso.php:353
 msgid "Incorrect or out of date login key"
 msgstr "Incorrect or out of date login key"
 
-#: classes/Domainmap/Module/Ajax/Map.php:201
+#: classes/Domainmap/Module/Ajax/Map.php:202
 msgid "Domain name is unavailable to access."
 msgstr "Domain name is unavailable to access."
 
-#: classes/Domainmap/Module/Ajax/Map.php:202
+#: classes/Domainmap/Module/Ajax/Map.php:203
 msgid ""
 "We can't access the new domain. If you've just purchased it, please, wait "
 "while it will be propagated. If it is already propagated, please, check your "
@@ -1103,15 +1103,15 @@ msgstr ""
 "while it will be propagated. If it is already propagated, please, check your "
 "DNS records to be sure that the domain is configured correctly."
 
-#: classes/Domainmap/Module/Ajax/Map.php:206
+#: classes/Domainmap/Module/Ajax/Map.php:207
 msgid "Domain is already mapped."
 msgstr "Domain is already mapped."
 
-#: classes/Domainmap/Module/Ajax/Map.php:209
+#: classes/Domainmap/Module/Ajax/Map.php:210
 msgid "Multiple domains are not allowed."
 msgstr "Multiple domains are not allowed."
 
-#: classes/Domainmap/Module/Ajax/Map.php:213
+#: classes/Domainmap/Module/Ajax/Map.php:214
 #: classes/Domainmap/Module/Ajax/Purchase.php:105
 msgid "Domain name is invalid."
 msgstr "Domain name is invalid."
@@ -1180,27 +1180,3 @@ msgstr "Show all actions"
 #: classes/Domainmap/Table/Reseller/Log.php:312
 msgid "Filter"
 msgstr "Filter"
-
-#~ msgid ""
-#~ "Easily get updates, support, and one-click WPMU DEV plugin/theme "
-#~ "installations right from in your dashboard - <strong><a href=\"%s\" title="
-#~ "\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
-#~ "strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/"
-#~ "wpmu-dev/update-notifications-plugin-information/\">(find out more)</a></"
-#~ "small>"
-#~ msgstr ""
-#~ "Easily get updates, support, and one-click WPMU DEV plugin/theme "
-#~ "installations right from in your dashboard - <strong><a href=\"%s\" title="
-#~ "\"Install Now &raquo;\">install the free WPMU DEV Dashboard plugin</a></"
-#~ "strong>. &nbsp;&nbsp;&nbsp;<small><a href=\"http://premium.wpmudev.org/"
-#~ "wpmu-dev/update-notifications-plugin-information/\">(find out more)</a></"
-#~ "small>"
-
-#~ msgid ""
-#~ "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" "
-#~ "title=\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin "
-#~ "now</a></strong>."
-#~ msgstr ""
-#~ "Updates, Support, Premium Plugins, Community - <strong><a href=\"%s\" "
-#~ "title=\"Activate Now &raquo;\">activate the WPMU DEV Dashboard plugin "
-#~ "now</a></strong>."
