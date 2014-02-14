@@ -3,6 +3,7 @@
 * Fixed domain health status check process
 * Fixed front end SSL mapping issue
 * Fixed x-autocomplete fields for eNom forms
+* Fixed unexpected redirect issue due to canonical URL difference
 * Implemented ability to override standard domain mapping instructions
 * Implemented ability to set front end mapping for a certain blog
 * Reworked cross domain single sign on implementation

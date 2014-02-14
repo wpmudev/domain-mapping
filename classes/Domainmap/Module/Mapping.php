@@ -105,6 +105,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 	}
 
+	private function _get_frontend_redirect_type() {
+		return get_option( 'domainmap_frontend_mapping', 'mapped' );
+	}
+
 	/**
 	 * Redirects to original domain.
 	 *
@@ -199,7 +203,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
-		$redirect_to = get_option( 'domainmap_frontend_mapping', 'mapped' );
+		$redirect_to = $this->_get_frontend_redirect_type();
 		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
 			if ( $this->_get_current_mapping_type( 'map_admindomain' ) == 'original' ) {
 				$redirect_to = 'original';
@@ -311,13 +315,18 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $this->_mapped_domains[$blog_id];
 		}
 
-		// fetch mapped domain
-		$errors = $this->_wpdb->suppress_errors();
-		$sql = filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
-			? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
-			: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
-		$domain = $this->_wpdb->get_var( $sql );
-		$this->_wpdb->suppress_errors( $errors );
+		$domain = '';
+		if ( $this->_get_frontend_redirect_type() == 'user' ) {
+			$domain = $_SERVER['HTTP_HOST'];
+		} else {
+			// fetch mapped domain
+			$errors = $this->_wpdb->suppress_errors();
+			$sql = filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
+				? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
+				: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
+			$domain = $this->_wpdb->get_var( $sql );
+			$this->_wpdb->suppress_errors( $errors );
+		}
 
 		// save mapped domain into local cache
 		$this->_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
@@ -437,7 +446,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function swap_root_url( $url ) {
 		global $current_site;
 
-		// do not swap URL if customizer is running
+		// do not swap URL if customizer is running or front end redirection is disabled
 		if ( $this->_suppress_swapping ) {
 			return $url;
 		}
