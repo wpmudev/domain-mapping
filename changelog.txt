@@ -6,7 +6,7 @@
 * Fixed unexpected redirect issue due to canonical URL difference
 * Implemented ability to override standard domain mapping instructions
 * Implemented ability to set front end mapping for a certain blog
-* Reworked cross domain single sign on implementation
+* Reworked cross domain single sign on implementation + better SSL support
 
 == 4.1.1 ==
 

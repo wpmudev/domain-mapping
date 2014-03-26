@@ -8,3 +8,8 @@
 	Location: Kiev, Ukraine
 	Contact: eugene[at]incsub[dot]com
 	Twitter: @eugene_manuilov
+	
+  Developer: Aaron Edwards
+	Location: Dallas, TX
+	Contact: aaron[at]incsub[dot]com
+	Twitter: @UglyRobotDev

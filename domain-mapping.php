@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Domain Mapping plugin
-Plugin URI: http://premium.wpmudev.org/project/domain-mapping
-Description: A domain mapping plugin that can handle sub-directory installs and global logins
-Version: 4.1.2.beta.5
+Plugin Name: Domain Mapping
+Plugin URI: https://premium.wpmudev.org/project/domain-mapping/
+Description: The ultimate Multisite domain mapping plugin Ð sync cookies, sell domains with eNom, and integrate with Pro Sites.
+Version: 4.1.2
 Author: WPMU DEV
 Author URI: http://premium.wpmudev.org
 WDP ID: 99
@@ -38,6 +38,9 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
 //define('DOMAINMAPPING_ALLOWMULTI', 'yes');
 
 // WPMUDev Dashboard Notices
+//load dashboard notice
+global $wpmudev_notices;
+$wpmudev_notices[] = array( 'id'=> 99,'name'=> 'Domain Mapping', 'screens' => array( 'tools_page_domainmapping', 'settings_page_domainmapping_options-network' ) );
 require_once 'extra/wpmudev-dash-notification.php';
 
 // main domain mapping class
