@@ -101,7 +101,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	/**
 	 * Equalizes redirect_to domain name with login URL domain.
 	 *
-	 * @since 4.1.2
+	 * @since 4.1.2.1
 	 * @filter login_url 10 2
 	 *
 	 * @param string $login_url The login URL.

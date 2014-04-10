@@ -1,3 +1,7 @@
+== 4.1.2.1 ==
+
+* Fixed a minor issue Cdsso::update_login_url() when $redirect_to is empty
+
 == 4.1.2 ==
 
 * Fixed domain health status check process
