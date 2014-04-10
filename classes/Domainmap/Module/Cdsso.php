@@ -109,6 +109,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string Updated login URL.
 	 */
 	public function update_login_url( $login_url, $redirect_to ) {
+        if( empty( $redirect_to ) )
+            return $login_url;
+
 		$login_domain = parse_url( $login_url, PHP_URL_HOST );
 		$redirect_domain = parse_url( $redirect_to, PHP_URL_HOST );
 		if ( $login_domain != $redirect_domain ) {
