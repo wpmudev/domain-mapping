@@ -474,6 +474,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @global object $current_site Current site object.
 	 * @param string $url Current URL to unswap.
 	 * @param int $blog_id The blog ID to which current URL is related to.
+	 * @param bool $include_path whether to include the url path
 	 * @return string Unswapped URL.
 	 */
 	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
@@ -512,6 +513,19 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return self::_build_url( $url_components );
 	}
 
+    /**
+     * Retrieves original domain from the given mapped_url
+     *
+     * @since 4.1.3
+     * @access public
+     *
+     * @usces self::unswap_mapped_url()
+     *
+     * @param $mapped_url
+     * @param bool $blog_id
+     * @param bool $include_path
+     * @return string
+     */
     public static function unswap_url( $mapped_url, $blog_id = false, $include_path = true ){
         return self::unswap_mapped_url( $mapped_url, $blog_id, $include_path );
     }

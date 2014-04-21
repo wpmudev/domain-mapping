@@ -13,3 +13,8 @@
 	Location: Dallas, TX
 	Contact: aaron[at]incsub[dot]com
 	Twitter: @UglyRobotDev
+
+  Developer : Sam Najian
+    Location : Tehran, Iran
+    Contact : sam[at]incsub[dot]com
+    Twitter : @samnajian
