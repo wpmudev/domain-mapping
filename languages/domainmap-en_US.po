@@ -1030,8 +1030,8 @@ msgid "You are about to unmap selected domain. Do you really want to proceed?"
 msgstr "You are about to unmap selected domain. Do you really want to proceed?"
 
 #: classes/Domainmap/Module/Setup.php:87
-msgid "Please, enter not empty domain name."
-msgstr "Please, enter not empty domain name."
+msgid "Please enter a valid domain to be mapped to your site."
+msgstr "Please enter a valid domain to be mapped to your site."
 
 #: classes/Domainmap/Module/Setup.php:88
 msgid ""
@@ -1095,13 +1095,15 @@ msgstr "Domain name is unavailable to access."
 
 #: classes/Domainmap/Module/Ajax/Map.php:203
 msgid ""
-"We can't access the new domain. If you've just purchased it, please, wait "
-"while it will be propagated. If it is already propagated, please, check your "
-"DNS records to be sure that the domain is configured correctly."
+"We can’t access your new domain. Mapping a new domains can take as little "
+"as 15 minutes to resolve but in some cases can take up to 72 hours, so please wait "
+"if you just bought it. If it is an existing domain and has already been fully propagated, "
+"check your DNS records are configured correctly."
 msgstr ""
-"We can't access the new domain. If you've just purchased it, please, wait "
-"while it will be propagated. If it is already propagated, please, check your "
-"DNS records to be sure that the domain is configured correctly."
+"We can’t access your new domain. Mapping a new domains can take as little "
+"as 15 minutes to resolve but in some cases can take up to 72 hours, so please wait "
+"if you just bought it. If it is an existing domain and has already been fully propagated, "
+"check your DNS records are configured correctly."
 
 #: classes/Domainmap/Module/Ajax/Map.php:207
 msgid "Domain is already mapped."

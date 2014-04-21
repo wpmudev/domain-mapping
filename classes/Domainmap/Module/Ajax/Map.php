@@ -200,7 +200,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						$message = sprintf(
 							'<b>%s</b><br><small>%s</small>',
 							__( 'Domain name is unavailable to access.', 'domainmap' ),
-							__( "We can't access the new domain. If you've just purchased it, please, wait while it will be propagated. If it is already propagated, please, check your DNS records to be sure that the domain is configured correctly.", 'domainmap' )
+							__( "We can’t access your new domain. Mapping a new domains can take as little as 15 minutes to resolve but in some cases can take up to 72 hours, so please wait if you just bought it. If it is an existing domain and has already been fully propagated, check your DNS records are configured correctly.", 'domainmap' )
 						);
 					}
 				} else {

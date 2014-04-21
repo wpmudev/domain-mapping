@@ -39,7 +39,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access private
 	 * @var array
 	 */
-	private $_mapped_domains = array();
+	private static $_mapped_domains = array();
 
 	/**
 	 * The array of original domains.
@@ -49,7 +49,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access private
 	 * @var array
 	 */
-	private $_original_domains = array();
+	private static $_original_domains = array();
 
 	/**
 	 * Determines whether we need to suppress swapping or not.
@@ -69,7 +69,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access private
 	 * @var boolean
 	 */
-	private $_force_protocol = false;
+	private static $_force_protocol = false;
 
 	/**
 	 * Constructor.
@@ -82,7 +82,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		$this->_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
+		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
 
 		$this->_add_action( 'template_redirect',       'redirect_front_area' );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
@@ -311,8 +311,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		// if we have already found mapped domain, then return it
-		if ( isset( $this->_mapped_domains[$blog_id] ) ) {
-			return $this->_mapped_domains[$blog_id];
+		if ( isset( self::$_mapped_domains[$blog_id] ) ) {
+			return self::$_mapped_domains[$blog_id];
 		}
 
 		$domain = '';
@@ -329,7 +329,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		// save mapped domain into local cache
-		$this->_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
+		self::$_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
 
 		return $domain;
 	}
@@ -388,7 +388,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$path = isset( $components['path'] ) ? $components['path'] : '';
 		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
 		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
-
 		return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
 	}
 
@@ -410,17 +409,17 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
 		// do not swap URL if customizer is running
-		if ( $this->_suppress_swapping ) {
-			return $url;
-		}
+        if ( $this->_suppress_swapping ) {
+            return $url;
+        }
 
-		// parse current url
-		$components = self::_parse_mb_url( $url );
-		if ( empty( $components['host'] ) ) {
-			return $url;
-		}
+        // parse current url
+        $components = self::_parse_mb_url( $url );
+        if ( empty( $components['host'] ) ) {
+            return $url;
+        }
 
-		// find mapped domain
+        // find mapped domain
 		$mapped_domain = $this->_get_mapped_domain( $blog_id );
 		if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
 			return $url;
@@ -430,6 +429,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		return self::_build_url( $components );
 	}
+
 
 	/**
 	 * Returns swapped root URL.
@@ -457,7 +457,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$protocol = 'http://';
-		if ( $this->_force_protocol && is_ssl() ) {
+		if ( self::$_force_protocol && is_ssl() ) {
 			$protocol = 'https://';
 		}
 
@@ -476,8 +476,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @param int $blog_id The blog ID to which current URL is related to.
 	 * @return string Unswapped URL.
 	 */
-	public function unswap_mapped_url( $url, $blog_id = false ) {
-		global $current_site;
+	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
+		global $current_site, $wpdb;
 
 		// if no blog id is passed, then take current one
 		if ( !$blog_id ) {
@@ -485,32 +485,35 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		// check if we have already found original domain for the blog
-		if ( !array_key_exists( $blog_id, $this->_original_domains ) ) {
-			$this->_original_domains[$blog_id] = $this->_wpdb->get_var( sprintf(
+		if ( !array_key_exists( $blog_id, self::$_original_domains ) ) {
+			self::$_original_domains[$blog_id] = $wpdb->get_var( sprintf(
 				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
-				$this->_wpdb->options
+                $wpdb->options
 			) );
 		}
 
-		if ( empty( $this->_original_domains[$blog_id] ) ) {
+		if ( empty( self::$_original_domains[$blog_id] ) ) {
 			return $url;
 		}
 
 		$url_components = self::_parse_mb_url( $url );
-		$orig_components = self::_parse_mb_url( $this->_original_domains[$blog_id] );
+		$orig_components = self::_parse_mb_url( self::$_original_domains[$blog_id] );
 
-		if ( $this->_force_protocol ) {
+		if ( self::$_force_protocol ) {
 			$url_components['scheme'] = is_ssl() ? 'htts' : 'http';
 		}
 
 		$url_components['host'] = $orig_components['host'];
 
 		$orig_path = isset( $orig_components['path'] ) ? $orig_components['path'] : '';
-		$url_path = isset( $url_components['path'] ) ? $url_components['path'] : '';
+		$url_path = isset( $url_components['path'] ) && $include_path ? $url_components['path'] : '';
 
 		$url_components['path'] = str_replace( '//', '/', $current_site->path . $orig_path . $url_path );
-
 		return self::_build_url( $url_components );
 	}
+
+    public static function unswap_url( $mapped_url, $blog_id = false, $include_path = true ){
+        return self::unswap_mapped_url( $mapped_url, $blog_id, $include_path );
+    }
 
 }

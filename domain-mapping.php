@@ -158,3 +158,53 @@ spl_autoload_register( 'domainmap_autoloader' );
 
 // launch the plugin
 domainmap_launch();
+
+/*================== Global Functions =======================*/
+
+/**
+ * Retrieves respective site url for current site checking weather it's an ssl connection
+ *
+ * Returns the 'site_url' option or unswapped site url if it's and ssl connection with the appropriate protocol, 'https' if
+ * is_ssl() and 'http' otherwise. If $scheme is 'http' or 'https', is_ssl() is
+ * overridden.
+ *
+ * @since 4.1.3
+ *
+ * @uses site_url()
+ *
+ * @param string $path Optional. Path relative to the site url.
+ * @param string $scheme Optional. Scheme to give the site url context. See set_url_scheme().
+ * @return string Site url link with optional path appended.
+ */
+function dm_site_url( $path = '', $scheme = null ){
+    $current_site_url = site_url( $path, $scheme );
+    if( is_ssl() ){
+        return Domainmap_Module_Mapping::unswap_url( $current_site_url, false, (bool) $path );
+    }else{
+        return $current_site_url;
+    }
+}
+
+/**
+ * Retrieves respective home url for current site checking weather it's an ssl connection
+ *
+ * Returns the 'home' option or unswapped home url if it's and ssl connection with the appropriate protocol, 'https' if
+ * is_ssl() and 'http' otherwise. If $scheme is 'http' or 'https', is_ssl() is
+ * overridden.
+ *
+ * @since 4.1.3
+ *
+ * @uses home_url()
+ *
+ * @param string $path Optional. Path relative to the site url.
+ * @param string $scheme Optional. Scheme to give the site url context. See set_url_scheme().
+ * @return string Site url link with optional path appended.
+ */
+function dm_home_url( $path = '', $scheme = null ){
+    $current_home_url = home_url( $path, $scheme );
+    if( is_ssl()){
+        return Domainmap_Module_Mapping::unswap_url( $current_home_url, false, (bool) $path );
+    }else{
+        return $current_home_url;
+    }
+}
