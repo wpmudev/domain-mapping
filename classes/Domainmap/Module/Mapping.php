@@ -88,6 +88,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
+        $this->_add_action( 'plugins_loaded', "redirect_ssl_to_original_url" );
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
@@ -202,13 +203,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
-
-        /**
-         * Redirect to original domain if it's an ssl connection
-         */
-        if( (bool) apply_filters( "dm_redirect_to_original_domain", is_ssl() )  && !$this->_is_original_url()){
-           $this->_redirect_to_area( "original" );
-        }
 
 		$redirect_to = $this->_get_frontend_redirect_type();
 		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
@@ -556,6 +550,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
         $current_url =  $this->_current_page_url();
         $unswapped_url = $this->unswap_mapped_url( $current_url, false, true );
         return $current_url === $unswapped_url;
+    }
+
+    /**
+     * Prevents redirection from https pages to mapped domain
+     */
+    function redirect_ssl_to_original_url(){
+
+        if( wp_get_referer() && false !== strpos(wp_get_referer(), "https") ){
+            $this->_redirect_to_area( "original" );
+        }
     }
 
 }
