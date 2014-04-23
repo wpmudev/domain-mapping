@@ -88,7 +88,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
-        $this->_add_action( 'plugins_loaded', "redirect_ssl_to_original_url" );
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
@@ -203,6 +202,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
+        // Don redirect from original domain to the mapped domain if it's an ssl connection
+        if( apply_filters( "dm_prevent_redirection_for_ssl", is_ssl() ) ) return;
 
 		$redirect_to = $this->_get_frontend_redirect_type();
 		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
@@ -529,37 +530,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
      */
     public static function unswap_url( $mapped_url, $blog_id = false, $include_path = true ){
         return self::unswap_mapped_url( $mapped_url, $blog_id, $include_path );
-    }
-
-
-    private function _current_page_url() {
-        $pageURL = 'http';
-        if( isset($_SERVER["HTTPS"]) ) {
-            if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-        }
-        $pageURL .= "://";
-        if ($_SERVER["SERVER_PORT"] != "80") {
-            $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-        } else {
-            $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-        }
-        return $pageURL;
-    }
-
-    private function _is_original_url(){
-        $current_url =  $this->_current_page_url();
-        $unswapped_url = $this->unswap_mapped_url( $current_url, false, true );
-        return $current_url === $unswapped_url;
-    }
-
-    /**
-     * Prevents redirection from https pages to mapped domain
-     */
-    function redirect_ssl_to_original_url(){
-
-        if( wp_get_referer() && false !== strpos(wp_get_referer(), "https") ){
-            $this->_redirect_to_area( "original" );
-        }
     }
 
 }
