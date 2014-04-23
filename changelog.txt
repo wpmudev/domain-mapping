@@ -1,4 +1,6 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.1.3 ==
+* Added feature that would prevent from redirecting to mapped domain if in ssl connection
 
 == 4.1.3 ==
 * Added dm_home_url() to retrieve home url with original domain when in ssl connection
