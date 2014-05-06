@@ -283,7 +283,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
 		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
 
-		if ( $mapped_url != $current_url ) {
+		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
 			if ( $request != $_SERVER['REQUEST_URI'] ) {

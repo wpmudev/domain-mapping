@@ -17,7 +17,7 @@ if ( filter_var( $using_domain, FILTER_VALIDATE_IP ) ) {
 	$s_e = $wpdb->suppress_errors();
 
 	// Check for the domain with and without the www. prefix
-	$using_domain = preg_replace( '/^www\./', '', $using_domain );
+	$using_domain = strtolower( preg_replace( '/^www\./', '', $using_domain ) );
 	$mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE domain = %s OR domain = %s LIMIT 1", $using_domain, "www.{$using_domain}" ) );
 
 	$wpdb->suppress_errors( $s_e );
