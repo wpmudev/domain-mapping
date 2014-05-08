@@ -1,6 +1,6 @@
 <?php
 
-define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.1' );
+define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.2' );
 
 // domain mapping plugin to handle VHOST and non VHOST installation
 global $wpdb;

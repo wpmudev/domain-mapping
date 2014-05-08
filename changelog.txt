@@ -1,4 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.1.4.1 ==
+* Fixed redirect loop for some domain names when SSO is active
+
 == 4.1.4 ==
 * Added feature that would prevent from redirecting to mapped domain if in ssl connection
 
