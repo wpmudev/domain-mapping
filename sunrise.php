@@ -1,6 +1,6 @@
 <?php
 
-define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.2' );
+define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.3' );
 
 // domain mapping plugin to handle VHOST and non VHOST installation
 global $wpdb;
@@ -10,7 +10,9 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 	define( 'COOKIE_DOMAIN_ERROR', true );
 }
 
-$using_domain = $_SERVER['HTTP_HOST'];
+$using_domain = strtolower( preg_replace( "/^www\./", "", $_SERVER['HTTP_HOST'] ) );
+var_dump($using_domain);die;
+define( 'COOKIE_DOMAIN', $using_domain );
 if ( filter_var( $using_domain, FILTER_VALIDATE_IP ) ) {
 	$mapped_id = 1;
 } else {
