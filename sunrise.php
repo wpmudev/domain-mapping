@@ -11,7 +11,6 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 }
 
 $using_domain = strtolower( preg_replace( "/^www\./", "", $_SERVER['HTTP_HOST'] ) );
-var_dump($using_domain);die;
 define( 'COOKIE_DOMAIN', $using_domain );
 if ( filter_var( $using_domain, FILTER_VALIDATE_IP ) ) {
 	$mapped_id = 1;
