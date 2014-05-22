@@ -29,8 +29,8 @@
 class Domainmap_Plugin {
 
 	const NAME    = 'domainmap';
-	const VERSION = '4.1.1';
-	const SUNRISE = '1.0.1';
+	const VERSION = '4.1.4.2';
+	const SUNRISE = '1.0.3';
 
 	const ACTION_CHECK_DOMAIN_AVAILABILITY  = 'domainmapping_check_domain';
 	const ACTION_SHOW_REGISTRATION_FORM     = 'domainmapping_show_registration_form';
