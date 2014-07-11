@@ -78,7 +78,12 @@ class Domainmap_Table extends WP_List_Table {
 	 * @return string The value to display.
 	 */
 	public function column_default( $item, $column_name ) {
-		$value = isset( $item[$column_name] ) ? $item[$column_name] : '';
+        if( is_object($item) ){
+            $value = isset( $item->{$column_name} ) ? $item->{$column_name} : '';
+        }else{
+            $value = isset( $item[$column_name] ) ? $item[$column_name] : '';
+        }
+
 		return is_numeric( $value ) ? number_format( $value ) : $value;
 	}
 
@@ -92,7 +97,12 @@ class Domainmap_Table extends WP_List_Table {
 	 * @return string The value to display.
 	 */
 	public function column_cb( $item ) {
-		return sprintf( '<input type="checkbox" class="cb" name="%1$s[]" value="%2$s">', $this->_args['plural'], $item['id'] );
+        if( is_object($item) ){
+            return sprintf( '<input type="checkbox" class="cb" name="%1$s[]" value="%2$s">', $this->_args['plural'], $item->id );
+        }else{
+            return sprintf( '<input type="checkbox" class="cb" name="%1$s[]" value="%2$s">', $this->_args['plural'], $item['id'] );
+        }
+
 	}
 
 	/**

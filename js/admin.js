@@ -101,6 +101,7 @@
 		$domains.on('click', 'a.domainmapping-map-remove', function() {
 			var $self = $(this),
 				parent = $self.parent(),
+                $tr = $self.closest("tr"),
 				wrapper = $self.parents('.domainmapping-domains-wrapper');
 
 			if (confirm(domainmapping.message.unmap)) {
@@ -111,6 +112,9 @@
 							wrapper.removeClass('domainmapping-form-hidden');
 						}
 					});
+                    $tr.fadeOut(300, function() {
+                        $tr.remove();
+                    });
 				});
 			}
 

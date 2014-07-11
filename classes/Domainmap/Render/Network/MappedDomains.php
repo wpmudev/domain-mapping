@@ -20,44 +20,49 @@
 // +----------------------------------------------------------------------+
 
 /**
- * Renders reseller API request log page.
+ * Main class for mapped domains tab.
  *
  * @category Domainmap
  * @package Render
- * @subpackage Network
+ * @subpackage MappedDomains
  *
- * @since 4.0.0
+ * @since 4.1.5
  */
-class Domainmap_Render_Network_Log extends Domainmap_Render_Network {
+class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
 
-	/**
-	 * Renders page header.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access protected
-	 */
-	protected function _render_header() {
-		parent::_render_header();
+    /**
+     * Renders page header.
+     *
+     * @since 4.1.5
+     *
+     * @access protected
+     */
+    protected function _render_header() {
+        parent::_render_header();
 
-		if ( filter_input( INPUT_GET, 'deleted', FILTER_VALIDATE_BOOLEAN ) ) :
-			echo '<div id="message" class="updated fade">', __( 'Log records were deleted.', 'domainmap' ), '</div>';
-		endif;
-	}
+        if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
+            echo '<div id="message" class="updated fade">', __( 'Options updated.', 'domainmap' ), '</div>';
+        endif;
 
-	/**
-	 * Renders tab content.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access protected
-	 */
-	protected function _render_tab() {
-		$this->table->prepare_items();
-		echo '<div id="domainmapping-reseller-log-table">';
-			$this->table->views();
-			$this->table->display();
-		echo '</div>';
-	}
+        if ( filter_input( INPUT_GET, 'registered', FILTER_VALIDATE_BOOLEAN ) ) :
+            echo '<div id="message" class="updated fade">', __( 'Account was registered successfully.', 'domainmap' ), '</div>';
+        endif;
+    }
+
+    /**
+     * Renders tab content.
+     *
+     * @since 4.1.5
+     *
+     * @access protected
+     */
+    protected function _render_tab() {
+        $this->table->prepare_items();
+
+        echo '<div id="domainmapping-mapped-domains-table">';
+        $this->table->views();
+        $this->table->display();
+        echo '</div>';
+    }
 
 }

@@ -709,3 +709,6 @@ input.domainmapping-radio {
 	padding-top: 4px;
 	margin-right: 5px;
 }
+.domainmapping-btn{
+    cursor: pointer;
+}

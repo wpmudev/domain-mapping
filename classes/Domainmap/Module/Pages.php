@@ -55,6 +55,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$this->_add_action( 'admin_menu', 'add_site_options_page' );
 		$this->_add_action( 'network_admin_menu', 'add_network_options_page' );
 		$this->_add_action( 'admin_enqueue_scripts', 'enqueue_scripts' );
+        $this->_add_action( 'init', "switch_to_blog" );
 	}
 
 	/**
@@ -364,6 +365,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$tabs = array(
 			'general-options'  => __( 'Mapping options', 'domainmap' ),
 			'reseller-options' => __( 'Reseller options', 'domainmap' ),
+//			'reseller-api-log' => __( 'API Log', 'domainmap' ),
+            'mapped-domains' => __( 'Mapped Domains', 'domainmap' ),
 		);
 
 		$reseller = $this->_plugin->get_reseller();
@@ -402,6 +405,16 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 					),
 				) );
 				break;
+            case 'mapped-domains':
+                $page = new Domainmap_Render_Network_MappedDomains( $tabs, $activetab, $nonce_action, $options );
+                $page->table = new Domainmap_Table_MappedDomains_Listing( array(
+                    //'reseller'     => $reseller->get_reseller_id(),
+                    'nonce_action' => $nonce_action,
+                    'actions'      => array(
+                        'mapped-domains-delete' => __( 'Delete', 'domainmap' ),
+                    ),
+                ) );
+                break;
 		}
 
 		if ( $page ) {
@@ -435,5 +448,11 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		wp_enqueue_style( 'google-font-lato' );
 		wp_enqueue_style( 'domainmapping-admin' );
 	}
+
+    public function switch_to_blog(){
+        if( is_admin() && isset($_GET['switch_to_blog']) && !empty( $_GET['switch_to_blog'] ) ){
+            switch_to_blog( $_GET['switch_to_blog'] );
+        }
+    }
 
 }
