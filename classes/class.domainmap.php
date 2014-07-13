@@ -613,4 +613,5 @@ class domain_map {
 		return str_replace( trailingslashit( $orig_url ), trailingslashit( $url ), $post_content );
 	}
 
+
 }

@@ -57,15 +57,24 @@ require_once 'classes/class.domainmap.php';
  */
 function domainmap_autoloader( $class ) {
 	$basedir = dirname( __FILE__ );
-	$namespaces = array( 'Domainmap' );
+	$namespaces = array( 'Domainmap', "Vendor" );
 	foreach ( $namespaces as $namespace ) {
 		if ( substr( $class, 0, strlen( $namespace ) ) == $namespace ) {
+
 			$filename = $basedir . str_replace( '_', DIRECTORY_SEPARATOR, "_classes_{$class}.php" );
 			if ( is_readable( $filename ) ) {
 				require $filename;
 				return true;
 			}
 		}
+
+        if( $namespace === "Vendor" ){
+            $filename = $basedir . str_replace( '_', DIRECTORY_SEPARATOR, "_classes_Vendor_{$class}.php" );
+            if ( is_readable( $filename ) ) {
+                require $filename;
+                return true;
+            }
+        }
 	}
 
 	return false;

@@ -165,6 +165,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		$message = $hide_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
+        $domain = Domainmap_Punycode::encode( $domain );
 		if ( self::_validate_domain_name( $domain ) ) {
 
 			// check if mapped domains are 0 or multi domains are enabled

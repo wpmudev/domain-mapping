@@ -53,7 +53,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     public function column_mapped_domain( $item ) {
         global $current_site;
         $suffix = $current_site->path != '/' ? $current_site->path : '';
-        printf( '<a href="http://%1$s%2$s">%1$s%2$s</a>', $item->mapped_domain, $suffix );
+        printf( '<a href="http://%1$s%2$s">%1$s%2$s</a>', Domainmap_Punycode::decode( $item->mapped_domain ), $suffix );
     }
 
     /**
@@ -156,7 +156,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
      * @return array The array of table columns to display.
      */
     public function get_columns() {
-        return array(
+        $cols =  array(
             'site_id'    => __( 'Site ID', 'domainmap' ),
             'mapped_domain'    => __( 'Mapped Domain', 'domainmap' ),
             'domain'    => __( 'Domain', 'domainmap' ),
@@ -165,6 +165,12 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
             'active'    => __( 'Active', 'domainmap' ),
             'actions'    => __( 'Actions', 'domainmap' ),
         );
+
+        if( !filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ){
+            unset( $cols["primary"] ) ;
+        }
+
+        return $cols;
     }
 
 

@@ -102,7 +102,7 @@ class Domainmap_Module_Admin extends Domainmap_Module {
 				if ( !isset( $this->_mapped_domains[$result->blog_id] ) ) {
 					$this->_mapped_domains[$result->blog_id] = array();
 				}
-				$this->_mapped_domains[$result->blog_id][] = sprintf( '<a href="http://%1$s%2$s">%1$s%2$s</a>', $result->domain, $suffix );
+				$this->_mapped_domains[$result->blog_id][] = sprintf( '<a href="http://%1$s%2$s">%1$s%2$s</a>', Domainmap_Punycode::decode( $result->domain ), $suffix );
 			}
 		}
 

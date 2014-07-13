@@ -176,11 +176,12 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 				'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN ),
 				'domain' => $row->domain,
 			), $admin_ajax ) );
+
 		}
 
 		?><li>
 			<a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>
+				<?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
 			</a>
 			<?php self::render_health_column( $row->domain ) ?>
 			<a class="domainmapping-map-remove dashicons-before dashicons-trash" href="#" data-href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
@@ -191,7 +192,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	}
 
 	/**
-	 * Renders health check status columnt.
+	 * Renders health check status column.
 	 *
 	 * @since 4.0.0
 	 *
@@ -223,5 +224,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			echo $health_message
 		?></a><?php
 	}
+
+
 
 }
