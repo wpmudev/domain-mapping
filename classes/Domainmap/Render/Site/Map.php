@@ -155,7 +155,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		}
 
 		$multi = self::_is_multi_enabled();
-		$admin_ajax = admin_url( 'admin-ajax.php' );
+		$admin_ajax =  admin_url( 'admin-ajax.php' ) ;
 
 		$remove_link = add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_UNMAP_DOMAIN,

@@ -26,14 +26,14 @@
  * @package Render
  * @subpackage MappedDomains
  *
- * @since 4.1.5
+ * @since 4.2
  */
 class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
 
     /**
      * Renders page header.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @access protected
      */
@@ -52,7 +52,7 @@ class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
     /**
      * Renders tab content.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @access protected
      */

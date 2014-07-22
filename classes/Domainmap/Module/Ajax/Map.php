@@ -321,6 +321,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
 			// unset all domains
+
 			$this->_wpdb->update(
 				DOMAINMAP_TABLE_MAP,
 				array( 'is_primary' => 0 ),

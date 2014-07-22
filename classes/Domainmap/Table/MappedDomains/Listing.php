@@ -26,14 +26,14 @@
  * @package Table
  * @subpackage MappedDomains
  *
- * @since 4.1.5
+ * @since 4.2
  */
 class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
     /**
      * Returns site id column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string The site id.
@@ -45,7 +45,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns mapped column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string The mapped domain name linking to blog's home page.
@@ -59,7 +59,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns domain column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string The domain name linking to blog's setting page.
@@ -73,7 +73,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns primary column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string Yes/No .
@@ -85,7 +85,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns active column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string Yes/No .
@@ -126,7 +126,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns domain column data to display.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param array $item The array of row data.
      * @return string The domain name.
@@ -151,7 +151,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns table columns.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @return array The array of table columns to display.
      */
@@ -179,7 +179,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Fetches records from database.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @global wpdb $wpdb The database connection.
      */
@@ -213,7 +213,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Generates content for a single row of the table.
      *
-     * @since 4.1.5
+     * @since 4.2
      *
      * @param arra $item The current item.
      */
@@ -226,7 +226,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Extra controls to be displayed between bulk actions and pagination
      *
-     * @since 4.1.5
+     * @since 4.2
      * @access protected
      */
     public function extra_tablenav( $which ) {
@@ -236,7 +236,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns bulk actions
      *
-     * @since 4.1.5
+     * @since 4.2
      * @access protected
      * @return array bulk actions
      */
