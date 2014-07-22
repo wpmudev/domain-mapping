@@ -120,7 +120,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	}
 
 	/**
-	 * Performs upgrade plugin evnironment to up to date version.
+	 * Performs upgrade plugin environment to up to date version.
 	 *
 	 * @since 4.0.0
 	 *
@@ -146,8 +146,15 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$this->_add_filter( $filter, 'setup_database', 1 );
 		$this->_add_filter( $filter, 'upgrade_to_4_0_3', 10 );
 
-		// upgrade database version to current plugin version
-		$db_version = apply_filters( $filter, $db_version );
+
+        /**
+         * Filter version number
+         *
+         * @since 4.0.0
+         * @param string $db_version plugin version number
+         */
+        $db_version = apply_filters( $filter, $db_version );
+        // upgrade database version to current plugin version
 		$db_version = version_compare( $db_version, Domainmap_Plugin::VERSION, '>=' )
 			? $db_version
 			: Domainmap_Plugin::VERSION;

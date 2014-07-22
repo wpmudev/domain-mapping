@@ -591,8 +591,14 @@ class domain_map {
 		static $orig_urls = array();
 
 		if ( !isset( $orig_urls[$this->db->blogid] ) ) {
-			// get the original url
-			$orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
+
+            /**
+             * Filter the original url
+             *
+             * @since 1.0.0
+             * @param string $orig_url the original url
+             */
+            $orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
 			// switch the url to use the correct http or https and store the url in the cache
 			$orig_urls[$this->db->blogid] = is_ssl()
 				? str_replace( "http://", "https://", $orig_url )
@@ -602,8 +608,13 @@ class domain_map {
 			$orig_url = $orig_urls[$this->db->blogid];
 		}
 
-		// Get the new mapped url
-		$url = apply_filters( 'pre_option_siteurl', 'NA' );
+        /**
+         * Filter getting new mapped url
+         *
+         * @since 1.0.0
+         * @param string $url
+         */
+        $url = apply_filters( 'pre_option_siteurl', 'NA' );
 		if ( $url == 'NA' ) {
 			// If we don't have a mapped url then just return the content unchanged
 			return $post_content;

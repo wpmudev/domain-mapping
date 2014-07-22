@@ -231,8 +231,14 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 					'active'  => 1,
 				), array( '%d', '%s', '%d' ) );
 
-				// fire the action when a new domain is added
-				do_action( 'domainmapping_added_domain', $domain, $blog_id );
+                /**
+                 * Fires the action when a new domain is added
+                 *
+                 * @since 4.0.0
+                 * @param string $domain added domain
+                 * $param int $blog_id
+                 */
+                do_action( 'domainmapping_added_domain', $domain, $blog_id );
 			}
 		}
 	}

@@ -202,7 +202,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
-        // Don't redirect from original domain to the mapped domain if it's an ssl connection
+
+        /**
+         * Filter if it should proceed with redirecting
+         *
+         * @since 4.1.0
+         * @param bool $is_ssl
+         */
         if( apply_filters( "dm_prevent_redirection_for_ssl", is_ssl() ) ) return;
 
 		$redirect_to = $this->_get_frontend_redirect_type();

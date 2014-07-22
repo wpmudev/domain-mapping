@@ -242,8 +242,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			// check if we need to show form
 			$show_form = $this->_get_domains_count() == 0 || defined( 'DOMAINMAPPING_ALLOWMULTI' );
 
-			// fire the action when a domain is removed
-			do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
+
+            /**
+             * Fires the action when a domain is removed
+             *
+             * @since 4.0.0
+             * @param string $domain deleted domain name
+             * @param int $blog_id
+             */
+            do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
 		}
 
 		wp_send_json_success( array( 'show_form' => $show_form ) );

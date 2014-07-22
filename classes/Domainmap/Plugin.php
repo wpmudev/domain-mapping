@@ -259,7 +259,13 @@ class Domainmap_Plugin {
 	public function get_resellers() {
 		if ( is_null( $this->_resellers ) ) {
 			$this->_resellers = array();
-			$resellers = apply_filters( 'domainmapping_resellers', array() );
+            /**
+             * Filter domain mapping resellers
+             *
+             * @since 4.0.0
+             * @param array $resellers
+             */
+            $resellers = apply_filters( 'domainmapping_resellers', array() );
 			foreach ( $resellers as $reseller ) {
 				if ( is_object( $reseller ) && is_a( $reseller, 'Domainmap_Reseller' ) ) {
 					$this->_resellers[Domainmap_Reseller::encode_reseller_class( get_class( $reseller ) )] = $reseller;

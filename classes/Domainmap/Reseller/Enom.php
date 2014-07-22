@@ -659,7 +659,13 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		if ( $psts ) {
 			if ( $this->_get_gateway() == self::GATEWAY_PROSITES ) {
-				$locale = apply_filters( 'domainmap_locale', get_locale() );
+                /**
+                 * Filter domain mapping locale
+                 *
+                 * @since 4.0.0
+                 * @param string $locale the locale of the blog or from the 'locale' hook.
+                 */
+                $locale = apply_filters( 'domainmap_locale', get_locale() );
 				if ( !preg_match( '/^[a-z]{2}_[A-Z]{2}$/', $locale ) ) {
 					$locale = 'en_US';
 				}
