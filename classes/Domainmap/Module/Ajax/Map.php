@@ -165,6 +165,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		$message = $hide_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
+		$scheme = strtolower( trim( filter_input( INPUT_POST, 'scheme' ) ) );
         $domain = Domainmap_Punycode::encode( $domain );
 		if ( self::_validate_domain_name( $domain ) ) {
 
@@ -182,7 +183,8 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						'blog_id' => $this->_wpdb->blogid,
 						'domain'  => $domain,
 						'active'  => 1,
-					), array( '%d', '%s', '%d' ) );
+                        "scheme" => $scheme
+					), array( '%d', '%s', '%d', '%d') );
 
 					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added

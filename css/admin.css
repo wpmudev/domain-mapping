@@ -224,7 +224,9 @@
     -webkit-border-radius: 0;
     border-radius: 0
 }
-
+.domainmapping-input-prefix{
+    float: left;
+}
 .domainmapping-form input.domainmapping-input-sufix,
 .domainmapping-form input.domainmapping-input-prefix {
 	border: 1px solid #dfdfdf;
@@ -269,7 +271,7 @@
     -webkit-border-bottom-right-radius: 0;
     -moz-border-radius-bottomright: 0;
     border-bottom-right-radius: 0;
-    -moz-border-radius-bottomright: 0
+    -moz-border-radius-bottomright: 0;
 }
 
 .domainmapping-form input.domainmapping-input-sufix,

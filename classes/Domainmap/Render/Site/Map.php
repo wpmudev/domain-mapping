@@ -79,7 +79,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access protected
 	 */
 	protected function _render_tab() {
-		$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';
+
+		$schema = ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) ? 'https' : 'http';
 		$form_class = count( $this->domains ) > 0 && !self::_is_multi_enabled() ? ' domainmapping-form-hidden' : '';
 		$admin_ajax = esc_url( admin_url( 'admin-ajax.php' ) );
 
@@ -106,7 +107,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						<span class="domainmapping-map-remove"><?php _e( 'Actions', 'domainmap' ) ?></span>
 					</li>
 					<?php foreach( $this->domains as $row ) : ?>
-						<?php self::render_mapping_row( $row, $schema ) ?>
+						<?php self::render_mapping_row( $row ) ?>
 					<?php endforeach; ?>
 					<li class="domainmapping-form">
 						<form id="domainmapping-front-mapping" action="<?php echo $admin_ajax ?>" method="post">
@@ -122,7 +123,10 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						<form id="domainmapping-form-map-domain" action="<?php echo $admin_ajax ?>" method="post">
 							<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
 							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
-							<input type="text" class="domainmapping-input-prefix" readonly disabled value="<?php echo $schema ?>://">
+							<select type="text" name="scheme" class="domainmapping-input-prefix">
+                                <option value="0">http://</option>
+                                <option value="1">https://</option>
+                            </select>
 							<div class="domainmapping-controls-wrapper">
 								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
 							</div>
@@ -151,7 +155,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		global $current_site;
 
 		if ( !$schema ) {
-			$schema = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ? 'https' : 'http';;
+			$schema = Domainmap_Module::force_ssl_on_mapped_domain( $row->domain ) ? 'https' : 'http';;
 		}
 
 		$multi = self::_is_multi_enabled();

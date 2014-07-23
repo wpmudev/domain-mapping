@@ -83,7 +83,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		parent::__construct( $plugin );
 
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
-        $this->_add_action( 'plugins_loaded', 'force_ssl' );
+        $this->_add_action( 'plugins_loaded', 'force_scheme' );
         $this->_add_action( 'template_redirect',       'redirect_front_area' );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
@@ -551,15 +551,17 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
     }
 
 
+
     /**
      * Forces ssl in different areas of the site based on user choice
      *
      * @since 4.2
+     *
      * @uses force_ssl_admin
      * @uses force_ssl_login
      * @uses wp_redirect
      */
-    public function force_ssl(){
+    public function force_scheme(){
         if( $this->is_original_domain() && !is_ssl()  ){
             /**
              * Login and Admin pages
@@ -572,12 +574,25 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
         /**
          * Front pages
          */
-        if( $this->is_original_domain() && is_ssl()  ){
-            if(  $this->_plugin->get_option("map_force_frontend_ssl") && !is_admin() && !$this->is_login() ){
+        if(  !$this->is_login() && !is_admin() ){
+            if(  $this->_plugin->get_option("map_force_frontend_ssl") &&  $this->is_original_domain() && is_ssl() && !$this->_force_ssl_on_mapped_domain()){
+                wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+                exit();
+            }
+
+
+            /**
+             * Force mapped domains
+             */
+            if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() && !is_ssl() ){
+                wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+                exit();
+            }elseif( $this->is_mapped_domain() && !self::force_ssl_on_mapped_domain() && is_ssl() ){
                 wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
                 exit();
             }
         }
+
 
 
     }

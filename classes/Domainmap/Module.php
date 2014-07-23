@@ -148,8 +148,20 @@ class Domainmap_Module {
         return $current_domain === $original_domain;
     }
 
+    protected function is_mapped_domain(){
+        $home = home_url( '/' );
+        $current_domain = parse_url( $home, PHP_URL_HOST );
+        $original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
+        return $current_domain !== $original_domain;
+    }
     protected function is_login(){
         return in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ));
+    }
+
+    public static function force_ssl_on_mapped_domain( $domain = "" ){
+        global $wpdb;
+        $domain = $domain === "" ?  $_SERVER['SERVER_NAME'] : $domain;
+        return (bool) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
     }
 
 }
