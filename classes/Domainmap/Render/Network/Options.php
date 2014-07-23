@@ -145,6 +145,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_login_mapping();
 		$this->_render_cross_autologin();
 		$this->_render_domain_validation();
+        $this->_render_ssl_forced_pages();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -289,7 +290,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access private
 	 */
 	private function _render_domain_validation() {
-		$selected = isset( $this->map_verifydomain ) ? (int)$this->map_verifydomain : 1;
+		$selected = isset( $this->map_verifydomain ) ? (int) $this->map_verifydomain : 1;
 		$options = array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
@@ -311,6 +312,53 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			endforeach;
 		?></ul><?php
 	}
+
+    /**
+     * Renders forcing of http or https for admin, login and frontend
+     *
+     * @since 4.2.0
+     *
+     * @access private
+     */
+    private function _render_ssl_forced_pages() {
+        $admin_ssl = isset( $this->map_force_admin_ssl ) ? (int) $this->map_force_admin_ssl : 0;
+        $front_ssl = isset( $this->map_force_frontend_ssl ) ? (int) $this->map_force_frontend_ssl : 0;
+        $options = array(
+            1 => __( 'Yes', 'domainmap' ),
+            0 => __( 'No', 'domainmap' ),
+        );
+
+        ?>
+        <h4 class="domainmapping-block-header"><?php _e( "Force http/https (Only work for original domain)", 'domainmap' ) ?></h4>
+        <p>
+            <?php _e( "Would you like to force <strong>https</strong> in login and admin pages:", 'domainmap' ) ?><br>
+        </p>
+
+        <ul class="domainmapping-compressed-list"><?php
+        foreach ( $options as $option => $label ) :
+            ?><li>
+            <label>
+                <input type="radio" class="domainmapping-radio" name="map_force_admin_ssl" value="<?php echo $option ?>"<?php checked( $option, $admin_ssl ) ?>>
+                <?php echo $label ?>
+            </label>
+            </li><?php
+        endforeach;
+        ?></ul>
+        <p>
+            <?php _e( "Would you like to force <strong>http</strong> in front-end pages:", 'domainmap' ) ?><br>
+        </p>
+
+        <ul class="domainmapping-compressed-list"><?php
+        foreach ( $options as $option => $label ) :
+            ?><li>
+            <label>
+                <input type="radio" class="domainmapping-radio" name="map_force_frontend_ssl" value="<?php echo $option ?>"<?php checked( $option, $front_ssl ) ?>>
+                <?php echo $label ?>
+            </label>
+            </li><?php
+        endforeach;
+        ?></ul><?php
+    }
 
 	/**
 	 * Renders pro site section.
