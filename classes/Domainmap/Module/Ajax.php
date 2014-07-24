@@ -45,7 +45,7 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
         $domain = Domainmap_Punycode::encode($domain);
 		return preg_match( "/^([A-Za-z0-9](-*[A-Za-z0-9])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
 			&& preg_match( "/^.{1,253}$/", $domain ) //overall length check
-			&& preg_match( "/^[^\.]{2,63}(\.[^\.]{2,63})+$/", $domain ); //length of each label
+			&& preg_match( "/^[^\.]{1,63}(\.[^\.]{2,63})+$/", $domain ); //length of each label
 	}
 
 	/**
