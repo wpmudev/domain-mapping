@@ -348,7 +348,6 @@ abstract class Domainmap_Reseller {
 	 */
 	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
 		global $wpdb;
-
 		if ( !$purchase_link ) {
 			$purchase_link = add_query_arg( array(
 				'action'  => Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM,
@@ -360,7 +359,7 @@ abstract class Domainmap_Reseller {
 					'sld' => $sld,
 					'tld' => $tld,
 				), wp_get_referer() ) ) ),
-			), network_site_url( 'wp-admin/admin-ajax.php' ) );
+			), admin_url( '/admin-ajax.php' ) );
 
 			$purchase_link = sprintf(
 				'<a class="domainmapping-purchase-link" href="%s"><b>%s</b></a>',

@@ -161,6 +161,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function map_domain() {
+        var_dump(current_user_can("manage_options"));
 		self::_check_premissions( Domainmap_Plugin::ACTION_MAP_DOMAIN );
 
 		$message = $hide_form = false;
