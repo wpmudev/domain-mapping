@@ -39,10 +39,17 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 * @static
 	 * @access protected
 	 * @param string $domain The domain name to validate.
+	 * @param bool $is_purchase If the validation is done for a domain purchase.
 	 * @return boolean TRUE if domain name is valid, otherwise FALSE.
 	 */
-	protected static function _validate_domain_name( $domain ) {
+	protected static function _validate_domain_name( $domain, $is_purchase = false ) {
         $domain = Domainmap_Punycode::encode($domain);
+        if( $is_purchase ){
+            return preg_match( "/^([A-Za-z0-9](-*[A-Za-z0-9])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
+            && preg_match( "/^.{1,253}$/", $domain ) //overall length check
+            && preg_match( "/^[^\.]{1,63}(\.[^\.]{2,63})+$/", $domain ) //length of each label
+                ;
+        }
 		return preg_match( "/^([A-Za-z0-9](-*[A-Za-z0-9])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
 			&& preg_match( "/^.{1,253}$/", $domain ) //overall length check
 			&& preg_match( "/^[^\.]{1,63}(\.[^\.]{2,63})+$/", $domain ) //length of each label

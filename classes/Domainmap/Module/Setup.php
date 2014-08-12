@@ -121,6 +121,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 	 */
 	public function setup_resellers( $resellers ) {
 		$resellers[] = new Domainmap_Reseller_Enom();
+		$resellers[] = new Domainmap_Reseller_WHMCS();
 		return $resellers;
 	}
 

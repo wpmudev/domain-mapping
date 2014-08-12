@@ -1,0 +1,881 @@
+<?php
+
+// +----------------------------------------------------------------------+
+// | Copyright Incsub (http://incsub.com/)                                |
+// | Based on an original by Donncha (http://ocaoimh.ie/)                 |
+// +----------------------------------------------------------------------+
+// | This program is free software; you can redistribute it and/or modify |
+// | it under the terms of the GNU General Public License, version 2, as  |
+// | published by the Free Software Foundation.                           |
+// |                                                                      |
+// | This program is distributed in the hope that it will be useful,      |
+// | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+// | GNU General Public License for more details.                         |
+// |                                                                      |
+// | You should have received a copy of the GNU General Public License    |
+// | along with this program; if not, write to the Free Software          |
+// | Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,               |
+// | MA 02110-1301 USA                                                    |
+// +----------------------------------------------------------------------+
+
+/**
+ * WHMCS reseller API class.
+ *
+ * @category Domainmap
+ * @package Reseller
+ *
+ * @since 4.0.0
+ */
+class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
+
+	const RESELLER_ID = 'whmcs';
+
+	const ENDPOINT_PROXY      = 'http://premium.wpmudev.org/enom-proxy.php?';
+
+	const ENVIRONMENT_PRODUCTION = 'prod';
+	const ENVIRONMENT_TEST       = 'test';
+
+	const COMMAND_CHECK_LOGIN        = 'getclients';
+	const COMMAND_CHECK              = 'domainwhois';
+	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
+	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
+	const COMMAND_PURCHASE           = 'Purchase';
+	const COMMAND_SET_HOSTS          = 'SetHosts';
+	const COMMAND_GET_EXT_ATTRIBUTES = 'GetExtAttributes';
+	const COMMAND_REGISTER_ACCOUNT   = 'CreateAccount';
+
+	const GATEWAY_PAYPAL     = 'whmcs';
+	const GATEWAY_PROSITES = 'prosites';
+
+
+	/**
+	 * Returns reseller internal id.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
+	public function get_reseller_id() {
+		return self::RESELLER_ID;
+	}
+
+	/**
+	 * Executes remote command and returns response of execution.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $command The command name.
+	 * @param array $args Additional optional arguments.
+	 * @param string $endpoint The concrete endpoint to use for the request.
+	 * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
+	 */
+	private function _exec_command( $command, $arguments = array() ) {
+        $options = Domainmap_Plugin::instance()->get_options();
+
+        $args = array();
+        $args['username']       = isset( $options[self::RESELLER_ID]['uid'] ) ?  $options[self::RESELLER_ID]['uid'] : false;
+        $args['password']       = isset( $options[self::RESELLER_ID]['pwd'] ) ?  md5( $options[self::RESELLER_ID]['pwd'] ) : false;
+        $api_url                = isset( $options[self::RESELLER_ID]['api'] ) ?  $options[self::RESELLER_ID]['api']  : false;
+        $args['responsetype']   = "json";
+        $args['action']         = $command;
+        $args                   = array_merge( $args, $arguments );
+
+        if( !($args['username'] && $args['password'] && $api_url)  ) return;
+
+        $response = wp_remote_post($api_url, array(
+            'timeout' => 3,
+            'body' => $args
+        ));
+
+        if ( is_wp_error( $response ) ) {
+            return $response;
+        }
+
+        $response_code = wp_remote_retrieve_response_code( $response );
+
+        if ( $response_code  === 200 ){
+            return  json_decode( wp_remote_retrieve_body( $response ) );
+        }else{
+            $error = new WP_Error();
+            $error->add( $response_code, strip_tags( wp_remote_retrieve_body( $response ) ) );
+            return $error;
+        }
+	}
+
+	/**
+	 * Logs request to reseller API.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @param int $type The request type.
+	 * @param SimpleXMLElement $response The response information, received on request.
+	 */
+	private function _log_enom_request( $type, $xml ) {
+		$valid = false;
+		$errors = array();
+
+		if ( is_wp_error( $xml ) ) {
+			$errors = $xml->get_error_messages();
+			$xml = array();
+		} elseif ( is_a( $xml, 'SimpleXMLElement' ) ) {
+			$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
+			if ( !$valid && isset( $xml->errors ) ) {
+				$errors = json_decode( json_encode( $xml->errors ), true );
+			}
+		} else {
+			$errors[] = __( 'Unexpected error appears during request processing. Please, try again later.', 'domainmap' );
+			if ( filter_input( INPUT_GET, 'debug' ) ) {
+				$errors[] = $xml;
+			}
+		}
+
+		$this->_log_request( $type, $valid, $errors, $xml );
+	}
+
+	/**
+	 * Saves reseller options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param array $options The array of plugin options.
+	 */
+	public function save_options( &$options ) {
+		if ( !isset( $options[self::RESELLER_ID] ) || !is_array( $options[self::RESELLER_ID] ) ) {
+			$options[self::RESELLER_ID] = array();
+		}
+
+        // api url
+        $uid = trim( filter_input( INPUT_POST, 'map_reseller_whmcs_api' ) );
+        $options[self::RESELLER_ID]['api'] = $uid;
+
+		// user name
+		$uid = trim( filter_input( INPUT_POST, 'map_reseller_whmcs_uid' ) );
+		$need_health_check = !isset( $options[self::RESELLER_ID]['uid'] ) || $options[self::RESELLER_ID]['uid'] != $uid;
+		$options[self::RESELLER_ID]['uid'] = $uid;
+
+		// password
+		$pwd = filter_input( INPUT_POST, 'map_reseller_whmcs_pwd' );
+		$pwd_hash = filter_input( INPUT_POST, 'map_reseller_whmcs_pwd_hash' );
+		if ( $pwd_hash != md5( $pwd ) ) {
+			$options[self::RESELLER_ID]['pwd'] = $pwd;
+			$need_health_check = true;
+		}
+
+		// payment gateway
+		$gateway = filter_input( INPUT_POST, 'map_reseller_whmcs_payment' );
+		if ( $gateway !== false ) {
+			$gateways = $this->_get_gateways();
+			if ( isset( $gateways[$gateway] ) ) {
+				$options[self::RESELLER_ID]['gateway'] = $gateway;
+			}
+		}
+
+        $this->_validate_credentials();
+		// validate credentials
+		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
+			? $this->_validate_credentials()
+			: true;
+	}
+
+	/**
+	 * Validates API credentials.
+	 *
+	 * @sicne 4.0.0
+	 *
+	 * @access private
+	 * @param string $uid The user id.
+	 * @param string $pwd The user password.
+	 * @param string $environment Current environment.
+	 * @return boolean TRUE if API credentials are valid, otherwise FALSE.
+	 */
+	private function _validate_credentials() {
+		$json = $this->_exec_command( self::COMMAND_CHECK_LOGIN );
+        $valid = is_object( $json ) && !is_wp_error( $json ) ? $json->result === 'success' : false;
+        $transient = 'whmcs_errors_' . get_current_user_id();
+        if ( !$valid ) {
+            set_site_transient( $transient, $this->get_last_errors() );
+        } else {
+            delete_site_transient( $transient );
+        }
+        return $valid;
+	}
+
+	/**
+	 * Returns the array of payments gateways supported by reseller.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @return array The associative array of payment gateways.
+	 */
+	private function _get_gateways() {
+		$gateways = array(
+            self::GATEWAY_PAYPAL => esc_html__( 'Paypal', 'domainmap' )
+        );
+
+		return $gateways;
+	}
+
+	/**
+	 * Returns current reseller payment gateway.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param array $options The plugin options.
+	 * @return string The current gateway key.
+	 */
+	private function _get_gateway( $options = null ) {
+		global $psts;
+
+		// if no options were passed, take it from the plugin instance
+		if ( !$options ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
+		}
+
+		// fetch gateway information
+		$gateways = $this->_get_gateways();
+		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] )
+			? $options['gateway']
+			: self::GATEWAY_PAYPAL;
+
+		// if paypal gateway is selected, then check if it is available
+		if ( $gateway == self::GATEWAY_PROSITES ) {
+			// if prosites or paypal gateway is not activated, then use eNom gateway
+			$paypal_class = 'ProSites_Gateway_PayPalExpressPro';
+			if ( !$psts || !in_array( $paypal_class, (array)$psts->get_setting( 'gateways_enabled' ) ) || !class_exists( $paypal_class ) ) {
+				$gateway = self::GATEWAY_PAYPAL;
+			}
+		}
+
+		return $gateway;
+	}
+
+	/**
+	 * Returns current environment.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param array $options The plugin options.
+	 * @return string The current environment.
+	 */
+	private function _get_environment( $options = null ) {
+		// if no options were passed, take it from the plugin instance
+		if ( !$options ) {
+			$options = Domainmap_Plugin::instance()->get_options();
+			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
+		}
+
+		return isset( $options['environment'] ) ? $options['environment'] : self::ENVIRONMENT_TEST;
+	}
+
+	/**
+	 * Returns reseller title.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return string The title of reseller provider.
+	 */
+	public function get_title() {
+		return 'WHMCS';
+	}
+
+	/**
+	 * Renders reseller options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 */
+	public function render_options() {
+		$options = Domainmap_Plugin::instance()->get_options();
+		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
+
+		$register_link = add_query_arg( array(
+			'action'   => Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM,
+			'nonce'    => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM ),
+			'reseller' => self::encode_reseller_class( __CLASS__ ),
+		), admin_url( 'admin-ajax.php' ) );
+
+		$template = new Domainmap_Render_Reseller_WHMCS_Settings( $options );
+
+		$template->gateways = $this->_get_gateways();
+		$template->gateway = $this->_get_gateway( $options );
+		$template->errors = get_site_transient( 'whmcs_errors_' . get_current_user_id() );
+
+		$template->render();
+	}
+
+	/**
+	 * Determines whether reseller API connected properly or not.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if API connected properly, otherwise FALSE.
+	 */
+	public function is_valid() {
+		$options = Domainmap_Plugin::instance()->get_options();
+		return !isset( $options[self::RESELLER_ID]['valid'] ) || $options[self::RESELLER_ID]['valid'] == true;
+	}
+
+	/**
+	 * Returns TLD list accepted by reseller.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @return array The array of TLD accepted by reseller.
+	 */
+	protected function _get_tld_list() {
+        return array("com", "info");
+	}
+
+	/**
+	 * Checks domain availability.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @param string $tld The top level domain.
+	 * @param string $sld The second level domain.
+	 * @return boolean TRUE if domain is available to puchase, otherwise FALSE.
+	 */
+	protected function _check_domain( $tld, $sld ) {
+		$json = $this->_exec_command( self::COMMAND_CHECK,  array(
+			'domain' => $sld . "." . $tld,
+		) );
+
+//		$this->_log_enom_request( self::REQUEST_CHECK_DOMAIN, $xml );
+
+        return isset( $json->status ) ? $json->status === "available" : false;
+	}
+
+	/**
+	 * Fetches and returns TLD price.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @param string $tld The top level domain.
+	 * @return float The price for the TLD.
+	 */
+	protected function _get_tld_price( $tld ) {
+		return 15;
+	}
+
+	/**
+	 * Purchases a domain name.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access protected
+	 * @return string|boolean The domain name if purchased successfully, otherwise FALSE.
+	 */
+	public function purchase() {
+		$sld = trim( filter_input( INPUT_POST, 'sld' ) );
+		$tld = trim( filter_input( INPUT_POST, 'tld' ) );
+		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
+
+		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
+		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
+		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+			'sld'                        => $sld,
+			'tld'                        => $tld,
+			'UseDNS'                     => 'default',
+			'ChargeAmount'               => $this->get_tld_price( $tld ),
+			'EndUserIP'                  => self::_get_remote_ip(),
+			'CardType'                   => filter_input( INPUT_POST, 'card_type' ),
+			'CCName'                     => filter_input( INPUT_POST, 'card_cardholder' ),
+			'CreditCardNumber'           => preg_replace( '/[^0-9]/', '', filter_input( INPUT_POST, 'card_number' ) ),
+			'CreditCardExpMonth'         => $expiry[0],
+			'CreditCardExpYear'          => isset( $expiry[1] ) ? "20{$expiry[1]}" : '',
+			'CVV2'                       => filter_input( INPUT_POST, 'card_cvv2' ),
+			'CCAddress'                  => filter_input( INPUT_POST, 'billing_address' ),
+			'CCCity'                     => filter_input( INPUT_POST, 'billing_city' ),
+			'CCStateProvince'            => filter_input( INPUT_POST, 'billing_state' ),
+			'CCZip'                      => filter_input( INPUT_POST, 'billing_zip' ),
+			'CCPhone'                    => $billing_phone,
+			'CCCountry'                  => filter_input( INPUT_POST, 'billing_country' ),
+			'RegistrantFirstName'        => filter_input( INPUT_POST, 'registrant_first_name' ),
+			'RegistrantLastName'         => filter_input( INPUT_POST, 'registrant_last_name' ),
+			'RegistrantOrganizationName' => filter_input( INPUT_POST, 'registrant_organization' ),
+			'RegistrantJobTitle'         => filter_input( INPUT_POST, 'registrant_job_title' ),
+			'RegistrantAddress1'         => filter_input( INPUT_POST, 'registrant_address1' ),
+			'RegistrantAddress2'         => filter_input( INPUT_POST, 'registrant_address2' ),
+			'RegistrantCity'             => filter_input( INPUT_POST, 'registrant_city' ),
+			'RegistrantStateProvince'    => filter_input( INPUT_POST, 'registrant_state' ),
+			'RegistrantPostalCode'       => filter_input( INPUT_POST, 'registrant_zip' ),
+			'RegistrantCountry'          => filter_input( INPUT_POST, 'registrant_country' ),
+			'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
+			'RegistrantPhone'            => $registrant_phone,
+			'RegistrantFax'              => $registrant_fax,
+		) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
+
+		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+
+		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
+			$this->_populate_dns_records( $tld, $sld );
+			return "{$sld}.{$tld}";
+		}
+
+		return false;
+	}
+
+	/**
+	 * Populates either DNS A or CNAME records for purchased domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global wpdb $wpdb The database connection.
+	 * @param string $tld The TLD name.
+	 * @param string $sld The SLD name.
+	 */
+	private function _populate_dns_records( $tld, $sld ) {
+		global $wpdb;
+
+		$ips = $args = array();
+		$options = Domainmap_Plugin::instance()->get_options();
+
+		// if server ip addresses are provided, use it to populate DNS records
+		if ( !empty( $options['map_ipaddress'] ) ) {
+			foreach ( explode( ',', trim( $options['map_ipaddress'] ) ) as $ip ) {
+				if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					$ips[] = $ip;
+				}
+			}
+		}
+
+		// looks like server ip addresses are not set, then try to read it automatically
+		if ( empty( $ips ) && function_exists( 'dns_get_record' ) ) {
+			// fetch unchanged domain name from database, because get_option function could return mapped domain name
+			$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
+			// fetch domain DNS A records
+			$dns = @dns_get_record( $basedomain, DNS_A );
+			if ( is_array( $dns ) ) {
+				$ips = wp_list_pluck( $dns, 'ip' );
+			}
+		}
+
+		// if we have an ip address to populate DNS record, then try to detect if we use shared or dedicated hosting
+		$dedicated = false;
+		if ( !empty( $ips ) ) {
+			$check = sha1( time() );
+
+			switch_to_blog( 1 );
+			$ajax_url = admin_url( 'admin-ajax.php' );
+			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
+			restore_current_blog();
+
+			$response = wp_remote_request( add_query_arg( array(
+				'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
+				'check'  => $check,
+			), $ajax_url ) );
+
+			$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check;
+		}
+
+		// populate request arguments
+		if ( !empty( $ips ) && $dedicated ) {
+			// network is hosted on dedicated hosting and we can use DNS A records
+			$i = 0;
+			foreach ( $ips as $ip ) {
+				if ( filter_var( trim( $ip ), FILTER_VALIDATE_IP ) ) {
+					$i++;
+					$args["HostName{$i}"] = '@';
+					$args["RecordType{$i}"] = 'A';
+					$args["Address{$i}"] = $ip;
+				}
+			}
+		} else {
+			// network is hosted on shared hosting and we can use DNS CNAME records for it
+			$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $wpdb->blogid ) );
+
+			$args['HostName1'] = "{$sld}.{$tld}";
+			$args['RecordType1'] = 'CNAME';
+			$args['Address1'] = "{$origin->domain}.";
+
+			$args['HostName2'] = "www.{$sld}.{$tld}";
+			$args['RecordType2'] = 'CNAME';
+			$args['Address2'] = "{$origin->domain}.";
+		}
+
+		// setup DNS records if it has been populated
+		if ( !empty( $args ) ) {
+			$args['sld'] = $sld;
+			$args['tld'] = $tld;
+
+			$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
+			$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
+		}
+	}
+
+	/**
+	 * Renders purchase form.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global WP_User $current_user The current user object.
+	 * @param array $domain_info The information about a domain to purchase.
+	 */
+	public function render_purchase_form( $domain_info ) {
+		global $current_user;
+
+		get_currentuserinfo();
+		$cardholder = trim( $current_user->user_firstname . ' ' . $current_user->user_lastname );
+		if ( empty( $cardholder ) ) {
+			$cardholder = __( 'Your name', 'domainmap' );
+		}
+
+		$render = new Domainmap_Render_Reseller_WHMCS_Purchase( $domain_info );
+		$render->errors = $this->get_last_errors();
+		$render->cardtypes = $this->get_card_types();
+		$render->cardholder = $cardholder;
+		$render->countries = Domainmap_Plugin::instance()->get_countries();
+		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
+
+		$render->render();
+	}
+
+	/**
+	 * Returns extended attributes for specific TLD.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $tld The TLD name.
+	 */
+	private function _get_extended_attributes( $tld ) {
+		$transient = "domainmap-ext-attributes-{$tld}";
+		$attributes = get_site_transient( $transient );
+		if ( $attributes !== false ) {
+			return $attributes;
+		}
+
+		$attributes = array();
+		$response = $this->_exec_command( self::COMMAND_GET_EXT_ATTRIBUTES, array( 'TLD' => $tld ) );
+		$this->_log_enom_request( self::REQUEST_GET_EXT_ATTRIBUTES, $response );
+
+		$response = json_decode( json_encode( $response ), true );
+		if ( !empty( $response['Attributes']['Attribute'] ) && is_array( $response['Attributes']['Attribute'] ) ) {
+			foreach ( $response['Attributes']['Attribute'] as $attribute ) {
+				if ( $attribute['Application'] == 2 ) {
+					$attribute['Options'] = $attribute['Options']['Option'];
+					$attributes[] = $attribute;
+				}
+			}
+		}
+
+		set_site_transient( $transient, $attributes, DAY_IN_SECONDS );
+
+		return $attributes;
+	}
+
+	/**
+	 * Returns domain available response HTML with a link on purchase form or paypal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param string $sld The actual SLD.
+	 * @param string $tld The actual TLD.
+	 * @param string $purchase_link The purchase URL.
+	 * @return string Response HTML.
+	 */
+	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
+
+	}
+
+	/**
+	 * Executes SetExpressCheckout command of PayPal API and returns response.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param float $amount The price of the domain.
+	 * @param string $sld The second level domain.
+	 * @param string $tld The first level domain.
+	 * @return array The response array on success, otherwise FALSE.
+	 */
+	private function _set_express_checkout( $amount, $sld, $tld ) {
+		global $psts;
+		if ( !$psts ) {
+			return false;
+		}
+
+		$returnurl = add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_PAYPAL_DO_EXPRESS_CHECKOUT,
+			'sld'    => $sld,
+			'tld'    => $tld,
+		), admin_url( 'admin-ajax.php' ) );
+
+		$cancelurl = parse_url( add_query_arg( array(
+			'token' => false,
+			'sld'   => $sld,
+			'tld'   => $tld,
+		), wp_get_referer() ) );
+
+		return $this->_call_paypal_api( 'SetExpressCheckout', array(
+			'PAYMENTREQUEST_0_AMT'           => $amount,
+			'PAYMENTREQUEST_0_ITEMAMT'       => $amount,
+			'PAYMENTREQUEST_0_CURRENCYCODE'  => 'USD',
+			'PAYMENTREQUEST_0_DESC'          => __( 'Payment for 1 year usage of the domain name.', 'domainmap' ),
+			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+			'L_PAYMENTREQUEST_0_NAME0'       => "{$sld}.{$tld}",
+			'L_PAYMENTREQUEST_0_QTY0'        => 1,
+			'L_PAYMENTREQUEST_0_AMT0'        => $amount,
+			'LOCALECODE'                     => $psts->get_setting( 'pypl_site' ),
+			'NOSHIPPING'                     => 1,
+			'ALLOWNOTE'                      => 0,
+			'RETURNURL'                      => $returnurl,
+			'CANCELURL'                      => site_url( "{$cancelurl['path']}?{$cancelurl['query']}" ),
+			'HDRIMG'                         => $psts->get_setting( 'pypl_header_img' ),
+			'HDRBORDERCOLOR'                 => $psts->get_setting( 'pypl_header_border' ),
+			'HDRBACKCOLOR'                   => $psts->get_setting( 'pypl_header_back' ),
+			'PAYFLOWCOLOR'                   => $psts->get_setting( 'pypl_page_back' ),
+		) );
+	}
+
+	/**
+	 * Calls PayPal API and returns response array.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 * @param string $method The request command.
+	 * @param array $args The array of request arguments.
+	 * @return boolean|array The response array on success, otherwise FALSE.
+	 */
+	private function _call_paypal_api( $method, array $args ) {
+		global $psts;
+		if ( !$psts ) {
+			return false;
+		}
+
+		$endpoint = $psts->get_setting( 'pypl_status' ) == 'live'
+			? "https://api-3t.paypal.com/nvp"
+			: "https://api-3t.sandbox.paypal.com/nvp";
+
+		$response = wp_remote_post( $endpoint, array(
+			'user-agent' => "Pro Sites: http://premium.wpmudev.org/project/pro-sites | PayPal Express/Pro Gateway",
+			'sslverify'  => false,
+			'timeout'    => 60,
+			'body'       => http_build_query( array_merge( array(
+				'VERSION'   => '63.0',
+				'PWD'       => $psts->get_setting( 'pypl_api_pass' ),
+				'USER'      => $psts->get_setting( 'pypl_api_user' ),
+				'SIGNATURE' => $psts->get_setting( 'pypl_api_sig' ),
+				'METHOD'    => $method,
+			), $args ) ),
+		) );
+
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
+			return false;
+		}
+
+		$nvp_response = array();
+		parse_str( wp_remote_retrieve_body( $response ), $nvp_response );
+		return $nvp_response;
+	}
+
+	/**
+	 * Proceeds PayPal checkout.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @global ProSites $psts The instance of ProSites plugin class.
+	 */
+	public function proceed_paypal_checkout() {
+		global $psts;
+
+		$tld = strtolower( trim( filter_input( INPUT_GET, 'tld' ) ) );
+		$sld = strtolower( trim( filter_input( INPUT_GET, 'sld' ) ) );
+		$response = $this->_set_express_checkout( $this->get_tld_price( $tld ), $sld, $tld );
+		if ( !$response || !isset( $response['ACK'] ) || !isset( $response['TOKEN'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
+			return;
+		}
+
+		$paypal_url = $psts->get_setting( 'pypl_status' ) == 'live'
+			? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
+			: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
+
+		wp_redirect( $paypal_url . urlencode( $response['TOKEN'] ) );
+		exit;
+	}
+
+	/**
+	 * Completes PayPal checkout and purchase a domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access public
+	 * @return string|boolean Returns domain name on success, otherwise FALSE.
+	 */
+	public function complete_paypal_checkout() {
+		$token = filter_input( INPUT_GET, 'token' );
+		if ( !$token ) {
+			return false;
+		}
+
+		// receive checkout details
+		$details = $this->_call_paypal_api( 'GetExpressCheckoutDetails', array( 'TOKEN' => $token ) );
+		if ( !$details || !isset( $details['ACK'] ) || ( $details['ACK'] != 'Success' && $details['ACK'] != 'SuccessWithWarning' ) ) {
+			return false;
+		}
+
+		// complete checkout
+		$response = $this->_call_paypal_api( 'DoExpressCheckoutPayment', array(
+			'PAYERID'                        => $details['PAYERID'],
+			'TOKEN'                          => $details['TOKEN'],
+			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
+			'PAYMENTREQUEST_0_CURRENCYCODE'  => $details['PAYMENTREQUEST_0_CURRENCYCODE'],
+			'PAYMENTREQUEST_0_AMT'           => $details['PAYMENTREQUEST_0_AMT'],
+			'PAYMENTREQUEST_0_ITEMAMT'       => $details['PAYMENTREQUEST_0_ITEMAMT'],
+			'L_PAYMENTREQUEST_0_QTY0'        => $details['L_PAYMENTREQUEST_0_QTY0'],
+			'L_PAYMENTREQUEST_0_AMT0'        => $details['L_PAYMENTREQUEST_0_AMT0'],
+			'L_PAYMENTREQUEST_0_NAME0'       => $details['L_PAYMENTREQUEST_0_NAME0'],
+			'L_PAYMENTREQUEST_0_NUMBER0'     => 0,
+		) );
+
+		if ( !$response || !isset( $response['ACK'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
+			return false;
+		}
+
+		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
+		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+			'sld'           => $sld,
+			'tld'           => $tld,
+			'UseDNS'        => 'default',
+			'UseCreditCard' => 'no',
+			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
+		) );
+
+		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+
+		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
+			$this->_populate_dns_records( $tld, $sld );
+			return "{$sld}.{$tld}";
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines whether reseller supports accounts registration.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if reseller supports account registration, otherwise FALSE.
+	 */
+	public function support_account_registration() {
+		return true;
+	}
+
+	/**
+	 * Renders registration form.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @global WP_User $current_user The current user object.
+	 */
+	public function render_registration_form() {
+		global $current_user;
+
+		get_currentuserinfo();
+		$cardholder = trim( $current_user->user_firstname . ' ' . $current_user->user_lastname );
+		if ( empty( $cardholder ) ) {
+			$cardholder = __( 'Your name', 'domainmap' );
+		}
+
+		$template = new Domainmap_Render_Reseller_WHMCS_Register();
+
+		$template->errors = $this->get_last_errors();
+		$template->cardtypes = $this->get_card_types();
+		$template->cardholder = $cardholder;
+		$template->countries = Domainmap_Plugin::instance()->get_countries();
+
+		$template->render();
+	}
+
+	/**
+	 * Registers new account.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @access public
+	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
+	 */
+	public function regiser_account() {
+		$force_production = !defined( 'DOMAINMAPPING_FORCE_PRODUCTION' ) || filter_var( DOMAINMAPPING_FORCE_PRODUCTION, FILTER_VALIDATE_BOOLEAN );
+
+		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
+		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
+
+		$response = $this->_exec_command( self::COMMAND_REGISTER_ACCOUNT, array(
+			'uid'                            => '',
+			'pw'                             => '',
+
+			// account information
+			'NewUID'                         => filter_input( INPUT_POST, 'account_login' ),
+			'NewPW'                          => filter_input( INPUT_POST, 'account_password' ),
+			'ConfirmPW'                      => filter_input( INPUT_POST, 'account_password_confirm' ),
+			'RegistrantEmailAddress_Contact' => filter_input( INPUT_POST, 'account_email' ),
+			'AuthQuestionType'               => filter_input( INPUT_POST, 'account_question_type' ),
+			'AuthQuestionAnswer'             => filter_input( INPUT_POST, 'account_question_answer' ),
+			'Reseller'                       => 1,
+			'EndUserIP'                      => self::_get_remote_ip(),
+
+			// registrant information
+			'RegistrantFirstName'            => filter_input( INPUT_POST, 'registrant_first_name' ),
+			'RegistrantLastName'             => filter_input( INPUT_POST, 'registrant_last_name' ),
+			'RegistrantOrganizationName'     => filter_input( INPUT_POST, 'registrant_organization' ),
+			'RegistrantJobTitle'             => filter_input( INPUT_POST, 'registrant_job_title' ),
+			'RegistrantAddress1'             => filter_input( INPUT_POST, 'registrant_address1' ),
+			'RegistrantAddress2'             => filter_input( INPUT_POST, 'registrant_address2' ),
+			'RegistrantCity'                 => filter_input( INPUT_POST, 'registrant_city' ),
+			'RegistrantStateProvince'        => filter_input( INPUT_POST, 'registrant_state' ),
+			'RegistrantPostalCode'           => filter_input( INPUT_POST, 'registrant_zip' ),
+			'RegistrantCountry'              => filter_input( INPUT_POST, 'registrant_country' ),
+			'RegistrantEmailAddress'         => filter_input( INPUT_POST, 'registrant_email' ),
+			'RegistrantPhone'                => $registrant_phone,
+			'RegistrantFax'                  => $registrant_fax,
+
+			// proxy stuff
+			'LiveEnvironment'                => $force_production ? 1 : 0,
+			'UserAgent'                      => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '',
+		), self::ENDPOINT_PROXY );
+
+		// check if we received invalid xml and was not able to parse it
+		if ( !$response ) {
+			$response = new WP_Error();
+			$response->add( 'invalid_xml', __( 'We received unexpected result from eNom server. Try to resubmit your form again and if you receive information that such login is already exists, then it means that current request was processed successfully.', 'domainmap' ) );
+		}
+
+		// pass FALSE as request type to process errors only
+		$this->_log_enom_request( false, $response );
+
+		return $response && isset( $response->ErrCount ) && $response->ErrCount == 0;
+	}
+
+}

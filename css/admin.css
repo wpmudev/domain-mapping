@@ -714,3 +714,12 @@ input.domainmapping-radio {
 .domainmapping-btn{
     cursor: pointer;
 }
+#domainmapping-whmcs-header{
+    height: 60px;
+    background: url("../images/whmcs-bg.jpg") center repeat-x;
+}
+#domainmapping-whmcs-logo{
+    background: url("../images/whmcs-logo.jpg") no-repeat left center;
+    height: 60px;
+    margin-left: 10px;
+}
