@@ -31,7 +31,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
 	const RESELLER_ID = 'whmcs';
 
-	const ENDPOINT_PROXY      = 'http://premium.wpmudev.org/enom-proxy.php?';
 
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
@@ -48,8 +47,9 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const GATEWAY_PAYPAL     = 'whmcs';
 	const GATEWAY_PROSITES = 'prosites';
 
+    const ACTION_CHECK_CLIENT_LOGIN      = 'dm_whmcs_validate_client_login';
 
-	/**
+    /**
 	 * Returns reseller internal id.
 	 *
 	 * @since 4.0.0
@@ -60,18 +60,28 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		return self::RESELLER_ID;
 	}
 
-	/**
-	 * Executes remote command and returns response of execution.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access private
-	 * @param string $command The command name.
-	 * @param array $args Additional optional arguments.
-	 * @param string $endpoint The concrete endpoint to use for the request.
-	 * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
-	 */
-	private function _exec_command( $command, $arguments = array() ) {
+
+
+    /**
+     * Executes remote command and returns response of execution.
+     *
+     * @since 4.0.0
+     *
+     * @access private
+     * @param string $command The command name.
+     * @param array $args Additional optional arguments.
+     * @param string $endpoint The concrete endpoint to use for the request.
+     * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
+     */
+
+    /**
+     * Executes remote command and returns response of execution.
+     *
+     * @param $command
+     * @param array $arguments
+     * @return WP_Error | stdClass
+     */
+    public static function exec_command( $command, $arguments = array() ){
         $options = Domainmap_Plugin::instance()->get_options();
 
         $args = array();
@@ -94,15 +104,25 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         }
 
         $response_code = wp_remote_retrieve_response_code( $response );
-
+        $response_body = wp_remote_retrieve_body( $response );
+        $error = new WP_Error();
         if ( $response_code  === 200 ){
-            return  json_decode( wp_remote_retrieve_body( $response ) );
+            $obj = json_decode( wp_remote_retrieve_body( $response ) );
+           if( isset( $obj->result ) && $obj->result === "success" ){
+               return $obj;
+           }elseif( isset( $obj->result ) && $obj->result === "error"  ){
+               $error->add( $response_code, strip_tags( $obj->message ) );
+               return $error;
+           }
         }else{
-            $error = new WP_Error();
-            $error->add( $response_code, strip_tags( wp_remote_retrieve_body( $response ) ) );
+            $error->add( $response_code, strip_tags( $response_body ) );
             return $error;
         }
-	}
+    }
+
+    private function _exec_command( $command, $arguments = array() ) {
+        return self::exec_command( $command, $arguments );
+    }
 
 	/**
 	 * Logs request to reseller API.
@@ -597,7 +617,49 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return string Response HTML.
 	 */
 	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
+        ob_start();
 
+        printf(
+            '<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<div class="domainmapping-clear"></div>',
+            strtoupper( "{$sld}.{$tld}" ),
+            __( 'is available to purchase for', 'domainmap' ),
+            $this->get_tld_price( $tld ),
+            __( 'per year', 'domainmap' )
+        );
+        ?>
+        <br/>
+        <p><?php _e("Login to WHMCS with your client details: ", domain_map::Text_Domain); ?></p>
+<!--        <div class="domainmapping-info domainmapping-info-success">-->
+                <form action="" method="post" id="dm_whmcs_client_login">
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><label for="dm_client_email"><?php _e("Email: ", domain_map::Text_Domain); ?></label></th>
+                            <td>
+                                <input type="email" id="dm_client_email" name="dm_client_email" class="regular-text" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="dm_client_pass"><?php _e("Password: ", domain_map::Text_Domain); ?></label></th>
+                            <td>
+                                <input type="password" id="dm_client_pass" name="dm_client_pass" class="regular-text" />
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        <button class="button-primary button"><?php _e("Submit", domain_map::Text_Domain); ?></button>
+                    </p>
+                    <p>
+                        <strong>
+                        <?php
+                            printf( __("Or <a href='%s'>click to signup as a client</a>", domain_map::Text_Domain), "http://google.com" );
+                        ?>
+                        </strong>
+                    </p>
+                </form>
+        </div>
+        <?php
+        return ob_get_clean();
 	}
 
 	/**
@@ -827,55 +889,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
 	 */
 	public function regiser_account() {
-		$force_production = !defined( 'DOMAINMAPPING_FORCE_PRODUCTION' ) || filter_var( DOMAINMAPPING_FORCE_PRODUCTION, FILTER_VALIDATE_BOOLEAN );
 
-		$registrant_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_phone' ) );
-		$registrant_fax = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'registrant_fax' ) );
-
-		$response = $this->_exec_command( self::COMMAND_REGISTER_ACCOUNT, array(
-			'uid'                            => '',
-			'pw'                             => '',
-
-			// account information
-			'NewUID'                         => filter_input( INPUT_POST, 'account_login' ),
-			'NewPW'                          => filter_input( INPUT_POST, 'account_password' ),
-			'ConfirmPW'                      => filter_input( INPUT_POST, 'account_password_confirm' ),
-			'RegistrantEmailAddress_Contact' => filter_input( INPUT_POST, 'account_email' ),
-			'AuthQuestionType'               => filter_input( INPUT_POST, 'account_question_type' ),
-			'AuthQuestionAnswer'             => filter_input( INPUT_POST, 'account_question_answer' ),
-			'Reseller'                       => 1,
-			'EndUserIP'                      => self::_get_remote_ip(),
-
-			// registrant information
-			'RegistrantFirstName'            => filter_input( INPUT_POST, 'registrant_first_name' ),
-			'RegistrantLastName'             => filter_input( INPUT_POST, 'registrant_last_name' ),
-			'RegistrantOrganizationName'     => filter_input( INPUT_POST, 'registrant_organization' ),
-			'RegistrantJobTitle'             => filter_input( INPUT_POST, 'registrant_job_title' ),
-			'RegistrantAddress1'             => filter_input( INPUT_POST, 'registrant_address1' ),
-			'RegistrantAddress2'             => filter_input( INPUT_POST, 'registrant_address2' ),
-			'RegistrantCity'                 => filter_input( INPUT_POST, 'registrant_city' ),
-			'RegistrantStateProvince'        => filter_input( INPUT_POST, 'registrant_state' ),
-			'RegistrantPostalCode'           => filter_input( INPUT_POST, 'registrant_zip' ),
-			'RegistrantCountry'              => filter_input( INPUT_POST, 'registrant_country' ),
-			'RegistrantEmailAddress'         => filter_input( INPUT_POST, 'registrant_email' ),
-			'RegistrantPhone'                => $registrant_phone,
-			'RegistrantFax'                  => $registrant_fax,
-
-			// proxy stuff
-			'LiveEnvironment'                => $force_production ? 1 : 0,
-			'UserAgent'                      => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '',
-		), self::ENDPOINT_PROXY );
-
-		// check if we received invalid xml and was not able to parse it
-		if ( !$response ) {
-			$response = new WP_Error();
-			$response->add( 'invalid_xml', __( 'We received unexpected result from eNom server. Try to resubmit your form again and if you receive information that such login is already exists, then it means that current request was processed successfully.', 'domainmap' ) );
-		}
-
-		// pass FALSE as request type to process errors only
-		$this->_log_enom_request( false, $response );
-
-		return $response && isset( $response->ErrCount ) && $response->ErrCount == 0;
 	}
 
 }

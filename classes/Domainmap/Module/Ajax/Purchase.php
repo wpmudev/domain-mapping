@@ -49,6 +49,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'redirect_to_login_form', false, true );
+		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_CHECK_CLIENT_LOGIN, 'whmcs_validate_client_login' );
 	}
 
 	/**
@@ -262,5 +263,31 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		wp_redirect( add_query_arg( 'page', 'domainmapping', admin_url( 'tools.php' ) ) );
 		exit;
 	}
+
+    public function whmcs_validate_client_login(){
+        extract( $_POST['data'] );
+        if( !empty( $password2 ) && !empty( $email ) ){
+            $object = Domainmap_Reseller_WHMCS::exec_command( "validatelogin", array(
+                "email" => $email,
+                "password2" => $password2
+            ) );
+            /**
+             * var $object WP_Error
+             */
+            $client_id_transient = $this->_get_transient_name( "whmcs_client_id" );
+            if( !is_wp_error($object) ){
+                set_site_transient( $client_id_transient, $object->userid, HOUR_IN_SECONDS  );
+                wp_send_json_success( array(
+                    "userir" => $object->userid
+                ) );
+            }else{
+                wp_send_json_error( array(
+                    "error" => $object->get_error_message(),
+                ) );
+            }
+        }
+
+        wp_die();
+    }
 
 }

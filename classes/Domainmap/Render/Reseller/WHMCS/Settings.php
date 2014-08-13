@@ -66,7 +66,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 		$pwd = str_shuffle( (string)$this->pwd );
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = md5( $pwd );
-    
+
 		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
 
 		<?php if ( $this->valid === false ) : ?>

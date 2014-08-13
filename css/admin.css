@@ -723,3 +723,18 @@ input.domainmapping-radio {
     height: 60px;
     margin-left: 10px;
 }
+
+#dm_whmcs_client_login th,
+#dm_whmcs_client_login td{
+    padding: 10px 0 0 0;
+}
+#dm_whmcs_client_login input[type="email"],
+#dm_whmcs_client_login input[type="password"]{
+    float: left;
+    margin-left: 10px;
+    width: 445px;
+}
+#dm_whmcs_client_login button{
+    margin-left: 315px;
+    margin-top: 20px;
+}

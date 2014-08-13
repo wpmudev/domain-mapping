@@ -238,4 +238,40 @@
 			$('#domainmapping-box-iframe #card_cvv2').payment('formatCardCVC');
 		}
 	});
+
+    $(document).on("submit", "#dm_whmcs_client_login", function( e ){
+        e.preventDefault();
+       var $this = $(this),
+           email = $("#dm_client_email").val(),
+           password = $("#dm_client_pass").val(),
+           $wrapper = $this.parents('.domainmapping-domains-wrapper');
+
+        if( email.length < 3 || password.length < 3 ) {
+            show_error(domainmapping.message.empty_email_pass);
+        }
+
+        $wrapper.addClass('domainmapping-domains-wrapper-locked');
+        $.ajax({
+            type           : "post",
+            url            : ajaxurl ,
+            data           :{
+                action     : "dm_whmcs_validate_client_login",
+                data       : {
+                    email : email,
+                    password2 : password
+                }
+            },
+            success        : function( result ){
+                if( result.success === true ){
+
+                }else{
+                    show_error( result.data.error );
+                }
+                $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+            },
+            error          : function( result ){
+                $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+            }
+        });
+    });
 })(jQuery);

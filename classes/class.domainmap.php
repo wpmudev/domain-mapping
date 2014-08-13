@@ -38,6 +38,14 @@ class domain_map {
 	// For caching swapped urls later on
 	var $swapped_url = array();
 
+    /**
+     * Text domain name used for translating strings
+     *
+     * @since 4.2.0
+     * @param string Text_Domain
+     */
+    const Text_Domain = "domainmap";
+
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
