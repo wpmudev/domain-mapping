@@ -80,6 +80,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
+        $reseller = $this->_plugin->get_reseller();
 		if ( self::_validate_domain_name( $domain, true ) ) {
 			$reseller = $this->_plugin->get_reseller();
 
@@ -89,12 +90,12 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 				$price = '$' . number_format( floatval( $reseller->get_tld_price( $tld ) ), 2 );
 			}
 
-//			set_site_transient( $this->_get_transient_name( 'checkdomain' ), array(
-//				'domain' => $domain,
-//				'price'  => $price,
-//				'sld'    => $sld,
-//				'tld'    => $tld,
-//			), HOUR_IN_SECONDS );
+			set_site_transient( $this->_get_transient_name( 'checkdomain' ), array(
+				'domain' => $domain,
+				'price'  => $price,
+				'sld'    => $sld,
+				'tld'    => $tld,
+			), HOUR_IN_SECONDS );
 
 			wp_send_json_success( array(
 				'available' => $available,
@@ -267,7 +268,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
     public function whmcs_validate_client_login(){
         extract( $_POST['data'] );
         if( !empty( $password2 ) && !empty( $email ) ){
-            $object = Domainmap_Reseller_WHMCS::exec_command( "validatelogin", array(
+            $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_VALIDATE_LOGIN, array(
                 "email" => $email,
                 "password2" => $password2
             ) );
@@ -278,7 +279,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
             if( !is_wp_error($object) ){
                 set_site_transient( $client_id_transient, $object->userid, HOUR_IN_SECONDS  );
                 wp_send_json_success( array(
-                    "userir" => $object->userid
+                    "userid" => $object->userid
                 ) );
             }else{
                 wp_send_json_error( array(
@@ -289,5 +290,6 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
         wp_die();
     }
+
 
 }

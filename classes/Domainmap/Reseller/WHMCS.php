@@ -25,7 +25,7 @@
  * @category Domainmap
  * @package Reseller
  *
- * @since 4.0.0
+ * @since 4.2.0
  */
 class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
@@ -35,8 +35,11 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const ENVIRONMENT_PRODUCTION = 'prod';
 	const ENVIRONMENT_TEST       = 'test';
 
-	const COMMAND_CHECK_LOGIN        = 'getclients';
+	const COMMAND_CHECK_LOGIN_CREDS  = 'getclients';
+	const COMMAND_VALIDATE_LOGIN     = 'validatelogin';
+	const COMMAND_ADD_ORDER          = 'addorder';
 	const COMMAND_CHECK              = 'domainwhois';
+
 	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
 	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
 	const COMMAND_PURCHASE           = 'Purchase';
@@ -49,10 +52,11 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
     const ACTION_CHECK_CLIENT_LOGIN      = 'dm_whmcs_validate_client_login';
 
+    protected $cache_tlds = false;
     /**
 	 * Returns reseller internal id.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 */
@@ -65,7 +69,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
     /**
      * Executes remote command and returns response of execution.
      *
-     * @since 4.0.0
+     * @since 4.2.0
      *
      * @access private
      * @param string $command The command name.
@@ -127,7 +131,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Logs request to reseller API.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 * @param int $type The request type.
@@ -158,7 +162,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Saves reseller options.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @param array $options The array of plugin options.
@@ -169,8 +173,8 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		}
 
         // api url
-        $uid = trim( filter_input( INPUT_POST, 'map_reseller_whmcs_api' ) );
-        $options[self::RESELLER_ID]['api'] = $uid;
+        $api = trim( filter_input( INPUT_POST, 'map_reseller_whmcs_api' ) );
+        $options[self::RESELLER_ID]['api'] = $api;
 
 		// user name
 		$uid = trim( filter_input( INPUT_POST, 'map_reseller_whmcs_uid' ) );
@@ -184,6 +188,13 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			$options[self::RESELLER_ID]['pwd'] = $pwd;
 			$need_health_check = true;
 		}
+
+        /**
+         * Tlds
+         */
+        $tlds = $_POST["dm_whmcs_tld"];
+        $options[self::RESELLER_ID]['tlds'] = $tlds;
+
 
 		// payment gateway
 		$gateway = filter_input( INPUT_POST, 'map_reseller_whmcs_payment' );
@@ -204,7 +215,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Validates API credentials.
 	 *
-	 * @sicne 4.0.0
+	 * @sicne 4.2.0
 	 *
 	 * @access private
 	 * @param string $uid The user id.
@@ -213,7 +224,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return boolean TRUE if API credentials are valid, otherwise FALSE.
 	 */
 	private function _validate_credentials() {
-		$json = $this->_exec_command( self::COMMAND_CHECK_LOGIN );
+		$json = $this->_exec_command( self::COMMAND_CHECK_LOGIN_CREDS );
         $valid = is_object( $json ) && !is_wp_error( $json ) ? $json->result === 'success' : false;
         $transient = 'whmcs_errors_' . get_current_user_id();
         if ( !$valid ) {
@@ -227,7 +238,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns the array of payments gateways supported by reseller.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -244,7 +255,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns current reseller payment gateway.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -281,7 +292,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns current environment.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @param array $options The plugin options.
@@ -300,7 +311,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns reseller title.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @return string The title of reseller provider.
@@ -312,7 +323,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Renders reseller options.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 */
@@ -338,7 +349,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Determines whether reseller API connected properly or not.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @return boolean TRUE if API connected properly, otherwise FALSE.
@@ -351,19 +362,32 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns TLD list accepted by reseller.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 * @return array The array of TLD accepted by reseller.
 	 */
 	protected function _get_tld_list() {
-        return array("com", "info");
+        $tlds = $this->get_domain_pricing();
+        $tlds = array_map( array($this, "_callback_extract_tld" ), $tlds);
+        return $tlds;
 	}
+
+    /**
+     * Callback to extract tld from domain pricing records
+     *
+     * @since 4.2.0
+     * @param $item
+     * @return mixed
+     */
+    private function _callback_extract_tld( $item ){
+        return str_replace( ".", "",  $item['tld'] );
+    }
 
 	/**
 	 * Checks domain availability.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 * @param string $tld The top level domain.
@@ -383,20 +407,26 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Fetches and returns TLD price.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @param string $tld The top level domain.
+	 * @param int $period Domain registration period.
 	 * @return float The price for the TLD.
 	 */
-	protected function _get_tld_price( $tld ) {
-		return 15;
+	protected function _get_tld_price( $tld, $period ) {
+		$pricing = $this->get_domain_pricing();
+        foreach( $pricing as $option ){
+            if( $option['tld'] === "." . $tld ){
+                return $option['price'][$period - 1];
+            }
+        }
 	}
 
 	/**
 	 * Purchases a domain name.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 * @return string|boolean The domain name if purchased successfully, otherwise FALSE.
@@ -456,7 +486,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Populates either DNS A or CNAME records for purchased domain.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @global wpdb $wpdb The database connection.
@@ -545,7 +575,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Renders purchase form.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @global WP_User $current_user The current user object.
@@ -573,7 +603,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns extended attributes for specific TLD.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @param string $tld The TLD name.
@@ -607,7 +637,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Returns domain available response HTML with a link on purchase form or paypal checkout.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -629,7 +659,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         ?>
         <br/>
         <p><?php _e("Login to WHMCS with your client details: ", domain_map::Text_Domain); ?></p>
-<!--        <div class="domainmapping-info domainmapping-info-success">-->
                 <form action="" method="post" id="dm_whmcs_client_login">
 
                     <table class="form-table">
@@ -652,7 +681,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                     <p>
                         <strong>
                         <?php
-                            printf( __("Or <a href='%s'>click to signup as a client</a>", domain_map::Text_Domain), "http://google.com" );
+                            printf( __("Or <a href='%s'>click to signup as a new client</a>", domain_map::Text_Domain), "http://google.com" );
                         ?>
                         </strong>
                     </p>
@@ -665,7 +694,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Executes SetExpressCheckout command of PayPal API and returns response.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -716,7 +745,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Calls PayPal API and returns response array.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -759,7 +788,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Proceeds PayPal checkout.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @global ProSites $psts The instance of ProSites plugin class.
@@ -785,7 +814,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Completes PayPal checkout and purchase a domain.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @return string|boolean Returns domain name on success, otherwise FALSE.
@@ -883,13 +912,53 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	/**
 	 * Registers new account.
 	 *
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
 	 */
-	public function regiser_account() {
+	public function register_account() {
 
 	}
 
+    /**
+     * Orders domain name by making api call to WHMCS endpoint
+     *
+     * @since 4.2
+     *
+     * @param $client_id
+     * @param $domain
+     */
+    public static function order_domain( $client_id, $domain ){
+        $options = Domainmap_Plugin::instance()->get_options();
+        $paymentmethod = isset( $options[Domainmap_Reseller_WHMCS::RESELLER_ID] ) ? $options[Domainmap_Reseller_WHMCS::RESELLER_ID] : $options['gateway'];
+        $nameserver1 = "";
+        $nameserver2 = "";
+        $args = array(
+            "clientid" => $client_id,
+            "domaintype" => "register",
+            "domain" => $domain,
+            "regperiod" => "1",
+            "dnsmanagement" => "on",
+            "idprotection" => "on",
+            "nameserver1" => $nameserver1,
+            "nameserver2" => $nameserver2,
+//            "promocode" => $promocode,
+            "paymentmethod" => $paymentmethod
+        );
+
+        Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_ADD_ORDER  , $args );
+    }
+
+    /**
+     * Retrieves domain pricing
+     *
+     * @since 4.2.0
+     * @return array
+     */
+    protected function get_domain_pricing(){
+        $options =  Domainmap_Plugin::instance()->get_options();
+        $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
+        return isset( $options['tlds'] ) ? $options['tlds'] : array();
+    }
 }

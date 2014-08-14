@@ -26,14 +26,17 @@
  * @package Render
  * @subpackage Reseller
  *
- * @since 4.0.0
+ * @since 4.2.0
  */
 class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 
+    private static function _reseller(){
+        return new Domainmap_Reseller_WHMCS();
+    }
 	/**
 	 * Renders eNom settings notifications.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 */
@@ -56,7 +59,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 	/**
 	 * Renders account credentials settings.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 */
@@ -97,10 +100,78 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 		</div><?php
 	}
 
+    /**
+     * Renders domain pricing.
+     *
+     * @sine 4.2.0
+     *
+     * @access private
+     */
+    private function _render_domain_pricing() {
+
+        $this->tlds = !$this->tlds ? array( array(
+            "tld" => ".com",
+            "price" => array(
+                0 => "5.00"
+            )
+        ) ) : $this->tlds;
+        $prices_count =  count( $this->tlds[0]['price'] );
+
+        ?><h4 class="domainmapping-block-header"><?php _e( 'Define domain pricing:', 'domainmap' ) ?></h4>
+
+        <div>
+            <table class="wp-list-table widefat dm_whmcs_tlds">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            TLD
+                        </th>
+
+                    <?php for ($i = 0 ; $i < $prices_count ; $i++): ?>
+                        <th scope="col">
+                            <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)"), $i+1 ); ?>
+                        </th>
+                    <?php endfor ?>
+                    <th scope="col" id="dm_whmcs_tlds_add_col" class="inaactive_cell">
+                        <a href="#0" class="dashicons-before dashicons-plus"></a>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php $i = 0 ; foreach ( $this->tlds as $tld ):  ?>
+                    <tr>
+
+                        <td>
+                            <input type="text" name="dm_whmcs_tld[<?php echo $i; ?>][tld]" value="<?php echo $tld['tld']; ?>" />
+                        </td>
+                            <?php
+                            $prices = $tld['price'];
+                            $pi = 0;
+                            foreach ( $prices as $price ): ?>
+                        <td>
+                            <input type="text" class="dm_whmcs_price_cell" name="dm_whmcs_tld[<?php echo $i ?>][price][<?php echo $pi ?>]" value="<?php echo $price; ?>" />
+                        </td>
+                            <?php $pi++; endforeach; ?>
+                        <th  class="inaactive_cell">
+                            <a href="#0" class="dashicons-before dashicons-trash dm_whmcs_tlds_remove_row"></a>
+                        </td>
+                    </tr>
+                <?php $i++; endforeach; ?>
+                    <tr id="dm_whmcs_tlds_add_row" class="inactive_row">
+                        <td>
+                            <a href="#0" class="dashicons-before dashicons-plus"></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <?php
+    }
+
 	/**
 	 * Renders payment gateways settings.
 	 *
-	 * @sine 4.0.0
+	 * @sine 4.2.0
 	 *
 	 * @access private
 	 */
@@ -126,13 +197,14 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 	/**
 	 * Renders template.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 */
 	protected function _to_html() {
 		$this->_render_notifications();
 		$this->_render_account_settings();
+        $this->_render_domain_pricing();
 		$this->_render_payment_settings();
 	}
 

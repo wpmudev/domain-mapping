@@ -243,7 +243,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				$options['map_reseller'] = $reseller;
 				$resellers[$reseller]->save_options( $options );
 			}
-
 			// save reseller API requests log level
 			$options['map_reseller_log'] = filter_input( INPUT_POST, 'map_reseller_log', FILTER_VALIDATE_INT, array(
 				'options' => array(

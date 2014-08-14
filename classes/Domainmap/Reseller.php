@@ -47,6 +47,7 @@ abstract class Domainmap_Reseller {
 	const LOG_LEVEL_ERRORS   = 1;
 	const LOG_LEVEL_ALL      = 2;
 
+
 	/**
 	 * Last errors returned by reseller API.
 	 *
@@ -56,6 +57,16 @@ abstract class Domainmap_Reseller {
 	 * @var WP_Error
 	 */
 	protected $_last_errors;
+
+    /**
+     * Whether to cache tlds
+     *
+     * @since 4.2.0
+     *
+     * @access protected
+     * @var bool
+     */
+    protected $cache_tlds = true;
 
 	/**
 	 * Returns last errors returned by reseller API.
@@ -142,11 +153,13 @@ abstract class Domainmap_Reseller {
 	 * @return array The array of TLD accepted by reseller.
 	 */
 	public function get_tld_list() {
-		$transient = 'reseller-' . $this->get_reseller_id() . '-tlds';
-		$tlds = get_site_transient( $transient );
-		if ( is_array( $tlds ) && !empty( $tlds ) ) {
-			return $tlds;
-		}
+        $transient = 'reseller-' . $this->get_reseller_id() . '-tlds';
+        if( $this->cache_tlds ){
+            $tlds = get_site_transient( $transient );
+            if ( is_array( $tlds ) && !empty( $tlds ) ) {
+                return $tlds;
+            }
+        }
 
 		$tlds = $this->_get_tld_list();
 		sort( $tlds, SORT_STRING );
@@ -201,7 +214,7 @@ abstract class Domainmap_Reseller {
 	 * @param string $tld The top level domain.
 	 * @return float The price for the TLD.
 	 */
-	protected abstract function _get_tld_price( $tld );
+	protected abstract function _get_tld_price( $tld, $period );
 
 	/**
 	 * Returns TLD price.
@@ -212,14 +225,15 @@ abstract class Domainmap_Reseller {
 	 * @param string $tld The top level domain.
 	 * @return float The price for the TLD.
 	 */
-	public function get_tld_price( $tld ) {
+	public function get_tld_price( $tld, $period = 1 ) {
 		$transient = sprintf( 'reseller-%s-%s-price', $this->get_reseller_id(), $tld );
-		$price = get_site_transient( $transient );
-		if ( $price != false ) {
-			return $price;
-		}
-
-		$price = $this->_get_tld_price( $tld );
+	    if( $this->cache_tlds ){
+            $price = get_site_transient( $transient );
+            if ( $price != false ) {
+                return $price;
+            }
+        }
+		$price = $this->_get_tld_price( $tld, $period );
 		set_site_transient( $transient, $price, DAY_IN_SECONDS );
 
 		return $price;

@@ -414,9 +414,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 *
 	 * @access public
 	 * @param string $tld The top level domain.
+	 * @param int $period Domain registration period.
 	 * @return float The price for the TLD.
 	 */
-	protected function _get_tld_price( $tld ) {
+	protected function _get_tld_price( $tld, $period ) {
 		$xml = $this->_exec_command( self::COMMAND_RETAIL_PRICE, array(
 			'tld'         => $tld,
 			'ProductType' => 10,

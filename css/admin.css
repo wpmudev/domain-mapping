@@ -738,3 +738,9 @@ input.domainmapping-radio {
     margin-left: 315px;
     margin-top: 20px;
 }
+.dm_whmcs_tlds{
+    width: auto;
+}
+.dm_whmcs_tlds_remove_row{
+    color: red;
+}

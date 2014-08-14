@@ -239,6 +239,9 @@
 		}
 	});
 
+    /**
+     * WHMCS
+     */
     $(document).on("submit", "#dm_whmcs_client_login", function( e ){
         e.preventDefault();
        var $this = $(this),
@@ -272,6 +275,61 @@
             error          : function( result ){
                 $wrapper.removeClass('domainmapping-domains-wrapper-locked');
             }
+        });
+    });
+
+    /**
+     * Add domain pricing row
+     */
+    $("#dm_whmcs_tlds_add_row a").on("click", function(e){
+        e.preventDefault();
+       var $new_row = $(".dm_whmcs_tlds tbody tr").first().clone(),
+           num_rows = $(".dm_whmcs_tlds tbody tr").length;
+
+        $new_row.find("input").each(function( index ){
+            var current_name = $(this).attr("name");
+
+            if( index === 0 ){
+                $(this).attr("name", current_name.replace("[0]", "[" + ( num_rows - 1 ) +"]"));
+            }else{
+                $(this).attr("name", current_name.replace("[0][", "[" + ( num_rows - 1 ) +"]["));
+            }
+            $(this).val("");
+        });
+        $(this).closest("tr").before($new_row);
+    });
+
+    /**
+     * Add domain pricing column
+     */
+    $("#dm_whmcs_tlds_add_col a").on("click", function( e ){
+        e.preventDefault();
+       var $new_col = $(".dm_whmcs_tlds thead th").eq(1).clone(),
+           num_cols = $(".dm_whmcs_tlds thead th").length;
+        $new_col.find(".dm_year_count").html( num_cols-1 );
+        // adding header
+        $(this).closest("th").before($new_col);
+
+        // adding rows
+        $(".dm_whmcs_tlds tbody tr").not(".inactive_row").each(function(){
+            var $price_cell = $(this).find(".dm_whmcs_price_cell").first().clone(),
+                num_cells = $(this).find(".dm_whmcs_price_cell").length;
+            $price_cell.val("");
+
+            $price_cell.attr("name", $price_cell.attr("name").replace("][0]", "][" + ( num_cells  ) +  "]" ));
+            $(this).find(".inaactive_cell").first().before( $price_cell );
+            $price_cell.wrap("<td></td>");
+        });
+
+    });
+
+    /**
+     * Remove domain pricing row
+     */
+    $(".dm_whmcs_tlds_remove_row").on("click", function( e ){
+        e.preventDefault();
+        $(this).closest("tr").toggle("highlight", function(){
+            $(this).remove();
         });
     });
 })(jQuery);
