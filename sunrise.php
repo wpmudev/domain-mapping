@@ -36,8 +36,13 @@ if ( !empty( $mapped_id ) ) {
 	$current_site = $wpdb->get_row( $wpdb->prepare( "SELECT * from {$wpdb->site} WHERE id = %d LIMIT 1", $current_blog->site_id ) );
 	$current_site->blog_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->blogs} WHERE domain = %s AND path = %s", $current_site->domain, $current_site->path ) );
 
-    if( function_exists( "get_current_site_name" ) )
+    // The function get_current_site_name is deprecated as of 3.9
+	global $wp_version;
+	if ( version_compare($wp_version, "3.9", ">=") ) {
+        $current_site = get_current_site();
+    } else if ( function_exists( "get_current_site_name" ) )
         $current_site = get_current_site_name( $current_site );
+	}
 
     //set site_name
     if( !isset( $current_site->site_name ) || empty($current_site->site_name) ){
