@@ -66,7 +66,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 	private function _render_account_settings() {
 		// it is a bad habit to show raw password even if we use password input field
 		// so lets shuffle it and render in the password field
-		$pwd = str_shuffle( (string)$this->pwd );
+		$pwd = str_shuffle( (string) $this->pwd );
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = md5( $pwd );
 
@@ -180,16 +180,22 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 
 
 		<div>
+            <?php if( count( $this->gateways ) > 0 ): ?>
 			<ul>
 				<?php foreach ( $this->gateways as $key => $label ) : ?>
 				<li>
 					<label>
-						<input type="radio" class="domainmapping-radio" name="map_reseller_enom_payment" value="<?php echo esc_attr( $key ) ?>"<?php checked( $key, $this->gateway )  ?>>
+						<input type="radio" class="domainmapping-radio" name="map_reseller_whmcs_payment" value="<?php echo esc_attr( $key ) ?>"<?php checked( $key, $this->gateway )  ?>>
 						<?php echo esc_html( $label ) ?>
 					</label>
 				</li>
 				<?php endforeach; ?>
 			</ul>
+            <?php else: ?>
+            <div class="domainmapping-info domainmapping-info-error">
+                <?php _e("Please make sure you have correctly entered your login credentials and save again to retrieve your payment methods."); ?>
+            </div>
+            <?php endif; ?>
 		</div><?php
 	}
 

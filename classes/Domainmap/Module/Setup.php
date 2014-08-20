@@ -89,6 +89,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 				'deselect'          => __( 'You are about to deselect your primary domain. Do you really want to proceed?', 'domainmap' ),
 				'valid_selection'   => __( 'You are about to change your primary domain. Do you really want to proceed?', 'domainmap' ),
 				'invalid_selection' => __( 'You are about to select invalid domain as primary. It could cause unexpected issues at your front end. Do you really want to proceed?', 'domainmap' ),
+                'invalid_data'      => __( 'Invalid data, please try again', 'domainmap' ),
 
 				'invalid' => array(
 					'card_number' => __( 'Credit card number is invalid.', 'domainmap' ),
@@ -101,6 +102,11 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 					'success' => __( 'Domain name has been purchased successfully.', 'domainmap' ),
 					'failed'  => __( 'Domain name purchase has failed.', 'domainmap' ),
 				),
+
+                'order' => array(
+                    'success' => __( 'Domain name has been ordered successfully.', 'domainmap' ),
+                    'failed'  => __( 'Domain name order has failed.', 'domainmap' ),
+                ),
 			),
 		) );
 

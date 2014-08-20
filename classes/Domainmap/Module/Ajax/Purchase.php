@@ -50,6 +50,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'redirect_to_login_form', false, true );
 		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_CHECK_CLIENT_LOGIN, 'whmcs_validate_client_login' );
+		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_CHECK_ORDER_DOMAIN, 'ajax_whmcs_order_domain' );
 	}
 
 	/**
@@ -80,7 +81,6 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
-        $reseller = $this->_plugin->get_reseller();
 		if ( self::_validate_domain_name( $domain, true ) ) {
 			$reseller = $this->_plugin->get_reseller();
 
@@ -267,6 +267,10 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
     public function whmcs_validate_client_login(){
         extract( $_POST['data'] );
+        /**
+         * @var $whmcs Domainmap_Reseller_WHMCS
+         */
+        $whmcs = $this->_plugin->get_reseller();
         if( !empty( $password2 ) && !empty( $email ) ){
             $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_VALIDATE_LOGIN, array(
                 "email" => $email,
@@ -279,8 +283,13 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
             if( !is_wp_error($object) ){
                 set_site_transient( $client_id_transient, $object->userid, HOUR_IN_SECONDS  );
                 wp_send_json_success( array(
-                    "userid" => $object->userid
+                    "html" =>  $whmcs->render_purchase_form( array(
+                        "tld" => $tld,
+                        "sld" => $sld,
+                        "domain" => $sld . "." . $tld
+                    ) )
                 ) );
+
             }else{
                 wp_send_json_error( array(
                     "error" => $object->get_error_message(),
@@ -291,5 +300,55 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
         wp_die();
     }
 
+    function ajax_whmcs_order_domain(){
+        global $current_site;
+        /**
+         * @var $whmcs Domainmap_Reseller_WHMCS
+         */
+        $whmcs = $this->_plugin->get_reseller();
+
+        $client_id_transient = $this->_get_transient_name( "whmcs_client_id" );
+        $client_id = get_site_transient( $client_id_transient );
+        $data = $_POST['data'];
+
+        $domain = isset( $data['sld'],  $data['tld'] ) ? $data['sld'] . "." . $data['tld'] : false;
+        $period = isset( $data['period'] ) ? $data["period"] : "1";
+        if( !$client_id ){
+            wp_send_json_error( array(
+                "expired" => true,
+                "message" => __("Session Expired, please login again", domain_map::Text_Domain),
+            ) );
+        }
+
+        if( !$domain ){
+            wp_send_json_error( array(
+                "expired" => false,
+            ) );
+        }
+
+        $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_ADD_ORDER, array(
+            "clientid" =>  $client_id,
+            "domaintype" => "register",
+            "domain" => $domain,
+            "regperiod" => $period,
+            "dnsmanagement" => "on",
+            "idprotection" => "on",
+            "nameserver1" => "ns1." . $current_site->domain,
+            "nameserver2" => "ns2." . $current_site->domain,
+            "paymentmethod" => $whmcs->get_gateway()
+        ) );
+
+        if( !is_wp_error($object) ){
+            wp_send_json_success( array(
+                "invoiceid" =>  $object->invoiceid,
+                "orderid" => $object->orderid
+            ) );
+        }else{
+            wp_send_json_error( array(
+                "message" => __("Error ordering the domain", domain_map::Text_Domain),
+            ) );
+        }
+
+    }
 
 }

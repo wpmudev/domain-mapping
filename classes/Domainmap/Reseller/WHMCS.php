@@ -39,18 +39,19 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const COMMAND_VALIDATE_LOGIN     = 'validatelogin';
 	const COMMAND_ADD_ORDER          = 'addorder';
 	const COMMAND_CHECK              = 'domainwhois';
+	const COMMAND_GET_GATEWAYS       = 'getpaymentmethods';
 
-	const COMMAND_GET_TLD_LIST       = 'GetTLDList';
 	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
 	const COMMAND_PURCHASE           = 'Purchase';
 	const COMMAND_SET_HOSTS          = 'SetHosts';
 	const COMMAND_GET_EXT_ATTRIBUTES = 'GetExtAttributes';
 	const COMMAND_REGISTER_ACCOUNT   = 'CreateAccount';
 
-	const GATEWAY_PAYPAL     = 'whmcs';
+	const GATEWAY_PAYPAL     = 'paypal';
 	const GATEWAY_PROSITES = 'prosites';
 
     const ACTION_CHECK_CLIENT_LOGIN      = 'dm_whmcs_validate_client_login';
+    const ACTION_CHECK_ORDER_DOMAIN      = 'dm_whmcs_order_domain';
 
     protected $cache_tlds = false;
     /**
@@ -245,9 +246,24 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return array The associative array of payment gateways.
 	 */
 	private function _get_gateways() {
-		$gateways = array(
-            self::GATEWAY_PAYPAL => esc_html__( 'Paypal', 'domainmap' )
-        );
+
+        $transient = "dm-whmcs-gateways";
+        $gateways = get_site_transient( $transient );
+        if( $gateways !== false ){
+            return $gateways;
+        }
+
+        $gateways = array();
+        $options = Domainmap_Plugin::instance()->get_options();
+        if( $options[self::RESELLER_ID]['valid'] ){
+            $object = $this->exec_command( self::COMMAND_GET_GATEWAYS );
+            if( !is_wp_error( $object ) ){
+                foreach( $object->paymentmethods->paymentmethod as $method ) {
+                    $gateways[$method->module] = $method->displayname;
+                }
+                set_site_transient( $transient, $gateways, DAY_IN_SECONDS );
+            }
+        }
 
 		return $gateways;
 	}
@@ -257,37 +273,28 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 *
 	 * @since 4.2.0
 	 *
-	 * @access private
-	 * @global ProSites $psts The instance of ProSites plugin class.
 	 * @param array $options The plugin options.
 	 * @return string The current gateway key.
 	 */
-	private function _get_gateway( $options = null ) {
-		global $psts;
+	public function get_gateway( $options = null, $name = false ) {
 
 		// if no options were passed, take it from the plugin instance
 		if ( !$options ) {
 			$options = Domainmap_Plugin::instance()->get_options();
 			$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 		}
-
 		// fetch gateway information
 		$gateways = $this->_get_gateways();
+
 		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] )
 			? $options['gateway']
 			: self::GATEWAY_PAYPAL;
-
-		// if paypal gateway is selected, then check if it is available
-		if ( $gateway == self::GATEWAY_PROSITES ) {
-			// if prosites or paypal gateway is not activated, then use eNom gateway
-			$paypal_class = 'ProSites_Gateway_PayPalExpressPro';
-			if ( !$psts || !in_array( $paypal_class, (array)$psts->get_setting( 'gateways_enabled' ) ) || !class_exists( $paypal_class ) ) {
-				$gateway = self::GATEWAY_PAYPAL;
-			}
-		}
-
+        if( $name ){
+          return isset( $gateways[$gateway] ) ? $gateways[$gateway] : $gateway;
+        }
 		return $gateway;
 	}
+
 
 	/**
 	 * Returns current environment.
@@ -340,7 +347,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		$template = new Domainmap_Render_Reseller_WHMCS_Settings( $options );
 
 		$template->gateways = $this->_get_gateways();
-		$template->gateway = $this->_get_gateway( $options );
+		$template->gateway = $this->get_gateway( $options );
 		$template->errors = get_site_transient( 'whmcs_errors_' . get_current_user_id() );
 
 		$template->render();
@@ -368,7 +375,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return array The array of TLD accepted by reseller.
 	 */
 	protected function _get_tld_list() {
-        $tlds = $this->get_domain_pricing();
+        $tlds = self::get_domain_pricing();
         $tlds = array_map( array($this, "_callback_extract_tld" ), $tlds);
         return $tlds;
 	}
@@ -415,7 +422,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @return float The price for the TLD.
 	 */
 	protected function _get_tld_price( $tld, $period ) {
-		$pricing = $this->get_domain_pricing();
+		$pricing = self::get_domain_pricing();
         foreach( $pricing as $option ){
             if( $option['tld'] === "." . $tld ){
                 return $option['price'][$period - 1];
@@ -589,15 +596,16 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		if ( empty( $cardholder ) ) {
 			$cardholder = __( 'Your name', 'domainmap' );
 		}
-
+        ob_start();
 		$render = new Domainmap_Render_Reseller_WHMCS_Purchase( $domain_info );
 		$render->errors = $this->get_last_errors();
-		$render->cardtypes = $this->get_card_types();
-		$render->cardholder = $cardholder;
-		$render->countries = Domainmap_Plugin::instance()->get_countries();
-		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
+//		$render->cardtypes = $this->get_card_types();
+//		$render->cardholder = $cardholder;
+//		$render->countries = Domainmap_Plugin::instance()->get_countries();
+//		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
 
 		$render->render();
+        return ob_get_clean();
 	}
 
 	/**
@@ -956,7 +964,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
      * @since 4.2.0
      * @return array
      */
-    protected function get_domain_pricing(){
+    public static function get_domain_pricing(){
         $options =  Domainmap_Plugin::instance()->get_options();
         $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
         return isset( $options['tlds'] ) ? $options['tlds'] : array();

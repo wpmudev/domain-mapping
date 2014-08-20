@@ -242,11 +242,17 @@
     /**
      * WHMCS
      */
+
+    /**
+     * Client Login
+     */
     $(document).on("submit", "#dm_whmcs_client_login", function( e ){
         e.preventDefault();
        var $this = $(this),
            email = $("#dm_client_email").val(),
            password = $("#dm_client_pass").val(),
+           sld = $(".domainmapping-input-domain").val(),
+           tld = $(".domainmapping-select-domain").val(),
            $wrapper = $this.parents('.domainmapping-domains-wrapper');
 
         if( email.length < 3 || password.length < 3 ) {
@@ -261,13 +267,17 @@
                 action     : "dm_whmcs_validate_client_login",
                 data       : {
                     email : email,
-                    password2 : password
+                    password2 : password,
+                    tld : tld,
+                    sld : sld
                 }
             },
             success        : function( result ){
                 if( result.success === true ){
+                    $(".domainmapping-info.domainmapping-info-success").data("form_html", $(".domainmapping-info.domainmapping-info-success").html() );
+                    $(".domainmapping-info.domainmapping-info-success").html( result.data.html );
+                }else if( typeof  result.data !== "undefined"){
 
-                }else{
                     show_error( result.data.error );
                 }
                 $wrapper.removeClass('domainmapping-domains-wrapper-locked');
@@ -330,6 +340,66 @@
         e.preventDefault();
         $(this).closest("tr").toggle("highlight", function(){
             $(this).remove();
+        });
+    });
+
+    /**
+     * Domain order cancel
+     */
+    $(document).on("click", "#dm-whmcs-domain-order-cancel", function(e){
+        e.preventDefault();
+        var form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
+        console.log(form_html);
+        $(".domainmapping-info.domainmapping-info-success").html( form_html );
+    });
+
+    /**
+     * Domain ordering submit
+     */
+    $(document).on("submit", "#domainmapping-whmcs-order-form", function( e ){
+        e.preventDefault();
+        var $this = $(this),
+            sld = $("input[name='sld']").val(),
+            tld = $("input[name='tld']").val(),
+            period = $("#dm_whmcs_domain_period").val(),
+            $wrapper = $this.parents('.domainmapping-domains-wrapper'),
+            form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
+        console.log(sld, tld , period );
+        if( sld && tld && period ){
+            $wrapper.addClass('domainmapping-domains-wrapper-locked');
+        }else{
+            show_error( domainmapping.message.invalid_data );
+            $(".domainmapping-info.domainmapping-info-success").html( form_html );
+            return;
+        }
+        $.ajax({
+            type           : "post",
+            url            : ajaxurl ,
+            data           :{
+                action     : "dm_whmcs_order_domain",
+                data       : {
+                    period : period,
+                    tld : tld,
+                    sld : sld
+                }
+            },
+            success        : function( result ){
+                if( result.success === true ){ // ordering successful
+                    show_success( domainmapping.message.order.success  );
+                }else if( typeof  result.data !== "undefined" && result.data.expired ){ // client id not found or expired
+                    show_error( result.data.message );
+                }else if( result.data !== "undefined" && result.data.message )  { // ordering failed
+                    show_error( result.data.message );
+                }else{
+                    show_error( domainmapping.message.order.failed );
+                }
+
+                $(".domainmapping-info.domainmapping-info-success").html( form_html );
+                $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+            },
+            error          : function( result ){
+                $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+            }
         });
     });
 })(jQuery);
