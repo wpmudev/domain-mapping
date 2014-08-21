@@ -45,7 +45,6 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 		if ( !in_array( $predefined_tld, $tlds ) ) {
 			$predefined_tld = 'com';
 		}
-
 		?><p class="domainmapping-info"><?php
 			_e( 'If you want to buy an unique domain name and map it to your site, then you can do it on this page. Check whether desired domain name is available, and if it is, just fill in payment details and purchase it. New domain will be bought and mapped to your site. All necessary DNS records will be setup automatically.', 'domainmap' )
 		?></p>

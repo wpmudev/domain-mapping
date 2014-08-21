@@ -274,7 +274,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
         if( !empty( $password2 ) && !empty( $email ) ){
             $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_VALIDATE_LOGIN, array(
                 "email" => $email,
-                "password2" => $password2
+                "password2" => domain_map::unscramble_pass($password2)
             ) );
             /**
              * var $object WP_Error
@@ -339,6 +339,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
         ) );
 
         if( !is_wp_error($object) ){
+            $this->_map_domain( $domain);
             wp_send_json_success( array(
                 "invoiceid" =>  $object->invoiceid,
                 "orderid" => $object->orderid

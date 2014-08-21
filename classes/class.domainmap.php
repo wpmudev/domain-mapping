@@ -113,7 +113,6 @@ class domain_map {
 		if ( !$_blog_id ) {
 			$_blog_id = $blog_id;
 		}
-
 		switch ( $this->options['map_admindomain'] ) {
 			case 'user':
 				break;
@@ -631,5 +630,39 @@ class domain_map {
 		// replace all the original urls with the new ones and then return the content
 		return str_replace( trailingslashit( $orig_url ), trailingslashit( $url ), $post_content );
 	}
+
+    /**
+     * Unscramble scrambled password using custom algorithm
+     *
+     *     function scramble_pass( password ){
+     *      var random_num = random_int( 12, 23),
+     *      pass = password.length.toString() + "_";
+     *       if( random_num % 2 !== 1){
+     *      random_num += 1;
+     *      }
+     *       for( var i = 0; i < random_num; i++ ){
+     *       if( i % ( ( random_num - 1 ) / 2 )  === 0){
+     *       pass += password;
+     *       }else{
+     *       pass += str_shuffle( password );
+     *      }
+     *      }
+     *      pass +=  "_" + ( (  random_num * ( password.length ) * 7 ) + 7   ).toString();
+     *      return pass;
+     *      }
+     * @since 4.2.0
+     *
+     * @param string $pass scrambled password
+     * @return string
+     */
+    public static function unscramble_pass( $pass ){
+
+        $decoded = explode("_", $pass);
+        $length = intval( array_shift( $decoded ) );
+        $random_num = ( ( (  intval( end( $decoded ) - 7  ) / ( 7 * $length ) )   )  ) ;
+        $pos = ( ( $random_num -1 )  * $length ) + 1 + strlen( $length );
+
+        return substr( $pass, $pos, $length );
+    }
 
 }

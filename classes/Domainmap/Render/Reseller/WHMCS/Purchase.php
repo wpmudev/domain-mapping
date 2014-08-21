@@ -59,7 +59,6 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
 					<?php endif; ?>
                     <?php $this->_render_domain_pricing() ?>
                     <?php $this->_render_payment_method() ?>
-
 					<div class="domainmapping-form-buttons">
 						<button class="button domainmapping-button domainmapping-push-right" id="dm-whmcs-domain-order-cancel"><?php _e( 'Cancel', 'domainmap' ) ?></button>
 						<button type="submit" class="button button-primary domainmapping-button" id="dm-whmcs-domain-order-order"><i class="icon-shopping-cart icon-white"></i> <?php _e( 'Order domain', 'domainmap' ) ?></button>
@@ -98,7 +97,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
         /**
          * @var $whmcs Domainmap_Reseller_WHMCS
          */
-        $whmcs = Domainmap_Plugin::instance()->get_reseller();;
+        $whmcs = Domainmap_Plugin::instance()->get_reseller();
 
         if(  $whmcs->get_gateway()  ):
         ?>

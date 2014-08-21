@@ -274,13 +274,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
 		restore_current_blog();
-
 		$response = wp_remote_request( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
 		), $ajax_url ), array( 'sslverify' => false ) );
-
-		return !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
+		return  !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 	}
 
 	/**
@@ -292,7 +290,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 */
 	public function check_health_status() {
 		self::_check_premissions( Domainmap_Plugin::ACTION_HEALTH_CHECK );
-
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
 		if ( !self::_validate_domain_name( $domain ) ) {
 			wp_send_json_error();

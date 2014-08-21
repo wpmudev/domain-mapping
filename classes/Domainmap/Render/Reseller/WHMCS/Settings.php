@@ -69,7 +69,6 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 		$pwd = str_shuffle( (string) $this->pwd );
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = md5( $pwd );
-
 		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
 
 		<?php if ( $this->valid === false ) : ?>
@@ -200,6 +199,25 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 	}
 
 
+    /**
+     * Renders payment gateways settings.
+     *
+     * @sine 4.2.0
+     *
+     * @access private
+     */
+    private function _render_registration_settings() {
+        ?><h4 class="domainmapping-block-header"><?php _e( 'Client registration:', 'domainmap' ) ?></h4>
+        <div>
+            <label for="whmcs-client-registration" id="whmcs-client-registration-label">
+                <input type="checkbox" id="whmcs-client-registration" <?php checked(  $this->enable_registration, true ); ?>  name="map_reseller_whmcs_client_registration">
+                <?php _e( 'Enable client registration', 'domainmap' ) ?>
+            </label>
+        </div>
+
+       <?php
+    }
+
 	/**
 	 * Renders template.
 	 *
@@ -210,6 +228,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 	protected function _to_html() {
 		$this->_render_notifications();
 		$this->_render_account_settings();
+        $this->_render_registration_settings();
         $this->_render_domain_pricing();
 		$this->_render_payment_settings();
 	}

@@ -400,7 +400,7 @@
 .domainmapping-descr {
 	display: block;
 	margin-left: 205px;
-	width: 600px;
+	width: 74%;
 	font-size: 85%;
 	font-style: italic;
 	color: gray;
@@ -743,4 +743,7 @@ input.domainmapping-radio {
 }
 .dm_whmcs_tlds_remove_row{
     color: red;
+}
+#whmcs-client-registration-label{
+
 }

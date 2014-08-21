@@ -20,9 +20,9 @@
 // +----------------------------------------------------------------------+
 
 /**
- * eNom account registration form template class.
+ * WHMCS client account registration form template class.
  *
- * @since 4.1.0
+ * @since 4.2.0
  * @category Domainmap
  * @package Render
  * @subpackage Reseller
@@ -32,24 +32,19 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 	/**
 	 * Render registration form template content.
 	 *
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 */
 	protected function _render_page() {
-		$backref = add_query_arg( array(
-			'page' => 'domainmapping_options',
-			'tab'  => 'reseller-options',
-		), network_admin_url( 'settings.php', 'http' ) );
-
 		?><div id="domainmapping-box-iframe" class="domainmapping-box">
-			<h3><?php _e( 'Register new eNom account', 'domainmap' ) ?></h3>
+			<h3><?php _e( 'Register new WHMCS client', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
 				<form id="domainmapping-iframe-form" method="post">
 					<input type="hidden" id="card_type" name="card_type">
 
-					<p class="domainmapping-info"><?php esc_html_e( 'You are about to register for a new eNom account. Please, fill in the form below and click on the register button. Pay attention that all fields marked with a red asterisk are required and must be filled with appropriate information.', 'domainmap' ) ?></p>
+					<p class="domainmapping-info"><?php esc_html_e( 'You are about to register for a new WHMCS client account. Please, fill in the form below and click on the register button. Pay attention that all fields marked with a red asterisk are required and must be filled with appropriate information.', 'domainmap' ) ?></p>
 
 					<?php if ( is_wp_error( $this->errors ) ) : ?>
 						<?php foreach ( $this->errors->get_error_messages() as $error ) : ?>
@@ -61,8 +56,8 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 					<?php $this->_render_registrant_fields() ?>
 
 					<div class="domainmapping-form-buttons">
-						<a class="button domainmapping-button domainmapping-push-right" href="<?php echo esc_url( $backref ) ?>"><?php _e( 'Cancel', 'domainmap' ) ?></a>
-						<button type="submit" class="button button-primary domainmapping-button"><i class="icon-ok icon-white"></i> <?php _e( 'Register account', 'domainmap' ) ?></button>
+						<button class="button domainmapping-button domainmapping-push-right" id="dm_whmcs_registeration_cancel"><?php _e( 'Cancel', 'domainmap' ) ?></button>
+						<button type="submit" class="button button-primary domainmapping-button" id="dm_whmcs_registeration_submit"><i class="icon-ok icon-white"></i> <?php _e( 'Register account', 'domainmap' ) ?></button>
 					</div>
 					<div class="domainmapping-clear"></div>
 				</form>
@@ -73,7 +68,7 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 	/**
 	 * Renders account fields.
 	 *
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 */
@@ -137,7 +132,7 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 	/**
 	 * Renders registrant information fields.
 	 *
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 *
 	 * @access private
 	 */

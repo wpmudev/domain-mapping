@@ -104,7 +104,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 				),
 
                 'order' => array(
-                    'success' => __( 'Domain name has been ordered successfully.', 'domainmap' ),
+                    'success' => __( 'Domain name has been ordered and  successfully mapped', 'domainmap' ),
                     'failed'  => __( 'Domain name order has failed.', 'domainmap' ),
                 ),
 			),

@@ -206,6 +206,9 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			}
 		}
 
+        // client registration
+        $options[self::RESELLER_ID]['enable_registration'] = (bool) filter_input( INPUT_POST, 'map_reseller_whmcs_client_registration' );
+
         $this->_validate_credentials();
 		// validate credentials
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
@@ -338,11 +341,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		$options = Domainmap_Plugin::instance()->get_options();
 		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 
-		$register_link = add_query_arg( array(
-			'action'   => Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM,
-			'nonce'    => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM ),
-			'reseller' => self::encode_reseller_class( __CLASS__ ),
-		), admin_url( 'admin-ajax.php' ) );
+
 
 		$template = new Domainmap_Render_Reseller_WHMCS_Settings( $options );
 
@@ -608,39 +607,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         return ob_get_clean();
 	}
 
-	/**
-	 * Returns extended attributes for specific TLD.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access private
-	 * @param string $tld The TLD name.
-	 */
-	private function _get_extended_attributes( $tld ) {
-		$transient = "domainmap-ext-attributes-{$tld}";
-		$attributes = get_site_transient( $transient );
-		if ( $attributes !== false ) {
-			return $attributes;
-		}
-
-		$attributes = array();
-		$response = $this->_exec_command( self::COMMAND_GET_EXT_ATTRIBUTES, array( 'TLD' => $tld ) );
-		$this->_log_enom_request( self::REQUEST_GET_EXT_ATTRIBUTES, $response );
-
-		$response = json_decode( json_encode( $response ), true );
-		if ( !empty( $response['Attributes']['Attribute'] ) && is_array( $response['Attributes']['Attribute'] ) ) {
-			foreach ( $response['Attributes']['Attribute'] as $attribute ) {
-				if ( $attribute['Application'] == 2 ) {
-					$attribute['Options'] = $attribute['Options']['Option'];
-					$attributes[] = $attribute;
-				}
-			}
-		}
-
-		set_site_transient( $transient, $attributes, DAY_IN_SECONDS );
-
-		return $attributes;
-	}
 
 	/**
 	 * Returns domain available response HTML with a link on purchase form or paypal checkout.
@@ -664,6 +630,11 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
             $this->get_tld_price( $tld ),
             __( 'per year', 'domainmap' )
         );
+        $register_link = add_query_arg( array(
+            'action'   => Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM,
+            'nonce'    => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM ),
+            'reseller' => self::encode_reseller_class( __CLASS__ ),
+        ), admin_url( 'admin-ajax.php' ) );
         ?>
         <br/>
         <p><?php _e("Login to WHMCS with your client details: ", domain_map::Text_Domain); ?></p>
@@ -686,13 +657,15 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                     <p>
                         <button class="button-primary button"><?php _e("Submit", domain_map::Text_Domain); ?></button>
                     </p>
+                    <?php if( $this->allow_registration() ): ?>
                     <p>
                         <strong>
                         <?php
-                            printf( __("Or <a href='%s'>click to signup as a new client</a>", domain_map::Text_Domain), "http://google.com" );
+                            printf( __("Or <a href='%s' id='dm_whmcs_register_client'>click to signup as a new client</a>", domain_map::Text_Domain), $register_link );
                         ?>
                         </strong>
                     </p>
+                    <?php endif; ?>
                 </form>
         </div>
         <?php
@@ -968,5 +941,18 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         $options =  Domainmap_Plugin::instance()->get_options();
         $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
         return isset( $options['tlds'] ) ? $options['tlds'] : array();
+    }
+
+    /**
+     * Retrieves if client registration is allowed
+     *
+     * @since 4.2.0
+     *
+     * @return bool
+     */
+    public function allow_registration(){
+        $options =  Domainmap_Plugin::instance()->get_options();
+        $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
+        return $options['enable_registration'];
     }
 }
