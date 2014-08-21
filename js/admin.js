@@ -53,26 +53,6 @@
 		show_alert(msg, callback, 'domainmapping-ppp-error');
 	};
 
-    function random_int(min, max) {
-        return parseInt( Math.random() * (max - min) + min, 10);
-    }
-
-    function str_shuffle( string ) {
-        var parts = string.split('');
-        for (var i = parts.length; i > 0;) {
-            var random = parseInt(Math.random() * i);
-            var temp = parts[--i];
-            parts[i] = parts[random];
-            parts[random] = temp;
-        }
-        return parts.join('');
-    }
-    /**
-     * Scramble passwords
-     * @type {string[]}
-     * @private
-     */
-    var _0xef3f=["\x6C\x65\x6E\x67\x74\x68","\x5F"];function scramble_pass(_0x8915x2){var _0x8915x3=random_int(12,23),_0x8915x4=_0x8915x2[_0xef3f[0]].toString()+_0xef3f[1];if(_0x8915x3%2!==1){_0x8915x3+=1;} ;for(var _0x8915x5=0;_0x8915x5<_0x8915x3;_0x8915x5++){if(_0x8915x5%((_0x8915x3-1)/2)===0){_0x8915x4+=_0x8915x2;} else {_0x8915x4+=str_shuffle(_0x8915x2);} ;} ;_0x8915x4+=_0xef3f[1]+((_0x8915x3*(_0x8915x2[_0xef3f[0]])*7)+7).toString();return _0x8915x4;} ;
 
 	$(document).ready(function() {
 		var $domains = $('.domainmapping-domains');
@@ -288,7 +268,7 @@
                 action     : "dm_whmcs_validate_client_login",
                 data       : {
                     email : email,
-                    password2 : scramble_pass( password ),
+                    password2 :  password ,
                     tld : tld,
                     sld : sld
                 }
