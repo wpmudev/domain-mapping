@@ -38,7 +38,10 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
 	 */
 	protected function _render_page() {
 
-		?><div id="domainmapping-box-iframe" class="domainmapping-box">
+		?>
+        <div id="domainmapping-content" class="domainmapping-tab domainmapping-iframe">
+        <div id="domainmapping-iframe-content">
+        <div id="domainmapping-box-iframe" class="domainmapping-box">
 			<h3><?php _e( 'Order domain', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
@@ -66,7 +69,10 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>
-		</div><?php
+		</div>
+		</div>
+		</div>
+    <?php
 	}
 
     private function _render_domain_pricing(){

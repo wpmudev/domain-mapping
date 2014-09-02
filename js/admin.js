@@ -382,7 +382,6 @@
             period = $("#dm_whmcs_domain_period").val(),
             $wrapper = $this.parents('.domainmapping-domains-wrapper'),
             form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
-        console.log(sld, tld , period );
         if( sld && tld && period ){
             $wrapper.addClass('domainmapping-domains-wrapper-locked');
         }else{
@@ -500,7 +499,7 @@
                 return $(el).css("display") === "block";
             });
             if( $first_el ){
-                $('html, body').animate({ scrollTop: $first_el.offset().top }, 600);
+                $('html, body').animate({ scrollTop: ($first_el.offset().top - 90) }, 600);
             }
 
         }
@@ -520,18 +519,19 @@
                 url            : ajaxurl ,
                 data           :{
                     action     : "dm_whmcs_register_client",
-                    data       : $form.serialize()
+                    data       : $form.serialize(),
+                    sld        : $(".domainmapping-input-domain").val(),
+                    tld        : $(".domainmapping-select-domain").val()
                 },
                 success        : function( result ){
 
                     if( result.success === true ){ // registering successful
-                        show_success( domainmapping.message.order.success  );
-                        $(".domainmapping-info.domainmapping-info-success").html( form_html  );
+                        show_success( domainmapping.message.registration.success  );
+                        $(".domainmapping-info.domainmapping-info-success").html( result.data.html  );
                     }else{
                         show_error( result.data.message + "\n" + result.data.errors );
                     }
 
-                    $(".domainmapping-info.domainmapping-info-success").html( form_html );
                     $wrapper.removeClass('domainmapping-domains-wrapper-locked');
                 },
                 error          : function( result ){

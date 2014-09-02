@@ -107,6 +107,11 @@ class Domainmap_Module_Setup extends Domainmap_Module {
                     'success' => __( 'Domain name has been ordered and  successfully mapped', 'domainmap' ),
                     'failed'  => __( 'Domain name order has failed.', 'domainmap' ),
                 ),
+
+                'registration' => array(
+                    'success' => __( 'Client account successfully registered, now you can go on with purchasing the domain.', 'domainmap' ),
+                    'failed'  => __( 'Client account registration failed.', 'domainmap' ),
+                ),
 			),
 		) );
 

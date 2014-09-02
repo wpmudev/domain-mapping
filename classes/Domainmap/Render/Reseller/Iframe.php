@@ -38,14 +38,7 @@ abstract class Domainmap_Render_Reseller_Iframe extends Domainmap_Render {
 	 * @access protected
 	 */
 	protected function _to_html() {
-		?><div id="wpwrap">
-			<div id="domainmapping-content" class="domainmapping-tab domainmapping-iframe">
-				<div id="domainmapping-iframe-content">
-					<?php $this->_render_page() ?>
-				</div>
-			</div>
-		</div><?php
-
+	     $this->_render_page();
 	}
 
 	/**

@@ -600,11 +600,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         ob_start();
 		$render = new Domainmap_Render_Reseller_WHMCS_Purchase( $domain_info );
 		$render->errors = $this->get_last_errors();
-//		$render->cardtypes = $this->get_card_types();
-//		$render->cardholder = $cardholder;
-//		$render->countries = Domainmap_Plugin::instance()->get_countries();
-//		$render->ext_attributes = $this->_get_extended_attributes( $domain_info['tld'] );
-
 		$render->render();
         return ob_get_clean();
 	}
@@ -885,8 +880,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		$template = new Domainmap_Render_Reseller_WHMCS_Register();
 
 		$template->errors = $this->get_last_errors();
-		$template->cardtypes = $this->get_card_types();
-		$template->cardholder = $cardholder;
 		$template->countries = Domainmap_Plugin::instance()->get_countries();
 
 		$template->render();

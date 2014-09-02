@@ -39,7 +39,11 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 	protected function _render_page() {
 		$cancel = filter_input( INPUT_GET, 'cancel', FILTER_VALIDATE_URL );
 
-		?><div id="domainmapping-box-iframe" class="domainmapping-box">
+		?>
+        <div id="wpwrap">
+        <div id="domainmapping-content" class="domainmapping-tab domainmapping-iframe">
+        <div id="domainmapping-iframe-content">
+        <div id="domainmapping-box-iframe" class="domainmapping-box">
 			<h3><?php _e( 'Purchase domain', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
@@ -74,7 +78,11 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>
-		</div><?php
+		</div>
+		</div>
+		</div>
+		</div>
+    <?php
 	}
 
 	/**

@@ -37,6 +37,11 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 	 * @access protected
 	 */
 	protected function _render_page() {
+        ?>
+        <div id="wpwrap">
+        <div id="domainmapping-content" class="domainmapping-tab domainmapping-iframe">
+        <div id="domainmapping-iframe-content">
+        <?php
 		$backref = add_query_arg( array(
 			'page' => 'domainmapping_options',
 			'tab'  => 'reseller-options',
@@ -67,7 +72,11 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>
-		</div><?php
+		</div>
+		</div>
+		</div>
+		</div>
+    <?php
 	}
 
 	/**

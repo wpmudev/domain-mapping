@@ -37,7 +37,10 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 	 * @access protected
 	 */
 	protected function _render_page() {
-		?><div id="domainmapping-box-iframe" class="domainmapping-box">
+		?>
+        <div id="domainmapping-content" class="domainmapping-tab domainmapping-iframe">
+        <div id="domainmapping-iframe-content">
+        <div id="domainmapping-box-iframe" class="domainmapping-box">
 			<h3><?php _e( 'Register new WHMCS client', 'domainmap' ) ?></h3>
 			<div class="domainmapping-domains-wrapper domainmapping-box-content domainmapping-form">
 				<div class="domainmapping-locker"></div>
@@ -61,7 +64,10 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 					<div class="domainmapping-clear"></div>
 				</form>
 			</div>
-		</div><?php
+		</div>
+		</div>
+		</div>
+    <?php
 	}
 
 	/**

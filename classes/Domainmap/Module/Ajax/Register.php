@@ -102,7 +102,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 			status_header( 404 );
 			exit;
 		}
-
 		// check whether reseller supports accounts registration
 		$reseller = $resellers[$reseller];
 		if ( !$reseller->support_account_registration() ) {
@@ -122,6 +121,11 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 			exit;
 		}
 
+        if( get_class($reseller) === "Domainmap_Reseller_WHMCS" ){
+            call_user_func(array($reseller, 'render_registration_form'));
+            wp_die();
+        }
+
 		define( 'IFRAME_REQUEST', true );
 
 		// enqueue scripts
@@ -135,7 +139,7 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 
 		// render registration form
 		wp_iframe( array( $reseller, 'render_registration_form' ) );
-		exit;
+		wp_die();
 	}
 
     private function _validate_whmcs_registration(){
@@ -145,7 +149,8 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
         $data = $_POST['data'];
         $errors = new WP_Error();
         parse_str($data);
-
+        $tld = $_POST['tld'];
+        $sld = $_POST['sld'];
         /**
          * Validate
          */
@@ -181,10 +186,23 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
             wp_send_json_error( $errors->get_error_messages() );
         }
         if( !is_wp_error($object) ){
+            $client_id_transient = sprintf( 'domainmap-%s-%s', get_current_user_id(), "whmcs_client_id" );
+            set_site_transient( $client_id_transient, $object->clientid, HOUR_IN_SECONDS  );
+            /**
+             * @var $whmcs Domainmap_Reseller_WHMCS
+             */
+            $whmcs = $this->_plugin->get_reseller();
+
             wp_send_json_success( array(
+                "html" =>  $whmcs->render_purchase_form( array(
+                    "tld" => $tld,
+                    "sld" => $sld,
+                    "domain" => $sld . "." . $tld
+                ) ),
                 "clientid" =>  $object->clientid,
                 "result" => $object->result
             ) );
+
         }else{
 //            var_dump($object);
             wp_send_json_error( array(

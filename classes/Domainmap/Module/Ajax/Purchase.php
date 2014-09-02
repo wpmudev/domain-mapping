@@ -129,8 +129,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 				wp_set_auth_cookie( $user_id, true, true );
 
 				// redirect to https version of this page
-				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
-				exit;
+//				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
+//				exit;
 			} else {
 				// redirect to login form
 				$this->redirect_to_login_form();
@@ -152,8 +152,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function render_purchase_form() {
-		$this->_check_ssl_and_security();
-
+        $this->_check_ssl_and_security();
 		$reseller = $this->_plugin->get_reseller();
 		$info = get_site_transient( $this->_get_transient_name( 'checkdomain' ) );
 		if ( !$info || !$reseller ) {
