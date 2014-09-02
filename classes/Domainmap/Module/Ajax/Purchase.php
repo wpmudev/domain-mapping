@@ -50,7 +50,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'render_purchase_form' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM, 'redirect_to_login_form', false, true );
 		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_CHECK_CLIENT_LOGIN, 'whmcs_validate_client_login' );
-		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_CHECK_ORDER_DOMAIN, 'ajax_whmcs_order_domain' );
+		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_ORDER_DOMAIN, 'ajax_whmcs_order_domain' );
 	}
 
 	/**
@@ -300,6 +300,11 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
         wp_die();
     }
 
+    /**
+     * Orders new domain via WHMCS API
+     *
+     * @since 4.2.0
+     */
     function ajax_whmcs_order_domain(){
         global $current_site;
         /**
@@ -326,17 +331,17 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
             ) );
         }
 
-        $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_ADD_ORDER, array(
+
+
+        $object = Domainmap_Reseller_WHMCS::exec_command( Domainmap_Reseller_WHMCS::COMMAND_ADD_ORDER, array_merge(array(
             "clientid" =>  $client_id,
             "domaintype" => "register",
             "domain" => $domain,
             "regperiod" => $period,
             "dnsmanagement" => "on",
             "idprotection" => "on",
-            "nameserver1" => "ns1." . $current_site->domain,
-            "nameserver2" => "ns2." . $current_site->domain,
             "paymentmethod" => $whmcs->get_gateway()
-        ) );
+        ), $this->_get_current_domain_nameservers()) );
 
         if( !is_wp_error($object) ){
             $this->_map_domain( $domain);
@@ -352,4 +357,32 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
     }
 
+    /**
+     * Retrieve name servers for current hostname
+     *
+     * @since 4.2.0
+     *
+     * @return array
+     */
+    private function _get_current_domain_nameservers(){
+        global $current_site;
+        $name_servers = array();
+        $ns_query = dns_get_record($current_site->domain);
+        if( is_array($ns_query) ){
+            $i = 1;
+            foreach($ns_query as $val){
+                if( isset($val['target']) ){
+                    $name_servers["nameserver" . $i] = $val['target'];
+                }
+                $i++;
+            }
+        }
+
+        if( count($name_servers) === 0 ){
+            $name_servers["nameserver1"] = "ns1." . $current_site->domain;
+            $name_servers["nameserver2"] = "ns2." . $current_site->domain;
+        }
+
+        return $name_servers;
+    }
 }

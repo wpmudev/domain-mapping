@@ -345,12 +345,29 @@
     });
 
     /**
+     * Remove domain pricing column
+     */
+    $(".dm_whmcs_tlds_remove_col").on("click", function( e ){
+        e.preventDefault();
+        var $this_header = $(this).closest("th"),
+            index = $this_header.index();
+        console.log(index);
+       $(".dm_whmcs_tlds tbody tr").each(function(){
+           $("td", this).eq(index).toggle("highlight", function(){
+               $(this).remove();
+           });
+           $this_header.toggle("highlight", function(){
+               $(this).remove();
+           });
+       })
+    });
+
+    /**
      * Domain order cancel
      */
     $(document).on("click", "#dm-whmcs-domain-order-cancel", function(e){
         e.preventDefault();
         var form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
-        console.log(form_html);
         $(".domainmapping-info.domainmapping-info-success").html( form_html );
     });
 
@@ -407,10 +424,14 @@
     });
 
     /**
+     * ======================================================================================
      * WHMCS register new client
      */
     $(document).on("click", "#dm_whmcs_register_client", function( e ){
         e.preventDefault();
+
+        $(".domainmapping-info.domainmapping-info-success").data("form_html", $(".domainmapping-info.domainmapping-info-success").html() );
+
         var $this = $(this),
             url = $this.attr("href"),
             $wrapper = $this.parents('.domainmapping-domains-wrapper');
@@ -427,5 +448,98 @@
                 $(".domainmapping-info.domainmapping-info-success").html( result );
             }
         });
+    });
+
+    /**
+     * Cancel registration
+     */
+    $(document).on("click", "#dm_whmcs_registeration_cancel", function( e ){
+        e.preventDefault();
+        var form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
+        $(".domainmapping-info.domainmapping-info-success").html( form_html );
+    });
+
+    function validate_client_form(){
+        var errs = [];
+
+        $("#dm-whmcs-client-registration-form input, #dm-whmcs-client-registration-form select").each(function(index){
+           var $this = $(this),
+               id = this.id,
+               error_id = "#" +  id + "_err",
+               val = $this.val();
+            if( val === "" ){
+                $(error_id).css("display", "block");
+                errs.push(index);
+            }else{
+                var i = errs.indexOf( index );
+                if( i !== -1 ){
+                    delete errs[i];
+                }
+
+                $(error_id).css("display", "none");
+            }
+        });
+
+        if( $("#account_password").val() !==  $("#account_password_confirm").val() ){
+            $("#account_password_match_err").css("display", "block");
+            errs.push("pass");
+        }else{
+            $("#account_password_match_err").css("display", "none");
+
+            var i = errs.indexOf( "pass" );
+            if( i !== -1 ){
+                delete errs[i];
+            }
+        }
+
+        /**
+         * Scroll to the first error
+         */
+        if( errs.length ){
+            var $first_el = $(".domainmapping-info-error").filter(function(index, el){
+                return $(el).css("display") === "block";
+            });
+            if( $first_el ){
+                $('html, body').animate({ scrollTop: $first_el.offset().top }, 600);
+            }
+
+        }
+        return +! errs.length;
+    }
+
+    $(document).off("submit", "#dm-whmcs-client-registration-form").on("submit", "#dm-whmcs-client-registration-form", function(e){
+        e.preventDefault();
+        var $wrapper = $('.domainmapping-domains-wrapper'),
+            $form = $(this);
+            form_html = $(".domainmapping-info.domainmapping-info-success").data("form_html");
+        $wrapper.addClass('domainmapping-domains-wrapper-locked');
+
+        if( validate_client_form() ){
+            $.ajax({
+                type           : "post",
+                url            : ajaxurl ,
+                data           :{
+                    action     : "dm_whmcs_register_client",
+                    data       : $form.serialize()
+                },
+                success        : function( result ){
+
+                    if( result.success === true ){ // registering successful
+                        show_success( domainmapping.message.order.success  );
+                        $(".domainmapping-info.domainmapping-info-success").html( form_html  );
+                    }else{
+                        show_error( result.data.message + "\n" + result.data.errors );
+                    }
+
+                    $(".domainmapping-info.domainmapping-info-success").html( form_html );
+                    $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+                },
+                error          : function( result ){
+                    $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+                }
+            });
+        }else{
+            $wrapper.removeClass('domainmapping-domains-wrapper-locked');
+        }
     });
 })(jQuery);

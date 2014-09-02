@@ -129,6 +129,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
                     <?php for ($i = 0 ; $i < $prices_count ; $i++): ?>
                         <th scope="col">
                             <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)"), $i+1 ); ?>
+                            <a href="#0" class="dashicons-before dashicons-trash dm_whmcs_tlds_remove_col"></a>
                         </th>
                     <?php endfor ?>
                     <th scope="col" id="dm_whmcs_tlds_add_col" class="inaactive_cell">

@@ -82,9 +82,14 @@
 .domainmapping-info-error {
 	border-color: #f0b0b0;
     border-left-color: #f33;
-    background-color: #fbb
+    background-color: #fbb;
 }
-
+.domainmapping-registration-error{
+    display: block;
+    margin-left: 205px;
+    padding: 5px;
+    margin-top: 5px;
+}
 .domainmapping-info-success {
 	border-color: #c0f0c0;
     border-left-color: #093;
@@ -390,6 +395,9 @@
 .domainmapping-form-hidden li:nth-last-child(2) {
     border-bottom-width: 0
 }
+.domainmapping-hidden{
+    display: none;
+}
 
 .domainmapping-label {
     width: 200px;
@@ -454,22 +462,26 @@ input.domainmapping-radio {
 }
 
 #domainmapping-check-domain-form,
-#domainmapping-iframe-form {
+#domainmapping-iframe-form,
+.domainmapping-iframe-form{
     margin-bottom: 10px;
 }
 
-#domainmapping-iframe-form h4 {
+#domainmapping-iframe-form h4,
+.domainmapping-iframe-form h4{
     margin-top: 40px;
     padding-bottom: 5px;
     border-bottom: 1px dashed #ccc;
     font-size: 16px;
 }
 
-#domainmapping-iframe-form h4:first-child {
+#domainmapping-iframe-form h4:first-child,
+.domainmapping-iframe-form h4:first-child{
     margin-top: 0;
 }
 
-#domainmapping-iframe-form h4 i {
+#domainmapping-iframe-form h4 i,
+.domainmapping-iframe-form h4 i{
     margin-right: 5px;
 	margin-top: 3px;
 }
@@ -477,7 +489,11 @@ input.domainmapping-radio {
 #domainmapping-iframe-form input[type="text"],
 #domainmapping-iframe-form input[type="password"],
 #domainmapping-iframe-form input[type="email"],
-#domainmapping-iframe-form select {
+#domainmapping-iframe-form select,
+.domainmapping-iframe-form input[type="text"],
+.domainmapping-iframe-form input[type="password"],
+.domainmapping-iframe-form input[type="email"],
+.domainmapping-iframe-form select{
     float: none;
     width: 500px;
 }
@@ -742,6 +758,10 @@ input.domainmapping-radio {
     width: auto;
 }
 .dm_whmcs_tlds_remove_row{
+    color: red;
+}
+.dm_whmcs_tlds_remove_col{
+    float: right;
     color: red;
 }
 #whmcs-client-registration-label{

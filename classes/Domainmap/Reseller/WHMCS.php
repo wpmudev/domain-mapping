@@ -40,6 +40,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const COMMAND_ADD_ORDER          = 'addorder';
 	const COMMAND_CHECK              = 'domainwhois';
 	const COMMAND_GET_GATEWAYS       = 'getpaymentmethods';
+	const COMMAND_REGISTER_CLIENT       = 'addclient';
 
 	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
 	const COMMAND_PURCHASE           = 'Purchase';
@@ -51,7 +52,8 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const GATEWAY_PROSITES = 'prosites';
 
     const ACTION_CHECK_CLIENT_LOGIN      = 'dm_whmcs_validate_client_login';
-    const ACTION_CHECK_ORDER_DOMAIN      = 'dm_whmcs_order_domain';
+    const ACTION_ORDER_DOMAIN            = 'dm_whmcs_order_domain';
+    const ACTION_REGISTER_CLIENT         = 'dm_whmcs_register_client';
 
     protected $cache_tlds = false;
     /**
