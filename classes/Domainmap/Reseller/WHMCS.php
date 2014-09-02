@@ -111,18 +111,18 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         }
 
         $response_code = wp_remote_retrieve_response_code( $response );
-        $response_body = wp_remote_retrieve_body( $response );
+        $response_body = json_decode( wp_remote_retrieve_body( $response ) );
+
         $error = new WP_Error();
         if ( $response_code  === 200 ){
-            $obj = json_decode( wp_remote_retrieve_body( $response ) );
-           if( isset( $obj->result ) && $obj->result === "success" ){
-               return $obj;
-           }elseif( isset( $obj->result ) && $obj->result === "error"  ){
-               $error->add( $response_code, strip_tags( $obj->message ) );
+           if( isset( $response_body->result ) && $response_body->result === "success" ){
+               return $response_body;
+           }elseif( isset( $response_body->result ) && $response_body->result === "error"  ){
+               $error->add( $response_code, strip_tags( $response_body->message ) );
                return $error;
            }
         }else{
-            $error->add( $response_code, strip_tags( $response_body ) );
+            $error->add( $response_code, isset( $response_body->message ) ? $response_body->message : __("Unknown", domain_map::Text_Domain) );
             return $error;
         }
     }
@@ -131,36 +131,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         return self::exec_command( $command, $arguments );
     }
 
-	/**
-	 * Logs request to reseller API.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access protected
-	 * @param int $type The request type.
-	 * @param SimpleXMLElement $response The response information, received on request.
-	 */
-	private function _log_enom_request( $type, $xml ) {
-		$valid = false;
-		$errors = array();
-
-		if ( is_wp_error( $xml ) ) {
-			$errors = $xml->get_error_messages();
-			$xml = array();
-		} elseif ( is_a( $xml, 'SimpleXMLElement' ) ) {
-			$valid = !isset( $xml->ErrCount ) || $xml->ErrCount == 0;
-			if ( !$valid && isset( $xml->errors ) ) {
-				$errors = json_decode( json_encode( $xml->errors ), true );
-			}
-		} else {
-			$errors[] = __( 'Unexpected error appears during request processing. Please, try again later.', 'domainmap' );
-			if ( filter_input( INPUT_GET, 'debug' ) ) {
-				$errors[] = $xml;
-			}
-		}
-
-		$this->_log_request( $type, $valid, $errors, $xml );
-	}
 
 	/**
 	 * Saves reseller options.
@@ -187,17 +157,18 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		// password
 		$pwd = filter_input( INPUT_POST, 'map_reseller_whmcs_pwd' );
 		$pwd_hash = filter_input( INPUT_POST, 'map_reseller_whmcs_pwd_hash' );
-		if ( $pwd_hash != md5( $pwd ) ) {
+		if ( $pwd_hash !== md5( $pwd ) ) {
 			$options[self::RESELLER_ID]['pwd'] = $pwd;
 			$need_health_check = true;
-		}
+		}else{
+            $need_health_check = !isset( $options[self::RESELLER_ID]['pwd'] ) || $options[self::RESELLER_ID]['pwd'] != $pwd;
+        }
 
         /**
          * Tlds
          */
         $tlds = $_POST["dm_whmcs_tld"];
         $options[self::RESELLER_ID]['tlds'] = $tlds;
-
 
 		// payment gateway
 		$gateway = filter_input( INPUT_POST, 'map_reseller_whmcs_payment' );
@@ -211,9 +182,8 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         // client registration
         $options[self::RESELLER_ID]['enable_registration'] = (bool) filter_input( INPUT_POST, 'map_reseller_whmcs_client_registration' );
 
-        $this->_validate_credentials();
 		// validate credentials
-		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
+		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] === false )
 			? $this->_validate_credentials()
 			: true;
 	}
@@ -231,13 +201,16 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 */
 	private function _validate_credentials() {
 		$json = $this->_exec_command( self::COMMAND_CHECK_LOGIN_CREDS );
+        $this->_log_whmcs_request(self::REQUEST_VALIDATE_CREDENTIALS, $json);
         $valid = is_object( $json ) && !is_wp_error( $json ) ? $json->result === 'success' : false;
+
         $transient = 'whmcs_errors_' . get_current_user_id();
         if ( !$valid ) {
             set_site_transient( $transient, $this->get_last_errors() );
         } else {
             delete_site_transient( $transient );
         }
+
         return $valid;
 	}
 
@@ -407,7 +380,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			'domain' => $sld . "." . $tld,
 		) );
 
-//		$this->_log_enom_request( self::REQUEST_CHECK_DOMAIN, $xml );
+		$this->_log_whmcs_request( self::REQUEST_CHECK_DOMAIN, $json );
 
         return isset( $json->status ) ? $json->status === "available" : false;
 	}
@@ -481,7 +454,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			'RegistrantFax'              => $registrant_fax,
 		) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
 
-		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+		$this->_log_whmcs_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
 			$this->_populate_dns_records( $tld, $sld );
@@ -576,7 +549,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			$args['tld'] = $tld;
 
 			$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
-			$this->_log_enom_request( self::REQUEST_SET_DNS_RECORDS, $response );
+			$this->_log_whmcs_request( self::REQUEST_SET_DNS_RECORDS, $response );
 		}
 	}
 
@@ -838,7 +811,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
 		) );
 
-		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+		$this->_log_whmcs_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
 			$this->_populate_dns_records( $tld, $sld );
@@ -949,5 +922,39 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         $options =  Domainmap_Plugin::instance()->get_options();
         $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
         return $options['enable_registration'];
+    }
+
+    /**
+     * Logs request to reseller API.
+     *
+     * @since 4.2.0
+     *
+     * @access protected
+     * @param int $type The request type.
+     * @param SimpleXMLElement $response The response information, received on request.
+     */
+    private function _log_whmcs_request( $type, $object ) {
+        if ( !is_object( $object ) ) {
+            return;
+        }
+
+        $valid = false;
+        $errors = array();
+
+        if ( is_wp_error( $object ) ) {
+            $errors = $object->get_error_messages();
+        } elseif ( is_object( $object ) && !is_wp_error( $object ) ) {
+                $valid = $object->result === "success";
+            if ( !$valid ) {
+                $errors = $object->message;
+            }
+        } else {
+            $errors[] = __( 'Unexpected error appears during request processing. Please, try again later.', 'domainmap' );
+            if ( filter_input( INPUT_GET, 'debug' ) ) {
+                $errors[] = $object;
+            }
+        }
+
+        $this->_log_request( $type, $valid, $errors, $object );
     }
 }

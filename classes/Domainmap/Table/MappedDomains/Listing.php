@@ -65,9 +65,8 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
      * @return string The domain name linking to blog's setting page.
      */
     public function column_domain( $item ) {
-
         ?>
-        <a href="<?php echo admin_url("network/site-info.php?id={$item->blog_id}") ?>"><?php echo $item->domain; ?></a>
+        <a href="<?php echo admin_url("network/site-info.php?id={$item->blog_id}") ?>"><?php echo get_site_url($item->blog_id); ?></a>
         <?php 
     }
     /**
@@ -159,7 +158,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         $cols =  array(
             'site_id'    => __( 'Site ID', 'domainmap' ),
             'mapped_domain'    => __( 'Mapped Domain', 'domainmap' ),
-            'domain'    => __( 'Domain', 'domainmap' ),
+            'domain'    => __( 'Original Address', 'domainmap' ),
             "health" => __( 'Health Status', 'domainmap' ),
             'primary'    => __( 'Primary', 'domainmap' ),
             'active'    => __( 'Active', 'domainmap' ),
