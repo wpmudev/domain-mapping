@@ -631,5 +631,64 @@ class domain_map {
 		return str_replace( trailingslashit( $orig_url ), trailingslashit( $url ), $post_content );
 	}
 
+    /**
+     * Retrieves option from db
+     *
+     * @since 4.2.0
+     * @param $key string option name
+     * @param bool $default string default value to return when option is not set or is empty
+     * @return bool false if option not set or empty | mixed option value
+     */
+    protected function get_option( $key, $default = false ){
+        return isset( $this->options[$key] ) && !empty( $this->options[$key] ) ? $this->options[$key] : $default;
+    }
+
+
+    /**
+     * Return mapping dns config and status
+     *
+     * @since 4.2.0
+     * @param null $mapping
+     * @return array
+     */
+    function get_dns_config($mapping = null) {
+        if ($mapping == null) {
+            $mapping = (object) array('domain' => 'www.example.com', 'apex' => 1, 'active' => 1);
+        }
+
+        $map_ipaddress = $this->get_option("map_ipaddress", __('IP not set by admin yet.', self::Text_Domain) );
+        $no_www_domain = preg_replace('/^www\./', '', $mapping->domain);
+
+        $records = array();
+        if ( defined('CAMPUSPRESS_SITE_ID') ) {
+            if ($mapping->apex) {
+                $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
+            } else {
+                $records[] = array('host' => $no_www_domain, 'type' => 'CNAME', 'target' => "{$no_www_domain}.c".CAMPUSPRESS_SITE_ID.".campuspress.com");
+            }
+            $records[] = array('host' => "www.{$no_www_domain}", 'type' => 'CNAME', 'target' => "www.{$no_www_domain}.c".CAMPUSPRESS_SITE_ID.".campuspress.com");
+
+        } else {
+            if ( strpos( $map_ipaddress, ',' ) ) {
+                // Multiple CNAME not supported, so assume A
+                $_records = preg_split(',', $map_ipaddress);
+                foreach ($_records as $record) {
+                    $records[] = array('host' => $mapping->domain, 'type' => 'A', 'target' => $record);
+                }
+            } else {
+                if (ip2long($map_ipaddress) > 0) {
+                    $rec_type = "A";
+                } else {
+                    $rec_type = "CNAME";
+                    if ($mapping->apex) {
+                        $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
+                    }
+                }
+                $records[] = array('host' => $mapping->domain, 'type' => $rec_type, 'target' => $map_ipaddress);
+            }
+        }
+        return $records;
+    }
+
 
 }

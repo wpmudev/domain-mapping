@@ -107,15 +107,20 @@
 
 			if (confirm(domainmapping.message.unmap)) {
 				$.get($self.attr('data-href'), {}, function(response) {
-					parent.fadeOut(300, function() {
-						parent.remove();
-						if (response && response.data && response.data.show_form) {
-							wrapper.removeClass('domainmapping-form-hidden');
-						}
-					});
-                    $tr.fadeOut(300, function() {
-                        $tr.remove();
-                    });
+                    if( response.success ){
+                        parent.fadeOut(300, function() {
+                            parent.remove();
+                            if (response && response.data && response.data.show_form) {
+                                wrapper.removeClass('domainmapping-form-hidden');
+                            }
+                        });
+                        $tr.fadeOut(300, function() {
+                            $tr.remove();
+                        });
+                    }else{
+                        show_error(domainmapping.message.unmap_error);
+                    }
+
 				});
 			}
 

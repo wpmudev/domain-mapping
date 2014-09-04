@@ -84,6 +84,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 			),
 			'message' => array(
 				'unmap'             => __( 'You are about to unmap selected domain. Do you really want to proceed?', 'domainmap' ),
+				'unmap_error'       => __( 'Unmapping was not successful, please check your permissions and try again later', 'domainmap' ),
 				'empty'             => __( 'Please enter a valid domain to be mapped to your site.', 'domainmap' ),
 				'empty_email_pass'  => __( 'Please enter username and password', 'domainmap' ),
 				'deselect'          => __( 'You are about to deselect your primary domain. Do you really want to proceed?', 'domainmap' ),

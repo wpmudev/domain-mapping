@@ -28,7 +28,133 @@
  *
  * @since 4.2
  */
+
 class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
+
+    function __construct( $args = array()  ){
+        parent::__construct( array_merge( array(
+            'search_box_label' => __( 'Search mapped domains' ),
+            'single'           => 'domain',
+            'plural'           => 'domains',
+            'ajax'             => false,
+        ), $args ) );
+
+    }
+
+    /**
+     * Get a list of all, hidden and sortable columns, with filter applied
+     *
+     * @since 4.2.0
+     * @access protected
+     *
+     * @return array
+     */
+    function get_column_info() {
+        if ( isset( $this->_column_headers ) )
+            return $this->_column_headers;
+        $columns = get_column_headers( $this->screen );
+        $hidden = get_hidden_columns( $this->screen );
+
+        $sortable_columns = $this->get_sortable_columns();
+        /**
+         * Filter the list table sortable columns for a specific screen.
+         *
+         * The dynamic portion of the hook name, $this->screen->id, refers
+         * to the ID of the current screen, usually a string.
+         *
+         * @since 4.2.0
+         *
+         * @param array $sortable_columns An array of sortable columns.
+         */
+        $_sortable = apply_filters( "manage_{$this->screen->id}_sortable_columns", $sortable_columns );
+
+        $sortable = array();
+        foreach ( $_sortable as $id => $data ) {
+            if ( empty( $data ) )
+                continue;
+
+            $data = (array) $data;
+            if ( !isset( $data[1] ) )
+                $data[1] = false;
+
+            $sortable[$id] = $data;
+        }
+
+        $this->_column_headers = array( $columns, $hidden, $sortable );
+        return $this->_column_headers;
+    }
+
+
+    /**
+     * Returns table columns.
+     *
+     * @since 4.2
+     *
+     * @return array The array of table columns to display.
+     */
+    public function get_columns() {
+        $cols =  array(
+            'site_id'    => __( 'Site ID', 'domainmap' ),
+            'mapped_domain'    => __( 'Mapped Domain', 'domainmap' ),
+            'domain'    => __( 'Original Address', 'domainmap' ),
+            "health" => __( 'Health Status', 'domainmap' ),
+            'dns' => __( 'DNS Configuration', 'domainmap' ),
+            'primary'    => __( 'Primary', 'domainmap' ),
+            'active'    => __( 'Active', 'domainmap' ),
+            'actions'    => __( 'Actions', 'domainmap' ),
+        );
+
+        if( !filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ){
+            unset( $cols["primary"] ) ;
+        }
+
+        return $cols;
+    }
+
+
+
+
+    /**
+     * Fetches records from database.
+     *
+     * @since 4.2
+     *
+     * @global wpdb $wpdb The database connection.
+     */
+    public function prepare_items() {
+        global $wpdb;
+
+        parent::prepare_items();
+
+        $per_page = 2;
+        $offset = ( $this->get_pagenum() - 1 ) * $per_page;
+
+        $search_term = null;
+        if ( isset( $_REQUEST['s'] ) ) {
+            $search_term = $_REQUEST['s'];
+        }
+
+        $q = $wpdb->prepare( "
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`apex`, mapped.`active`, blog.`site_id`
+			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
+			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
+			 ORDER BY blog.blog_id DESC
+			    LIMIT %d
+			    OFFSET %d
+			", $per_page, $offset
+        );
+
+        $this->items = $wpdb->get_results( $q, OBJECT );
+        $total_items = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,
+            'per_page' => $per_page,
+            'total_pages' => ceil( $total_items / $per_page )
+        ) );
+
+    }
+
 
     /**
      * Returns site id column data to display.
@@ -78,7 +204,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
      * @return string Yes/No .
      */
     public function column_primary( $item ) {
-        echo $item->primary ? __("Yes", "domainmap") : __("No", "domainmap");
+        echo $item->is_primary ? __("Yes", "domainmap") : __("No", "domainmap");
     }
 
     /**
@@ -122,6 +248,26 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         </div>
         <?php
     }
+
+
+    function column_dns( $item ) {
+        global $dm_map;
+
+        $_records = $dm_map->get_dns_config( ( object ) $item );
+        $dns_config = "";
+
+        foreach ( $_records as $_record ) {
+            if (ip2long($_record['target']) == 0) {
+                $_record['target'] .= ".";
+            }
+            $dns_config .= "<p>Host Name: <code>{$_record['host']}</code><br/>";
+            $dns_config .= "Record Type: {$_record['type']}<br/>";
+            $dns_config .= "Value: <code>{$_record['target']}</code>\n</p>";
+        }
+
+        return $dns_config;
+    }
+
     /**
      * Returns domain column data to display.
      *
@@ -147,67 +293,6 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
 
 
-    /**
-     * Returns table columns.
-     *
-     * @since 4.2
-     *
-     * @return array The array of table columns to display.
-     */
-    public function get_columns() {
-        $cols =  array(
-            'site_id'    => __( 'Site ID', 'domainmap' ),
-            'mapped_domain'    => __( 'Mapped Domain', 'domainmap' ),
-            'domain'    => __( 'Original Address', 'domainmap' ),
-            "health" => __( 'Health Status', 'domainmap' ),
-            'primary'    => __( 'Primary', 'domainmap' ),
-            'active'    => __( 'Active', 'domainmap' ),
-            'actions'    => __( 'Actions', 'domainmap' ),
-        );
-
-        if( !filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ){
-            unset( $cols["primary"] ) ;
-        }
-
-        return $cols;
-    }
-
-
-
-
-    /**
-     * Fetches records from database.
-     *
-     * @since 4.2
-     *
-     * @global wpdb $wpdb The database connection.
-     */
-    public function prepare_items() {
-        global $wpdb;
-
-        parent::prepare_items();
-
-        $per_page = 20;
-        $offset = ( $this->get_pagenum() - 1 ) * $per_page;
-
-
-        $q = $wpdb->prepare( "
-			SELECT mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`active`, blog.`site_id`
-			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
-			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
-			 ORDER BY blog.blog_id DESC
-			    LIMIT {$per_page}
-			    OFFSET {$offset}
-			", null
-        );
-        $this->items = $wpdb->get_results( $q );
-        $total_items = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
-        $this->set_pagination_args( array(
-            'total_items' => $total_items,
-            'per_page' => $per_page,
-            'total_pages' => ceil( $total_items / $per_page )
-        ) );
-    }
 
     /**
      * Generates content for a single row of the table.
@@ -223,24 +308,14 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     }
 
     /**
-     * Extra controls to be displayed between bulk actions and pagination
+     * Returns associative array with the list of bulk actions available on this table.
      *
-     * @since 4.2
-     * @access protected
-     */
-    public function extra_tablenav( $which ) {
-       
-    }
-
-    /**
-     * Returns bulk actions
+     * @since 4.2.0
      *
-     * @since 4.2
      * @access protected
-     * @return array bulk actions
+     * @return array The associative array of bulk actions.
      */
     public function get_bulk_actions() {
         return array();
     }
-
 }

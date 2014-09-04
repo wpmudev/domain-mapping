@@ -168,6 +168,7 @@ spl_autoload_register( 'domainmap_autoloader' );
 // launch the plugin
 domainmap_launch();
 
+
 /*================== Global Functions =======================*/
 
 /**
@@ -209,3 +210,4 @@ function dm_home_url( $path = '', $scheme = null ){
     $current_home_url = home_url( $path, $scheme );
     return Domainmap_Module_Mapping::unswap_url( $current_home_url, false, (bool) $path );
 }
+

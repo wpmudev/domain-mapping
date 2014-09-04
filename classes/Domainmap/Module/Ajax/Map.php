@@ -237,8 +237,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
-		if ( _validate_domain_name( $domain ) ) {
-			$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
+        $success = false;
+		if ( $this->_validate_domain_name( $domain, true) ) {
+            $success = (bool) $this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
+
 			delete_transient( "domainmapping-{$domain}-health" );
 
 			// check if we need to show form
@@ -254,8 +256,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
              */
             do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
 		}
-
-		wp_send_json_success( array( 'show_form' => $show_form ) );
+        if( $success ){
+            wp_send_json_success( array( 'show_form' => $show_form ) );
+        }else{
+            wp_send_json_error( array( 'show_form' => $show_form ) );
+        }
 	}
 
 	/**
