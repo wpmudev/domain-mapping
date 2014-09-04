@@ -308,6 +308,8 @@
             $(this).val("");
         });
         $(this).closest("tr").before($new_row);
+        $(".dm_whmcs_tlds_remove_row").show();
+        $(".dm_whmcs_tlds_remove_row").attr("disabled", false);
     });
 
     /**
@@ -331,24 +333,34 @@
             $(this).find(".inaactive_cell").first().before( $price_cell );
             $price_cell.wrap("<td></td>");
         });
-
+        $(".dm_whmcs_tlds_remove_col").attr("disabled", false);
+        $(".dm_whmcs_tlds_remove_col").show();
     });
 
     /**
      * Remove domain pricing row
      */
-    $(".dm_whmcs_tlds_remove_row").on("click", function( e ){
+    $(document).on("click", ".dm_whmcs_tlds_remove_row", function( e ){
         e.preventDefault();
+
+        if( $( ".dm_whmcs_tlds_remove_row").length === 1 ) return;
+
         $(this).closest("tr").toggle("highlight", function(){
             $(this).remove();
+            if( $(".dm_whmcs_tlds_remove_row").length === 1  ){
+                $(".dm_whmcs_tlds_remove_row").attr("disabled", true);
+                $(".dm_whmcs_tlds_remove_row").hide();
+            }
         });
     });
 
     /**
      * Remove domain pricing column
      */
-    $(".dm_whmcs_tlds_remove_col").on("click", function( e ){
+    $(document).on("click", ".dm_whmcs_tlds_remove_col", function( e ){
         e.preventDefault();
+        // if this is the only col remove button, don't remove
+        if( $(".dm_whmcs_tlds_remove_col").length === 1 ) return;
         var $this_header = $(this).closest("th"),
             index = $this_header.index();
         console.log(index);
@@ -358,6 +370,16 @@
            });
            $this_header.toggle("highlight", function(){
                $(this).remove();
+               // if there is one col left, disable and hide the remove buttons
+               if( $(".dm_whmcs_tlds_remove_col").length === 1){
+                   $(".dm_whmcs_tlds_remove_col").hide();
+                   $(".dm_whmcs_tlds_remove_col").attr("disabled", true);
+               }
+
+               // take care of column year labels
+               $(".dm_year_count").each(function(index){
+                  $(this).text(index + 1);
+               });
            });
        })
     });

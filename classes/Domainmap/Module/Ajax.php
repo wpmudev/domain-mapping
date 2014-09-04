@@ -42,9 +42,11 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 * @param bool $is_purchase If the validation is done for a domain purchase.
 	 * @return boolean TRUE if domain name is valid, otherwise FALSE.
 	 */
-	protected static function _validate_domain_name( $domain, $is_purchase = false ) {
+	protected function _validate_domain_name( $domain, $is_purchase = false ) {
+        $map_verifydomain = $this->_plugin->get_option("map_verifydomain");
+
         $domain = Domainmap_Punycode::encode($domain);
-        if( $is_purchase ){
+        if( $is_purchase || !$map_verifydomain ){
             return preg_match( "/^([A-Za-z0-9](-*[A-Za-z0-9])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
             && preg_match( "/^.{1,253}$/", $domain ) //overall length check
             && preg_match( "/^[^\.]{1,63}(\.[^\.]{2,63})+$/", $domain ) //length of each label
@@ -92,6 +94,7 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_to_login_form() {
+
 		wp_redirect( wp_login_url( add_query_arg() ) );
 		exit;
 	}

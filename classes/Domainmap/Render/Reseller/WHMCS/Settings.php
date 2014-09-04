@@ -69,7 +69,6 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 		$pwd = str_shuffle( (string) $this->pwd );
 		// we save shuffle hash to see on POST if the password was changed by an user
 		$pwd_hash = md5( $pwd );
-        var_dump($this->valid);
 		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
 
 		<?php if ( $this->valid === false ) : ?>
@@ -115,8 +114,11 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
                 0 => "5.00"
             )
         ) ) : $this->tlds;
-        $prices_count =  count( $this->tlds[0]['price'] );
 
+        $prices_vals = array_values($this->tlds);
+        $prices_count =  count( $prices_vals[0]['price'] );
+        $hide_delete_row = count($this->tlds) === 1;
+        $hide_delete_col = $prices_count === 1;
         ?><h4 class="domainmapping-block-header"><?php _e( 'Define domain pricing:', 'domainmap' ) ?></h4>
 
         <div>
@@ -130,7 +132,9 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
                     <?php for ($i = 0 ; $i < $prices_count ; $i++): ?>
                         <th scope="col">
                             <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)"), $i+1 ); ?>
-                            <a href="#0" class="dashicons-before dashicons-trash dm_whmcs_tlds_remove_col"></a>
+
+                            <button <?php echo $hide_delete_col ? "disabled='disabled'" : ""; ?> class="dashicons-before <?php echo $hide_delete_col ? "domainmapping-hidden" : ""; ?> dashicons-trash dm_whmcs_tlds_remove_col"></button>
+
                         </th>
                     <?php endfor ?>
                     <th scope="col" id="dm_whmcs_tlds_add_col" class="inaactive_cell">
@@ -154,7 +158,8 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
                         </td>
                             <?php $pi++; endforeach; ?>
                         <th  class="inaactive_cell">
-                            <a href="#0" class="dashicons-before dashicons-trash dm_whmcs_tlds_remove_row"></a>
+
+                            <button <?php echo $hide_delete_row ? "disabled='disabled'" : ""; ?> class="dashicons-before dashicons-trash dm_whmcs_tlds_remove_row <?php echo $hide_delete_row ? "domainmapping-hidden" : ""; ?>"></button>
                         </td>
                     </tr>
                 <?php $i++; endforeach; ?>

@@ -167,7 +167,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
 		$scheme = strtolower( trim( filter_input( INPUT_POST, 'scheme' ) ) );
         $domain = Domainmap_Punycode::encode( $domain );
-		if ( self::_validate_domain_name( $domain ) ) {
+		if ( $this->_validate_domain_name( $domain ) ) {
 
 			// check if mapped domains are 0 or multi domains are enabled
 			$count = $this->_get_domains_count();
@@ -237,7 +237,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
-		if ( self::_validate_domain_name( $domain ) ) {
+		if ( _validate_domain_name( $domain ) ) {
 			$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
 			delete_transient( "domainmapping-{$domain}-health" );
 
@@ -291,7 +291,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	public function check_health_status() {
 		self::_check_premissions( Domainmap_Plugin::ACTION_HEALTH_CHECK );
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
-		if ( !self::_validate_domain_name( $domain ) ) {
+		if ( !$this->_validate_domain_name( $domain ) ) {
 			wp_send_json_error();
 		}
 

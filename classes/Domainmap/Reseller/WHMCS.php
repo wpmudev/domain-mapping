@@ -49,7 +49,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const COMMAND_REGISTER_ACCOUNT   = 'CreateAccount';
 
 	const GATEWAY_PAYPAL     = 'paypal';
-	const GATEWAY_PROSITES = 'prosites';
 
     const ACTION_CHECK_CLIENT_LOGIN      = 'dm_whmcs_validate_client_login';
     const ACTION_ORDER_DOMAIN            = 'dm_whmcs_order_domain';
@@ -266,7 +265,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
 		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] )
 			? $options['gateway']
-			: self::GATEWAY_PAYPAL;
+			: "";
         if( $name ){
           return isset( $gateways[$gateway] ) ? $gateways[$gateway] : $gateway;
         }
@@ -579,7 +578,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
 
 	/**
-	 * Returns domain available response HTML with a link on purchase form or paypal checkout.
+	 * Returns domain available response HTML.
 	 *
 	 * @since 4.2.0
 	 *
@@ -642,184 +641,9 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         return ob_get_clean();
 	}
 
-	/**
-	 * Executes SetExpressCheckout command of PayPal API and returns response.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access private
-	 * @global ProSites $psts The instance of ProSites plugin class.
-	 * @param float $amount The price of the domain.
-	 * @param string $sld The second level domain.
-	 * @param string $tld The first level domain.
-	 * @return array The response array on success, otherwise FALSE.
-	 */
-	private function _set_express_checkout( $amount, $sld, $tld ) {
-		global $psts;
-		if ( !$psts ) {
-			return false;
-		}
 
-		$returnurl = add_query_arg( array(
-			'action' => Domainmap_Plugin::ACTION_PAYPAL_DO_EXPRESS_CHECKOUT,
-			'sld'    => $sld,
-			'tld'    => $tld,
-		), admin_url( 'admin-ajax.php' ) );
 
-		$cancelurl = parse_url( add_query_arg( array(
-			'token' => false,
-			'sld'   => $sld,
-			'tld'   => $tld,
-		), wp_get_referer() ) );
 
-		return $this->_call_paypal_api( 'SetExpressCheckout', array(
-			'PAYMENTREQUEST_0_AMT'           => $amount,
-			'PAYMENTREQUEST_0_ITEMAMT'       => $amount,
-			'PAYMENTREQUEST_0_CURRENCYCODE'  => 'USD',
-			'PAYMENTREQUEST_0_DESC'          => __( 'Payment for 1 year usage of the domain name.', 'domainmap' ),
-			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
-			'L_PAYMENTREQUEST_0_NAME0'       => "{$sld}.{$tld}",
-			'L_PAYMENTREQUEST_0_QTY0'        => 1,
-			'L_PAYMENTREQUEST_0_AMT0'        => $amount,
-			'LOCALECODE'                     => $psts->get_setting( 'pypl_site' ),
-			'NOSHIPPING'                     => 1,
-			'ALLOWNOTE'                      => 0,
-			'RETURNURL'                      => $returnurl,
-			'CANCELURL'                      => site_url( "{$cancelurl['path']}?{$cancelurl['query']}" ),
-			'HDRIMG'                         => $psts->get_setting( 'pypl_header_img' ),
-			'HDRBORDERCOLOR'                 => $psts->get_setting( 'pypl_header_border' ),
-			'HDRBACKCOLOR'                   => $psts->get_setting( 'pypl_header_back' ),
-			'PAYFLOWCOLOR'                   => $psts->get_setting( 'pypl_page_back' ),
-		) );
-	}
-
-	/**
-	 * Calls PayPal API and returns response array.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access private
-	 * @global ProSites $psts The instance of ProSites plugin class.
-	 * @param string $method The request command.
-	 * @param array $args The array of request arguments.
-	 * @return boolean|array The response array on success, otherwise FALSE.
-	 */
-	private function _call_paypal_api( $method, array $args ) {
-		global $psts;
-		if ( !$psts ) {
-			return false;
-		}
-
-		$endpoint = $psts->get_setting( 'pypl_status' ) == 'live'
-			? "https://api-3t.paypal.com/nvp"
-			: "https://api-3t.sandbox.paypal.com/nvp";
-
-		$response = wp_remote_post( $endpoint, array(
-			'user-agent' => "Pro Sites: http://premium.wpmudev.org/project/pro-sites | PayPal Express/Pro Gateway",
-			'sslverify'  => false,
-			'timeout'    => 60,
-			'body'       => http_build_query( array_merge( array(
-				'VERSION'   => '63.0',
-				'PWD'       => $psts->get_setting( 'pypl_api_pass' ),
-				'USER'      => $psts->get_setting( 'pypl_api_user' ),
-				'SIGNATURE' => $psts->get_setting( 'pypl_api_sig' ),
-				'METHOD'    => $method,
-			), $args ) ),
-		) );
-
-		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) != 200 ) {
-			return false;
-		}
-
-		$nvp_response = array();
-		parse_str( wp_remote_retrieve_body( $response ), $nvp_response );
-		return $nvp_response;
-	}
-
-	/**
-	 * Proceeds PayPal checkout.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access public
-	 * @global ProSites $psts The instance of ProSites plugin class.
-	 */
-	public function proceed_paypal_checkout() {
-		global $psts;
-
-		$tld = strtolower( trim( filter_input( INPUT_GET, 'tld' ) ) );
-		$sld = strtolower( trim( filter_input( INPUT_GET, 'sld' ) ) );
-		$response = $this->_set_express_checkout( $this->get_tld_price( $tld ), $sld, $tld );
-		if ( !$response || !isset( $response['ACK'] ) || !isset( $response['TOKEN'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
-			return;
-		}
-
-		$paypal_url = $psts->get_setting( 'pypl_status' ) == 'live'
-			? "https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token="
-			: "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&token=";
-
-		wp_redirect( $paypal_url . urlencode( $response['TOKEN'] ) );
-		exit;
-	}
-
-	/**
-	 * Completes PayPal checkout and purchase a domain.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access public
-	 * @return string|boolean Returns domain name on success, otherwise FALSE.
-	 */
-	public function complete_paypal_checkout() {
-		$token = filter_input( INPUT_GET, 'token' );
-		if ( !$token ) {
-			return false;
-		}
-
-		// receive checkout details
-		$details = $this->_call_paypal_api( 'GetExpressCheckoutDetails', array( 'TOKEN' => $token ) );
-		if ( !$details || !isset( $details['ACK'] ) || ( $details['ACK'] != 'Success' && $details['ACK'] != 'SuccessWithWarning' ) ) {
-			return false;
-		}
-
-		// complete checkout
-		$response = $this->_call_paypal_api( 'DoExpressCheckoutPayment', array(
-			'PAYERID'                        => $details['PAYERID'],
-			'TOKEN'                          => $details['TOKEN'],
-			'PAYMENTREQUEST_0_PAYMENTACTION' => 'Sale',
-			'PAYMENTREQUEST_0_CURRENCYCODE'  => $details['PAYMENTREQUEST_0_CURRENCYCODE'],
-			'PAYMENTREQUEST_0_AMT'           => $details['PAYMENTREQUEST_0_AMT'],
-			'PAYMENTREQUEST_0_ITEMAMT'       => $details['PAYMENTREQUEST_0_ITEMAMT'],
-			'L_PAYMENTREQUEST_0_QTY0'        => $details['L_PAYMENTREQUEST_0_QTY0'],
-			'L_PAYMENTREQUEST_0_AMT0'        => $details['L_PAYMENTREQUEST_0_AMT0'],
-			'L_PAYMENTREQUEST_0_NAME0'       => $details['L_PAYMENTREQUEST_0_NAME0'],
-			'L_PAYMENTREQUEST_0_NUMBER0'     => 0,
-		) );
-
-		if ( !$response || !isset( $response['ACK'] ) || ( $response['ACK'] != 'Success' && $response['ACK'] != 'SuccessWithWarning' ) ) {
-			return false;
-		}
-
-		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
-		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
-
-		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
-			'sld'           => $sld,
-			'tld'           => $tld,
-			'UseDNS'        => 'default',
-			'UseCreditCard' => 'no',
-			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
-		) );
-
-		$this->_log_whmcs_request( self::REQUEST_PURCHASE_DOMAIN, $response );
-
-		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
-			$this->_populate_dns_records( $tld, $sld );
-			return "{$sld}.{$tld}";
-		}
-
-		return false;
-	}
 
 	/**
 	 * Determines whether reseller supports accounts registration.

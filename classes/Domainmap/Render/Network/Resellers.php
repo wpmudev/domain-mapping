@@ -91,7 +91,7 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 				foreach ( $this->resellers as $hash => $reseller ) :
 				?><li>
 					<label>
-						<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked( $hash, $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
+						<input type="radio" class="domainmapping-reseller-switch domainmapping-radio" name="map_reseller"<?php checked((int) $hash, (int) $this->map_reseller ) ?> value="<?php echo esc_attr( $hash ) ?>">
 						<?php echo esc_html( $reseller->get_title() ) ?>
 						<?php $selected = $hash == $this->map_reseller ? $hash : $selected ?>
 					</label>

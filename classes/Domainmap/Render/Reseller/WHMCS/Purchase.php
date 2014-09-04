@@ -82,7 +82,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
         $pricing = Domainmap_Reseller_WHMCS::get_domain_pricing();
 
         foreach( $pricing as $p ){
-            if( $p["tld"] === "." . $this->tld ){
+            if( $p["tld"] === "." . $this->tld  && !empty( $p['price'] ) ){
                 $pricing = $p['price'];
             }
         }
@@ -91,9 +91,9 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
         <p>
             <label for="dm_whmcs_domain_period" class="domainmapping-label"><?php _e( 'Domain Period:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
             <select  name="dm_whmcs_domain_period" id="dm_whmcs_domain_period">
-            <?php foreach( $pricing as $key => $price ):?>
-                <option <?php selected("0", $key); ?> value="<?php echo $key + 1 ?>"> <?php printf( __("%s Year - %s%s", domain_map::Text_Domain), $key + 1 , $currency, $price );  ?> </option>
-            <?php endforeach;?>
+            <?php $year = 1; foreach( $pricing as $key => $price ):?>
+                <option <?php selected("0", $key); ?> value="<?php echo $year?>"> <?php printf( __("%s Year - %s%s", domain_map::Text_Domain), $year , $currency, $price );  ?> </option>
+            <?php $year++; endforeach;?>
             </select>
         </p>
         <?php

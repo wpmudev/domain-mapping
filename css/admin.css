@@ -759,10 +759,16 @@ input.domainmapping-radio {
 }
 .dm_whmcs_tlds_remove_row{
     color: red;
+    background:none;
+    border: none;
+    cursor: pointer;
 }
 .dm_whmcs_tlds_remove_col{
     float: right;
     color: red;
+    background:none;
+    border: none;
+    cursor: pointer;
 }
 #whmcs-client-registration-label{
 

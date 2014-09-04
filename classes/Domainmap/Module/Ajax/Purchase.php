@@ -81,7 +81,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
-		if ( self::_validate_domain_name( $domain, true ) ) {
+		if ( $this->_validate_domain_name( $domain, true ) ) {
 			$reseller = $this->_plugin->get_reseller();
 
 			$price = false;
