@@ -660,32 +660,22 @@ class domain_map {
         $no_www_domain = preg_replace('/^www\./', '', $mapping->domain);
 
         $records = array();
-        if ( defined('CAMPUSPRESS_SITE_ID') ) {
-            if ($mapping->apex) {
-                $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
-            } else {
-                $records[] = array('host' => $no_www_domain, 'type' => 'CNAME', 'target' => "{$no_www_domain}.c".CAMPUSPRESS_SITE_ID.".campuspress.com");
+        if ( strpos( $map_ipaddress, ',' ) ) {
+            // Multiple CNAME not supported, so assume A
+            $_records = preg_split(',', $map_ipaddress);
+            foreach ($_records as $record) {
+                $records[] = array('host' => $mapping->domain, 'type' => 'A', 'target' => $record);
             }
-            $records[] = array('host' => "www.{$no_www_domain}", 'type' => 'CNAME', 'target' => "www.{$no_www_domain}.c".CAMPUSPRESS_SITE_ID.".campuspress.com");
-
         } else {
-            if ( strpos( $map_ipaddress, ',' ) ) {
-                // Multiple CNAME not supported, so assume A
-                $_records = preg_split(',', $map_ipaddress);
-                foreach ($_records as $record) {
-                    $records[] = array('host' => $mapping->domain, 'type' => 'A', 'target' => $record);
-                }
+            if (ip2long($map_ipaddress) > 0) {
+                $rec_type = "A";
             } else {
-                if (ip2long($map_ipaddress) > 0) {
-                    $rec_type = "A";
-                } else {
-                    $rec_type = "CNAME";
-                    if ($mapping->apex) {
-                        $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
-                    }
+                $rec_type = "CNAME";
+                if ($mapping->apex) {
+                    $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
                 }
-                $records[] = array('host' => $mapping->domain, 'type' => $rec_type, 'target' => $map_ipaddress);
             }
+            $records[] = array('host' => $mapping->domain, 'type' => $rec_type, 'target' => $map_ipaddress);
         }
         return $records;
     }

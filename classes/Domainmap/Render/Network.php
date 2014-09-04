@@ -56,7 +56,6 @@ abstract class Domainmap_Render_Network extends Domainmap_Render_Tabbed {
 	 * @access protected
 	 */
 	protected function _render_header() {
-		screen_icon( 'ms-admin' );
 		echo '<h2>', __( 'Domain Mapping', 'domainmap' ), '</h2>';
 	}
 

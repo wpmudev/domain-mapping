@@ -37,8 +37,8 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
             'single'           => 'domain',
             'plural'           => 'domains',
             'ajax'             => false,
+            'search_box'       => true
         ), $args ) );
-
     }
 
     /**
@@ -126,12 +126,12 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
         parent::prepare_items();
 
-        $per_page = 2;
+        $per_page = 20;
         $offset = ( $this->get_pagenum() - 1 ) * $per_page;
 
-        $search_term = null;
-        if ( isset( $_REQUEST['s'] ) ) {
-            $search_term = $_REQUEST['s'];
+        $search_term = false;
+        if ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] )) {
+            $search_term = "%" .  like_escape($_REQUEST['s'])  . "%";
         }
 
         $q = $wpdb->prepare( "
@@ -144,9 +144,21 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 			", $per_page, $offset
         );
 
+        if( $search_term ){
+            $q = $wpdb->prepare( "
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`apex`, mapped.`active`, blog.`site_id`
+			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
+			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
+			  WHERE mapped.domain LIKE %s
+			 ORDER BY blog.blog_id DESC
+			    LIMIT %d
+			    OFFSET %d
+			", $search_term,  $per_page, $offset
+            );
+        }
+
         $this->items = $wpdb->get_results( $q, OBJECT );
         $total_items = $wpdb->get_var( 'SELECT FOUND_ROWS()' );
-
         $this->set_pagination_args( array(
             'total_items' => $total_items,
             'per_page' => $per_page,
@@ -318,4 +330,5 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     public function get_bulk_actions() {
         return array();
     }
+
 }

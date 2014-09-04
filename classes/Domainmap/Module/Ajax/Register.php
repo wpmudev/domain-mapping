@@ -204,7 +204,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
             ) );
 
         }else{
-//            var_dump($object);
             wp_send_json_error( array(
                 "message" => __("Error registering client account.", domain_map::Text_Domain),
                 "errors" =>   $object->get_error_message()

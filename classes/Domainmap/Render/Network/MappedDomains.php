@@ -31,23 +31,9 @@
 class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
 
     /**
-     * Renders page header.
-     *
-     * @since 4.2
-     *
-     * @access protected
+     * @var $table Domainmap_Table
      */
-    protected function _render_header() {
-        parent::_render_header();
-
-        if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
-            echo '<div id="message" class="updated fade">', __( 'Options updated.', 'domainmap' ), '</div>';
-        endif;
-
-        if ( filter_input( INPUT_GET, 'registered', FILTER_VALIDATE_BOOLEAN ) ) :
-            echo '<div id="message" class="updated fade">', __( 'Account was registered successfully.', 'domainmap' ), '</div>';
-        endif;
-    }
+    public $table = "";
 
     /**
      * Renders tab content.
@@ -58,11 +44,30 @@ class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
      */
     protected function _render_tab() {
         $this->table->prepare_items();
-
-        echo '<div id="domainmapping-mapped-domains-table">';
+        ?>
+        <div id="domainmapping-mapped-domains-table">
+        <?php
         $this->table->views();
+        $this->table->search_box(__("Search mapped domains", domain_map::Text_Domain), "mapped_domain");
         $this->table->display();
-        echo '</div>';
+        ?>
+        </div>
+        <?php
     }
 
+    /**
+     * Renders template.
+     *
+     * @since 4.2.0
+     *
+     * @access protected
+     */
+    protected function _to_html() {
+        ?><form action="<?php echo wp_get_referer(); ?>" method="post">
+        <?php if ( $this->_nonce_action ) : ?>
+            <?php wp_nonce_field( $this->_nonce_action ) ?>
+        <?php endif; ?>
+        <?php parent::_to_html() ?>
+        </form><?php
+    }
 }

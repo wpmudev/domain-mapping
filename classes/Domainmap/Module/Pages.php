@@ -343,6 +343,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			case 'reseller-api-log':
 				$this->_handle_log_actions( $nonce_action );
 				break;
+
 		}
 
 		// if noheader argument is passed, then redirect back to options page
@@ -409,11 +410,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
             case 'mapped-domains':
                 $page = new Domainmap_Render_Network_MappedDomains( $tabs, $activetab, $nonce_action, $options );
                 $page->table = new Domainmap_Table_MappedDomains_Listing( array(
-                    //'reseller'     => $reseller->get_reseller_id(),
                     'nonce_action' => $nonce_action,
-                    'actions'      => array(
-                        'mapped-domains-delete' => __( 'Delete', 'domainmap' ),
-                    ),
                 ) );
                 break;
 		}

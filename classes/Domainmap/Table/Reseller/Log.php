@@ -240,7 +240,6 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		global $wpdb;
 
 		parent::prepare_items();
-
 		$per_page = 20;
 		$offset = ( $this->get_pagenum() - 1 ) * $per_page;
 
