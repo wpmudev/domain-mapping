@@ -196,7 +196,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			</div>
 		</div>
 
-		<p><?php _e( 'In case if you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show default ones.' ) ?></p>
+		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show the default text.' ) ?></p>
 
 		<textarea name="map_instructions" class="widefat" cols="150" rows="5"><?php echo esc_textarea( $this->map_instructions ) ?></textarea><?php
 	}
