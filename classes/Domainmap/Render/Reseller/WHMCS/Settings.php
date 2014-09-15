@@ -47,13 +47,13 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 
 		<div class="domainmapping-info">
             <?php _e( 'Keep in mind that to start using WHMCS API you have to white list and authorize your IP address. Go to "My Account" > General Settings > Security tab and add your IP to the list under "API IP Access Restriction"' , 'domainmap' ); ?></div>
-
+        <?php if( !$this->valid ): ?>
 		<div class="domainmapping-info">
 			<b><?php esc_html_e( 'Signup for a WHMCS account.', 'domainmap' ) ?></b><br>
-<!--			--><?php //esc_html_e( 'By signing up here as a sub-reseller you will avoid the high setup fees of direct accounts. You can of course switch to a direct eNom account later and change the credentials here to that.', 'domainmap' ) ?>
 			<a target="_blank" href="http://www.whmcs.com/order-now/"><?php esc_html_e( 'Register new WHMCS account', 'domainmap' ) ?></a>.
             </div>
-        <?php
+            <?php
+            endif;
 	}
 
 	/**
@@ -83,20 +83,37 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 			<?php endif; ?>
 		</div>
 		<?php endif; ?>
-        <div>
-            <label for="whmcs-api" class="domainmapping-label"><?php _e( 'API url:', 'domainmap' ) ?></label>
-            <input type="text" id="whmcs-api" class="regular-text" name="map_reseller_whmcs_api" value="<?php echo esc_attr( $this->api ) ?>" autocomplete="off">
-        </div>
-
-		<div>
-			<label for="whmcs-uid" class="domainmapping-label"><?php _e( 'Username:', 'domainmap' ) ?></label>
-			<input type="text" id="whmcs-uid" class="regular-text" name="map_reseller_whmcs_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
-		</div>
-		<div>
-			<label for="whmcs-pwd" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?></label>
-			<input type="password" id="whmcs-pwd" class="regular-text" name="map_reseller_whmcs_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
+        <table class="form-table">
+            <tbody>
+                <tr>
+                    <th scope="row">
+                        <label for="whmcs-api" class="domainmapping-label"><?php _e( 'WHMCS url:', 'domainmap' ) ?></label>
+                    </th>
+                    <td>
+                        <input type="text" id="whmcs-api" class="regular-text" name="map_reseller_whmcs_api" value="<?php echo esc_attr( $this->api ) ?>" autocomplete="off">
+                        <p class="description">Url to your installation of WHMCS</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="whmcs-uid" class="domainmapping-label"><?php _e( 'Username:', 'domainmap' ) ?></label>
+                    </th>
+                    <td>
+                        <input type="text" id="whmcs-uid" class="regular-text" name="map_reseller_whmcs_uid" value="<?php echo esc_attr( $this->uid ) ?>" autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="whmcs-pwd" class="domainmapping-label"><?php _e( 'Password:', 'domainmap' ) ?></label>
+                    </th>
+                    <td>
+                        <input type="password" id="whmcs-pwd" class="regular-text" name="map_reseller_whmcs_pwd" value="<?php echo esc_attr( $pwd ) ?>" autocomplete="off">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 			<input type="hidden" name="map_reseller_whmcs_pwd_hash" value="<?php echo $pwd_hash ?>">
-		</div><?php
+		<?php
 	}
 
     /**

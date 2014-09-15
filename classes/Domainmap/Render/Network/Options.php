@@ -325,11 +325,11 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
         $front_ssl = isset( $this->map_force_frontend_ssl ) ? (int) $this->map_force_frontend_ssl : 0;
         $options = array(
             1 => __( 'Yes', 'domainmap' ),
-            0 => __( 'No', 'domainmap' ),
+            0 => __( 'No', 'domainmap' )
         );
 
         ?>
-        <h4 class="domainmapping-block-header"><?php _e( "Force http/https (Only work for original domain)", 'domainmap' ) ?></h4>
+        <h4 class="domainmapping-block-header"><?php _e( "Force http/https (Only for original domain)", 'domainmap' ) ?></h4>
         <p>
             <?php _e( "Would you like to force <strong>https</strong> in login and admin pages:", 'domainmap' ) ?><br>
         </p>
@@ -345,10 +345,15 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
         endforeach;
         ?></ul>
         <p>
-            <?php _e( "Would you like to force <strong>http</strong> in front-end pages:", 'domainmap' ) ?><br>
+            <?php _e( "Would you like to force <strong>http/https</strong> in front-end pages:", 'domainmap' ) ?><br>
         </p>
 
         <ul class="domainmapping-compressed-list"><?php
+        $options = array(
+            0 => __( 'No', 'domainmap' ),
+            1 => __( 'Force http', 'domainmap' ),
+            2 => __( 'Force https', 'domainmap' )
+        );
         foreach ( $options as $option => $label ) :
             ?><li>
             <label>

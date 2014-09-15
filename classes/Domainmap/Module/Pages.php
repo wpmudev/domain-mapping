@@ -204,7 +204,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_crossautologin'] = filter_input( INPUT_POST, 'map_crossautologin', FILTER_VALIDATE_BOOLEAN );
 			$options['map_verifydomain'] = filter_input( INPUT_POST, 'map_verifydomain', FILTER_VALIDATE_BOOLEAN );
 			$options['map_force_admin_ssl'] = filter_input( INPUT_POST, 'map_force_admin_ssl', FILTER_VALIDATE_BOOLEAN );
-			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_BOOLEAN );
+			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_INT );
 			$options['map_instructions'] = current_user_can('unfiltered_html') ? filter_input( INPUT_POST, 'map_instructions' ) : wp_kses_post( filter_input( INPUT_POST, 'map_instructions' ) );
 
 			// update options

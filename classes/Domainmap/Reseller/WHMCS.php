@@ -93,7 +93,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         $args = array();
         $args['username']       = isset( $options[self::RESELLER_ID]['uid'] ) ?  $options[self::RESELLER_ID]['uid'] : false;
         $args['password']       = isset( $options[self::RESELLER_ID]['pwd'] ) ?  md5( $options[self::RESELLER_ID]['pwd'] ) : false;
-        $api_url                = isset( $options[self::RESELLER_ID]['api'] ) ?  $options[self::RESELLER_ID]['api']  : false;
+        $api_url                = isset( $options[self::RESELLER_ID]['api'] ) ?  trailingslashit( $options[self::RESELLER_ID]['api'] ) . "includes/api.php"  : false;
         $args['responsetype']   = "json";
         $args['action']         = $command;
         $args                   = array_merge( $args, $arguments );
