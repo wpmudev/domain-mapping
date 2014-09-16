@@ -117,7 +117,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Fetches records from database.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
      * @global wpdb $wpdb The database connection.
      */
@@ -220,7 +220,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     }
 
     /**
-     * Returns active column data to display.
+     * Renders active column data to display.
      *
      * @since 4.2
      *
@@ -232,6 +232,12 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     }
 
 
+  /**
+   * Renders health column
+   *
+   * @since 4.2.0
+   * @param $item
+   */
     public function column_health($item){
         $url = add_query_arg( array(
             'action' => Domainmap_Plugin::ACTION_HEALTH_CHECK,
@@ -262,6 +268,14 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     }
 
 
+  /**
+   * Returns dns column
+   *
+   * @since 4.2.0
+   *
+   * @param $item
+   * @return string
+   */
     function column_dns( $item ) {
         global $dm_map;
 
@@ -281,7 +295,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     }
 
     /**
-     * Returns domain column data to display.
+     * Renders domain column data to display.
      *
      * @since 4.2
      *

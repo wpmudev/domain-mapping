@@ -576,31 +576,30 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
          */
         if(  !$this->is_login() && !is_admin() ){
 
+          if( $this->is_original_domain() ){ // Original domain
             // Force http
-            if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1 &&  $this->is_original_domain() && is_ssl()){
-                wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-                exit();
+            if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1  && is_ssl()  ){
+              wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+              exit();
             }
 
             // Force https
             if(  $this->_plugin->get_option("map_force_frontend_ssl") === 2 &&  $this->is_original_domain() && !is_ssl()){
-                wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-                exit();
+              wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+              exit();
             }
 
-
+          }else{
             // Force mapped domains
-            if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() && !is_ssl() ){ // force https
-                wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-                exit();
+            if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() && !is_ssl() && !$this->is_original_domain() ){ // force https
+              wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+              exit();
             }elseif( $this->is_mapped_domain() && !self::force_ssl_on_mapped_domain() && is_ssl() ){ //force http
-                wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-                exit();
+              wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+              exit();
             }
+          }
         }
-
-
-
     }
 
 }

@@ -141,6 +141,13 @@ class Domainmap_Module {
 		return $this;
 	}
 
+  /**
+   * Checks if current site resides in original domain
+   *
+   * @since 4.2.0
+   *
+   * @return bool true if it's original domain, false if not
+   */
     protected function is_original_domain(){
         $home = home_url( '/' );
         $current_domain = parse_url( $home, PHP_URL_HOST );
@@ -148,16 +155,36 @@ class Domainmap_Module {
         return $current_domain === $original_domain;
     }
 
+  /**
+   * Checks if current site resides in mapped domain
+   *
+   * @since 4.2.0
+   *
+   * @return bool
+   */
     protected function is_mapped_domain(){
-        $home = home_url( '/' );
-        $current_domain = parse_url( $home, PHP_URL_HOST );
-        $original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
-        return $current_domain !== $original_domain;
+        return !$this->is_original_domain();
     }
+
+  /**
+   * Checks if current page is login page
+   *
+   * @since 4.2.0
+   *
+   * @return bool
+   */
     protected function is_login(){
         return in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ));
     }
 
+  /**
+   * Checks if give domain should be forced to use https
+   *
+   * @since 4.2.0
+   *
+   * @param string $domain
+   * @return bool
+   */
     public static function force_ssl_on_mapped_domain( $domain = "" ){
         global $wpdb;
         $domain = $domain === "" ?  $_SERVER['SERVER_NAME'] : $domain;

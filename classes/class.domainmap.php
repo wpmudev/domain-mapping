@@ -648,6 +648,7 @@ class domain_map {
      * Return mapping dns config and status
      *
      * @since 4.2.0
+     *
      * @param null $mapping
      * @return array
      */
