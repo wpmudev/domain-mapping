@@ -309,9 +309,23 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
             'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_UNMAP_DOMAIN ),
             'domain' => $item->mapped_domain,
         ), admin_url( 'admin-ajax.php' ) );
+        $primary_class = $item->is_primary == 1 ? 'dashicons-star-filled' : 'dashicons-star-empty';
+        $admin_ajax =  admin_url( 'admin-ajax.php' ) ;
+        $select_primary = esc_url( add_query_arg( array(
+            'action' => Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN,
+            'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN ),
+            'domain' =>  $item->mapped_domain,
+        ), $admin_ajax ) );
+        $deselect_primary = esc_url( add_query_arg( array(
+            'action' => Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN,
+            'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN ),
+            'domain' =>  $item->mapped_domain,
+        ), $admin_ajax ) );
         ?>
         <div class="domainmapping-domains">
-            <a href="<?php echo admin_url("/tools.php?page=domainmapping&switch_to_blog=" . $item->blog_id ); ?>" title="<?php _e("Edit Settings", "domainmap"); ?>" class=" dashicons-before dashicons-admin-settings"></a>
+          <?php if ( Domainmap_Render_Site_Map::_is_multi_enabled() ) : ?>
+            <a style="position: inherit" class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
+          <?php endif; ?>
             <a style="position: inherit"  data-href="<?php echo $remove_link; ?>"  title="<?php _e("Remove Mapping", "domainmap"); ?>" class="domainmapping-btn domainmapping-map-remove dashicons-before dashicons-trash"></a>
         </div>
         <?php

@@ -51,6 +51,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN, 'select_primary_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN, 'deselect_primary_domain' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'change_frontend_mapping' );
+		$this->_add_ajax_action( Domainmap_Plugin::ACTION_TOGGLE_SCHEME, 'toggle_scheme' );
 
 		// add wpengine compatibility
 		if ( !has_action( 'domainmapping_added_domain' ) ) {
@@ -333,24 +334,30 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
 			// unset all domains
+            $domain = filter_input( INPUT_GET, 'domain' );
 
-			$this->_wpdb->update(
-				DOMAINMAP_TABLE_MAP,
-				array( 'is_primary' => 0 ),
-				array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1 ),
-				array( '%d' ),
-				array( '%d', '%d' )
-			);
+            $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
 
-			// set primary domain
-			$domain = filter_input( INPUT_GET, 'domain' );
-			$this->_wpdb->update(
-				DOMAINMAP_TABLE_MAP,
-				array( 'is_primary' => 1 ),
-				array( 'blog_id' => $this->_wpdb->blogid, 'domain' => $domain ),
-				array( '%d' ),
-				array( '%d', '%s' )
-			);
+          if( is_numeric($blog_id) && $blog_id !== 0 )
+          {
+            $res = $this->_wpdb->update(
+                DOMAINMAP_TABLE_MAP,
+                array( 'is_primary' => 0 ),
+                array( 'blog_id' => $blog_id, 'is_primary' => 1 ),
+                array( '%d' ),
+                array( '%d', '%d' )
+            );
+var_dump(is_network_admin(), $blog_id, $res);
+            // set primary domain
+            $this->_wpdb->update(
+                DOMAINMAP_TABLE_MAP,
+                array( 'is_primary' => 1 ),
+                array( 'domain' => $domain ),
+                array( '%d' ),
+                array( '%s' )
+            );
+          }
+
 		}
 
 		wp_send_json_success();
@@ -368,11 +375,14 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		self::_check_premissions( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN );
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
-			// deselect primary domains
+          $domain = filter_input( INPUT_GET, 'domain' );
+          $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
+
+          // deselect primary domains
 			$this->_wpdb->update(
 				DOMAINMAP_TABLE_MAP,
 				array( 'is_primary' => 0 ),
-				array( 'blog_id' => $this->_wpdb->blogid, 'is_primary' => 1, 'domain' => filter_input( INPUT_GET, 'domain' ) ),
+				array( 'blog_id' => $blog_id, 'is_primary' => 1, 'domain' => $domain),
 				array( '%d' ),
 				array( '%d', '%d', '%s' )
 			);
@@ -402,4 +412,30 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		exit;
 	}
 
+
+   function toggle_scheme(){
+     self::_check_premissions( Domainmap_Plugin::ACTION_TOGGLE_SCHEME );
+     $domain  = $_GET['domain'];
+     $nonce = $_GET['nonce'];
+     $result = false;
+
+     $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );
+     if( !is_null( $current_scheme ) ){
+       $result = $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array(
+           "scheme" =>  ( 1 - $current_scheme ),
+       ), array(
+           "domain" => $domain
+       )  );
+     }
+
+     if( $result ){
+       wp_send_json_success();
+     }else{
+       wp_send_json_error();
+     }
+
+
+
+     wp_die();
+   }
 }

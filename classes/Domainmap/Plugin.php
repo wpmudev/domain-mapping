@@ -47,6 +47,7 @@ class Domainmap_Plugin {
 	const ACTION_CDSSO_LOGIN                = 'domainmapping_cdsso_login';
 	const ACTION_CDSSO_LOGOUT               = 'domainmapping_cdsso_logout';
 	const ACTION_CDSSO_PROPAGATE            = 'domainmapping_cdsso_propagate';
+	const ACTION_TOGGLE_SCHEME              = 'domainmapping_toggle_scheme';
 	const SCHEME_HTTP                       = 0;
 	const SCHEME_HTTPS                      = 1;
 

@@ -36,10 +36,9 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @since 4.0.3
 	 *
 	 * @static
-	 * @access protected
 	 * @return boolean TRUE if multi domains mapping enabled, otherwise FALSE.
 	 */
-	protected static function _is_multi_enabled() {
+	public static function _is_multi_enabled() {
 		return defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN );
 	}
 
@@ -131,7 +130,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
 							</div>
 							<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-							<button type="submit" class="button button-primary domainmapping-button"><i class="icon-globe icon-white"></i><?php _e( 'Map domain', 'domainmap' ) ?></button>
+							<button type="submit" class="button button-primary domainmapping-button dashicons-before dashicons-admin-site"><?php _e( 'Map domain', 'domainmap' ) ?></button>
+                          <i class="icon-globe icon-white"></i>
 							<div class="domainmapping-clear"></div>
 						</form>
 					</li>
@@ -167,9 +167,14 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			'domain' => $row->domain,
 		), $admin_ajax );
 
+      $toggle_scheme_link = add_query_arg( array(
+          'action' => Domainmap_Plugin::ACTION_TOGGLE_SCHEME,
+          'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_TOGGLE_SCHEME ),
+          'domain' => $row->domain,
+      ), $admin_ajax );
 		// if multi domains mapping enabled, then add ability to select primary domain
 		if ( $multi ) {
-			$primary_class = $row->is_primary == 1 ? 'icon-star' : 'icon-star-empty';
+			$primary_class = $row->is_primary == 1 ? 'dashicons-star-filled' : 'dashicons-star-empty';
 			$select_primary = esc_url( add_query_arg( array(
 				'action' => Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN,
 				'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN ),
@@ -184,13 +189,16 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		}
 
 		?><li>
-			<a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+      <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle scheme', 'domainmap' ) ?>"></a>
+
+      <a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
 				<?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
 			</a>
-			<?php self::render_health_column( $row->domain ) ?>
+
+      <?php self::render_health_column( $row->domain ) ?>
 			<a class="domainmapping-map-remove dashicons-before dashicons-trash" href="#" data-href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
 			<?php if ( $multi ) : ?>
-			<a class="domainmapping-map-primary <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
+			<a class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
 			<?php endif; ?>
 		</li><?php
 	}
@@ -212,7 +220,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		), admin_url( 'admin-ajax.php' ) );
 
 		$health = get_site_transient( "domainmapping-{$domain}-health" );
-		$health_message = __( 'need revalidate', 'domainmap' );
+		$health_message = __( 'needs revalidation', 'domainmap' );
 		$health_class = ' domainmapping-need-revalidate';
 		if ( $health !== false ) {
 			if ( $health ) {

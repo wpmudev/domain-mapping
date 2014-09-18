@@ -181,7 +181,7 @@
 }
 
 .domainmapping-mapped {
-    left: 0
+    left: 28px;
 }
 
 .domainmapping-map-state, .domainmapping-map-state:hover {
@@ -344,12 +344,14 @@
     background-image: linear-gradient(bottom, #00487f 0%, #003866 100%);
 }
 
-.wp-core-ui .domainmapping-button i,
-.domainmapping-form-submit i {
+.wp-core-ui .domainmapping-button,
+.domainmapping-form-submit{
     margin-right: 3px;
 	margin-top: 2px;
 }
-
+.domainmapping-button:before{
+    margin: 3px 5px 0 0;
+}
 .domainmapping-invalid-domain,
 .domainmapping-need-revalidate {
     color: red
@@ -772,4 +774,9 @@ input.domainmapping-radio {
 }
 #whmcs-client-registration-label{
 
+}
+.domainmapping-map-toggle-scheme{
+    float: left;
+    text-decoration: none;
+    margin-top: 5px;
 }

@@ -265,7 +265,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
 		$gateway = isset( $options['gateway'] ) && isset( $gateways[$options['gateway']] )
 			? $options['gateway']
-			: "";
+			: "paypal";
         if( $name ){
           return isset( $gateways[$gateway] ) ? $gateways[$gateway] : $gateway;
         }

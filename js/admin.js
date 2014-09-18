@@ -145,28 +145,32 @@
 			return false;
 		});
 
+        /**
+         * Toggles domain is_primary attribute
+         */
 		$domains.on('click', 'a.domainmapping-map-primary', function() {
 			var $this = $(this), message;
 
-			if ($this.hasClass('icon-star-empty')) {
+			if ($this.hasClass('dashicons-star-empty')) {
 				message = $this.parents('li').find('a.domainmapping-map-state').hasClass('domainmapping-valid-domain')
 					? domainmapping.message.valid_selection
 					: domainmapping.message.invalid_selection;
 
 				if (confirm(message)) {
-					$domains.find('a.domainmapping-map-primary.icon-star').toggleClass('icon-star icon-star-empty');
-					$this.toggleClass('icon-star icon-star-empty');
+					$domains.find('a.domainmapping-map-primary.dashicons-star').toggleClass('dashicons-star-filled dashicons-star-empty');
+					$this.toggleClass('dashicons-star-filled dashicons-star-empty');
 					$.get($this.attr('data-select-href'));
 				}
 			} else {
 				if (confirm(domainmapping.message.deselect)) {
-					$this.toggleClass('icon-star icon-star-empty');
+					$this.toggleClass('dashicons-star-filled dashicons-star-empty');
 					$.get($this.attr('data-deselect-href'));
 				}
 			}
 
 			return false;
 		});
+
 
 		$('a.domainmapping-need-revalidate').click();
 
@@ -568,5 +572,31 @@
         }else{
             $wrapper.removeClass('domainmapping-domains-wrapper-locked');
         }
+    });
+
+
+    /**
+     * Toggles domain scheme
+     */
+    $(document).on('click', 'a.domainmapping-map-toggle-scheme', function( e ) {
+        var $this = $(this),
+            $link = $this.closest("li").find(".domainmapping-mapped"),
+            current_link = $link.html(),
+            href = $this.data("href");
+        e.preventDefault();
+
+        $.ajax({
+            type        : "get",
+            url         : href,
+            success     : function(data){
+                if( data.success ){
+                    current_link = current_link.indexOf("https://") !== -1 ? current_link.replace("https://", "http://") : current_link.replace("http://", "https://");
+                    $link.toggle("highlight");
+                    $link.html( current_link );
+                    $link.toggle("highlight");
+                }
+
+            }
+        })
     });
 })(jQuery);
