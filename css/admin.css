@@ -184,6 +184,9 @@
     left: 28px;
 }
 
+table.domains .domainmapping-mapped{
+    position: inherit;
+}
 .domainmapping-map-state, .domainmapping-map-state:hover {
     color: black
 }
@@ -779,4 +782,11 @@ input.domainmapping-radio {
     float: left;
     text-decoration: none;
     margin-top: 5px;
+}
+
+table.domains .domainmapping-map-toggle-scheme{
+    float: none;
+}
+table.domains td.column-actions a{
+    margin: 5px;
 }

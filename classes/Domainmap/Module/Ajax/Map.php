@@ -416,7 +416,6 @@ var_dump(is_network_admin(), $blog_id, $res);
    function toggle_scheme(){
      self::_check_premissions( Domainmap_Plugin::ACTION_TOGGLE_SCHEME );
      $domain  = $_GET['domain'];
-     $nonce = $_GET['nonce'];
      $result = false;
 
      $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );

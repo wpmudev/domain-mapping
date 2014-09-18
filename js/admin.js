@@ -580,7 +580,7 @@
      */
     $(document).on('click', 'a.domainmapping-map-toggle-scheme', function( e ) {
         var $this = $(this),
-            $link = $this.closest("li").find(".domainmapping-mapped"),
+            $link = $this.closest("li").length ? $this.closest("li").find(".domainmapping-mapped") : $this.closest("tr").find(".domainmapping-mapped"),
             current_link = $link.html(),
             href = $this.data("href");
         e.preventDefault();

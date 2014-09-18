@@ -192,7 +192,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         global $current_site;
         $suffix = $current_site->path != '/' ? $current_site->path : '';
         $scheme = $item->scheme ==  1 ? "https" : "http";
-        printf( '<a href="%1$s://%2$s%3$s">%1$s://%2$s%3$s</a>', $scheme , Domainmap_Punycode::decode( $item->mapped_domain ), $suffix );
+        printf( '<a class="domainmapping-mapped" href="%1$s://%2$s%3$s">%1$s://%2$s%3$s</a>', $scheme , Domainmap_Punycode::decode( $item->mapped_domain ), $suffix );
     }
 
     /**
@@ -247,7 +247,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         ), admin_url( 'admin-ajax.php' ) );
 
         $health = get_site_transient( "domainmapping-{$item->mapped_domain}-health" );
-        $health_message = __( 'need revalidate', 'domainmap' );
+        $health_message = __( 'needs revalidation', 'domainmap' );
         $health_class = ' domainmapping-need-revalidate';
         if ( $health !== false ) {
             if ( $health ) {
@@ -312,18 +312,27 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         ), admin_url( 'admin-ajax.php' ) );
         $primary_class = $item->is_primary == 1 ? 'dashicons-star-filled' : 'dashicons-star-empty';
         $admin_ajax =  admin_url( 'admin-ajax.php' ) ;
+
         $select_primary = esc_url( add_query_arg( array(
             'action' => Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN,
             'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN ),
             'domain' =>  $item->mapped_domain,
         ), $admin_ajax ) );
+
         $deselect_primary = esc_url( add_query_arg( array(
             'action' => Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN,
             'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN ),
             'domain' =>  $item->mapped_domain,
         ), $admin_ajax ) );
+
+      $toggle_scheme_link = esc_url( add_query_arg( array(
+          'action' => Domainmap_Plugin::ACTION_TOGGLE_SCHEME,
+          'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_TOGGLE_SCHEME ),
+          'domain' => $item->mapped_domain
+      ), $admin_ajax) );
         ?>
         <div class="domainmapping-domains">
+          <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle scheme', 'domainmap' ) ?>"></a>
           <?php if ( Domainmap_Render_Site_Map::_is_multi_enabled() ) : ?>
             <a style="position: inherit" class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
           <?php endif; ?>

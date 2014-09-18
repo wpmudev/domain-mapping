@@ -161,17 +161,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		$multi = self::_is_multi_enabled();
 		$admin_ajax =  admin_url( 'admin-ajax.php' ) ;
 
-		$remove_link = add_query_arg( array(
+		$remove_link = esc_url( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_UNMAP_DOMAIN,
 			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_UNMAP_DOMAIN ),
 			'domain' => $row->domain,
-		), $admin_ajax );
+		), $admin_ajax ) );
 
-      $toggle_scheme_link = add_query_arg( array(
+      $toggle_scheme_link = esc_url( add_query_arg( array(
           'action' => Domainmap_Plugin::ACTION_TOGGLE_SCHEME,
           'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_TOGGLE_SCHEME ),
           'domain' => $row->domain,
-      ), $admin_ajax );
+      ), $admin_ajax ) );
 		// if multi domains mapping enabled, then add ability to select primary domain
 		if ( $multi ) {
 			$primary_class = $row->is_primary == 1 ? 'dashicons-star-filled' : 'dashicons-star-empty';
