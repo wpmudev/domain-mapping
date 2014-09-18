@@ -135,7 +135,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         }
 
         $q = $wpdb->prepare( "
-			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`apex`, mapped.`active`, blog.`site_id`
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`,  mapped.`scheme`,  mapped.`apex`, mapped.`active`, blog.`site_id`
 			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
 			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
 			 ORDER BY blog.blog_id DESC
@@ -146,7 +146,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
         if( $search_term ){
             $q = $wpdb->prepare( "
-			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`apex`, mapped.`active`, blog.`site_id`
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`scheme`, mapped.`apex`, mapped.`active`, blog.`site_id`
 			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
 			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
 			  WHERE mapped.domain LIKE %s
@@ -191,7 +191,8 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     public function column_mapped_domain( $item ) {
         global $current_site;
         $suffix = $current_site->path != '/' ? $current_site->path : '';
-        printf( '<a href="http://%1$s%2$s">%1$s%2$s</a>', Domainmap_Punycode::decode( $item->mapped_domain ), $suffix );
+        $scheme = $item->scheme ==  1 ? "https" : "http";
+        printf( '<a href="%1$s://%2$s%3$s">%1$s://%2$s%3$s</a>', $scheme , Domainmap_Punycode::decode( $item->mapped_domain ), $suffix );
     }
 
     /**
