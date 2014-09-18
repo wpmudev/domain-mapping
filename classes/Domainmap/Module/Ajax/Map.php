@@ -183,8 +183,9 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						'blog_id' => $this->_wpdb->blogid,
 						'domain'  => $domain,
 						'active'  => 1,
-                        "scheme" => $scheme
-					), array( '%d', '%s', '%d', '%d') );
+                        "scheme" => $scheme,
+                        "is_primary" => $scheme ? 1 : 0
+					), array( '%d', '%s', '%d', '%d', '%d') );
 
 					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added
