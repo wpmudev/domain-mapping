@@ -258,6 +258,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
              */
             do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
 		}
+
         if( $success ){
             wp_send_json_success( array( 'show_form' => $show_form ) );
         }else{
@@ -347,7 +348,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
                 array( '%d' ),
                 array( '%d', '%d' )
             );
-var_dump(is_network_admin(), $blog_id, $res);
+
             // set primary domain
             $this->_wpdb->update(
                 DOMAINMAP_TABLE_MAP,

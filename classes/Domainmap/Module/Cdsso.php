@@ -84,6 +84,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+
 	}
 
 	/**
@@ -295,7 +296,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_auth_script() {
-		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+		if ( ( ( is_user_logged_in() || get_current_blog_id() == 1 ) && !$this->is_login() ) || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
 
@@ -342,7 +343,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function authorize_user() {
 		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
-			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+          $user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 			if ( $user_id ) {
 				wp_set_auth_cookie( $user_id );
 
