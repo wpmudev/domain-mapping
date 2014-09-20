@@ -199,7 +199,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
-	 * Sets internim login mode.
+	 * Sets interim login mode.
 	 *
 	 * @since 4.1.2
 	 * @filter login_redirect 10 3
@@ -296,12 +296,13 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_auth_script() {
-		if ( ( ( is_user_logged_in() || get_current_blog_id() == 1 ) && !$this->is_login() ) || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
 
 		switch_to_blog( 1 );
 		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, admin_url( 'admin-ajax.php' ) );
+
 		echo '<script type="text/javascript" src="', $url, '"></script>';
 		restore_current_blog();
 	}
@@ -328,8 +329,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
 			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
 		), $_SERVER['HTTP_REFERER'] );
-
-		echo 'window.location = "', $url, '";';
+        echo 'window.location = "', $url, '";';
 		exit;
 	}
 
