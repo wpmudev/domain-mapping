@@ -26,7 +26,7 @@
  * @package Render
  * @subpackage MappedDomains
  *
- * @since 4.2
+ * @since 4.2.0
  */
 class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
 
@@ -38,7 +38,7 @@ class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
     /**
      * Renders tab content.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
      * @access protected
      */
@@ -63,7 +63,7 @@ class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
      * @access protected
      */
     protected function _to_html() {
-        ?><form action="<?php echo wp_get_referer(); ?>" method="post">
+        ?><form action="" method="post">
         <?php if ( $this->_nonce_action ) : ?>
             <?php wp_nonce_field( $this->_nonce_action ) ?>
         <?php endif; ?>

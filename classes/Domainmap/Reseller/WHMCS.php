@@ -31,10 +31,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
 	const RESELLER_ID = 'whmcs';
 
-
-	const ENVIRONMENT_PRODUCTION = 'prod';
-	const ENVIRONMENT_TEST       = 'test';
-
 	const COMMAND_CHECK_LOGIN_CREDS  = 'getclients';
 	const COMMAND_VALIDATE_LOGIN     = 'validatelogin';
 	const COMMAND_ADD_ORDER          = 'addorder';
@@ -42,11 +38,8 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	const COMMAND_GET_GATEWAYS       = 'getpaymentmethods';
 	const COMMAND_REGISTER_CLIENT       = 'addclient';
 
-	const COMMAND_RETAIL_PRICE       = 'PE_GetRetailPrice';
 	const COMMAND_PURCHASE           = 'Purchase';
 	const COMMAND_SET_HOSTS          = 'SetHosts';
-	const COMMAND_GET_EXT_ATTRIBUTES = 'GetExtAttributes';
-	const COMMAND_REGISTER_ACCOUNT   = 'CreateAccount';
 
 	const GATEWAY_PAYPAL     = 'paypal';
 
@@ -67,26 +60,15 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	}
 
 
-
-    /**
-     * Executes remote command and returns response of execution.
-     *
-     * @since 4.2.0
-     *
-     * @access private
-     * @param string $command The command name.
-     * @param array $args Additional optional arguments.
-     * @param string $endpoint The concrete endpoint to use for the request.
-     * @return SimpleXMLElement Returns simplexml object on success, otherwise FALSE.
-     */
-
-    /**
-     * Executes remote command and returns response of execution.
-     *
-     * @param $command
-     * @param array $arguments
-     * @return WP_Error | stdClass
-     */
+  /**
+   * Executes api command and returns results
+   *
+   * @since 4.2.0
+   *
+   * @param $command
+   * @param array $arguments
+   * @return WP_Error|Response object
+   */
     public static function exec_command( $command, $arguments = array() ){
         $options = Domainmap_Plugin::instance()->get_options();
 
@@ -315,8 +297,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		$options = Domainmap_Plugin::instance()->get_options();
 		$options = isset( $options[self::RESELLER_ID] ) ? $options[self::RESELLER_ID] : array();
 
-
-
 		$template = new Domainmap_Render_Reseller_WHMCS_Settings( $options );
 
 		$template->gateways = $this->_get_gateways();
@@ -336,7 +316,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 */
 	public function is_valid() {
 		$options = Domainmap_Plugin::instance()->get_options();
-		return !isset( $options[self::RESELLER_ID]['valid'] ) || $options[self::RESELLER_ID]['valid'] == true;
+		return !isset( $options[self::RESELLER_ID]['valid'] ) || true == $options[self::RESELLER_ID]['valid'];
 	}
 
 	/**
@@ -626,7 +606,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                     <p>
                         <button class="button-primary button"><?php _e("Submit", domain_map::Text_Domain); ?></button>
                     </p>
-                    <?php if( $this->allow_registration() ): ?>
+                    <?php if( $this->allow_client_registration() ): ?>
                     <p>
                         <strong>
                         <?php
@@ -642,13 +622,10 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	}
 
 
-
-
-
 	/**
 	 * Determines whether reseller supports accounts registration.
 	 *
-	 * @since 4.1.0
+	 * @since 4.2.0
 	 *
 	 * @access public
 	 * @return boolean TRUE if reseller supports account registration, otherwise FALSE.
@@ -680,18 +657,6 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 		$template->countries = Domainmap_Plugin::instance()->get_countries();
 
 		$template->render();
-	}
-
-	/**
-	 * Registers new account.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @access public
-	 * @return boolean TRUE if account registered successfully, otherwise FALSE.
-	 */
-	public function register_account() {
-
 	}
 
     /**
@@ -742,7 +707,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
      *
      * @return bool
      */
-    public function allow_registration(){
+    public function allow_client_registration(){
         $options =  Domainmap_Plugin::instance()->get_options();
         $options = $options[Domainmap_Reseller_WHMCS::RESELLER_ID];
         return $options['enable_registration'];

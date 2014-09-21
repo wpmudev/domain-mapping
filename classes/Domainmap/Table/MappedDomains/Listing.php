@@ -26,7 +26,7 @@
  * @package Table
  * @subpackage MappedDomains
  *
- * @since 4.2
+ * @since 4.2.0
  */
 
 class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
@@ -88,7 +88,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns table columns.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
      * @return array The array of table columns to display.
      */
@@ -131,7 +131,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
         $search_term = false;
         if ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] )) {
-            $search_term = "%" .  like_escape($_REQUEST['s'])  . "%";
+            $search_term = "%" .  $wpdb->esc_like($_REQUEST['s'])  . "%";
         }
 
         $q = $wpdb->prepare( "
@@ -171,10 +171,9 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns site id column data to display.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
-     * @param array $item The array of row data.
-     * @return string The site id.
+	 * @param object $item current row's record
      */
     public function column_site_id( $item ) {
         echo $item->blog_id;
@@ -185,8 +184,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
      *
      * @since 4.2
      *
-     * @param array $item The array of row data.
-     * @return string The mapped domain name linking to blog's home page.
+	 * @param object $item current row's record
      */
     public function column_mapped_domain( $item ) {
         global $current_site;
@@ -198,10 +196,9 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns domain column data to display.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
-     * @param array $item The array of row data.
-     * @return string The domain name linking to blog's setting page.
+	 * @param object $item current row's record
      */
     public function column_domain( $item ) {
         ?>
@@ -211,10 +208,9 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Returns primary column data to display.
      *
-     * @since 4.2
+     * @since 4.2.0
      *
-     * @param array $item The array of row data.
-     * @return string Yes/No .
+	 * @param object $item current row's record
      */
     public function column_primary( $item ) {
         echo $item->is_primary ? __("Yes", "domainmap") : __("No", "domainmap");
@@ -225,8 +221,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
      *
      * @since 4.2
      *
-     * @param array $item The array of row data.
-     * @return string Yes/No .
+	 * @param object $item current row's record
      */
     public function column_active( $item ) {
         echo $item->active ? __("Yes", "domainmap") : __("No", "domainmap");
@@ -237,7 +232,8 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
    * Renders health column
    *
    * @since 4.2.0
-   * @param $item
+   *
+   * @param $item current row's record
    */
     public function column_health($item){
         $url = add_query_arg( array(
@@ -274,7 +270,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
    *
    * @since 4.2.0
    *
-   * @param $item
+   * @param $item current row's record
    * @return string
    */
     function column_dns( $item ) {
@@ -298,11 +294,10 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Renders domain column data to display.
      *
-     * @since 4.2
-     *
-     * @param array $item The array of row data.
-     * @return string The domain name.
+     * @since 4.2.0
+	 * @param $item current row's record
      */
+
     public function column_actions( $item ) {
 
         $remove_link = add_query_arg( array(
@@ -347,9 +342,9 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
     /**
      * Generates content for a single row of the table.
      *
-     * @since 4.2
-     *
-     * @param arra $item The current item.
+     * @since 4.2.0
+	 *
+	 * @param $item current row's record
      */
     public function single_row( $item ) {
         echo '<tr class="domainmapping-mapped-domain-item-'. $item->domain. '">';

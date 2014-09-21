@@ -1,4 +1,14 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+
+== 4.2.0 ==
+* International domain names
+* List of mapped domains for network admin and inline actions
+* Ability to force front-end and admin schemes ( http / https )
+* Accepting one letter subdomain as mapped domain
+* Fixed: Blank page while purchasing a new domain in sub-site admin
+* Changed how sunrise is maintained
+
+
 == 4.1.4.2 ==
 * Fixed redirect loop for mapped domains while SSO is active
 

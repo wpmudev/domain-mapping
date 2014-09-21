@@ -89,7 +89,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 				'empty_email_pass'  => __( 'Please enter username and password', 'domainmap' ),
 				'deselect'          => __( 'You are about to deselect your primary domain. Do you really want to proceed?', 'domainmap' ),
 				'valid_selection'   => __( 'You are about to change your primary domain. Do you really want to proceed?', 'domainmap' ),
-				'invalid_selection' => __( 'You are about to select invalid domain as primary. It could cause unexpected issues at your front end. Do you really want to proceed?', 'domainmap' ),
+				'invalid_selection' => __( 'You are about to make a invalid domain the primary domain. This could cause unexpected issues on the front-end of your site. Do you want to proceed?', 'domainmap' ),
                 'invalid_data'      => __( 'Invalid data, please try again', 'domainmap' ),
 
 				'invalid' => array(

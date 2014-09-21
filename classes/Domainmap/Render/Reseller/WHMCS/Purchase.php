@@ -22,7 +22,7 @@
 /**
  * eNom credit card processing form template class.
  *
- * @since 4.0.0
+ * @since 4.2.0
  * @category Domainmap
  * @package Render
  * @subpackage Reseller
@@ -32,7 +32,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
 	/**
 	 * Renders purchase form.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.0
 	 *
 	 * @access protected
 	 */
@@ -75,6 +75,13 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
     <?php
 	}
 
+  /**
+   * Renders pricing options
+   *
+   * @since 4.2.0
+   *
+   * @access private
+   */
     private function _render_domain_pricing(){
         /**
          * @var  $whmcs Domainmap_Reseller_WHMCS
@@ -99,6 +106,13 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
         <?php
     }
 
+  /**
+   * Renders payment method
+   *
+   * @since 4.2.0
+   *
+   * @access private
+   */
     private function _render_payment_method(){
         /**
          * @var $whmcs Domainmap_Reseller_WHMCS
