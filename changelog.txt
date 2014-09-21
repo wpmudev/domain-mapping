@@ -6,6 +6,7 @@
 * Ability to force front-end and admin schemes ( http / https )
 * Accepting one letter subdomain as mapped domain
 * Fixed: Blank page while purchasing a new domain in sub-site admin
+* Added: WHMCS integration
 * Changed how sunrise is maintained
 
 
