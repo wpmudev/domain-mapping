@@ -135,7 +135,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         }
 
         $q = $wpdb->prepare( "
-			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`,  mapped.`scheme`,  mapped.`apex`, mapped.`active`, blog.`site_id`
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`,  mapped.`scheme`, mapped.`active`, blog.`site_id`
 			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
 			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
 			 ORDER BY blog.blog_id DESC
@@ -146,7 +146,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
         if( $search_term ){
             $q = $wpdb->prepare( "
-			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`scheme`, mapped.`apex`, mapped.`active`, blog.`site_id`
+			SELECT SQL_CALC_FOUND_ROWS mapped.domain AS mapped_domain, blog.`blog_id`, blog.`domain`, mapped.`is_primary`, mapped.`scheme`, mapped.`active`, blog.`site_id`
 			  FROM " . DOMAINMAP_TABLE_MAP . " AS mapped
 			  LEFT JOIN {$wpdb->blogs} AS blog ON mapped.blog_id = blog.blog_id
 			  WHERE mapped.domain LIKE %s
