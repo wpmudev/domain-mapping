@@ -654,7 +654,7 @@ class domain_map {
      */
     function get_dns_config($mapping = null) {
         if ($mapping == null) {
-            $mapping = (object) array('domain' => 'www.example.com', 'apex' => 1, 'active' => 1);
+            $mapping = (object) array('domain' => 'www.example.com', 'active' => 1);
         }
 
         $map_ipaddress = $this->get_option("map_ipaddress", __('IP not set by admin yet.', self::Text_Domain) );
@@ -672,9 +672,6 @@ class domain_map {
                 $rec_type = "A";
             } else {
                 $rec_type = "CNAME";
-                if ($mapping->apex) {
-                    $records[] = array('host' => $no_www_domain, 'type' => 'A', 'target' => '69.174.241.163');
-                }
             }
             $records[] = array('host' => $mapping->domain, 'type' => $rec_type, 'target' => $map_ipaddress);
         }

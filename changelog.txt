@@ -1,7 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 == 4.2.0.1 ==
 * Fixed: bug in Mapped domains table
-* Amended sunrise inclusion file
+* Amended: sunrise inclusion
 
 == 4.2.0 ==
 * International domain names
