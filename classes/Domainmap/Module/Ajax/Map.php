@@ -185,7 +185,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						'domain'  => $domain,
 						'active'  => 1,
                         "scheme" => $scheme,
-					), array( '%d', '%s', '%d', '%d', '%d') );
+					), array( '%d', '%s', '%d', '%d') );
 
 					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added
