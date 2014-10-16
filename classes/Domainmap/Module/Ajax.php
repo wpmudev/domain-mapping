@@ -43,7 +43,7 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 */
 	protected function _validate_domain_name( $domain) {
         $map_verifydomain = $this->_plugin->get_option("map_verifydomain");
-		if( !$map_verifydomain ) return;
+		if( !$map_verifydomain ) return true;
 
         $domain = Domainmap_Punycode::encode($domain);
             return preg_match( "/^([A-Za-z0-9](-*[A-Za-z0-9])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain ) //valid chars check
