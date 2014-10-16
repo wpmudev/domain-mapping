@@ -1,4 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.2.0.3 ==
+* Fixed: Domain validation issue
+
 == 4.2.0.2 ==
 * Fixed: bug that prevented some installs from adding a new domain
 * Fixed: domain validation when adding or removing a domain
