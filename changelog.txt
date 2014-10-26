@@ -5,7 +5,7 @@
 * Added: delete mapping record from db when blog is deleted
 * Fixed: bug in mapped domain schema forcing on nginx servers
 * Fixed: preventing original domain with www to be added as mapped domain
-* Fixed: bug in SSO when logging on subdomain and not getting logged in in mapped domain
+* Fixed: bug in SSO when logging in subdomain and not getting logged in in mapped domain
 
 == 4.2.0.3 ==
 * Fixed: Domain validation issue
