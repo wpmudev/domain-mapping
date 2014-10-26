@@ -157,14 +157,14 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 		if ( !$schema ) {
 			switch( Domainmap_Module::force_ssl_on_mapped_domain( $row->domain ) ){
-				case 0:
-					$schema = 'http';
-					break;
 				case 1:
 					$schema = 'https';
 					break;
 				case 2:
 					$schema = '<del>http</del>';
+					break;
+				default:
+					$schema = 'http';
 					break;
 			}
 		}
