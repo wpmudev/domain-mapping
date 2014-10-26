@@ -433,9 +433,5 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
      }else{
        wp_send_json_error();
      }
-
-
-
-     wp_die();
    }
 }
