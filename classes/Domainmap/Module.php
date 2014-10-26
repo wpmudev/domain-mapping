@@ -227,4 +227,9 @@ class Domainmap_Module {
 		}
 
 	}
+
+	protected function is_subdomain(){
+		$network_domain =  parse_url( network_home_url(), PHP_URL_HOST );
+		return  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']);
+	}
 }

@@ -214,8 +214,14 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
 		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
+			$home = home_url( '/' );
+			$current_domain = parse_url( $home, PHP_URL_HOST );
+			$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
+			if ( $current_domain != $original_domain || $this->is_subdomain() ) {
 				$interim_login = $this->_do_propagation = true;
+			}
 		}
+
 		return $redirect_to;
 	}
 
@@ -289,6 +295,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_auth_script() {
+
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
