@@ -98,6 +98,18 @@ class CHttpRequest
 	private $_restParams;
 
 	/**
+	 * @param $name
+	 *
+	 * @return mixed
+	 */
+	public function __get($name)
+	{
+		$getter='get'.$name;
+		if(method_exists($this,$getter))
+			return $this->$getter();
+	}
+
+	/**
 	 * Initializes the application component.
 	 * This method overrides the parent implementation by preprocessing
 	 * the user request data.

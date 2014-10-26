@@ -204,7 +204,8 @@ class Domainmap_Module {
    */
     public static function force_ssl_on_mapped_domain( $domain = "" ){
         global $wpdb;
-        $domain = $domain === "" ?  $_SERVER['SERVER_NAME'] : $domain;
+	    $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
+        $domain = $domain === "" ? $current_domain  : $domain;
         return (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
     }
 
