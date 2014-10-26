@@ -798,7 +798,7 @@ class CHttpRequest
 			$url=$this->getHostInfo().$url;
 		header('Location: '.$url, true, $statusCode);
 		if($terminate)
-			die;
+			wp_die();
 	}
 
 	/**
@@ -872,7 +872,7 @@ class CHttpRequest
 			// clean up the application first because the file downloading could take long time
 			// which may cause timeout of some resources (such as DB connection)
 			ob_start();
-			die;
+			wp_die();
 			ob_end_clean();
 			echo $content;
 			exit(0);
@@ -968,7 +968,7 @@ class CHttpRequest
 		header(trim($options['xHeader']).': '.$filePath);
 
 		if(!isset($options['terminate']) || $options['terminate'])
-			die;
+			wp_die();
 	}
 
 	/**
