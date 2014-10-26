@@ -168,7 +168,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
 		$scheme = strtolower( trim( filter_input( INPUT_POST, 'scheme' ) ) );
         $domain = Domainmap_Punycode::encode( $domain );
-		if ( $this->_validate_domain_name( $domain ) ) {
+		if ( $this->_validate_domain_name( $domain, true ) ) {
 
 			// check if mapped domains are 0 or multi domains are enabled
 			$count = $this->_get_domains_count();
@@ -420,15 +420,16 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
      $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );
      if( !is_null( $current_scheme ) ){
+	     $new_schema = $current_scheme == 0 ? 1 : 0;
        $result = $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array(
-           "scheme" =>  ( 1 - $current_scheme ),
+           "scheme" => $new_schema ,
        ), array(
            "domain" => $domain
        )  );
      }
 
      if( $result ){
-       wp_send_json_success();
+       wp_send_json_success(array( "schema" => $new_schema ));
      }else{
        wp_send_json_error();
      }

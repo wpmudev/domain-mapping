@@ -203,7 +203,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
 			$options['map_crossautologin'] = filter_input( INPUT_POST, 'map_crossautologin', FILTER_VALIDATE_BOOLEAN );
 			$options['map_verifydomain'] = filter_input( INPUT_POST, 'map_verifydomain', FILTER_VALIDATE_BOOLEAN );
-			$options['map_force_admin_ssl'] = filter_input( INPUT_POST, 'map_force_admin_ssl', FILTER_VALIDATE_BOOLEAN );
+			$options['map_force_admin_ssl'] = $this->_can_force_admin_schema() ?  filter_input( INPUT_POST, 'map_force_admin_ssl', FILTER_VALIDATE_BOOLEAN ) : 0;
 			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_INT );
 			$options['map_instructions'] = current_user_can('unfiltered_html') ? filter_input( INPUT_POST, 'map_instructions' ) : wp_kses_post( filter_input( INPUT_POST, 'map_instructions' ) );
 
@@ -449,4 +449,16 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	}
 
 
+	private function _can_force_admin_schema(){
+		$request = wp_remote_head(  $this->_http->getHostInfo("https") );
+		if( is_wp_error( $request ) ){
+			if( isset( $request->errors['http_request_failed'] ) && isset( $request->errors['http_request_failed'][0] ) && $request->errors['http_request_failed'][0] === "SSL: certificate verification failed (result: 5)")
+				return true;
+
+			return false;
+		}else{
+			return true;
+		}
+
+	}
 }

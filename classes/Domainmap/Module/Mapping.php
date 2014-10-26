@@ -19,6 +19,8 @@
 // | MA 02110-1301 USA                                                    |
 // +----------------------------------------------------------------------+
 
+
+
 /**
  * The module responsible for mapping domains.
  *
@@ -84,6 +86,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
         $this->_add_action( 'plugins_loaded', 'force_schema' );
+//		add_action('plugins_loaded', '');
         $this->_add_action( 'template_redirect',       'redirect_front_area' );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
@@ -102,6 +105,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
 		}
+
+		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
 	}
 
     /**
@@ -562,44 +567,66 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
      * @uses wp_redirect
      */
     public function force_schema(){
+
         if( $this->is_original_domain() && !is_ssl()  ){
-            /**
-             * Login and Admin pages
-             */
-            force_ssl_admin( $this->_plugin->get_option("map_force_admin_ssl") );
-            force_ssl_login( $this->_plugin->get_option("map_force_admin_ssl") );
+			/**
+			 * Login and Admin pages
+			 */
+
+			force_ssl_admin( $this->_plugin->get_option("map_force_admin_ssl") );
+			force_ssl_login( $this->_plugin->get_option("map_force_admin_ssl") );
+        }
+
+	    $current_url = $this->_http->getHostInfo("http") . $this->_http->getUrl();
+	    $current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
+	    $force_schema = true;
+	    /**
+	     * Filters if schema should be forced
+	     *
+	     * @since 4.2.0.4
+	     *
+	     * @param bool $force_schema
+	     * @param bool $current_url current page http url
+	     * @param bool $current_url_secure current page https url
+	     */
+	    if( !apply_filters("dm_forcing_schema", $force_schema, $current_url, $current_url_secure) ) return;
+
+	    /**
+	     * Force original domain
+	     */
+        if(  !$this->is_login() && !is_admin() && $this->is_original_domain()){
+
+				// Force http
+				if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1  && is_ssl()  ){
+				  wp_redirect( $current_url );
+				  exit();
+				}
+
+				// Force https
+				if(  $this->_plugin->get_option("map_force_frontend_ssl") === 2 &&  $this->is_original_domain() && !is_ssl()){
+				  wp_redirect( $current_url_secure  );
+				  exit();
+				}
 
         }
 
-        /**
-         * Front pages
-         */
-        if(  !$this->is_login() && !is_admin() ){
+	    /**
+	     * Force mapped domains
+	     */
+	    if( self::force_ssl_on_mapped_domain() !== 2 ){
+		    if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() === 1 && !is_ssl() && !$this->is_original_domain() ){ // force https
+			    wp_redirect( $current_url_secure  );
+			    exit();
+		    }elseif( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() === 0 && is_ssl() ){ //force http
+			    wp_redirect( $current_url);
+			    exit();
+		    }
+	    }
 
-          if( $this->is_original_domain() ){ // Original domain
-            // Force http
-            if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1  && is_ssl()  ){
-              wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-              exit();
-            }
-
-            // Force https
-            if(  $this->_plugin->get_option("map_force_frontend_ssl") === 2 &&  $this->is_original_domain() && !is_ssl()){
-              wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-              exit();
-            }
-
-          }else{
-            // Force mapped domains
-            if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() && !is_ssl() && !$this->is_original_domain() ){ // force https
-              wp_redirect("https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-              exit();
-            }elseif( $this->is_mapped_domain() && !self::force_ssl_on_mapped_domain() && is_ssl() ){ //force http
-              wp_redirect("http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-              exit();
-            }
-          }
-        }
     }
+
+	function on_delete_blog( $blog_id, $drop){
+		$this->_wpdb->delete(DOMAINMAP_TABLE_MAP, array( "blog_id" => $blog_id ) , array( "%d" ) );
+	}
 
 }

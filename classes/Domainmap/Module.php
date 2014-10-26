@@ -18,7 +18,7 @@
 // | Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,               |
 // | MA 02110-1301 USA                                                    |
 // +----------------------------------------------------------------------+
-
+include_once  dirname(__FILE__) . "../../Vendor/CHttpRequest.php";
 /**
  * Base class for all modules. Implements routine methods required by all modules.
  *
@@ -50,6 +50,15 @@ class Domainmap_Module {
 	protected $_plugin = null;
 
 	/**
+	 * CHttpRequest class instance
+	 *
+	 * @since 4.2.0.4
+	 *
+	 * @var CHttpRequest
+	 */
+	protected $_http;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.0
@@ -63,6 +72,8 @@ class Domainmap_Module {
 
 		$this->_wpdb = $wpdb;
 		$this->_plugin = $plugin;
+		$this->_http = new CHttpRequest();
+		$this->_http->init();
 	}
 
 	/**
@@ -141,6 +152,12 @@ class Domainmap_Module {
 		return $this;
 	}
 
+
+	protected function get_original_domain( $with_www = false ){
+		$home = home_url( '/' );
+		$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
+		return $with_www ? "www." . $original_domain : $original_domain ;
+	}
   /**
    * Checks if current site resides in original domain
    *
@@ -151,8 +168,8 @@ class Domainmap_Module {
     protected function is_original_domain(){
         $home = home_url( '/' );
         $current_domain = parse_url( $home, PHP_URL_HOST );
-        $original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
-        return $current_domain === $original_domain;
+
+        return $current_domain === $this->get_original_domain();
     }
 
   /**
@@ -188,7 +205,7 @@ class Domainmap_Module {
     public static function force_ssl_on_mapped_domain( $domain = "" ){
         global $wpdb;
         $domain = $domain === "" ?  $_SERVER['SERVER_NAME'] : $domain;
-        return (bool) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+        return (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
     }
 
 }

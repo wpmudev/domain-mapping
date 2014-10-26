@@ -588,9 +588,11 @@
         $.ajax({
             type        : "get",
             url         : href,
-            success     : function(data){
-                if( data.success ){
-                    current_link = current_link.indexOf("https://") !== -1 ? current_link.replace("https://", "http://") : current_link.replace("http://", "https://");
+            success     : function(res){
+                if( res.success ){
+                    current_link = current_link.replace("<del>", "");
+                    current_link = current_link.replace("</del>", "");
+                    current_link =  res.data.schema === 0  ? current_link.replace("https://", "http://") : current_link.replace("http://", "https://");
                     $link.toggle("highlight");
                     $link.html( current_link );
                     $link.toggle("highlight");

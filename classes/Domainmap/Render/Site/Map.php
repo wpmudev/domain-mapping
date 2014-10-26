@@ -125,6 +125,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 							<select type="text" name="scheme" class="domainmapping-input-prefix">
                                 <option value="0">http://</option>
                                 <option value="1">https://</option>
+                                <option value="2"><?php _e("Force none", domain_map::Text_Domain); ?></option>
                             </select>
 							<div class="domainmapping-controls-wrapper">
 								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
@@ -155,7 +156,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		global $current_site;
 
 		if ( !$schema ) {
-			$schema = Domainmap_Module::force_ssl_on_mapped_domain( $row->domain ) ? 'https' : 'http';;
+			switch( Domainmap_Module::force_ssl_on_mapped_domain( $row->domain ) ){
+				case 0:
+					$schema = 'http';
+					break;
+				case 1:
+					$schema = 'https';
+					break;
+				case 2:
+					$schema = '<del>http</del>';
+					break;
+			}
 		}
 
 		$multi = self::_is_multi_enabled();
@@ -189,10 +200,10 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		}
 
 		?><li>
-      <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle scheme', 'domainmap' ) ?>"></a>
+      <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle forced schema', 'domainmap' ) ?>"></a>
 
-      <a class="domainmapping-mapped" href="<?php echo $schema ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				<?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
+      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
 			</a>
 
       <?php self::render_health_column( $row->domain ) ?>

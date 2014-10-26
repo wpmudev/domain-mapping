@@ -73,6 +73,7 @@ class domain_map {
 		return $initiator_url;
 	}
 
+
 	function domain_mapping_login_url( $login_url, $redirect = '' ) {
 		switch ( $this->options['map_logindomain'] ) {
 			case 'user':
