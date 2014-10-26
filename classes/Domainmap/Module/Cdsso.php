@@ -214,15 +214,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
 		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
-			$home = home_url( '/' );
-			$current_domain = parse_url( $home, PHP_URL_HOST );
-			$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
-
-			if ( $current_domain != $original_domain ) {
 				$interim_login = $this->_do_propagation = true;
-			}
 		}
-
 		return $redirect_to;
 	}
 
@@ -318,7 +311,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function setup_cdsso() {
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
-
 		if ( !is_user_logged_in() || empty( $_SERVER['HTTP_REFERER'] ) ) {
 			header( "Vary: Accept-Encoding" ); // Handle proxies
 			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + MINUTE_IN_SECONDS ) . " GMT" );
