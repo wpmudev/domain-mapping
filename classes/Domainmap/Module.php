@@ -166,7 +166,7 @@ class Domainmap_Module {
    * @return bool true if it's original domain, false if not
    */
     protected function is_original_domain(){
-        $home = home_url( '/' );
+        $home = network_home_url( '/' );
         $current_domain = parse_url( $home, PHP_URL_HOST );
 
         return $current_domain === $this->get_original_domain();

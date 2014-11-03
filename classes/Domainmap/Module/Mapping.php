@@ -613,11 +613,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	    /**
 	     * Force mapped domains
 	     */
-	    if( self::force_ssl_on_mapped_domain() !== 2 ){
-		    if( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() === 1 && !is_ssl() && !$this->is_original_domain() ){ // force https
+	    if(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 ){
+		    if( self::force_ssl_on_mapped_domain() === 1 && !is_ssl()  ){ // force https
 			    wp_redirect( $current_url_secure  );
 			    exit();
-		    }elseif( $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() === 0 && is_ssl() ){ //force http
+		    }elseif( self::force_ssl_on_mapped_domain() === 0 && is_ssl() ){ //force http
 			    wp_redirect( $current_url);
 			    exit();
 		    }
