@@ -166,11 +166,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, self::ACTION_KEY ) != self::ACTION_LOGOUT_USER ) {
 			return;
 		}
-
-		switch_to_blog( 1 );
-		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, admin_url( 'admin-ajax.php' ) );
+//		switch_to_blog( 1 );
+		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, network_admin_url( 'admin-ajax.php' ) );
 		echo '<script type="text/javascript" src="', $url, '"></script>';
-		restore_current_blog();
+//		restore_current_blog();
 	}
 
 	/**
@@ -275,12 +274,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		echo '</script>';
 
 
-		switch_to_blog( 1 );
+//		switch_to_blog( 1 );
 		$url = add_query_arg( array(
 			'action' => self::ACTION_PROPAGATE_USER,
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
-		), admin_url( 'admin-ajax.php' ) );
-		restore_current_blog();
+		), network_admin_url( 'admin-ajax.php' ) );
+//		restore_current_blog();
 
 		echo '<script type="text/javascript" src="', $url, '"></script>';
 	}
@@ -300,11 +299,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			return;
 		}
 
-		switch_to_blog( 1 );
-		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, admin_url( 'admin-ajax.php' ) );
+//		switch_to_blog( 1 );
+		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, network_admin_url( 'admin-ajax.php' ) );
 
 		echo '<script type="text/javascript" src="', $url, '"></script>';
-		restore_current_blog();
+//		restore_current_blog();
 	}
 
 	/**
