@@ -307,6 +307,7 @@ table.domains .domainmapping-mapped{
 .domainmapping-controls-wrapper {
     border-top: 1px solid #dfdfdf;
     border-bottom: 1px solid #dfdfdf;
+    border-left: 1px solid #dfdfdf;
     float: left
 }
 
