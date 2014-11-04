@@ -154,60 +154,59 @@ class Domainmap_Module {
 
 
 	protected function get_original_domain( $with_www = false ){
-		$home = home_url( '/' );
+		$home = network_home_url( '/' );
 		$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
 		return $with_www ? "www." . $original_domain : $original_domain ;
 	}
-  /**
-   * Checks if current site resides in original domain
-   *
-   * @since 4.2.0
-   *
-   * @return bool true if it's original domain, false if not
-   */
-    protected function is_original_domain(){
-        $home = network_home_url( '/' );
-        $current_domain = parse_url( $home, PHP_URL_HOST );
+	/**
+	 * Checks if current site resides in original domain
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return bool true if it's original domain, false if not
+	 */
+	protected function is_original_domain(){
+		$home = home_url( '/' );
+		$current_domain = parse_url( apply_filters( 'unswap_url', $home ) , PHP_URL_HOST );
+		return $current_domain === $this->get_original_domain();
+	}
 
-        return $current_domain === $this->get_original_domain();
-    }
+	/**
+	 * Checks if current site resides in mapped domain
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return bool
+	 */
+	protected function is_mapped_domain(){
+		return !$this->is_original_domain();
+	}
 
-  /**
-   * Checks if current site resides in mapped domain
-   *
-   * @since 4.2.0
-   *
-   * @return bool
-   */
-    protected function is_mapped_domain(){
-        return !$this->is_original_domain();
-    }
+	/**
+	 * Checks if current page is login page
+	 *
+	 * @since 4.2.0
+	 *
+	 * @return bool
+	 */
+	protected function is_login(){
+		return in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ));
+	}
 
-  /**
-   * Checks if current page is login page
-   *
-   * @since 4.2.0
-   *
-   * @return bool
-   */
-    protected function is_login(){
-        return in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ));
-    }
-
-  /**
-   * Checks if give domain should be forced to use https
-   *
-   * @since 4.2.0
-   *
-   * @param string $domain
-   * @return bool
-   */
-    public static function force_ssl_on_mapped_domain( $domain = "" ){
-        global $wpdb;
-	    $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
-        $domain = $domain === "" ? $current_domain  : $domain;
-        return (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
-    }
+	/**
+	 * Checks if give domain should be forced to use https
+	 *
+	 * @since 4.2.0
+	 *
+	 * @param string $domain
+	 * @return bool
+	 */
+	public static function force_ssl_on_mapped_domain( $domain = "" ){
+		global $wpdb;
+		$current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
+		$domain = $domain === "" ? $current_domain  : $domain;
+		return (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+	}
 
 	/**
 	 * Checks if server supports ssl
@@ -228,8 +227,45 @@ class Domainmap_Module {
 
 	}
 
+	/**
+	 * Checks if current domain is a subdomain
+	 *
+	 * @since 4.2.0.4
+	 * @return bool
+	 */
 	protected function is_subdomain(){
 		$network_domain =  parse_url( network_home_url(), PHP_URL_HOST );
 		return  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']);
+	}
+
+	/**
+	 * Returns ajax url based on the main domain
+	 *
+	 * @since 4.2.0.4
+	 * @return mixed
+	 */
+	protected function get_main_ajax_url(){
+		return  $this->_replace_last_occurence('network/', '', network_admin_url( 'admin-ajax.php' ) );
+	}
+
+	/**
+	 * Replaces last occurence of string with $replace string
+	 *
+	 * @since 4.2.0.5
+	 *
+	 * @param $search
+	 * @param $replace
+	 * @param $string
+	 *
+	 * @return mixed
+	 */
+	private function _replace_last_occurence($search, $replace, $string)
+	{
+		$pos = strrpos($string, $search);
+
+		if($pos !== false)
+			$string = substr_replace($string, $replace, $pos, strlen($search));
+
+		return $string;
 	}
 }

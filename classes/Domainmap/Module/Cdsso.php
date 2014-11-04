@@ -167,7 +167,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			return;
 		}
 
-		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, str_replace("/network", "", network_admin_url( 'admin-ajax.php' ) ) );
+		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, $this->get_main_ajax_url() );
 		echo '<script type="text/javascript" src="', $url, '"></script>';
 	}
 
@@ -276,7 +276,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$url = add_query_arg( array(
 			'action' => self::ACTION_PROPAGATE_USER,
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
-		), str_replace("/network", "", network_admin_url( 'admin-ajax.php' ) ) );
+		), $this->get_main_ajax_url() );
 
 		echo '<script type="text/javascript" src="', $url, '"></script>';
 	}
@@ -295,7 +295,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
-		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, str_replace("/network", "", network_admin_url( 'admin-ajax.php' ) ) );
+		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, $this->get_main_ajax_url() );
 		echo '<script type="text/javascript" src="', $url, '"></script>';
 	}
 
