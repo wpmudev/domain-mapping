@@ -155,7 +155,7 @@ class Domainmap_Module {
 
 	protected function get_original_domain( $with_www = false ){
 		$home = network_home_url( '/' );
-		$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
+		$original_domain = parse_url( $home, PHP_URL_HOST );
 		return $with_www ? "www." . $original_domain : $original_domain ;
 	}
 	/**
@@ -166,9 +166,8 @@ class Domainmap_Module {
 	 * @return bool true if it's original domain, false if not
 	 */
 	protected function is_original_domain(){
-		$home = home_url( '/' );
-		$current_domain = parse_url( apply_filters( 'unswap_url', $home ) , PHP_URL_HOST );
-		return $current_domain === $this->get_original_domain();
+		$current_domain = parse_url( $this->_http->hostinfo  , PHP_URL_HOST );
+		return $current_domain === $this->get_original_domain() || strpos($current_domain, "." . $this->get_original_domain());
 	}
 
 	/**
