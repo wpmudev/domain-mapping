@@ -1,4 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.2.0.6 ==
+* Fixed: bug in mapped domain schema forcing
+
 == 4.2.0.5 ==
 * Fixed: bug causing redirect loop in sub-site's login when original admin/login pages are forced to have https and subdomain has mapped domain
 
