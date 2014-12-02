@@ -342,7 +342,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$domain = '';
 		if ( $this->_get_frontend_redirect_type() == 'user' ) {
-			$domain = $_SERVER['HTTP_HOST'];
+			$domain = is_admin() && $this->is_original_domain() ? $domain : $_SERVER['HTTP_HOST'];
 		} else {
 			// fetch mapped domain
 			$errors = $this->_wpdb->suppress_errors();
