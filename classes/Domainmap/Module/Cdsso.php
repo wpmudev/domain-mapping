@@ -73,7 +73,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
 
-		$this->_add_action( 'wp_head', 'add_auth_script', 0 );
+		$this->_add_action( 'wp_footer', 'add_auth_script', 0 );
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
@@ -168,7 +168,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, $this->get_main_ajax_url() );
-		echo '<script type="text/javascript" src="', $url, '"></script>';
+		echo '<script async type="text/javascript" src="', $url, '"></script>';
 	}
 
 	/**
@@ -267,7 +267,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			}
 		}
 
-		echo '<script type="text/javascript">';
+		echo '<script async type="text/javascript">';
 			echo 'function domainmap_do_redirect() { window.location = "', $redirect_to, '"; };';
 			echo 'setTimeout(domainmap_do_redirect, 5000);';
 		echo '</script>';
@@ -278,7 +278,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
-		echo '<script type="text/javascript" src="', $url, '"></script>';
+		echo '<script async type="text/javascript" src="', $url, '"></script>';
 	}
 
 	/**
