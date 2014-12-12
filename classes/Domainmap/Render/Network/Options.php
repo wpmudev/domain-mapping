@@ -260,6 +260,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 */
 	private function _render_cross_autologin() {
 		$selected = isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
+		$infooter = isset( $this->map_crossautologin_infooter ) ? (int)$this->map_crossautologin_infooter : 0;
+		$async = isset( $this->map_crossautologin_async ) ? (int)$this->map_crossautologin_async : 0;
 		$options = array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
@@ -279,7 +281,21 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 					</label>
 				</li><?php
 			endforeach;
-		?></ul><?php
+		?></ul>
+		<br/>
+		<div class="domainmapping-child-list domainmapping-child-list-crossautologin <?php echo $selected ? '' : 'domainmapping-child-list-hidden' ?>" >
+			<label>
+				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_async" value="1" <?php checked( $async, 1 ) ?> >
+				<?php _e( "Load Cross-domain autologin asynchronously", 'domainmap' ) ?><br>
+			</label>
+
+			<label>
+				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_infooter" value="1" <?php checked( $infooter, 1 ) ?> >
+				<?php _e( "Add Cross-domain autologin scripts in footer", 'domainmap' ) ?><br>
+			</label>
+
+		</div>
+	<?php
 	}
 
 	/**

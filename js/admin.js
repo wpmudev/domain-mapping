@@ -601,4 +601,15 @@
             }
         })
     });
+
+    $("input[name='map_crossautologin']").on("change", function(){
+
+        var $this = $(this),
+            $child_list = $(".domainmapping-child-list-crossautologin");
+        if( $this.val() === "1"){
+            $child_list.slideDown();
+        }else{
+            $child_list.slideUp();
+        }
+    });
 })(jQuery);

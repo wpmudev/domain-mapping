@@ -193,6 +193,8 @@ class Domainmap_Plugin {
 				$this->_options['map_reseller'] = array();
 				$this->_options['map_reseller_log'] = Domainmap_Reseller::LOG_LEVEL_DISABLED;
 				$this->_options['map_crossautologin'] = 0;
+				$this->_options['map_crossautologin_infooter'] = 0;
+				$this->_options['map_crossautologin_async'] = 0;
 				$this->_options['map_verifydomain'] = 1;
 				$this->_options['map_force_admin_ssl'] = 0;
 				$this->_options['map_force_frontend_ssl'] = 0;

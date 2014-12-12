@@ -58,6 +58,26 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private $_do_logout = false;
 
 	/**
+	 * Whether to load the sso scripts in footer
+	 *
+	 * @since 4.2.1
+	 *
+	 * @access private
+	 * @var bool
+	 */
+	private $_load_in_footer = false;
+
+	/**
+	 * Whether to load the sso scripts asynchronously
+	 *
+	 * @since 4.2.1
+	 *
+	 * @access private
+	 * @var bool
+	 */
+	private $_async = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.2
@@ -68,12 +88,18 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
+		$this->_load_in_footer =  $plugin->get_option("map_crossautologin_infooter");
+		$this->_async =  $plugin->get_option("map_crossautologin_async");
+
 		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
 
-		$this->_add_action( 'wp_footer', 'add_auth_script', 0 );
+
+
+		$this->_add_action( $this->_load_in_footer ?  'wp_footer' :  'wp_head', 'add_auth_script', 0 );
+
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
@@ -96,7 +122,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function set_auth_script_for_login() {
-		$this->_add_action( 'login_head', 'add_auth_script', 0 );
+		$this->_add_action( $this->_load_in_footer ? "login_footer" : 'login_head', 'add_auth_script', 0 );
 	}
 
 	/**
@@ -168,7 +194,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, $this->get_main_ajax_url() );
-		echo '<script async type="text/javascript" src="', $url, '"></script>';
+		$this->_add_async_script( $url );
 	}
 
 	/**
@@ -266,19 +292,21 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 				$redirect_to = admin_url( 'profile.php' );
 			}
 		}
+		?>
+		<script <?php echo $this->_async ? "async='true'" : ""; ?>  type="text/javascript">
+			function domainmap_do_redirect() { window.location = "<?php echo $redirect_to ?>"; }
+			setTimeout(domainmap_do_redirect, 5000);
+		</script>
 
-		echo '<script async type="text/javascript">';
-			echo 'function domainmap_do_redirect() { window.location = "', $redirect_to, '"; };';
-			echo 'setTimeout(domainmap_do_redirect, 5000);';
-		echo '</script>';
-
+		<?php
 
 		$url = add_query_arg( array(
 			'action' => self::ACTION_PROPAGATE_USER,
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
-		echo '<script async type="text/javascript" src="', $url, '"></script>';
+		$this->_add_async_script( $url );
+
 	}
 
 	/**
@@ -296,7 +324,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			return;
 		}
 		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, $this->get_main_ajax_url() );
-		echo '<script type="text/javascript" src="', $url, '"></script>';
+		$this->_add_async_script( $url );
 	}
 
 	/**
@@ -320,7 +348,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
 			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
 		), $_SERVER['HTTP_REFERER'] );
-        echo 'window.location = "', $url, '";';
+		?>
+		window.location.replace("<?php echo $url ?>");
+		<?php
 		exit;
 	}
 
@@ -373,5 +403,29 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		exit;
 	}
+
+	/**
+	 * Prints async javascript script
+	 *
+	 * @since 4.2.1
+	 *
+	 * @access private
+	 * @param $url
+	 */
+	private function _add_async_script( $url )
+	{
+		?>
+		<script type="text/javascript">
+			(function(d, t) {
+				var g = d.createElement(t),
+					s = d.getElementsByTagName(t)[0];
+				g.src = '<?php echo $url ?>';
+				g.async = true;
+				s.parentNode.insertBefore(g, s);
+			}(document, 'script'));
+		</script>
+		<?php
+	}
+
 
 }

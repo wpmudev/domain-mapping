@@ -791,3 +791,6 @@ table.domains .domainmapping-map-toggle-scheme{
 table.domains td.column-actions a{
     margin: 5px;
 }
+.domainmapping-child-list-hidden{
+    display: none;
+}

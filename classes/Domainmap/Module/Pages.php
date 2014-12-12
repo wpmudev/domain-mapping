@@ -202,6 +202,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_admindomain'] = filter_input( INPUT_POST, 'map_admindomain' );
 			$options['map_logindomain'] = filter_input( INPUT_POST, 'map_logindomain' );
 			$options['map_crossautologin'] = filter_input( INPUT_POST, 'map_crossautologin', FILTER_VALIDATE_BOOLEAN );
+			$options['map_crossautologin_infooter'] = filter_input( INPUT_POST, 'map_crossautologin_infooter', FILTER_VALIDATE_BOOLEAN );
+			$options['map_crossautologin_async'] = filter_input( INPUT_POST, 'map_crossautologin_async', FILTER_VALIDATE_BOOLEAN );
 			$options['map_verifydomain'] = filter_input( INPUT_POST, 'map_verifydomain', FILTER_VALIDATE_BOOLEAN );
 			$options['map_force_admin_ssl'] = $this->server_supports_ssl() ?  filter_input( INPUT_POST, 'map_force_admin_ssl', FILTER_VALIDATE_BOOLEAN ) : 0;
 			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_INT );
