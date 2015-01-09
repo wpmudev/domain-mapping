@@ -11,16 +11,13 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 
 $using_domain = strtolower( preg_replace( "/^www\./", "", $_SERVER['HTTP_HOST'] ) );
 define( 'COOKIE_DOMAIN', $using_domain );
-if ( filter_var( $using_domain, FILTER_VALIDATE_IP ) ) {
-    $mapped_id = 1;
-} else {
-    $s_e = $wpdb->suppress_errors();
 
-    // Check for the domain with and without the www. prefix
-    $mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE domain = %s OR domain = %s LIMIT 1", $using_domain, "www.{$using_domain}" ) );
+$s_e = $wpdb->suppress_errors();
 
-    $wpdb->suppress_errors( $s_e );
-}
+// Check for the domain with and without the www. prefix
+$mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE domain = %s OR domain = %s LIMIT 1", $using_domain, "www.{$using_domain}" ) );
+
+$wpdb->suppress_errors( $s_e );
 
 if ( !empty( $mapped_id ) ) {
     $current_blog = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = %d LIMIT 1", $mapped_id ) );
