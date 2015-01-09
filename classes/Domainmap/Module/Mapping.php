@@ -217,13 +217,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
-		/**
-		 * Filter if it should proceed with redirecting
-		 *
-		 * @since 4.1.0
-		 * @param bool $is_ssl
-		 */
-		if( apply_filters( "dm_prevent_redirection_for_ssl", is_ssl() ) ) return;
 
 		$redirect_to = $this->_get_frontend_redirect_type();
 		$force_ssl = false;
@@ -233,6 +226,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				$force_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
 			}
 		}
+
+		/**
+		 * Filter if it should proceed with redirecting
+		 *
+		 * @since 4.1.0
+		 * @param bool $is_ssl
+		 */
+		if( apply_filters( "dm_prevent_redirection_for_ssl", is_ssl() && $redirect_to !== "mapped"  ) ) return;
 
 		if ( $redirect_to != 'user' ) {
 			$this->_redirect_to_area( $redirect_to, $force_ssl);
