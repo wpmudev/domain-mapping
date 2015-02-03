@@ -85,9 +85,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		parent::__construct( $plugin );
 
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
-		$this->_add_action( 'plugins_loaded', 'force_schema' );
+
+
 //		add_action('plugins_loaded', '');
-		$this->_add_action( 'template_redirect',       'redirect_front_area' );
+		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
+		$this->_add_action( 'template_redirect', 'force_schema', 11 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
@@ -568,7 +570,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses wp_redirect
 	 */
 	public function force_schema(){
-
 		if( $this->is_original_domain() && !is_ssl()  ){
 			/**
 			 * Login and Admin pages
