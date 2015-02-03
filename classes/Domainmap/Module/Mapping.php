@@ -33,6 +33,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	const NAME = __CLASS__;
 
+	const BYPASS = "bypass";
 	/**
 	 * The array of mapped domains.
 	 *
@@ -109,6 +110,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
+		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
 	}
 
 	/**
@@ -219,6 +221,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
+
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
 
 		$redirect_to = $this->_get_frontend_redirect_type();
 		$force_ssl = false;
@@ -627,8 +631,38 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	}
 
+	/**
+	 * Removes mapping record from db when a site is deleted
+	 *
+	 * Since 4.2.0
+	 * @param $blog_id
+	 * @param $drop
+	 */
 	function on_delete_blog( $blog_id, $drop){
 		$this->_wpdb->delete(DOMAINMAP_TABLE_MAP, array( "blog_id" => $blog_id ) , array( "%d" ) );
+	}
+
+
+	/**
+	 * Makes sure post preview is shown even if the admin uses original or entered domain and the frontend is supposed
+	 * to use mapped domain
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $url
+	 * @param $post
+	 *
+	 * @return string
+	 */
+	function post_preview_link_from_original_domain_to_mapped_domain($url, $post){
+		$url_fragments = parse_url( $url );
+		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
+
+		if( $hostinfo !== $this->_http->hostInfo ){
+			return add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  ));
+		}
+
+		return $url;
 	}
 
 }
