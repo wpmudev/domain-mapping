@@ -454,7 +454,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 * @param string $sld The SLD name.
 	 */
 	private function _populate_dns_records( $tld, $sld ) {
-		global $wpdb;
+		global $wpdb, $blog_id;
 
 		$ips = $args = array();
 		$options = Domainmap_Plugin::instance()->get_options();
@@ -511,7 +511,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			}
 		} else {
 			// network is hosted on shared hosting and we can use DNS CNAME records for it
-			$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $wpdb->blogid ) );
+			$origin = $wpdb->get_row( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = " . intval( $blog_id ) );
 
 			$args['HostName1'] = "{$sld}.{$tld}";
 			$args['RecordType1'] = 'CNAME';

@@ -162,6 +162,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function map_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_MAP_DOMAIN );
 
 		$message = $hide_form = false;
@@ -181,7 +182,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 				if ( is_null( $blog ) && is_null( $map ) ) {
 					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
-						'blog_id' => $this->_wpdb->blogid,
+						'blog_id' => (int) $blog_id,
 						'domain'  => $domain,
 						'active'  => 1,
                         "scheme" => $scheme,
@@ -234,6 +235,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function unmap_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_UNMAP_DOMAIN );
 
 		$show_form = false;
@@ -255,7 +257,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
              * @param string $domain deleted domain name
              * @param int $blog_id
              */
-            do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
+            do_action( 'domainmapping_deleted_domain', $domain, $blog_id);
 		}
 
         if( $success ){
@@ -330,13 +332,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function select_primary_domain() {
+		global $blog_id;
+
 		self::_check_premissions( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN );
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
 			// unset all domains
             $domain = filter_input( INPUT_GET, 'domain' );
 
-            $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
+            $blog_id = $blog_id == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $blog_id;
 
           if( is_numeric($blog_id) && $blog_id !== 0 )
           {
@@ -372,11 +376,12 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function deselect_primary_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN );
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
           $domain = filter_input( INPUT_GET, 'domain' );
-          $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
+          $blog_id = $blog_id == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : (int)  $blog_id;
 
           // deselect primary domains
 			$this->_wpdb->update(

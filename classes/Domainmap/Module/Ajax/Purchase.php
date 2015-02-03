@@ -213,7 +213,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 */
 	private function _map_domain( $domain, $blog_id = false ) {
 		if ( !$blog_id ) {
-			$blog_id = intval( $this->_wpdb->blogid );
+			global $blog_id;
+			$blog_id = intval( $blog_id );
 		}
 
 		// check if mapped domains are 0 or multi domains are enabled
