@@ -33,6 +33,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	const NAME = __CLASS__;
 
+	/**
+	 * @const key for url get param
+	 *
+	 * @since 4.3.0
+	 *
+	 */
 	const BYPASS = "bypass";
 	/**
 	 * The array of mapped domains.
@@ -84,7 +90,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
-
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
 
 

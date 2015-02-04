@@ -146,6 +146,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_cross_autologin();
 		$this->_render_domain_validation();
         $this->_render_ssl_forced_pages();
+        $this->_render_prohibited_domains();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -412,6 +413,31 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				</li><?php
 			endforeach;
 		?></ul><?php
+	}
+
+	private function _render_prohibited_domains(){
+		?>
+		<h4 class="domainmapping-block-header"><?php _e( "Prohibited mappings", 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Domains that sub-sites shouldn't use as primary(mapped) domain, please comma separate domain name", 'domainmap' ) ?><br>
+		</p>
+		<textarea name="dm_prohibited_domains" id="dm_prohibited_domains" cols="60" rows="3"><?php echo $this->map_prohibited_domains; ?></textarea>
+
+		<p class="description">
+			<?php _e( "Please separate domain names with comma", 'domainmap' ) ?>
+		</p>
+
+		<ul>
+			<li>
+				<label for="dm_disallow_subdomain">
+					<input type="checkbox" value="1" <?php checked($this->map_disallow_subdomain, true ) ?> name="dm_disallow_subdomain" id="dm_disallow_subdomain"/>
+					<?php _e( "Disallow sub-domains of the original domain to be used as mapped (primary) domain for sub-sites", 'domainmap' ) ?>
+				</label>
+			</li>
+		</ul>
+
+
+		<?php
 	}
 
 }
