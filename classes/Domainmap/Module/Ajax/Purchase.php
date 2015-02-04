@@ -129,8 +129,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 				wp_set_auth_cookie( $user_id, true, true );
 
 				// redirect to https version of this page
-//				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
-//				exit;
+				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
+				exit;
 			} else {
 				// redirect to login form
 				$this->redirect_to_login_form();

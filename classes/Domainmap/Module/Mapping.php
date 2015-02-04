@@ -206,6 +206,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_login_area() {
+
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
+
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
 			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl );
@@ -303,10 +306,19 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return;
 		}
 
-		// do not redirect if there is no mapped domain
+
 		$mapped_domain = $this->_get_mapped_domain();
+		// do not redirect if there is no mapped domain
 		if ( !$mapped_domain ) {
 			return;
+		}
+
+
+
+		// Don't map if mapped domain is not healthy
+		$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
+		if( $health !== "1" ){
+			if( !$this->set_valid_transient($mapped_domain)  ) return true;
 		}
 
 		$protocol = is_ssl() || $force_ssl ? 'https://' : 'http://';
@@ -657,7 +669,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function post_preview_link_from_original_domain_to_mapped_domain($url, $post){
 		$url_fragments = parse_url( $url );
 		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
-
+return;
 		if( $hostinfo !== $this->_http->hostInfo ){
 			return add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  ));
 		}

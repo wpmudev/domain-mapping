@@ -268,29 +268,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	}
 
 	/**
-	 * Validates health status of a domain.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access private
-	 * @param string $domain The domain name to validate.
-	 * @return boolean TRUE if the domain name works, otherwise FALSE.
-	 */
-	private function _validate_health_status( $domain ) {
-		$check = sha1( time() );
-
-		switch_to_blog( 1 );
-		$ajax_url = admin_url( 'admin-ajax.php' );
-		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
-		restore_current_blog();
-		$response = wp_remote_request( add_query_arg( array(
-			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
-			'check'  => $check,
-		), $ajax_url ), array( 'sslverify' => false ) );
-		return  !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
-	}
-
-	/**
 	 * Checks domain health status.
 	 *
 	 * @since 4.0.0
@@ -304,8 +281,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			wp_send_json_error();
 		}
 
-		$valid = $this->_validate_health_status( $domain );
-		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? WEEK_IN_SECONDS : 10 * MINUTE_IN_SECONDS );
+		$this->set_valid_transient( $domain );
 
 		ob_start();
 		Domainmap_Render_Site_Map::render_health_column( $domain );
@@ -439,4 +415,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
        wp_send_json_error();
      }
    }
+
+
 }
