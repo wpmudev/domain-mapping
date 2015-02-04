@@ -90,7 +90,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 //		add_action('plugins_loaded', '');
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
-		$this->_add_action( 'template_redirect', 'force_schema', 11 );
+		$this->_add_action( 'template_redirect',       'force_schema', 11 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
@@ -111,6 +111,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
+		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
 	}
 
 	/**
@@ -669,7 +670,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function post_preview_link_from_original_domain_to_mapped_domain($url, $post){
 		$url_fragments = parse_url( $url );
 		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
-return;
 		if( $hostinfo !== $this->_http->hostInfo ){
 			return add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  ));
 		}
@@ -677,4 +677,25 @@ return;
 		return $url;
 	}
 
+	/**
+	 * Adds mapped domain to customizer's allowed urls so
+	 * @param $allowed_urls
+	 *
+	 * @return array
+	 */
+	function customizer_allowed_urls( $allowed_urls ){
+
+		if( self::$_mapped_domains === array() ) return $allowed_urls;
+
+		$mapped_urls = array();
+
+		foreach( self::$_mapped_domains as $domain ){
+			if(  !empty( $domain ) ){
+				$mapped_urls[] = "http://" . $domain;
+				$mapped_urls[] = "https://" . $domain;
+			}
+		}
+
+		return array_merge($allowed_urls, $mapped_urls);
+	}
 }
