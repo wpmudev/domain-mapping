@@ -35,7 +35,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 	function __construct( $args = array()  ){
 		parent::__construct( array_merge( array(
-			'search_box_label' => __( 'Search pages' ),
+			'search_box_label' => __( 'Search pages', domain_map::Text_Domain ),
 			'single'           => 'Excluded page',
 			'plural'           => 'Excluded pages',
 			'ajax'             => true,
@@ -55,8 +55,8 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	 */
 	public function get_columns() {
 		$cols =  array(
-			'exclude'    => __( 'Exclude', 'domainmap' ),
-			'title'    => __( 'Title', 'domainmap' )
+			'exclude'    => __( 'Exclude', domain_map::Text_Domain ),
+			'title'    => __( 'Title', domain_map::Text_Domain )
 		);
 
 		return $cols;
@@ -181,11 +181,12 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 					<div class="search-box">
 
 						<input type="text" id="dm_excluded_pages_search_s" name="s" value="<?php echo $s ?>" placeholder="Search for page"/>
-						<?php submit_button( __( 'Search pages' ), 'button', false, false, array( 'id' => 'dm-search-for-exluded-pages' ) ); 		?>
+						<?php submit_button( __( 'Search pages', domain_map::Text_Domain ), 'button', false, false, array( 'id' => 'dm-search-for-exluded-pages' ) ); 		?>
 
 					</div>
 				</form>
 			<span class="spinner" id="dm_excluded_pages_search_spinner"></span>
+			<div class="displaying-num dm_excluded_pages_label"><span><?php echo count( $this->_excluded_pages_array ); ?></span> excluded</div>
 		<?php endif;?>
 		<?php if ( 'bottom' == $which ):?>
 			<form  method="post">
@@ -193,7 +194,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 				<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
 				<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
 			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
-			<?php submit_button( __( 'Save excluded pages' ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
+			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 			</form>
 		<?php endif;?>
 
@@ -211,8 +212,6 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 		check_ajax_referer( 'excluded-pages-nonce', '_excluded_pages_nonce' );
 		$this->prepare_items();
-//		extract( $this->_args );
-//		extract( $this->_pagination_args, EXTR_SKIP );
 		ob_start();
 		if ( ! empty( $_REQUEST['no_placeholder'] ) )
 			$this->display_rows();

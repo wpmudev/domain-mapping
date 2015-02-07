@@ -825,3 +825,8 @@ table.domains td.column-actions a{
     margin-top: 40px;
     position: absolute;
 }
+.dm_excluded_pages_label{
+    margin-top: 5px;
+    display: block;
+    float: left;
+}

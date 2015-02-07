@@ -621,12 +621,20 @@
 
             excluded_pages.splice(page_id_index, 1);
             $field.val( excluded_pages.join(",") );
-
+            this.update_label();
         },
         add_page: function(page_id){
             var $field = $("#dm_exluded_pages_hidden_field"),
                 excluded_pages = $.isEmptyObject( $field.val() ) ? [] : $field.val().replace(/ /g,'').split(",");
             $field.val( excluded_pages.concat([page_id]).join(",") );
+            this.update_label();
+        },
+        update_label: function(){
+            var $label = $(".dm_excluded_pages_label span"),
+                ids  = $("#dm_exluded_pages_hidden_field").val().trim() == "" ? [] : $("#dm_exluded_pages_hidden_field").val().trim().split(",");
+
+            $label.text( ids.length  );
+
         }
     };
 
