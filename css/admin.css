@@ -794,3 +794,34 @@ table.domains td.column-actions a{
 .domainmapping-child-list-hidden{
     display: none;
 }
+#dm_excluded_pages{
+    max-height: 300px;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    border:#eee solid 2px;
+    border-bottom: 0;
+}
+.dm_excluded_page{
+    background: #EEEEFF;
+    color: #343434;
+    height: 35px;
+    line-height: 30px;
+    padding: 0 1%;
+    overflow: hidden;
+    width: 98%;
+    margin: 0;
+    float: left;
+    clear: right;
+}
+.dm_excluded_page:nth-child(2n){
+    background: #fff;
+}
+.column-exclude{
+    width: 50px;
+}
+#dm_excluded_pages_search_spinner{
+    margin-left: 150px;
+    float: left;
+    margin-top: 40px;
+    position: absolute;
+}

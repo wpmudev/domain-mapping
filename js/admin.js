@@ -612,4 +612,156 @@
             $child_list.slideUp();
         }
     });
+
+    var excluded_pages = {
+        remove_page : function(page_id){
+            var $field = $("#dm_exluded_pages_hidden_field"),
+                excluded_pages = $field.val().replace(/ /g,'').split(","),
+                page_id_index = excluded_pages.indexOf(page_id.toString());
+
+            excluded_pages.splice(page_id_index, 1);
+            $field.val( excluded_pages.join(",") );
+
+        },
+        add_page: function(page_id){
+            var $field = $("#dm_exluded_pages_hidden_field"),
+                excluded_pages = $.isEmptyObject( $field.val() ) ? [] : $field.val().replace(/ /g,'').split(",");
+            $field.val( excluded_pages.concat([page_id]).join(",") );
+        }
+    };
+
+    $(document).on("change", ".dm_excluded_page_checkbox", function(){
+
+        var $this = $(this),
+            id = $this.data("id");
+
+        if( $this.is(":checked") ){
+            excluded_pages.add_page( id );
+        }else{
+            excluded_pages.remove_page( id );
+        }
+
+    });
+})(jQuery);
+
+
+(function($) {
+    list = {
+
+        init: function() {
+            var timer;
+            var delay = 500;
+            $('.tablenav-pages a, .manage-column.sortable a, .manage-column.sorted a').on('click', function(e) {
+                e.preventDefault();
+                var query = this.search.substring( 1 );
+
+                var data = {
+                    paged: list.__query( query, 'paged' ) || '1',
+                    order: list.__query( query, 'order' ) || 'asc',
+                    orderby: list.__query( query, 'orderby' ) || 'title'
+                };
+                list.update( data );
+            });
+            // Page number input
+            $('input[name=paged]').on('keyup', function(e) {
+
+                if ( 13 == e.which )
+                    e.preventDefault();
+                var data = {
+                    paged: parseInt( $('input[name=paged]').val() ) || '1',
+                    order: $('input[name=order]').val() || 'asc',
+                    orderby: $('input[name=orderby]').val() || 'title'
+                };
+
+                window.clearTimeout( timer );
+                timer = window.setTimeout(function() {
+                    list.update( data );
+                }, delay);
+            });
+
+            $("#dm_excluded_pages_search_form").on("submit", function(e){
+                e.preventDefault();
+                var s_val =  $("#dm_excluded_pages_search_s").val();
+                //if( !s_val.length ) return;
+                var data = {
+                    paged: parseInt( $('input[name=paged]').val() ) || '1',
+                    order: $('input[name=order]').val() || 'asc',
+                    orderby: $('input[name=orderby]').val() || 'title',
+                    s: s_val
+                };
+                window.clearTimeout( timer );
+                timer = window.setTimeout(function() {
+                    list.update( data );
+                }, delay);
+            })
+        },
+
+        update: function( data ) {
+            var $spinner = $("#dm_excluded_pages_search_spinner"),
+                $excluded_pages =  $("#dm_exluded_pages_hidden_field"),
+                get_excluded_pages_ids = function(){
+                    return $excluded_pages.val().replace(/ /g,'').split(",")
+                };
+
+            $.ajax({
+                url: ajaxurl,
+                data: $.extend(
+                    {
+                        _excluded_pages_nonce: $('#_excluded_pages_nonce').val(),
+                        action: 'update_excluded_pages_list'
+                    },
+                    data
+                ),
+                beforeSend:  function(){
+                    $spinner.show();
+                },
+                complete:  function(){
+                    $spinner.hide();
+                },
+                // Handle the successful result
+                success: function( response ) {
+                    // WP_List_Table::ajax_response() returns json
+                    var response = $.parseJSON( response );
+
+                    if ( response.rows.length )
+                        $('#the-list').html( response.rows );
+
+                    if ( response.column_headers.length )
+                        $('thead tr, tfoot tr').html( response.column_headers );
+
+                    if ( response.pagination.bottom.length )
+                        $('.tablenav.top .tablenav-pages').html( $(response.pagination.top).html() );
+                    if ( response.pagination.top.length )
+                        $('.tablenav.bottom .tablenav-pages').html( $(response.pagination.bottom).html() );
+
+                    /**
+                     * Keep checkboxes in sync
+                     */
+                    var excluded_pages = get_excluded_pages_ids();
+                    $(".dm_excluded_page_checkbox").each(function(){
+                       var $this = $(this),
+                           id = $this.data("id").toString();
+
+                        if( excluded_pages.indexOf( id ) !== -1 ){
+                            $this.prop('checked', true);
+                        }else{
+                            $this.prop('checked', false);
+                        }
+                    });
+                    list.init();
+                }
+            });
+        },
+
+        __query: function( query, variable ) {
+            var vars = query.split("&");
+            for ( var i = 0; i <vars.length; i++ ) {
+                var pair = vars[ i ].split("=");
+                if ( pair[0] == variable )
+                    return pair[1];
+            }
+            return false;
+        }
+    }
+    list.init();
 })(jQuery);

@@ -28,6 +28,7 @@
  *
  * @since 4.0.0
  */
+include_once "../../Table/ExcludedPages/Listing.php";
 class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 	/**
@@ -137,8 +138,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						</form>
 					</li>
 				</ul>
+				<br/>
+				<?php $this->_render_excluded_pages(); ?>
 			</div>
-		</div><?php
+
+
+		</div>
+
+
+
+		<?php
+
 	}
 
 	/**
@@ -249,5 +259,37 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	}
 
 
+	/**
+	 * Renders excluded pages list
+	 *
+	 * @since 4.3.0
+	 *
+	 */
+	private function _render_excluded_pages(){
+		$this->_save_excluded_pages();
+		/**
+		 * @param $page WP_Post
+		 */
+		?>
+		<h4><?php _e("Excluded pages: ", domain_map::Text_Domain); ?></h4>
+		<?php
+		$table = new Domainmap_Table_ExcludedPages_Listing();
+		$table->prepare_items();
+		$table->display();
 
+
+	}
+
+
+	/**
+	 * Updates excluded pages
+	 *
+	 * @since 4.3.0
+	 */
+	private function _save_excluded_pages()	{
+		if( isset( $_POST['dm-save-exluded-pages'] ) && wp_verify_nonce($nonce = filter_input( INPUT_POST, "_save-exluded-pages" ), "save-exluded-pages") ){
+			update_option( "dm_excluded_pages", strip_tags($_POST['dm_excluded_pages']) );
+		}
+	}
 }
+

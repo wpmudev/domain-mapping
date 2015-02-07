@@ -92,7 +92,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		parent::__construct( $plugin );
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
 
-
 //		add_action('plugins_loaded', '');
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
 		$this->_add_action( 'template_redirect',       'force_schema', 11 );
@@ -104,6 +103,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
+			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'site_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
@@ -178,6 +178,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @param bool $force_ssl
 	 */
 	private function _redirect_to_area( $redirect_to, $force_ssl = false ) {
+
+		/**
+		 * Don't map if this page is exluded from mapping
+		 */
+		global $post;
+
+		if( isset( $post ) && $this->is_excluded_by_id( $post->ID ) ) return;
+
 		switch ( $redirect_to ) {
 			case 'mapped':
 				$this->redirect_to_mapped_domain( $force_ssl );
@@ -304,13 +312,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_to_mapped_domain( $force_ssl = false ) {
-		global $current_blog, $current_site;
+		global $current_blog, $current_site, $post;
 
-		// do not redirect if headers were sent or site is not permitted to use
-		// domain mapping
-		if ( headers_sent() || !$this->_plugin->is_site_permitted() ) {
+		/**
+		 * do not redirect if headers were sent or site is not permitted to use domain mapping
+		 */
+		if ( headers_sent() || !$this->_plugin->is_site_permitted()  ) {
 			return;
 		}
+
 
 
 		$mapped_domain = $this->_get_mapped_domain();
@@ -451,11 +461,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @filter content_url 10 2
 	 * @filter plugins_url 10 3
 	 *
-	 * @access public
-	 * @param string $url Current URL to swap.
-	 * @param string $path The path related to domain.
-	 * @param type $orig_scheme The scheme to use 'http', 'https', or 'relative'.
-	 * @param string $blog_id The blog ID to which URL is related to.
+	 * @param $url
+	 * @param bool $path
+	 * @param bool $orig_scheme
+	 * @param bool $blog_id
+	 *
+	 * @return string
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
 		// do not swap URL if customizer is running
@@ -468,6 +479,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( empty( $components['host'] ) ) {
 			return $url;
 		}
+
+
 
 		// find mapped domain
 		$mapped_domain = $this->_get_mapped_domain( $blog_id );
@@ -494,7 +507,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string Swapped root URL on success, otherwise inital value.
 	 */
 	public function swap_root_url( $url ) {
-		global $current_site;
+		global $current_site, $post;
 
 		// do not swap URL if customizer is running or front end redirection is disabled
 		if ( $this->_suppress_swapping ) {
@@ -505,6 +518,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( !$domain ) {
 			return $url;
 		}
+
+
 
 		$protocol = 'http://';
 		if ( self::$_force_protocol && is_ssl() ) {
@@ -702,5 +717,37 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		return array_merge($allowed_urls, $mapped_urls);
+	}
+
+	/**
+	 * Returns excluded pages
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_excluded_pages( $return_array = false ){
+		$excluded_pages = get_option( "dm_excluded_pages", "");
+		if( $return_array ){
+			return array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
+		}
+
+		return $excluded_pages;
+	}
+
+
+	/**
+	 * Checks to see if the given page should be excluded from mapping
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $post_id
+	 *
+	 * @return bool
+	 */
+	function is_excluded_by_id( $post_id ){
+		return in_array( $post_id, self::get_excluded_pages( true )  );
 	}
 }

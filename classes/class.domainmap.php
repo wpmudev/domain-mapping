@@ -67,7 +67,11 @@ class domain_map {
 
 		// Add in the filters for domain mapping early on to get any information covered before the init action is hit
 		$this->add_domain_mapping_filters();
+		add_action('wp_ajax_update_excluded_pages_list', array($this, 'ajax_update_excluded_pages_list'));
+
 	}
+
+
 
 	function shibboleth_session_initiator_url($initiator_url) {
 		return $initiator_url;
@@ -679,5 +683,14 @@ class domain_map {
         return $records;
     }
 
-
+	/**
+	 * Updates excluded pages listing table with ajax
+	 *
+	 * @since 4.3.0
+	 */
+	function ajax_update_excluded_pages_list() {
+		$wp_list_table = new Domainmap_Table_ExcludedPages_Listing();
+		$wp_list_table->ajax_response();
+	}
 }
+
