@@ -81,7 +81,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
-		if ( $this->_validate_domain_name( $domain ) ) {
+		$is_valid = $this->_validate_domain_name( $domain );
+		if ( $is_valid ) {
 			$reseller = $this->_plugin->get_reseller();
 
 			$price = false;
@@ -104,7 +105,11 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 					: sprintf( '<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>', $domain, __( 'is not available to purchase', 'domainmap' ) ),
 			) );
 		} else {
-			$message = __( 'Domain name is invalid.', 'domainmap' );
+			if( $is_valid === false ){
+				$message = __( 'Domain name is invalid.', 'domainmap' );
+			}else{
+				$message = __( 'Domain name is prohibited.', 'domainmap' );
+			}
 		}
 
 		wp_send_json_error( array( 'message' => $message ) );

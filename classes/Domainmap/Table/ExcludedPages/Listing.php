@@ -127,9 +127,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	 * @param $page WP_Post
 	 */
 	public function column_title( $page ) {
-		$is_excluded = in_array( $page->ID, $this->_excluded_pages_array );
-		$url = $is_excluded ? apply_filters("unswap_url",  get_permalink( $page->ID )) :  get_permalink( $page->ID );
-		printf( '<a target="_blank" href="%1$s">%2$s</a>',  $url , $page->post_title  );
+		printf( '<a target="_blank" href="%1$s">%2$s</a>',  get_permalink( $page->ID ) , $page->post_title  );
 	}
 
 

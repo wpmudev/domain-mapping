@@ -39,14 +39,14 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 * @static
 	 * @access protected
 	 * @param string $domain The domain name to validate.
-	 * @return boolean TRUE if domain name is valid, otherwise FALSE.
+	 * @return boolean TRUE if domain name is valid, false if it's invalid and 0 if it's prohibited.
 	 */
     protected function _validate_domain_name( $domain, $mapping = false) {
         $is_valid = true;
         $map_verifydomain = $this->_plugin->get_option("map_verifydomain");
         if( !$map_verifydomain ) $is_valid = true;
 
-	    $is_valid = !$this->_plugin->is_prohibited_domain( $domain );
+	    $is_valid = $this->_plugin->is_prohibited_domain( $domain ) ? 0 : true;
 		$is_valid = $this->_plugin->get_option("map_disallow_subdomain") ? strpos( $domain, "." . $this->get_original_domain() ) === false : $is_valid;
 	    if( !$is_valid ){
 		    return apply_filters('dm_validate_domain_name', $is_valid, $domain, $mapping);

@@ -92,18 +92,19 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		parent::__construct( $plugin );
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
 
-//		add_action('plugins_loaded', '');
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
-		$this->_add_action( 'template_redirect',       'force_schema', 11 );
+		$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
+		$this->_add_action( 'template_redirect',       'force_schema', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
+
+		$this->_add_filter("post_link",                 'exclude_page_links', 10, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
-			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'site_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
@@ -476,10 +477,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// parse current url
 		$components = self::_parse_mb_url( $url );
-		if ( empty( $components['host'] ) ) {
+
+		if ( empty( $components['host'] ) || $this->is_excluded_by_url( $url ) ) {
 			return $url;
 		}
-
 
 
 		// find mapped domain
@@ -489,6 +490,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$components['host'] = $mapped_domain;
+		$components['path'] = "/" . $path;
 
 		return self::_build_url( $components );
 	}
@@ -515,9 +517,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$domain = $this->_get_mapped_domain();
-		if ( !$domain ) {
-			return $url;
-		}
+
+
 
 
 
@@ -526,7 +527,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$protocol = 'https://';
 		}
 
-		return untrailingslashit( $protocol . $domain . $current_site->path );
+		$destination = untrailingslashit( $protocol . $domain . $current_site->path );
+		if ( !$domain || $this->is_excluded_by_url( $url ) ) {
+			return $this->unswap_url( $destination ) ;
+		}
+
+		return $destination;
 	}
 
 	/**
@@ -648,7 +654,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 
 		}
-
+//var_dump( self::force_ssl_on_mapped_domain());die;
 		/**
 		 * Force mapped domains
 		 */
@@ -749,5 +755,85 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function is_excluded_by_id( $post_id ){
 		return in_array( $post_id, self::get_excluded_pages( true )  );
+	}
+
+	/**
+	 * Checks if the given url is ( should be ) excluded
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $url
+	 *
+	 * @return bool
+	 */
+	function is_excluded_by_url( $url ){
+		if( $url === false ) return true;
+		if( empty( $url ) ) return false;
+		$excluded_ids =  self::get_excluded_pages( true );
+		$permalink_structure = get_option("permalink_structure");
+		$comps = parse_url( $url );
+		if( empty( $permalink_structure ) )
+		{
+			if( isset( $comps['query'] ) && $query = $comps['query'] ){
+				foreach( $excluded_ids as $excluded_id ){
+					if( $query === "page_id=" . $excluded_id ) return true;
+				}
+			}
+
+			return false;
+		}
+
+
+
+		if( isset( $comps['path'] ) && $path = $comps['path'] )
+		{
+			foreach( $excluded_ids as $excluded_id ){
+				$post = get_post( $excluded_id );
+
+				if( strrpos( $path, $post->post_name ) ) return true;
+			}
+		}
+
+
+		return false;
+	}
+
+
+	/**
+	 * Excludes page permalinks
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $permalink
+	 * @param $post
+	 * @param $leavename
+	 *
+	 * @return string
+	 */
+	function exclude_page_links( $permalink, $post, $leavename  ){
+		if( !is_a($post, WP_Post)) return $permalink;
+
+		if( $this->is_excluded_by_id( $post->ID ) ){
+			return $this->unswap_url( $permalink );
+		}
+		return $permalink;
+	}
+
+	/**
+	 * Forces excluded pages to land on the main domain
+	 *
+	 * @since 4.3.0
+	 */
+	function force_page_exclusion(){
+		global $post;
+
+		if( !is_a($post, WP_Post)) return;
+
+		if( $this->is_excluded_by_id( $post->ID ) &&  $this->is_mapped_domain() ){
+			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
+			$current_url = $this->unswap_url( $current_url );
+			wp_redirect( $current_url );
+			die;
+		}
 	}
 }

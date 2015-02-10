@@ -169,7 +169,8 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
 		$scheme = strtolower( trim( filter_input( INPUT_POST, 'scheme' ) ) );
         $domain = Domainmap_Punycode::encode( $domain );
-		if ( $this->_validate_domain_name( $domain, true ) ) {
+		$is_valid = $this->_validate_domain_name( $domain, true );
+		if ( $is_valid ) {
 
 			// check if mapped domains are 0 or multi domains are enabled
 			$count = $this->_get_domains_count();
@@ -216,7 +217,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				$hide_form = true;
 			}
 		} else {
-			$message = __( 'Domain name is invalid.', 'domainmap' );
+			if( $is_valid === false ){
+				$message = __( 'Domain name is invalid.', 'domainmap' );
+			}else{
+				$message = __( 'Domain name is prohibited.', 'domainmap' );
+			}
 		}
 
 		wp_send_json_error( array(
