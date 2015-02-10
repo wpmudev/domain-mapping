@@ -289,6 +289,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	private function _save_excluded_pages()	{
 		if( isset( $_POST['dm-save-exluded-pages'] ) && wp_verify_nonce($nonce = filter_input( INPUT_POST, "_save-exluded-pages" ), "save-exluded-pages") ){
 			update_option( "dm_excluded_pages", strip_tags($_POST['dm_excluded_pages']) );
+			update_option( "dm_ssl_forced_pages", strip_tags($_POST['dm_ssl_forced_pages']) );
 		}
 	}
 }

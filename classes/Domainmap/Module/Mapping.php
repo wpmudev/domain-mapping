@@ -737,12 +737,29 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public static function get_excluded_pages( $return_array = false ){
 		$excluded_pages = get_option( "dm_excluded_pages", "");
 		if( $return_array ){
-			return array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
+			return $excluded_pages === "" ? array() :  array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
 		}
 
 		return $excluded_pages;
 	}
 
+	/**
+	 * Returns ssl forced pages
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_ssl_forced_pages( $return_array = false ){
+		$forced_pages = get_option( "dm_ssl_forced_pages", "");
+		if( $return_array ){
+			return  $forced_pages == "" ? array() :  array_map("intval", array_map("trim", explode(",", $forced_pages)) );
+		}
+
+		return $forced_pages;
+	}
 
 	/**
 	 * Checks to see if the given page should be excluded from mapping
@@ -835,5 +852,18 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			wp_redirect( $current_url );
 			die;
 		}
+	}
+
+	/**
+	 * Checks to see if the given page should be forced to https
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $post_id
+	 *
+	 * @return bool
+	 */
+	function is_ssl_forced_by_id( $post_id ){
+		return in_array( $post_id, self::get_ssl_forced_pages( true )  );
 	}
 }

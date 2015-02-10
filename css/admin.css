@@ -816,17 +816,24 @@ table.domains td.column-actions a{
 .dm_excluded_page:nth-child(2n){
     background: #fff;
 }
-.column-exclude{
-    width: 50px;
+.column-exclude, .column-force_ssl{
+    width: 55px;
+}
+.column-force_ssl{
+    width: 65px;
 }
 #dm_excluded_pages_search_spinner{
-    margin-left: 150px;
+    margin-left: 220px;
     float: left;
-    margin-top: 40px;
+    margin-top: 38px;
     position: absolute;
 }
-.dm_excluded_pages_label{
+.dm_excluded_pages_label,
+.dm_ssl_forced_pages_label{
     margin-top: 5px;
     display: block;
     float: left;
+}
+.dm_ssl_forced_pages_label{
+    margin-left: 25px;
 }

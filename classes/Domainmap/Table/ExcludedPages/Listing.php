@@ -32,6 +32,7 @@
 class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 	private $_excluded_pages_array;
+	private $_ssl_forced_pages_array;
 
 	function __construct( $args = array()  ){
 		parent::__construct( array_merge( array(
@@ -43,6 +44,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 		), $args ) );
 
 		$this->_excluded_pages_array = Domainmap_Module_Mapping::get_excluded_pages(true);
+		$this->_ssl_forced_pages_array = Domainmap_Module_Mapping::get_ssl_forced_pages(true);
 	}
 
 
@@ -56,6 +58,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	public function get_columns() {
 		$cols =  array(
 			'exclude'    => __( 'Exclude', domain_map::Text_Domain ),
+			'force_ssl'    => __( 'Force ssl', domain_map::Text_Domain ),
 			'title'    => __( 'Title', domain_map::Text_Domain )
 		);
 
@@ -110,6 +113,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	}
 
 	/**
+	 * Renders exclude columns
 	 *
 	 * @since 4.3.0
 	 * @param $page WP_Post
@@ -122,7 +126,20 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	}
 
 	/**
+	 * Renders exclude columns
 	 *
+	 * @since 4.3.0
+	 * @param $page WP_Post
+	 */
+	public function column_force_ssl( $page ) {
+		$is_excluded = in_array( $page->ID, $this->_ssl_forced_pages_array );
+		?>
+		<input <?php checked($is_excluded, true); ?> type="checkbox" data-id="<?php echo $page->ID ?>" class="dm_ssl_forced_page_checkbox" value="<?php echo $page->ID ?>"/>
+		<?php
+	}
+
+	/**
+	 * Renders title columns
 	 * @since 4.3.0
 	 * @param $page WP_Post
 	 */
@@ -134,6 +151,10 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 
 	/**
+	 * Renders single row
+	 *
+	 * @since 4.3.0
+	 *
 	 * @param WP_Post $page
 	 */
 	public function single_row( $page ) {
@@ -145,7 +166,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	/**
 	 * Returns associative array with the list of bulk actions available on this table.
 	 *
-	 * @since 4.2.0
+	 * @since 4.3.0
 	 *
 	 * @access protected
 	 * @return array The associative array of bulk actions.
@@ -184,7 +205,9 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 					</div>
 				</form>
 			<span class="spinner" id="dm_excluded_pages_search_spinner"></span>
-			<div class="displaying-num dm_excluded_pages_label"><span><?php echo count( $this->_excluded_pages_array ); ?></span> excluded</div>
+			<div class="displaying-num dm_excluded_pages_label"><span><?php echo count( $this->_excluded_pages_array ); ?></span> <?php _e("excluded", domain_map::Text_Domain); ?></div>
+			&nbsp;
+			<div class="displaying-num dm_ssl_forced_pages_label"><span><?php echo count( $this->_ssl_forced_pages_array ); ?></span> <?php _e("ssl forced", domain_map::Text_Domain); ?></div>
 		<?php endif;?>
 		<?php if ( 'bottom' == $which ):?>
 			<form  method="post">
@@ -192,6 +215,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 				<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
 				<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
 			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
+			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
 			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 			</form>
 		<?php endif;?>
@@ -203,7 +227,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	/**
 	 * Handle an incoming ajax request (called from admin-ajax.php)
 	 *
-	 * @since 3.1.0
+	 * @since 4.3.0
 	 * @access public
 	 */
 	function ajax_response() {

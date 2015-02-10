@@ -601,8 +601,8 @@ class domain_map {
 
 	function domain_mapping_post_content( $post_content ) {
 		static $orig_urls = array();
-
-		if ( !isset( $orig_urls[$this->db->blogid] ) ) {
+		$blog_id = get_current_blog_id();
+		if ( !isset( $orig_urls[$blog_id] ) ) {
 
             /**
              * Filter the original url
@@ -612,12 +612,12 @@ class domain_map {
              */
             $orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
 			// switch the url to use the correct http or https and store the url in the cache
-			$orig_urls[$this->db->blogid] = is_ssl()
+			$orig_urls[$blog_id] = is_ssl()
 				? str_replace( "http://", "https://", $orig_url )
 				: str_replace( "https://", "http://", $orig_url );
 		} else {
 			// we have a cached entry so just return that
-			$orig_url = $orig_urls[$this->db->blogid];
+			$orig_url = $orig_urls[$blog_id];
 		}
 
         /**

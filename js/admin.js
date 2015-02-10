@@ -613,30 +613,34 @@
         }
     });
 
-    var excluded_pages = {
-        remove_page : function(page_id){
-            var $field = $("#dm_exluded_pages_hidden_field"),
-                excluded_pages = $field.val().replace(/ /g,'').split(","),
+    var pages_checkbox = function(field_selector, label_selector  ){
+        this.$field = $(field_selector);
+        this.$label = $(label_selector);
+
+        this.remove_page = function(page_id){
+            var excluded_pages = this.$field.val().replace(/ /g,'').split(","),
                 page_id_index = excluded_pages.indexOf(page_id.toString());
 
             excluded_pages.splice(page_id_index, 1);
-            $field.val( excluded_pages.join(",") );
+            this.$field.val( excluded_pages.join(",") );
             this.update_label();
-        },
-        add_page: function(page_id){
-            var $field = $("#dm_exluded_pages_hidden_field"),
-                excluded_pages = $.isEmptyObject( $field.val() ) ? [] : $field.val().replace(/ /g,'').split(",");
-            $field.val( excluded_pages.concat([page_id]).join(",") );
+        };
+
+        this.add_page =  function(page_id){
+            var excluded_pages = $.isEmptyObject( this.$field.val() ) ? [] : this.$field.val().replace(/ /g,'').split(",");
+            this.$field.val( excluded_pages.concat([page_id]).join(",") );
             this.update_label();
-        },
-        update_label: function(){
-            var $label = $(".dm_excluded_pages_label span"),
-                ids  = $("#dm_exluded_pages_hidden_field").val().trim() == "" ? [] : $("#dm_exluded_pages_hidden_field").val().trim().split(",");
+        };
 
-            $label.text( ids.length  );
+        this.update_label = function(){
+            var ids  = this.$field.val().trim() == "" ? [] : this.$field.val().trim().split(",");
 
+            this.$label.text( ids.length  );
         }
     };
+
+    var excluded_pages = new pages_checkbox( "#dm_exluded_pages_hidden_field", ".dm_excluded_pages_label span" );
+    var ssl_forced_pages = new pages_checkbox( "#dm_ssl_forced_pages_hidden_field", ".dm_ssl_forced_pages_label span" );
 
     $(document).on("change", ".dm_excluded_page_checkbox", function(){
 
@@ -650,6 +654,20 @@
         }
 
     });
+
+    $(document).on("change", ".dm_ssl_forced_page_checkbox", function(){
+
+        var $this = $(this),
+            id = $this.data("id");
+
+        if( $this.is(":checked") ){
+            ssl_forced_pages.add_page( id );
+        }else{
+            ssl_forced_pages.remove_page( id );
+        }
+
+    });
+
 })(jQuery);
 
 
