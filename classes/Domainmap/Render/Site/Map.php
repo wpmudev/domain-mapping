@@ -272,10 +272,13 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		 */
 		?>
 
-		<h4>
-			<span class="dashicons-before dashicons-admin-comments" title="<?php _e("Pages selected here will not be mapped and can optionally force https", domain_map::Text_Domain); ?>"></span>
+		<h4  title="<?php _e("Pages selected here will not be mapped and can optionally force https", domain_map::Text_Domain); ?>">
+			<span class="dashicons-before dashicons-admin-comments"></span>
 			<?php _e("Excluded pages: ", domain_map::Text_Domain); ?>
 		</h4>
+		<p class="description">
+			<?php _e('Pages selected here will not be mapped and can optionally force https, If you set the domain to use https, the following "force/unforce SSL will be ignored" ', domain_map::Text_Domain); ?>
+		</p>
 		<?php
 		$table = new Domainmap_Table_ExcludedPages_Listing();
 		$table->prepare_items();

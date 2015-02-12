@@ -658,9 +658,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		/**
-		 * Force mapped domains
+		 * Force single page
 		 */
-		if(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 ){
+		if( $post instanceof WP_Post &&  !is_admin() && $this->is_ssl_forced_by_id( $post->ID ) && !is_ssl() ){
+			wp_redirect( $current_url_secure  );
+			exit();
+		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !$this->is_ssl_forced_by_id( $post->ID ) ){
+			/**
+			 * Force mapped domains
+			 */
 			if( self::force_ssl_on_mapped_domain() === 1 && !is_ssl()  ){ // force https
 				wp_redirect( $current_url_secure  );
 				exit();
@@ -670,13 +676,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
-		/**
-		 * Force single page
-		 */
-		if( $post instanceof WP_Post &&  !is_admin() && $this->is_ssl_forced_by_id( $post->ID ) ){
-			wp_redirect( $current_url_secure  );
-			exit();
-		}
+
+
+
 	}
 
 	/**
