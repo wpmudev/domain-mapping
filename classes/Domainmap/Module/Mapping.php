@@ -99,7 +99,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
-		$this->_add_filter("post_link",                 'exclude_page_links', 10, 3);
+		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
+		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
@@ -613,6 +614,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses wp_redirect
 	 */
 	public function force_schema(){
+		global $post;
 		if( $this->is_original_domain() && !is_ssl()  ){
 			/**
 			 * Login and Admin pages
@@ -654,7 +656,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 
 		}
-//var_dump( self::force_ssl_on_mapped_domain());die;
+
 		/**
 		 * Force mapped domains
 		 */
@@ -668,6 +670,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
+		/**
+		 * Force single page
+		 */
+		if( $post instanceof WP_Post &&  !is_admin() && $this->is_ssl_forced_by_id( $post->ID ) ){
+			wp_redirect( $current_url_secure  );
+			exit();
+		}
 	}
 
 	/**
@@ -784,6 +793,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function is_excluded_by_url( $url ){
+
 		if( $url === false ) return true;
 		if( empty( $url ) ) return false;
 		$excluded_ids =  self::get_excluded_pages( true );
@@ -822,15 +832,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @since 4.3.0
 	 *
 	 * @param $permalink
-	 * @param $post
+	 * @param $post_id
 	 * @param $leavename
 	 *
 	 * @return string
 	 */
-	function exclude_page_links( $permalink, $post, $leavename  ){
-		if( !is_a($post, WP_Post)) return $permalink;
+	function exclude_page_links( $permalink, $post_id, $leavename  ){
 
-		if( $this->is_excluded_by_id( $post->ID ) ){
+		if( empty($post_id) ) return $permalink;
+
+		if( $this->is_excluded_by_id( $post_id) ){
 			return $this->unswap_url( $permalink );
 		}
 		return $permalink;
@@ -865,5 +876,28 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function is_ssl_forced_by_id( $post_id ){
 		return in_array( $post_id, self::get_ssl_forced_pages( true )  );
+	}
+
+
+	/**
+	 * SSL force page permalinks
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $permalink
+	 * @param $post_id
+	 * @param $leavename
+	 *
+	 * @return string
+	 */
+	function ssl_force_page_links( $permalink, $post_id, $leavename  ){
+
+		if( empty( $post_id )) return $permalink;
+
+		if( $this->is_ssl_forced_by_id( $post_id ) ){
+			$permalink = set_url_scheme( $permalink, "https" ) ;
+			return  $permalink;
+		}
+		return $permalink;
 	}
 }

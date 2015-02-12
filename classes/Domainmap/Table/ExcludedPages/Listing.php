@@ -144,7 +144,8 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	 * @param $page WP_Post
 	 */
 	public function column_title( $page ) {
-		printf( '<a target="_blank" href="%1$s">%2$s</a>',  get_permalink( $page->ID ) , $page->post_title  );
+		$url = get_permalink( $page->ID );
+		printf( '<a target="_blank" href="%1$s">%2$s</a>',  $url , $page->post_title  );
 	}
 
 
