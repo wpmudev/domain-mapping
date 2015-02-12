@@ -271,7 +271,11 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		 * @param $page WP_Post
 		 */
 		?>
-		<h4><?php _e("Excluded pages: ", domain_map::Text_Domain); ?></h4>
+
+		<h4>
+			<span class="dashicons-before dashicons-admin-comments" title="<?php _e("Pages selected here will not be mapped and can optionally force https", domain_map::Text_Domain); ?>"></span>
+			<?php _e("Excluded pages: ", domain_map::Text_Domain); ?>
+		</h4>
 		<?php
 		$table = new Domainmap_Table_ExcludedPages_Listing();
 		$table->prepare_items();

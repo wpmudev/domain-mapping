@@ -837,3 +837,6 @@ table.domains td.column-actions a{
 .dm_ssl_forced_pages_label{
     margin-left: 25px;
 }
+.wp-list-table.excludedpages tbody td{
+    border-bottom: 1px dashed #dfdfdf;
+}
