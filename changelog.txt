@@ -1,4 +1,20 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.3.0 ==
+* Added the ability to disable sub-domains of the original domain to be used as sub-site’s primary (mapped) domain
+* Added the ability to prohibit certain domains and their sub-domains
+* Added the ability to exclude some pages to be mapped
+* Added the ability to force https for each single page
+* Added not mapping to primary (mapped) domain when it’s not valid yet.
+* Added ability to define custom sunrise file
+* Added ability to include SSO asynchronously
+* Fixed bug in mapped domain schema forcing
+* Fixed wrong urls in the admin of sub-site when the sub-site has mapped domain
+* Fixed problem in sunrise when IP addressed is used instead of a domain name for the main site
+* Fixed bug when frontend is forced to  use https and redirect type is set to force primary domain
+* Fixed bug when front-end is to https forced in the main site’s settings page and it’s allowing both https and http for the mapped domain
+* Fixed problem in customizer when mapped domain is used with https
+
+
 == 4.2.0.6 ==
 * Fixed: bug in mapped domain schema forcing
 

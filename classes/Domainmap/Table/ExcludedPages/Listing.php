@@ -31,7 +31,20 @@
 
 class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
+	/**
+	 * Excluded pages' id in array format
+	 *
+	 * @since 4.3.0
+	 * @var array
+	 */
 	private $_excluded_pages_array;
+
+	/*
+	 * SSL forced pages' id in array format
+	 *
+	 * $since 4.3.0
+	 * @var array
+	 */
 	private $_ssl_forced_pages_array;
 
 	function __construct( $args = array()  ){
@@ -51,7 +64,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	/**
 	 * Returns table columns.
 	 *
-	 * @since 4.2.0
+	 * @since 4.3.0
 	 *
 	 * @return array The array of table columns to display.
 	 */
@@ -66,6 +79,13 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	}
 
 
+	/**
+	 * Returns sortable columns
+	 *
+	 * @since 4.3.0
+	 *
+	 * @return array
+	 */
 	protected function get_sortable_columns() {
 		return array(
 			'title'=> "title"
@@ -75,7 +95,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	/**
 	 * Fetches records from database.
 	 *
-	 * @since 4.2.0
+	 * @since 4.3.0
 	 *
 	 * @global wpdb $wpdb The database connection.
 	 */
