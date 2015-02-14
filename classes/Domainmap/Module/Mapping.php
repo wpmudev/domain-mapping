@@ -425,7 +425,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return array The array of URL components.
 	 */
 	private static function _parse_mb_url( $url ) {
-		return array_map( 'urldecode', parse_url( preg_replace_callback( '%[^:/?#&=\.]+%usD', __CLASS__ . '::_parse_mb_url_urlencode', $url ) ) );
+		return array_map( 'urldecode', (array) parse_url( preg_replace_callback( '%[^:/?#&=\.]+%usD', __CLASS__ . '::_parse_mb_url_urlencode', $url ) ) );
 	}
 
 	/**
@@ -519,10 +519,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$domain = $this->_get_mapped_domain();
 
-
-
-
-
 		$protocol = 'http://';
 		if ( self::$_force_protocol && is_ssl() ) {
 			$protocol = 'https://';
@@ -530,7 +526,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$destination = untrailingslashit( $protocol . $domain . $current_site->path );
 		if ( !$domain || $this->is_excluded_by_url( $url ) ) {
-			return $this->unswap_url( $destination ) ;
+			return $protocol .  $current_site->domain . $current_site->path;
 		}
 
 		return $destination;
