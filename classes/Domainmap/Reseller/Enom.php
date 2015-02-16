@@ -193,7 +193,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$options[self::RESELLER_ID]['sslverification'] = (int)filter_input( INPUT_POST, 'map_reseller_enom_sslverification', FILTER_VALIDATE_BOOLEAN );
 
 		// validate credentials
-		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] == false )
+		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'], $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'] ) && $options[self::RESELLER_ID]['valid'] == false )
 			? $this->_validate_credentials( $options[self::RESELLER_ID]['uid'], $options[self::RESELLER_ID]['pwd'], $options[self::RESELLER_ID]['environment'] )
 			: true;
 	}

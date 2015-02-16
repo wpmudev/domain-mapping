@@ -214,7 +214,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
         $gateways = array();
         $options = Domainmap_Plugin::instance()->get_options();
-        if( $options[self::RESELLER_ID]['valid'] ){
+        if( isset( $options[self::RESELLER_ID] ) && $options[self::RESELLER_ID]['valid'] ){
             $object = $this->exec_command( self::COMMAND_GET_GATEWAYS );
             if( !is_wp_error( $object ) ){
                 foreach( $object->paymentmethods->paymentmethod as $method ) {

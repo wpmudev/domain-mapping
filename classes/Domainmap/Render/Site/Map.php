@@ -28,7 +28,6 @@
  *
  * @since 4.0.0
  */
-include_once "../../Table/ExcludedPages/Listing.php";
 class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 	/**

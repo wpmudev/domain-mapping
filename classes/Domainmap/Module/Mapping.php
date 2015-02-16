@@ -853,7 +853,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function force_page_exclusion(){
 		global $post;
 
-		if( !is_a($post, WP_Post)) return;
+		if( !is_a($post, "WP_Post")) return;
 
 		if( $this->is_excluded_by_id( $post->ID ) &&  $this->is_mapped_domain() ){
 			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
