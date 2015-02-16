@@ -211,8 +211,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		?><li>
       <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle forced schema', 'domainmap' ) ?>"></a>
 
-      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
+      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ) ?>
 			</a>
 
       <?php self::render_health_column( $row->domain ) ?>
