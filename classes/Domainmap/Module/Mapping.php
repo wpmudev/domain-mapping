@@ -188,6 +188,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if( isset( $post ) && $this->is_excluded_by_id( $post->ID ) ) return;
 
+		if( !isset( $post ) && $this->is_excluded_by_request() ) return;
+
 		switch ( $redirect_to ) {
 			case 'mapped':
 				$this->redirect_to_mapped_domain( $force_ssl );
@@ -751,6 +753,35 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/**
+	 * Returns excluded page urls
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_excluded_page_urls( $return_array = false ){
+		$excluded_page_urls = get_option( "dm_excluded_page_urls", "");
+
+		if( $return_array ){
+			if( $excluded_page_urls === "" )
+				return array();
+
+			$urls = array_map("trim", explode(",", $excluded_page_urls));
+			$parseds = array_map("parse_url", $urls);
+			$paths = array();
+			foreach( $parseds as $parsed ){
+				if( isset( $parsed['path'] ) )
+					$paths[] = ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+			}
+			return $paths;
+		}
+
+		return $excluded_page_urls;
+	}
+
+	/**
 	 * Returns ssl forced pages
 	 *
 	 * @since 4.3.0
@@ -773,11 +804,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 *
 	 * @since 4.3.0
 	 *
-	 * @param $post_id
+	 * @param $post_id int | null
 	 *
 	 * @return bool
 	 */
-	function is_excluded_by_id( $post_id ){
+	function is_excluded_by_id( $post_id = null ){
+		if( is_null( $post_id ) ) return false;
 		return in_array( $post_id, self::get_excluded_pages( true )  );
 	}
 
@@ -824,6 +856,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 
+	function is_excluded_by_request(){
+		global $wp;
+
+		if( !isset( $wp->request ) ) return false;
+
+		$excluded_urls = $this->get_excluded_page_urls(true);
+		return in_array( $wp->request, $excluded_urls );
+	}
 	/**
 	 * Excludes page permalinks
 	 *
@@ -853,9 +893,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function force_page_exclusion(){
 		global $post;
 
-		if( !is_a($post, "WP_Post")) return;
-
-		if( $this->is_excluded_by_id( $post->ID ) &&  $this->is_mapped_domain() ){
+		if( $this->is_mapped_domain()  &&  ( $this->is_excluded_by_id( $post->ID ) || $this->is_excluded_by_request() ) ){
 			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
 			$current_url = $this->unswap_url( $current_url );
 			wp_redirect( $current_url );

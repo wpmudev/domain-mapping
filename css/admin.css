@@ -833,10 +833,22 @@ table.domains td.column-actions a{
     margin-top: 5px;
     display: block;
     float: left;
+    margin-left: 10px;
 }
 .dm_ssl_forced_pages_label{
-    margin-left: 25px;
+    margin-left: 15px;
 }
 .wp-list-table.excludedpages tbody td{
     border-bottom: 1px dashed #dfdfdf;
+}
+.domain-mapping-or-urls-title{
+    margin-top: 0;
+}
+#save-exluded-pages{
+}
+#dm_exlcued_page_urls{
+    width: 50%;
+}
+#dm_save_excluded_pages_form{
+    padding: 10px;
 }

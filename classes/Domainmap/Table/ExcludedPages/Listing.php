@@ -103,7 +103,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 		parent::prepare_items();
 
-		$per_page = 15;
+		$per_page = 10;
 
 		$search_term = "";
 		if ( isset( $_REQUEST['s'] ) && !empty( $_REQUEST['s'] )) {
@@ -225,20 +225,14 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 
 					</div>
 				</form>
+			<br/>
 			<span class="spinner" id="dm_excluded_pages_search_spinner"></span>
 			<div class="displaying-num dm_excluded_pages_label"><span><?php echo count( $this->_excluded_pages_array ); ?></span> <?php _e("excluded", domain_map::Text_Domain); ?></div>
 			&nbsp;
 			<div class="displaying-num dm_ssl_forced_pages_label"><span><?php echo count( $this->_ssl_forced_pages_array ); ?></span> <?php _e("ssl forced", domain_map::Text_Domain); ?></div>
 		<?php endif;?>
 		<?php if ( 'bottom' == $which ):?>
-			<form  method="post">
-				<input type="hidden" name="page" value="domainmapping"/>
-				<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
-				<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
-			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
-			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
-			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
-			</form>
+
 		<?php endif;?>
 
 
