@@ -105,7 +105,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		$reseller = $this->_plugin->get_reseller();
 		$tabs = array( 'mapping' => __( 'Map domain', 'domainmap' ) );
 
-		if ( $reseller && $reseller->is_valid() ) {
+		if ( $reseller && $reseller->is_valid() && count( $reseller->get_tld_list() ) ) {
 			$tabs['purchase'] = __( 'Purchase domain', 'domainmap' );
 		}
 
