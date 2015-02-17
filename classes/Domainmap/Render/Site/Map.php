@@ -30,6 +30,10 @@
  */
 class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
+	function __construct($tabs, $active, $data){
+		parent::__construct($tabs, $active, $data);
+		$this->_save_excluded_pages();
+	}
 	/**
 	 * Determines whether ability to map multi domains is enabled or not.
 	 *
@@ -265,7 +269,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 *
 	 */
 	private function _render_excluded_pages(){
-		$this->_save_excluded_pages();
+
 		/**
 		 * @param $page WP_Post
 		 */
@@ -284,7 +288,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		$table->prepare_items();
 		$table->display();
 		?>
-		<form  method="post" id="dm_save_excluded_pages_form">
+		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo add_query_arg( 'noheader', 'true' ) ?>">
 			<input type="hidden" name="page" value="domainmapping"/>
 			<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
 			<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
@@ -300,8 +304,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 		</form>
 		<?php
-	}
 
+	}
 
 	/**
 	 * Updates excluded pages
@@ -313,7 +317,13 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			update_option( "dm_excluded_pages", strip_tags($_POST['dm_excluded_pages']) );
 			update_option( "dm_excluded_page_urls", strip_tags($_POST['dm_exlcued_page_urls']) );
 			update_option( "dm_ssl_forced_pages", strip_tags($_POST['dm_ssl_forced_pages']) );
+			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				exit;
+			}
 		}
+
 	}
+
 }
 
