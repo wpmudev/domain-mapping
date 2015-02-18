@@ -907,7 +907,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	function is_ssl_forced_by_request(){
 		global $wp;
-var_dump($this->get_ssl_forced_page_urls(true));
+
 		if( !isset($wp) || !isset( $wp->request ) ) return false;
 		return in_array( $wp->request, $this->get_ssl_forced_page_urls(true) );
 	}
