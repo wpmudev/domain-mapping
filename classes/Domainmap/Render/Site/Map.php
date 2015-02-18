@@ -299,12 +299,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 				<?php _e('Add page urls bellow to have excluded:', domain_map::Text_Domain); ?>
 			</h4>
 			<textarea name="dm_excluded_page_urls" id="dm_excluded_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_excluded_page_urls()); ?></textarea>
+			<p class="description">
+				<?php _e('Please enter absolute URLs (starting with http:// or https://), URLs should be comma separated', domain_map::Text_Domain); ?>
+			</p>
+			<br/>
+			<br/>
 			<h4 class="domain-mapping-or-urls-title">
 				<?php _e('Add page urls bellow to force https:', domain_map::Text_Domain); ?>
 			</h4>
 			<textarea name="dm_ssl_forced_page_urls" id="dm_ssl_forced_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_ssl_forced_page_urls()); ?></textarea>
 			<p class="description">
-				<?php _e('Separate URLs with comma', domain_map::Text_Domain); ?>
+				<?php _e('Please enter absolute URLs (starting with http:// or https://), URLs should be comma separated', domain_map::Text_Domain); ?>
 			</p>
 			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 		</form>

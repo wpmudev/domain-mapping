@@ -53,7 +53,7 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 					<input type="hidden" id="card_type" name="card_type">
 
 					<p class="domainmapping-info"><?php printf(
-						__( 'You are about to purchase domain name %s and pay %s for 1 year of usage. Please, fill in the form below and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
+						__( 'You are about to purchase domain name %s and pay %s for 1 year of usage. Please, fill in the form bellow and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
 						'<b>' . esc_html( strtoupper( $this->domain ) ) . '</b>',
 						'<b>' . esc_html( $this->price ) . '</b>'
 					) ?></p>

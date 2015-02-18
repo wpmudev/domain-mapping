@@ -50,7 +50,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
 					<input type="hidden" name="tld" value="<?php echo esc_attr( $this->tld ) ?>">
 
 					<p class="domainmapping-info"><?php printf(
-						__( 'You are about to order domain name %s for the selected period. Please, confirm the period below and click on order button.', 'domainmap' ),
+						__( 'You are about to order domain name %s for the selected period. Please, confirm the period bellow and click on order button.', 'domainmap' ),
 						'<b>' . esc_html( strtoupper( $this->domain ) ) . '</b>',
 						'<b>' . esc_html( $this->price ) . '</b>'
 					) ?></p>

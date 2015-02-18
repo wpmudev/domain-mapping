@@ -182,7 +182,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<?php if ( !empty( $ips ) ) : ?>
 		<div class="domainmapping-info">
 			<p><?php
-				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
+				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field bellow:', 'domainmap' )
 			?></p>
 			<p>
 				<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
@@ -197,7 +197,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			</div>
 		</div>
 
-		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show the default text.' ) ?></p>
+		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area bellow to enter your instructions or leave it blank to show the default text.' ) ?></p>
 
 		<textarea name="map_instructions" class="widefat" cols="150" rows="5"><?php echo esc_textarea( $this->map_instructions ) ?></textarea><?php
 	}

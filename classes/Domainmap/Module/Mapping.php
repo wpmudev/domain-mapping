@@ -188,7 +188,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if( isset( $post ) && $this->is_excluded_by_id( $post->ID ) ) return;
 
-		if( !isset( $post ) && $this->is_excluded_by_request() ) return;
+		if( $this->is_excluded_by_request() ) return;
 
 		switch ( $redirect_to ) {
 			case 'mapped':
@@ -337,7 +337,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// Don't map if mapped domain is not healthy
 		$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
-		if( $health !== "1" ){
+		$map_verifydomain = $this->_plugin->get_option("map_verifydomain");
+		if( $health !== "1" && $map_verifydomain){
 			if( !$this->set_valid_transient($mapped_domain)  ) return true;
 		}
 
@@ -762,6 +763,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return array|mixed|void
 	 */
 	public static function get_excluded_page_urls( $return_array = false ){
+		global $current_blog;
 		$excluded_page_urls = get_option( "dm_excluded_page_urls", "");
 
 		if( $return_array ){
@@ -769,11 +771,17 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				return array();
 
 			$urls = array_map("trim", explode(",", $excluded_page_urls));
+
 			$parseds = array_map("parse_url", $urls);
 			$paths = array();
+
 			foreach( $parseds as $parsed ){
-				if( isset( $parsed['path'] ) )
-					$paths[] = ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+				if( isset( $parsed['path'] ) ){
+					$path =  ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+					$replacee = ltrim( $current_blog->path, '/\\');
+					$paths[] = str_replace($replacee, "", $path);
+				}
+
 			}
 			return $paths;
 		}
@@ -791,6 +799,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return array|mixed|void
 	 */
 	public static function get_ssl_forced_page_urls( $return_array = false ){
+		global $current_blog;
 		$excluded_page_urls = get_option( "dm_ssl_forced_page_urls", "");
 
 		if( $return_array ){
@@ -801,8 +810,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$parseds = array_map("parse_url", $urls);
 			$paths = array();
 			foreach( $parseds as $parsed ){
-				if( isset( $parsed['path'] ) )
-					$paths[] = ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+				if( isset( $parsed['path'] ) ){
+					$path =  ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+					$replacee = ltrim( $current_blog->path, '/\\');
+					$paths[] = str_replace($replacee, "", $path);
+				}
+
 			}
 			return $paths;
 		}
@@ -888,14 +901,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function is_excluded_by_request(){
 		global $wp;
 
-		if( !isset( $wp->request ) ) return false;
+		if( !isset( $wp ) || !isset( $wp->request ) ) return false;
 		return in_array( $wp->request, $this->get_excluded_page_urls(true) );
 	}
 
 	function is_ssl_forced_by_request(){
 		global $wp;
-
-		if( !isset( $wp->request ) ) return false;
+var_dump($this->get_ssl_forced_page_urls(true));
+		if( !isset($wp) || !isset( $wp->request ) ) return false;
 		return in_array( $wp->request, $this->get_ssl_forced_page_urls(true) );
 	}
 
