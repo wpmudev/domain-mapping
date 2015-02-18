@@ -846,7 +846,8 @@ table.domains td.column-actions a{
 }
 #save-exluded-pages{
 }
-#dm_exlcued_page_urls{
+#dm_excluded_page_urls,
+#dm_ssl_forced_page_urls{
     width: 50%;
 }
 #dm_save_excluded_pages_form{

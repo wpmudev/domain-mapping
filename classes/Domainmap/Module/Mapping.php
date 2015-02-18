@@ -658,10 +658,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		/**
 		 * Force single page
 		 */
-		if( $post instanceof WP_Post &&  !is_admin() && $this->is_ssl_forced_by_id( $post->ID ) && !is_ssl() ){
+		if( !is_admin() && ( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
 			wp_redirect( $current_url_secure  );
 			exit();
-		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !$this->is_ssl_forced_by_id( $post->ID ) ){
+		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) ){
 			/**
 			 * Force mapped domains
 			 */
@@ -782,6 +782,35 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/**
+	 * Returns excluded page urls
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_ssl_forced_page_urls( $return_array = false ){
+		$excluded_page_urls = get_option( "dm_ssl_forced_page_urls", "");
+
+		if( $return_array ){
+			if( $excluded_page_urls === "" )
+				return array();
+
+			$urls = array_map("trim", explode(",", $excluded_page_urls));
+			$parseds = array_map("parse_url", $urls);
+			$paths = array();
+			foreach( $parseds as $parsed ){
+				if( isset( $parsed['path'] ) )
+					$paths[] = ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+			}
+			return $paths;
+		}
+
+		return $excluded_page_urls;
+	}
+
+	/**
 	 * Returns ssl forced pages
 	 *
 	 * @since 4.3.0
@@ -808,7 +837,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 *
 	 * @return bool
 	 */
-	function is_excluded_by_id( $post_id = null ){
+	function is_excluded_by_id( $post_id ){
 		if( is_null( $post_id ) ) return false;
 		return in_array( $post_id, self::get_excluded_pages( true )  );
 	}
@@ -860,10 +889,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		global $wp;
 
 		if( !isset( $wp->request ) ) return false;
-
-		$excluded_urls = $this->get_excluded_page_urls(true);
-		return in_array( $wp->request, $excluded_urls );
+		return in_array( $wp->request, $this->get_excluded_page_urls(true) );
 	}
+
+	function is_ssl_forced_by_request(){
+		global $wp;
+
+		if( !isset( $wp->request ) ) return false;
+		return in_array( $wp->request, $this->get_ssl_forced_page_urls(true) );
+	}
+
 	/**
 	 * Excludes page permalinks
 	 *
@@ -911,6 +946,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function is_ssl_forced_by_id( $post_id ){
+		if( is_null( $post_id ) ) return false;
 		return in_array( $post_id, self::get_ssl_forced_pages( true )  );
 	}
 

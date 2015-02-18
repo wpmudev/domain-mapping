@@ -294,10 +294,15 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
 			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
 			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
+
 			<h4 class="domain-mapping-or-urls-title">
-				<?php _e('Or, add page urls bellow to have excluded', domain_map::Text_Domain); ?>
+				<?php _e('Add page urls bellow to have excluded:', domain_map::Text_Domain); ?>
 			</h4>
-			<textarea name="dm_exlcued_page_urls" id="dm_exlcued_page_urls"  rows="7"><?php echo Domainmap_Module_Mapping::get_excluded_page_urls(); ?></textarea>
+			<textarea name="dm_excluded_page_urls" id="dm_excluded_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_excluded_page_urls()); ?></textarea>
+			<h4 class="domain-mapping-or-urls-title">
+				<?php _e('Add page urls bellow to force https:', domain_map::Text_Domain); ?>
+			</h4>
+			<textarea name="dm_ssl_forced_page_urls" id="dm_ssl_forced_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_ssl_forced_page_urls()); ?></textarea>
 			<p class="description">
 				<?php _e('Separate URLs with comma', domain_map::Text_Domain); ?>
 			</p>
@@ -315,8 +320,9 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	private function _save_excluded_pages()	{
 		if( isset( $_POST['dm-save-exluded-pages'] ) && wp_verify_nonce($nonce = filter_input( INPUT_POST, "_save-exluded-pages" ), "save-exluded-pages") ){
 			update_option( "dm_excluded_pages", strip_tags($_POST['dm_excluded_pages']) );
-			update_option( "dm_excluded_page_urls", strip_tags($_POST['dm_exlcued_page_urls']) );
 			update_option( "dm_ssl_forced_pages", strip_tags($_POST['dm_ssl_forced_pages']) );
+			update_option( "dm_excluded_page_urls", strip_tags($_POST['dm_excluded_page_urls']) );
+			update_option( "dm_ssl_forced_page_urls", strip_tags($_POST['dm_ssl_forced_page_urls']) );
 			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
 				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
 				exit;
