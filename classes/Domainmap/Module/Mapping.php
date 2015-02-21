@@ -494,7 +494,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$components['host'] = $mapped_domain;
-		$components['path'] = "/" . $path;
+		$components['path'] = strpos($path, "/") !== 0 ?  "/" . $path : $path;
 
 		return self::_build_url( $components );
 	}
