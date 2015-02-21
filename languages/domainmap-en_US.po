@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2015-02-12 17:36+0330\n"
-"PO-Revision-Date: 2015-02-12 17:36+0330\n"
+"POT-Creation-Date: 2015-02-21 22:57+0330\n"
+"PO-Revision-Date: 2015-02-21 22:57+0330\n"
 "Last-Translator: Sam Najian <sam@incsub.com>\n"
 "Language-Team: Sam Najian <sam@incsub.com>\n"
 "Language: en_US\n"
@@ -104,7 +104,7 @@ msgid "Domain Mapping"
 msgstr ""
 
 #: classes/Domainmap/Module/Pages.php:106
-#: classes/Domainmap/Render/Site/Map.php:135
+#: classes/Domainmap/Render/Site/Map.php:138
 msgid "Map domain"
 msgstr ""
 
@@ -243,6 +243,7 @@ msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:60
 #: classes/Domainmap/Render/Network/Resellers.php:44
+#: classes/Domainmap/Render/Site.php:45
 msgid "Options updated."
 msgstr ""
 
@@ -298,7 +299,7 @@ msgstr ""
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
-"address(es) to enter in the <b>Server IP Address</b> field below:"
+"address(es) to enter in the <b>Server IP Address</b> field bellow:"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:194
@@ -308,8 +309,8 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:200
 msgid ""
 "If you want to display your own instructions on the Domain Mapping page, "
-"then use the text area below to enter your instructions or leave it blank to "
-"show the default text."
+"then use the text area bellow to enter your instructions or leave it blank "
+"to show the default text."
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:213
@@ -337,8 +338,8 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:267
 #: classes/Domainmap/Render/Network/Options.php:312
 #: classes/Domainmap/Render/Network/Options.php:344
-#: classes/Domainmap/Table/MappedDomains/Listing.php:216
-#: classes/Domainmap/Table/MappedDomains/Listing.php:227
+#: classes/Domainmap/Table/MappedDomains/Listing.php:214
+#: classes/Domainmap/Table/MappedDomains/Listing.php:225
 msgid "Yes"
 msgstr ""
 
@@ -346,8 +347,8 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:313
 #: classes/Domainmap/Render/Network/Options.php:345
 #: classes/Domainmap/Render/Network/Options.php:370
-#: classes/Domainmap/Table/MappedDomains/Listing.php:216
-#: classes/Domainmap/Table/MappedDomains/Listing.php:227
+#: classes/Domainmap/Table/MappedDomains/Listing.php:214
+#: classes/Domainmap/Table/MappedDomains/Listing.php:225
 msgid "No"
 msgstr ""
 
@@ -468,7 +469,7 @@ msgstr ""
 #, php-format
 msgid ""
 "You are about to purchase domain name %s and pay %s for 1 year of usage. "
-"Please, fill in the form below and click on purchase button. Pay attention "
+"Please, fill in the form bellow and click on purchase button. Pay attention "
 "that all fields marked with red asterisk are required and has to be filled "
 "with appropriate information."
 msgstr ""
@@ -730,8 +731,8 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:57
 msgid ""
 "You are about to register for a new eNom account. Please, fill in the form "
-"below and click on the register button. Pay attention that all fields marked "
-"with a red asterisk are required and must be filled with appropriate "
+"bellow and click on the register button. Pay attention that all fields "
+"marked with a red asterisk are required and must be filled with appropriate "
 "information."
 msgstr ""
 
@@ -801,9 +802,9 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:112
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:93
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:99
 #: classes/Domainmap/Render/Reseller/WHMCS/Register.php:106
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:107
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:113
 msgid "Password:"
 msgstr ""
 
@@ -925,20 +926,26 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:77
 msgid ""
+"Warning: you haven't entered any API credentials, the purchase domain tab "
+"will not show till you've successfully saved your API credentials"
+msgstr ""
+
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:83
+msgid ""
 "Looks like your credentials are invalid. Please, check the errors sent by "
 "eNom server:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:89
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:95
 msgid "Account id:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:107
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:202
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:113
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:208
 msgid "Select payment gateway:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:111
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:117
 msgid ""
 "You use eNom credit card processing service. Pay attention that this service "
 "is available only to resellers who have entered into a credit card "
@@ -946,38 +953,38 @@ msgid ""
 "on your server to enable these payments."
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:138
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:144
 msgid "Test environment"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:139
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:145
 msgid "Production environment"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:142
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:148
 msgid "Select environment:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:144
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:150
 msgid ""
 "Select an environment which you want to use. Use test environment to test "
 "your reseller account and production one when you will be ready to sell "
 "domains to your users."
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:169
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:175
 msgid "Enable SSL verification"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:170
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:176
 msgid "Disable SSL verification"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:173
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:179
 msgid "SSL Certificate Verification:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/Enom/Settings.php:177
+#: classes/Domainmap/Render/Reseller/Enom/Settings.php:183
 #, php-format
 msgid ""
 "If you have a list of %scertificate authorities%s installed on your web "
@@ -995,7 +1002,7 @@ msgstr ""
 #, php-format
 msgid ""
 "You are about to order domain name %s for the selected period. Please, "
-"confirm the period below and click on order button."
+"confirm the period bellow and click on order button."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:99
@@ -1018,7 +1025,7 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/WHMCS/Register.php:49
 msgid ""
 "You are about to register for a new WHMCS client account. Please, fill in "
-"the form below and click on the register button. Pay attention that all "
+"the form bellow and click on the register button. Pay attention that all "
 "fields marked with a red asterisk are required and must be filled with "
 "appropriate information."
 msgstr ""
@@ -1106,139 +1113,171 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:76
 msgid ""
+"Maybe: Warning you haven't entered any API credentials, the purchase domain "
+"tab will not show till you've successfully saved your API credentials"
+msgstr ""
+
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:82
+msgid ""
 "Looks like your credentials are invalid. Please, check the errors sent by "
 "WHMCS server:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:90
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:96
 msgid "WHMCS url:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:99
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:105
 msgid "Username:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:139
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:145
 msgid "Define domain pricing:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:151
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:157
 #, php-format
 msgid "<span class='dm_year_count'>%d</span> Year(s)"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:219
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:225
 msgid ""
 "Please make sure you have correctly entered your login credentials and save "
 "again to retrieve your payment methods."
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:234
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:240
 msgid "Client registration:"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:238
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:244
 msgid "Enable client registration"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:60
+#: classes/Domainmap/Render/Site/Map.php:63
 msgid ""
 "If your domain name includes a sub-domain such as \"blog\" then you can add "
 "a CNAME for that hostname in your DNS pointing at this blog URL."
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:65
+#: classes/Domainmap/Render/Site/Map.php:68
 msgid ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:67
+#: classes/Domainmap/Render/Site/Map.php:70
 msgid ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:89
+#: classes/Domainmap/Render/Site/Map.php:92
 msgid "disabled and entered domain should be used"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:90
+#: classes/Domainmap/Render/Site/Map.php:93
 msgid "directed to mapped (primary) domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:91
+#: classes/Domainmap/Render/Site/Map.php:94
 msgid "directed to original domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:98
+#: classes/Domainmap/Render/Site/Map.php:101
 msgid "Domain(s) mapped to"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:105
+#: classes/Domainmap/Render/Site/Map.php:108
 msgid "Mapped domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:106
+#: classes/Domainmap/Render/Site/Map.php:109
 msgid "Health status"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:107
+#: classes/Domainmap/Render/Site/Map.php:110
 #: classes/Domainmap/Table/MappedDomains/Listing.php:104
 msgid "Actions"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:116
+#: classes/Domainmap/Render/Site/Map.php:119
 msgid "Front end redirect should be"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:129
+#: classes/Domainmap/Render/Site/Map.php:132
 msgid "Force none"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:213
+#: classes/Domainmap/Render/Site/Map.php:216
 msgid "Toggle forced schema"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:215
+#: classes/Domainmap/Render/Site/Map.php:218
 msgid "Go to this domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:220
+#: classes/Domainmap/Render/Site/Map.php:223
 msgid "Remove the domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:222
-#: classes/Domainmap/Table/MappedDomains/Listing.php:332
+#: classes/Domainmap/Render/Site/Map.php:225
+#: classes/Domainmap/Table/MappedDomains/Listing.php:330
 msgid "Select as primary domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:244
-#: classes/Domainmap/Table/MappedDomains/Listing.php:246
+#: classes/Domainmap/Render/Site/Map.php:247
+#: classes/Domainmap/Table/MappedDomains/Listing.php:244
 msgid "needs revalidation"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:249
-#: classes/Domainmap/Table/MappedDomains/Listing.php:251
+#: classes/Domainmap/Render/Site/Map.php:252
+#: classes/Domainmap/Table/MappedDomains/Listing.php:249
 msgid "valid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:252
-#: classes/Domainmap/Table/MappedDomains/Listing.php:254
+#: classes/Domainmap/Render/Site/Map.php:255
+#: classes/Domainmap/Table/MappedDomains/Listing.php:252
 msgid "invalid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:256
-#: classes/Domainmap/Table/MappedDomains/Listing.php:260
+#: classes/Domainmap/Render/Site/Map.php:259
+#: classes/Domainmap/Table/MappedDomains/Listing.php:258
 msgid "Refresh health status"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:276
+#: classes/Domainmap/Render/Site/Map.php:278
 msgid "Pages selected here will not be mapped and can optionally force https"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:277
+#: classes/Domainmap/Render/Site/Map.php:280
 msgid "Excluded pages: "
+msgstr ""
+
+#: classes/Domainmap/Render/Site/Map.php:282
+msgid ""
+"Pages selected here will not be mapped and can optionally force https, If "
+"you set the domain to use https, the following \"force/unforce SSL will be "
+"ignored\" "
+msgstr ""
+
+#: classes/Domainmap/Render/Site/Map.php:299
+msgid "Add page urls bellow to have excluded:"
+msgstr ""
+
+#: classes/Domainmap/Render/Site/Map.php:303
+#: classes/Domainmap/Render/Site/Map.php:312
+msgid ""
+"Please enter absolute URLs (starting with http:// or https://), URLs should "
+"be comma separated"
+msgstr ""
+
+#: classes/Domainmap/Render/Site/Map.php:308
+msgid "Add page urls bellow to force https:"
+msgstr ""
+
+#: classes/Domainmap/Render/Site/Map.php:314
+msgid "Save excluded pages"
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Purchase.php:49
@@ -1358,36 +1397,32 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:39
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:204
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:52
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:224
 msgid "Search pages"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:60
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:73
 msgid "Exclude"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:61
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:74
 msgid "Force ssl"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:62
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:75
 msgid "Title"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:209
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:230
 msgid "excluded"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:211
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:232
 msgid "ssl forced"
 msgstr ""
 
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:220
-msgid "Save excluded pages"
-msgstr ""
-
-#: classes/Domainmap/Table/ExcludedPages/Listing.php:258
+#: classes/Domainmap/Table/ExcludedPages/Listing.php:272
 #, php-format
 msgid "1 item"
 msgid_plural "%s items"
@@ -1418,11 +1453,15 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:330
+#: classes/Domainmap/Table/MappedDomains/Listing.php:328
+msgid "Switch schema"
+msgstr ""
+
+#: classes/Domainmap/Table/MappedDomains/Listing.php:328
 msgid "Toggle scheme"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:334
+#: classes/Domainmap/Table/MappedDomains/Listing.php:332
 msgid "Remove Mapping"
 msgstr ""
 
