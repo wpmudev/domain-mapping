@@ -325,9 +325,9 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
       ), $admin_ajax) );
         ?>
         <div class="domainmapping-domains">
-          <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle scheme', 'domainmap' ) ?>"></a>
+          <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" title="<?php _e("Switch schema", domain_map::Text_Domain); ?>" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle scheme', 'domainmap' ) ?>"></a>
           <?php if ( Domainmap_Render_Site_Map::_is_multi_enabled() ) : ?>
-            <a style="position: inherit" class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
+            <a style="position: inherit" class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', domain_map::Text_Domain ) ?>"></a>
           <?php endif; ?>
             <a style="position: inherit"  data-href="<?php echo $remove_link; ?>"  title="<?php _e("Remove Mapping", "domainmap"); ?>" class="domainmapping-btn domainmapping-map-remove dashicons-before dashicons-trash"></a>
         </div>

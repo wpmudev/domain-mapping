@@ -74,7 +74,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		<?php if ( empty($this->uid) || empty($this->pwd) ) : ?>
 			<div class="domainmapping-info domainmapping-info-error">
-				<p><?php _e( "Maybe: Warning you haven't entered any API credentials, the purchase domain tab will not show till you've successfully saved your API credentials", 'domainmap' ) ?></p>
+				<p><?php _e( "Warning: you haven't entered any API credentials, the purchase domain tab will not show till you've successfully saved your API credentials", 'domainmap' ) ?></p>
 			</div>
 		<?php endif; ?>
 
