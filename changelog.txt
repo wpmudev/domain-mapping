@@ -1,4 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.3.0.2 ==
+* Fixed minor bug when sub-site doesn't have a mapped domain
+
 == 4.3.0.1 ==
 * Fixed double forward slash in urls
 * Fixed sub-site name missing in some urls
