@@ -453,7 +453,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$path = isset( $components['path'] ) ? $components['path'] : '';
 		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
 		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
-		return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
+		return  $scheme . str_replace("//", "/", $user . $pass . $host . $port . $path . $query . $fragment );
 	}
 
 	/**
@@ -494,7 +494,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$components['host'] = $mapped_domain;
-		$components['path'] = strpos($path, "/") !== 0 ?  "/" . $path : $path;
+		$components['path'] = "/" . $path;
 
 		return self::_build_url( $components );
 	}
@@ -513,7 +513,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string Swapped root URL on success, otherwise inital value.
 	 */
 	public function swap_root_url( $url ) {
-		global $current_site, $post;
+		global $current_site, $current_blog;
 
 		// do not swap URL if customizer is running or front end redirection is disabled
 		if ( $this->_suppress_swapping ) {
@@ -527,9 +527,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$protocol = 'https://';
 		}
 
-		$destination = untrailingslashit( $protocol . $domain . $current_site->path );
+		$destination = untrailingslashit( $protocol . $domain  . $current_site->path );
 		if ( !$domain || $this->is_excluded_by_url( $url ) ) {
-			return $protocol .  $current_site->domain . $current_site->path;
+			$_url = $current_site->domain . $current_blog->path .$current_site->path;
+			return untrailingslashit( $protocol .  str_replace("//", "/", $_url) );
 		}
 
 		return $destination;
