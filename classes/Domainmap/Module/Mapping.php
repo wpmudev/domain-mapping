@@ -521,6 +521,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$domain = $this->_get_mapped_domain();
+		if ( !$domain ){
+			return $url;
+		}
 
 		$protocol = 'http://';
 		if ( self::$_force_protocol && is_ssl() ) {
@@ -528,7 +531,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$destination = untrailingslashit( $protocol . $domain  . $current_site->path );
-		if ( !$domain || $this->is_excluded_by_url( $url ) ) {
+
+		if ( $this->is_excluded_by_url( $url ) ) {
 			$_url = $current_site->domain . $current_blog->path .$current_site->path;
 			return untrailingslashit( $protocol .  str_replace("//", "/", $_url) );
 		}
