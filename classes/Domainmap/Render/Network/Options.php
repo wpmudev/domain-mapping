@@ -308,6 +308,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 */
 	private function _render_domain_validation() {
 		$selected = isset( $this->map_verifydomain ) ? (int) $this->map_verifydomain : 1;
+		$check_health = isset( $this->map_check_domain_health ) ? (int) $this->map_check_domain_health : 0;
+
 		$options = array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
@@ -315,7 +317,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 
 		?><h4 class="domainmapping-block-header"><?php _e( "Verify domain's DNS settings", 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "Would you like to verify domain's DNS settings before they will be mapped by your members:", 'domainmap' ) ?><br>
+			<?php _e( "Would you like to verify domain's DNS settings before they will be mapped by your members:", domain_map::Text_Domain  ); ?><br>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -327,7 +329,25 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 					</label>
 				</li><?php
 			endforeach;
-		?></ul><?php
+		?></ul>
+
+		<h4 class="domainmapping-block-header"><?php _e( "Check domain propagation before mapping", 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Would you like to check domain health and propagation before mapping:", domain_map::Text_Domain ) ?><br>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $options as $option => $label ) :
+				?><li>
+				<label>
+					<input type="radio" class="domainmapping-radio" name="map_check_domain_health" value="<?php echo $option ?>"<?php checked( $option, $check_health ) ?>>
+					<?php echo $label ?>
+				</label>
+				</li><?php
+			endforeach;
+			?></ul>
+
+	<?php
 	}
 
     /**

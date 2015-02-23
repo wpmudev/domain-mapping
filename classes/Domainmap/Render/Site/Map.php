@@ -244,6 +244,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		), admin_url( 'admin-ajax.php' ) );
 
 		$health = get_site_transient( "domainmapping-{$domain}-health" );
+
 		$health_message = __( 'needs revalidation', 'domainmap' );
 		$health_class = ' domainmapping-need-revalidate';
 		if ( $health !== false ) {

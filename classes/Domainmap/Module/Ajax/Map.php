@@ -191,7 +191,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added
-						do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
+						do_action( 'domainmapping_added_domain', $domain, $blog_id );
 
 						// send success response
 						ob_start();
@@ -285,9 +285,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		if ( !$this->_validate_domain_name( $domain ) ) {
 			wp_send_json_error();
 		}
-
 		$this->set_valid_transient( $domain );
-
 		ob_start();
 		Domainmap_Render_Site_Map::render_health_column( $domain );
 		wp_send_json_success( array( 'html' => ob_get_clean() ) );

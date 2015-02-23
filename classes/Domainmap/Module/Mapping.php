@@ -334,13 +334,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 
-
-		// Don't map if mapped domain is not healthy
-		$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
-		$map_verifydomain = $this->_plugin->get_option("map_verifydomain");
-		if( $health !== "1" && $map_verifydomain){
-			if( !$this->set_valid_transient($mapped_domain)  ) return true;
+		$map_check_health = $this->_plugin->get_option("map_check_domain_health");
+		if( $map_check_health ){
+			// Don't map if mapped domain is not healthy
+			$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
+			if( $health !== "1"){
+				if( !$this->set_valid_transient($mapped_domain)  ) return true;
+			}
 		}
+
 
 		$protocol = is_ssl() || $force_ssl ? 'https://' : 'http://';
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );

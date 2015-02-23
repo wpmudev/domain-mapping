@@ -174,7 +174,9 @@ class Domainmap_Module {
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
 		), $ajax_url ), array( 'sslverify' => false ) );
-		return  !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
+		$status = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
+		$this->set_valid_transient( $domain, $status );
+		return $status;
 	}
 
 
@@ -300,12 +302,15 @@ class Domainmap_Module {
 	 *
 	 * @since 4.3.0
 	 * @param $domain
+	 * @param $status bool to set as domain's health status
 	 *
 	 * @return bool
 	 */
-	protected function set_valid_transient( $domain ) {
-		$valid = $this->_validate_health_status( $domain );
-		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? WEEK_IN_SECONDS : 10 * MINUTE_IN_SECONDS );
+	protected function set_valid_transient( $domain, $status = null ) {
+		if( is_null( $status ) ) {
+			$valid = $this->_validate_health_status( $domain );
+		}
+		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? 4 * WEEK_IN_SECONDS  : 10 * MINUTE_IN_SECONDS );
 		return $valid;
 	}
 }
