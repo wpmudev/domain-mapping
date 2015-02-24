@@ -758,7 +758,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $excluded_pages === "" ? array() :  array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
 		}
 
-		return $excluded_pages;
+		return $excluded_pages === "" ? false : $excluded_pages;
 	}
 
 	/**
@@ -873,10 +873,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function is_excluded_by_url( $url ){
-
-		if( $url === false ) return true;
-		if( empty( $url ) ) return false;
 		$excluded_ids =  self::get_excluded_pages( true );
+
+		if( empty( $url ) || !$excluded_ids ) return false;
+
 		$permalink_structure = get_option("permalink_structure");
 		$comps = parse_url( $url );
 		if( empty( $permalink_structure ) )
@@ -933,7 +933,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function exclude_page_links( $permalink, $post_id, $leavename  ){
 
-		if( empty($post_id) ) return $permalink;
+		if( empty($post_id) || $this->is_original_domain() ) return $permalink;
 
 		if( $this->is_excluded_by_id( $post_id) ){
 			return $this->unswap_url( $permalink );
