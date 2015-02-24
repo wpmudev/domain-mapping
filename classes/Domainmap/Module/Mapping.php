@@ -543,6 +543,24 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/**
+	 * Retrieves original domain from the given mapped_url
+	 *
+	 * @since 4.1.3
+	 * @access public
+	 *
+	 * @uses self::unswap_url()
+	 *
+	 * @param $url
+	 * @param bool $blog_id
+	 * @param bool $include_path
+	 * @return string
+	 */
+	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
+		return self::unswap_url( $url, $blog_id, $include_path );
+	}
+
+
+	/**
 	 * Unswaps URL to use original domain.
 	 *
 	 * @since 4.1.0
@@ -551,11 +569,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 * @global object $current_site Current site object.
 	 * @param string $url Current URL to unswap.
-	 * @param int $blog_id The blog ID to which current URL is related to.
+	 * @param int|bool|null $blog_id The blog ID to which current URL is related to.
 	 * @param bool $include_path whether to include the url path
 	 * @return string Unswapped URL.
 	 */
-	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
+	public static function unswap_url( $url, $blog_id = false, $include_path = true ){
 		global $current_site, $wpdb;
 
 		// if no blog id is passed, then take current one
@@ -589,23 +607,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$url_components['path'] = str_replace( '//', '/', $current_site->path . $orig_path . $url_path );
 		return self::_build_url( $url_components );
-	}
-
-	/**
-	 * Retrieves original domain from the given mapped_url
-	 *
-	 * @since 4.1.3
-	 * @access public
-	 *
-	 * @usces self::unswap_mapped_url()
-	 *
-	 * @param $mapped_url
-	 * @param bool $blog_id
-	 * @param bool $include_path
-	 * @return string
-	 */
-	public static function unswap_url( $mapped_url, $blog_id = false, $include_path = true ){
-		return self::unswap_mapped_url( $mapped_url, $blog_id, $include_path );
 	}
 
 
