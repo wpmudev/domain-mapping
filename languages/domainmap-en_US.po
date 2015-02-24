@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2015-02-21 22:57+0330\n"
-"PO-Revision-Date: 2015-02-21 22:57+0330\n"
+"POT-Creation-Date: 2015-02-25 03:05+0330\n"
+"PO-Revision-Date: 2015-02-25 03:05+0330\n"
 "Last-Translator: Sam Najian <sam@incsub.com>\n"
 "Language-Team: Sam Najian <sam@incsub.com>\n"
 "Language: en_US\n"
@@ -115,23 +115,23 @@ msgstr ""
 msgid "Purchase domain"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:373
+#: classes/Domainmap/Module/Pages.php:374
 msgid "Mapping options"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:374
+#: classes/Domainmap/Module/Pages.php:375
 msgid "Reseller options"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:376
+#: classes/Domainmap/Module/Pages.php:377
 msgid "Mapped Domains"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:381
+#: classes/Domainmap/Module/Pages.php:382
 msgid "Reseller API log"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:411
+#: classes/Domainmap/Module/Pages.php:412
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr ""
@@ -336,17 +336,17 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:267
-#: classes/Domainmap/Render/Network/Options.php:312
-#: classes/Domainmap/Render/Network/Options.php:344
+#: classes/Domainmap/Render/Network/Options.php:314
+#: classes/Domainmap/Render/Network/Options.php:364
 #: classes/Domainmap/Table/MappedDomains/Listing.php:214
 #: classes/Domainmap/Table/MappedDomains/Listing.php:225
 msgid "Yes"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:268
-#: classes/Domainmap/Render/Network/Options.php:313
-#: classes/Domainmap/Render/Network/Options.php:345
-#: classes/Domainmap/Render/Network/Options.php:370
+#: classes/Domainmap/Render/Network/Options.php:315
+#: classes/Domainmap/Render/Network/Options.php:365
+#: classes/Domainmap/Render/Network/Options.php:390
 #: classes/Domainmap/Table/MappedDomains/Listing.php:214
 #: classes/Domainmap/Table/MappedDomains/Listing.php:225
 msgid "No"
@@ -370,60 +370,68 @@ msgstr ""
 msgid "Add Cross-domain autologin scripts in footer"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:316
+#: classes/Domainmap/Render/Network/Options.php:318
 msgid "Verify domain's DNS settings"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:318
+#: classes/Domainmap/Render/Network/Options.php:320
 msgid ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:349
+#: classes/Domainmap/Render/Network/Options.php:334
+msgid "Check domain propagation before mapping"
+msgstr ""
+
+#: classes/Domainmap/Render/Network/Options.php:336
+msgid "Would you like to check domain health and propagation before mapping:"
+msgstr ""
+
+#: classes/Domainmap/Render/Network/Options.php:369
 msgid "Force http/https (Only for original domain)"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:351
+#: classes/Domainmap/Render/Network/Options.php:371
 msgid ""
 "Would you like to force <strong>https</strong> in login and admin pages:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:365
+#: classes/Domainmap/Render/Network/Options.php:385
 msgid "Would you like to force <strong>http/https</strong> in front-end pages:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:371
+#: classes/Domainmap/Render/Network/Options.php:391
 msgid "Force http"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:372
+#: classes/Domainmap/Render/Network/Options.php:392
 msgid "Force https"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:397
+#: classes/Domainmap/Render/Network/Options.php:417
 msgid "Select Pro Sites Levels:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:398
+#: classes/Domainmap/Render/Network/Options.php:418
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:420
+#: classes/Domainmap/Render/Network/Options.php:440
 msgid "Prohibited mappings"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:422
+#: classes/Domainmap/Render/Network/Options.php:442
 msgid ""
 "Domains that sub-sites shouldn't use as primary(mapped) domain, please comma "
 "separate domain name"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:427
+#: classes/Domainmap/Render/Network/Options.php:447
 msgid "Please separate domain names with comma"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:434
+#: classes/Domainmap/Render/Network/Options.php:454
 msgid ""
 "Disallow sub-domains of the original domain to be used as mapped (primary) "
 "domain for sub-sites"
@@ -1226,57 +1234,57 @@ msgstr ""
 msgid "Select as primary domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:247
+#: classes/Domainmap/Render/Site/Map.php:248
 #: classes/Domainmap/Table/MappedDomains/Listing.php:244
 msgid "needs revalidation"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:252
+#: classes/Domainmap/Render/Site/Map.php:253
 #: classes/Domainmap/Table/MappedDomains/Listing.php:249
 msgid "valid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:255
+#: classes/Domainmap/Render/Site/Map.php:256
 #: classes/Domainmap/Table/MappedDomains/Listing.php:252
 msgid "invalid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:259
+#: classes/Domainmap/Render/Site/Map.php:260
 #: classes/Domainmap/Table/MappedDomains/Listing.php:258
 msgid "Refresh health status"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:278
+#: classes/Domainmap/Render/Site/Map.php:279
 msgid "Pages selected here will not be mapped and can optionally force https"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:280
+#: classes/Domainmap/Render/Site/Map.php:281
 msgid "Excluded pages: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:282
+#: classes/Domainmap/Render/Site/Map.php:283
 msgid ""
 "Pages selected here will not be mapped and can optionally force https, If "
 "you set the domain to use https, the following \"force/unforce SSL will be "
 "ignored\" "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:299
+#: classes/Domainmap/Render/Site/Map.php:300
 msgid "Add page urls bellow to have excluded:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:303
-#: classes/Domainmap/Render/Site/Map.php:312
+#: classes/Domainmap/Render/Site/Map.php:304
+#: classes/Domainmap/Render/Site/Map.php:313
 msgid ""
 "Please enter absolute URLs (starting with http:// or https://), URLs should "
 "be comma separated"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:308
+#: classes/Domainmap/Render/Site/Map.php:309
 msgid "Add page urls bellow to force https:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:314
+#: classes/Domainmap/Render/Site/Map.php:315
 msgid "Save excluded pages"
 msgstr ""
 
