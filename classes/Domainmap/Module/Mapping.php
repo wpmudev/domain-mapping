@@ -933,7 +933,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function exclude_page_links( $permalink, $post_id, $leavename  ){
 
-		if( empty($post_id) || $this->is_original_domain() ) return $permalink;
+		if( empty($post_id) || $this->is_original_domain( $permalink ) ) return $permalink;
 
 		if( $this->is_excluded_by_id( $post_id) ){
 			return $this->unswap_url( $permalink );

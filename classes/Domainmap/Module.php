@@ -191,11 +191,12 @@ class Domainmap_Module {
 	 *
 	 * @since 4.2.0
 	 *
+	 * @param string $domain
 	 * @return bool true if it's original domain, false if not
 	 */
-	protected function is_original_domain(){
-		$current_domain = parse_url( $this->_http->hostinfo  , PHP_URL_HOST );
-		return $current_domain === $this->get_original_domain() || strpos($current_domain, "." . $this->get_original_domain());
+	protected function is_original_domain( $domain = null ){
+		$domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
+		return $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
 	}
 
 	/**
