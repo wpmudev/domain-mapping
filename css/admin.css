@@ -853,3 +853,6 @@ table.domains td.column-actions a{
 #dm_save_excluded_pages_form{
     padding: 10px;
 }
+.domainmapping-domains.domainmapping-box .tablenav{
+    padding: 0 10px;
+}
