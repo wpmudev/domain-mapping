@@ -772,7 +772,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public static function get_excluded_page_urls( $return_array = false ){
 		global $current_blog;
-		$excluded_page_urls = get_option( "dm_excluded_page_urls", "");
+		$excluded_page_urls = trim( get_option( "dm_excluded_page_urls", "") );
+
+		if( empty(  $excluded_page_urls   ) ) return array();
 
 		if( $return_array ){
 			if( $excluded_page_urls === "" )
@@ -808,8 +810,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public static function get_ssl_forced_page_urls( $return_array = false ){
 		global $current_blog;
-		$excluded_page_urls = get_option( "dm_ssl_forced_page_urls", "");
-
+		$excluded_page_urls =  trim( get_option( "dm_ssl_forced_page_urls", "") );
+		if( empty(  $excluded_page_urls   ) ) return array();
 		if( $return_array ){
 			if( $excluded_page_urls === "" )
 				return array();
