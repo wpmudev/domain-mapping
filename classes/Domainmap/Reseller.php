@@ -361,13 +361,13 @@ abstract class Domainmap_Reseller {
 	 * @return string Response HTML.
 	 */
 	public function get_domain_available_response( $sld, $tld, $purchase_link = false ) {
-		global $wpdb;
+		global $wpdb, $blog_id;
 		if ( !$purchase_link ) {
 			$purchase_link = add_query_arg( array(
 				'action'  => Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM,
 				'nonce'   => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_PURCHASE_FORM ),
 				'tld'     => $tld,
-				'blog'    => $wpdb->blogid,
+				'blog'    => $blog_id,
 				'success' => urlencode( add_query_arg( 'page', 'domainmapping', admin_url( 'tools.php' ) ) ),
 				'cancel'  => urlencode( site_url( add_query_arg( array(
 					'sld' => $sld,

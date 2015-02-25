@@ -794,3 +794,65 @@ table.domains td.column-actions a{
 .domainmapping-child-list-hidden{
     display: none;
 }
+#dm_excluded_pages{
+    max-height: 300px;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    border:#eee solid 2px;
+    border-bottom: 0;
+}
+.dm_excluded_page{
+    background: #EEEEFF;
+    color: #343434;
+    height: 35px;
+    line-height: 30px;
+    padding: 0 1%;
+    overflow: hidden;
+    width: 98%;
+    margin: 0;
+    float: left;
+    clear: right;
+}
+.dm_excluded_page:nth-child(2n){
+    background: #fff;
+}
+.column-exclude, .column-force_ssl{
+    width: 55px;
+}
+.column-force_ssl{
+    width: 65px;
+}
+#dm_excluded_pages_search_spinner{
+    margin-left: 220px;
+    float: left;
+    margin-top: 38px;
+    position: absolute;
+}
+.dm_excluded_pages_label,
+.dm_ssl_forced_pages_label{
+    margin-top: 5px;
+    display: block;
+    float: left;
+    margin-left: 10px;
+}
+.dm_ssl_forced_pages_label{
+    margin-left: 15px;
+}
+.wp-list-table.excludedpages tbody td{
+    border-bottom: 1px dashed #dfdfdf;
+}
+.domain-mapping-or-urls-title{
+    margin-top: 0;
+}
+#save-exluded-pages{
+}
+#dm_excluded_page_urls,
+#dm_ssl_forced_page_urls{
+    width: 50%;
+}
+#dm_save_excluded_pages_form{
+    padding: 10px;
+}
+.domainmapping-domains.domainmapping-box .tablenav{
+    padding: 0 10px;
+}

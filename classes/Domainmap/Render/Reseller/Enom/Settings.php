@@ -72,6 +72,12 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Account credentials:', 'domainmap' ) ?></h4>
 
+		<?php if ( empty($this->uid) || empty($this->pwd) ) : ?>
+			<div class="domainmapping-info domainmapping-info-error">
+				<p><?php _e( "Warning: you haven't entered any API credentials, the purchase domain tab will not show till you've successfully saved your API credentials", 'domainmap' ) ?></p>
+			</div>
+		<?php endif; ?>
+
 		<?php if ( $this->valid === false ) : ?>
 		<div class="domainmapping-info domainmapping-info-error">
 			<p><?php _e( 'Looks like your credentials are invalid. Please, check the errors sent by eNom server:', 'domainmap' ) ?></p>

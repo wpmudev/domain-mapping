@@ -46,7 +46,7 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 				<div class="domainmapping-locker"></div>
 				<form class="domainmapping-iframe-form" method="post" id="dm-whmcs-client-registration-form">
 
-					<p class="domainmapping-info"><?php esc_html_e( 'You are about to register for a new WHMCS client account. Please, fill in the form below and click on the register button. Pay attention that all fields marked with a red asterisk are required and must be filled with appropriate information.', 'domainmap' ) ?></p>
+					<p class="domainmapping-info"><?php esc_html_e( 'You are about to register for a new WHMCS client account. Please, fill in the form bellow and click on the register button. Pay attention that all fields marked with a red asterisk are required and must be filled with appropriate information.', 'domainmap' ) ?></p>
 
 					<?php if ( is_wp_error( $this->errors ) ) : ?>
 						<?php foreach ( $this->errors->get_error_messages() as $error ) : ?>

@@ -146,6 +146,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_cross_autologin();
 		$this->_render_domain_validation();
         $this->_render_ssl_forced_pages();
+        $this->_render_prohibited_domains();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -181,7 +182,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<?php if ( !empty( $ips ) ) : ?>
 		<div class="domainmapping-info">
 			<p><?php
-				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
+				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field bellow:', 'domainmap' )
 			?></p>
 			<p>
 				<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
@@ -196,7 +197,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			</div>
 		</div>
 
-		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show the default text.' ) ?></p>
+		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area bellow to enter your instructions or leave it blank to show the default text.' ) ?></p>
 
 		<textarea name="map_instructions" class="widefat" cols="150" rows="5"><?php echo esc_textarea( $this->map_instructions ) ?></textarea><?php
 	}
@@ -307,6 +308,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 */
 	private function _render_domain_validation() {
 		$selected = isset( $this->map_verifydomain ) ? (int) $this->map_verifydomain : 1;
+		$check_health = isset( $this->map_check_domain_health ) ? (int) $this->map_check_domain_health : 0;
+
 		$options = array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
@@ -314,7 +317,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 
 		?><h4 class="domainmapping-block-header"><?php _e( "Verify domain's DNS settings", 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( "Would you like to verify domain's DNS settings before they will be mapped by your members:", 'domainmap' ) ?><br>
+			<?php _e( "Would you like to verify domain's DNS settings before they will be mapped by your members:", domain_map::Text_Domain  ); ?><br>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -326,7 +329,25 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 					</label>
 				</li><?php
 			endforeach;
-		?></ul><?php
+		?></ul>
+
+		<h4 class="domainmapping-block-header"><?php _e( "Check domain propagation before mapping", 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Would you like to check domain health and propagation before mapping:", domain_map::Text_Domain ) ?><br>
+		</p>
+
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $options as $option => $label ) :
+				?><li>
+				<label>
+					<input type="radio" class="domainmapping-radio" name="map_check_domain_health" value="<?php echo $option ?>"<?php checked( $option, $check_health ) ?>>
+					<?php echo $label ?>
+				</label>
+				</li><?php
+			endforeach;
+			?></ul>
+
+	<?php
 	}
 
     /**
@@ -412,6 +433,31 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				</li><?php
 			endforeach;
 		?></ul><?php
+	}
+
+	private function _render_prohibited_domains(){
+		?>
+		<h4 class="domainmapping-block-header"><?php _e( "Prohibited mappings", 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Domains that sub-sites shouldn't use as primary(mapped) domain, please comma separate domain name", 'domainmap' ) ?><br>
+		</p>
+		<textarea name="dm_prohibited_domains" id="dm_prohibited_domains" cols="60" rows="3"><?php echo $this->map_prohibited_domains; ?></textarea>
+
+		<p class="description">
+			<?php _e( "Please separate domain names with comma", 'domainmap' ) ?>
+		</p>
+
+		<ul>
+			<li>
+				<label for="dm_disallow_subdomain">
+					<input type="checkbox" value="1" <?php checked($this->map_disallow_subdomain, true ) ?> name="dm_disallow_subdomain" id="dm_disallow_subdomain"/>
+					<?php _e( "Disallow sub-domains of the original domain to be used as mapped (primary) domain for sub-sites", 'domainmap' ) ?>
+				</label>
+			</li>
+		</ul>
+
+
+		<?php
 	}
 
 }

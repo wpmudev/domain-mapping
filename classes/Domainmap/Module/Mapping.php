@@ -34,6 +34,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	const NAME = __CLASS__;
 
 	/**
+	 * @const key for url get param
+	 *
+	 * @since 4.3.0
+	 *
+	 */
+	const BYPASS = "bypass";
+	/**
 	 * The array of mapped domains.
 	 *
 	 * @since 4.1.0
@@ -83,14 +90,17 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
-
 		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
-		$this->_add_action( 'plugins_loaded', 'force_schema' );
-//		add_action('plugins_loaded', '');
-		$this->_add_action( 'template_redirect',       'redirect_front_area' );
+
+		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
+		$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
+		$this->_add_action( 'template_redirect',       'force_schema', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
+
+		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
+		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
@@ -107,6 +117,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
+		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
+		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
 	}
 
 	/**
@@ -168,6 +180,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @param bool $force_ssl
 	 */
 	private function _redirect_to_area( $redirect_to, $force_ssl = false ) {
+
+		/**
+		 * Don't map if this page is exluded from mapping
+		 */
+		global $post;
+
+		if( isset( $post ) && $this->is_excluded_by_id( $post->ID ) ) return;
+
+		if( $this->is_excluded_by_request() ) return;
+
 		switch ( $redirect_to ) {
 			case 'mapped':
 				$this->redirect_to_mapped_domain( $force_ssl );
@@ -202,6 +224,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_login_area() {
+
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
+
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
 			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl );
@@ -217,6 +242,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_front_area() {
+
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
 
 		$redirect_to = $this->_get_frontend_redirect_type();
 		$force_ssl = false;
@@ -289,19 +316,33 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 */
 	public function redirect_to_mapped_domain( $force_ssl = false ) {
-		global $current_blog, $current_site;
+		global $current_blog, $current_site, $post;
 
-		// do not redirect if headers were sent or site is not permitted to use
-		// domain mapping
-		if ( headers_sent() || !$this->_plugin->is_site_permitted() ) {
+		/**
+		 * do not redirect if headers were sent or site is not permitted to use domain mapping
+		 */
+		if ( headers_sent() || !$this->_plugin->is_site_permitted()  ) {
 			return;
 		}
 
-		// do not redirect if there is no mapped domain
+
+
 		$mapped_domain = $this->_get_mapped_domain();
+		// do not redirect if there is no mapped domain
 		if ( !$mapped_domain ) {
 			return;
 		}
+
+
+		$map_check_health = $this->_plugin->get_option("map_check_domain_health");
+		if( $map_check_health ){
+			// Don't map if mapped domain is not healthy
+			$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
+			if( $health !== "1"){
+				if( !$this->set_valid_transient($mapped_domain)  ) return true;
+			}
+		}
+
 
 		$protocol = is_ssl() || $force_ssl ? 'https://' : 'http://';
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
@@ -389,7 +430,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return array The array of URL components.
 	 */
 	private static function _parse_mb_url( $url ) {
-		return array_map( 'urldecode', parse_url( preg_replace_callback( '%[^:/?#&=\.]+%usD', __CLASS__ . '::_parse_mb_url_urlencode', $url ) ) );
+		return array_map( 'urldecode', (array) parse_url( preg_replace_callback( '%[^:/?#&=\.]+%usD', __CLASS__ . '::_parse_mb_url_urlencode', $url ) ) );
 	}
 
 	/**
@@ -414,7 +455,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$path = isset( $components['path'] ) ? $components['path'] : '';
 		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
 		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
-		return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
+		return  $scheme . str_replace("//", "/", $user . $pass . $host . $port . $path . $query . $fragment );
 	}
 
 	/**
@@ -427,11 +468,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @filter content_url 10 2
 	 * @filter plugins_url 10 3
 	 *
-	 * @access public
-	 * @param string $url Current URL to swap.
-	 * @param string $path The path related to domain.
-	 * @param type $orig_scheme The scheme to use 'http', 'https', or 'relative'.
-	 * @param string $blog_id The blog ID to which URL is related to.
+	 * @param $url
+	 * @param bool $path
+	 * @param bool $orig_scheme
+	 * @param bool $blog_id
+	 *
+	 * @return string
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
 		// do not swap URL if customizer is running
@@ -441,9 +483,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// parse current url
 		$components = self::_parse_mb_url( $url );
-		if ( empty( $components['host'] ) ) {
+
+		if ( empty( $components['host'] ) || $this->is_excluded_by_url( $url ) ) {
 			return $url;
 		}
+
 
 		// find mapped domain
 		$mapped_domain = $this->_get_mapped_domain( $blog_id );
@@ -452,6 +496,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$components['host'] = $mapped_domain;
+		$components['path'] = "/" . $path;
 
 		return self::_build_url( $components );
 	}
@@ -470,7 +515,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string Swapped root URL on success, otherwise inital value.
 	 */
 	public function swap_root_url( $url ) {
-		global $current_site;
+		global $current_site, $current_blog;
 
 		// do not swap URL if customizer is running or front end redirection is disabled
 		if ( $this->_suppress_swapping ) {
@@ -478,7 +523,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$domain = $this->_get_mapped_domain();
-		if ( !$domain ) {
+		if ( !$domain ){
 			return $url;
 		}
 
@@ -487,8 +532,33 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$protocol = 'https://';
 		}
 
-		return untrailingslashit( $protocol . $domain . $current_site->path );
+		$destination = untrailingslashit( $protocol . $domain  . $current_site->path );
+
+		if ( $this->is_excluded_by_url( $url ) ) {
+			$_url = $current_site->domain . $current_blog->path .$current_site->path;
+			return untrailingslashit( $protocol .  str_replace("//", "/", $_url) );
+		}
+
+		return $destination;
 	}
+
+	/**
+	 * Retrieves original domain from the given mapped_url
+	 *
+	 * @since 4.1.3
+	 * @access public
+	 *
+	 * @uses self::unswap_url()
+	 *
+	 * @param $url
+	 * @param bool $blog_id
+	 * @param bool $include_path
+	 * @return string
+	 */
+	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
+		return self::unswap_url( $url, $blog_id, $include_path );
+	}
+
 
 	/**
 	 * Unswaps URL to use original domain.
@@ -499,11 +569,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 * @global object $current_site Current site object.
 	 * @param string $url Current URL to unswap.
-	 * @param int $blog_id The blog ID to which current URL is related to.
+	 * @param int|bool|null $blog_id The blog ID to which current URL is related to.
 	 * @param bool $include_path whether to include the url path
 	 * @return string Unswapped URL.
 	 */
-	public function unswap_mapped_url( $url, $blog_id = false, $include_path = true ) {
+	public static function unswap_url( $url, $blog_id = false, $include_path = true ){
 		global $current_site, $wpdb;
 
 		// if no blog id is passed, then take current one
@@ -539,23 +609,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return self::_build_url( $url_components );
 	}
 
-	/**
-	 * Retrieves original domain from the given mapped_url
-	 *
-	 * @since 4.1.3
-	 * @access public
-	 *
-	 * @usces self::unswap_mapped_url()
-	 *
-	 * @param $mapped_url
-	 * @param bool $blog_id
-	 * @param bool $include_path
-	 * @return string
-	 */
-	public static function unswap_url( $mapped_url, $blog_id = false, $include_path = true ){
-		return self::unswap_mapped_url( $mapped_url, $blog_id, $include_path );
-	}
-
 
 
 	/**
@@ -568,7 +621,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses wp_redirect
 	 */
 	public function force_schema(){
-
+		global $post;
 		if( $this->is_original_domain() && !is_ssl()  ){
 			/**
 			 * Login and Admin pages
@@ -612,9 +665,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		/**
-		 * Force mapped domains
+		 * Force single page
 		 */
-		if(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 ){
+		if( !is_admin() && ( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
+			wp_redirect( $current_url_secure  );
+			exit();
+		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) ){
+			/**
+			 * Force mapped domains
+			 */
 			if( self::force_ssl_on_mapped_domain() === 1 && !is_ssl()  ){ // force https
 				wp_redirect( $current_url_secure  );
 				exit();
@@ -624,10 +683,316 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
+
+
+
 	}
 
+	/**
+	 * Removes mapping record from db when a site is deleted
+	 *
+	 * Since 4.2.0
+	 * @param $blog_id
+	 * @param $drop
+	 */
 	function on_delete_blog( $blog_id, $drop){
 		$this->_wpdb->delete(DOMAINMAP_TABLE_MAP, array( "blog_id" => $blog_id ) , array( "%d" ) );
 	}
 
+
+	/**
+	 * Makes sure post preview is shown even if the admin uses original or entered domain and the frontend is supposed
+	 * to use mapped domain
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $url
+	 * @param $post
+	 *
+	 * @return string
+	 */
+	function post_preview_link_from_original_domain_to_mapped_domain($url, $post){
+		$url_fragments = parse_url( $url );
+		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
+		if( $hostinfo !== $this->_http->hostInfo ){
+			return add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  ));
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Adds mapped domain to customizer's allowed urls so
+	 * @param $allowed_urls
+	 *
+	 * @return array
+	 */
+	function customizer_allowed_urls( $allowed_urls ){
+
+		if( self::$_mapped_domains === array() ) return $allowed_urls;
+
+		$mapped_urls = array();
+
+		foreach( self::$_mapped_domains as $domain ){
+			if(  !empty( $domain ) ){
+				$mapped_urls[] = "http://" . $domain;
+				$mapped_urls[] = "https://" . $domain;
+			}
+		}
+
+		return array_merge($allowed_urls, $mapped_urls);
+	}
+
+	/**
+	 * Returns excluded pages
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_excluded_pages( $return_array = false ){
+		$excluded_pages = get_option( "dm_excluded_pages", "");
+		if( $return_array ){
+			return $excluded_pages === "" ? array() :  array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
+		}
+
+		return $excluded_pages === "" ? false : $excluded_pages;
+	}
+
+	/**
+	 * Returns excluded page urls
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_excluded_page_urls( $return_array = false ){
+		global $current_blog;
+		$excluded_page_urls = trim( get_option( "dm_excluded_page_urls", "") );
+
+		if( empty(  $excluded_page_urls   ) ) return array();
+
+		if( $return_array ){
+			if( $excluded_page_urls === "" )
+				return array();
+
+			$urls = array_map("trim", explode(",", $excluded_page_urls));
+
+			$parseds = array_map("parse_url", $urls);
+			$paths = array();
+
+			foreach( $parseds as $parsed ){
+				if( isset( $parsed['path'] ) ){
+					$path =  ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+					$replacee = ltrim( $current_blog->path, '/\\');
+					$paths[] = str_replace($replacee, "", $path);
+				}
+
+			}
+			return $paths;
+		}
+
+		return $excluded_page_urls;
+	}
+
+	/**
+	 * Returns excluded page urls
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_ssl_forced_page_urls( $return_array = false ){
+		global $current_blog;
+		$excluded_page_urls =  trim( get_option( "dm_ssl_forced_page_urls", "") );
+		if( empty(  $excluded_page_urls   ) ) return array();
+		if( $return_array ){
+			if( $excluded_page_urls === "" )
+				return array();
+
+			$urls = array_map("trim", explode(",", $excluded_page_urls));
+			$parseds = array_map("parse_url", $urls);
+			$paths = array();
+			foreach( $parseds as $parsed ){
+				if( isset( $parsed['path'] ) ){
+					$path =  ltrim( untrailingslashit( str_replace("//", "/", $parsed['path']) ), '/\\' );
+					$replacee = ltrim( $current_blog->path, '/\\');
+					$paths[] = str_replace($replacee, "", $path);
+				}
+
+			}
+			return $paths;
+		}
+
+		return $excluded_page_urls;
+	}
+
+	/**
+	 * Returns ssl forced pages
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param bool $return_array weather it should return array or or string of comma separated ids
+	 *
+	 * @return array|mixed|void
+	 */
+	public static function get_ssl_forced_pages( $return_array = false ){
+		$forced_pages = get_option( "dm_ssl_forced_pages", "");
+		if( $return_array ){
+			return  $forced_pages == "" ? array() :  array_map("intval", array_map("trim", explode(",", $forced_pages)) );
+		}
+
+		return $forced_pages;
+	}
+
+	/**
+	 * Checks to see if the given page should be excluded from mapping
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $post_id int | null
+	 *
+	 * @return bool
+	 */
+	function is_excluded_by_id( $post_id ){
+		if( is_null( $post_id ) ) return false;
+		return in_array( $post_id, self::get_excluded_pages( true )  );
+	}
+
+	/**
+	 * Checks if the given url is ( should be ) excluded
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $url
+	 *
+	 * @return bool
+	 */
+	function is_excluded_by_url( $url ){
+		$excluded_ids =  self::get_excluded_pages( true );
+
+		if( empty( $url ) || !$excluded_ids ) return false;
+
+		$permalink_structure = get_option("permalink_structure");
+		$comps = parse_url( $url );
+		if( empty( $permalink_structure ) )
+		{
+			if( isset( $comps['query'] ) && $query = $comps['query'] ){
+				foreach( $excluded_ids as $excluded_id ){
+					if( $query === "page_id=" . $excluded_id ) return true;
+				}
+			}
+
+			return false;
+		}
+
+
+
+		if( isset( $comps['path'] ) && $path = $comps['path'] )
+		{
+			foreach( $excluded_ids as $excluded_id ){
+				$post = get_post( $excluded_id );
+
+				if( strrpos( $path, $post->post_name ) ) return true;
+			}
+		}
+
+
+		return false;
+	}
+
+
+	function is_excluded_by_request(){
+		global $wp;
+
+		if( !isset( $wp ) || !isset( $wp->request ) ) return false;
+		return in_array( $wp->request, $this->get_excluded_page_urls(true) );
+	}
+
+	function is_ssl_forced_by_request(){
+		global $wp;
+
+		if( !isset($wp) || !isset( $wp->request ) ) return false;
+		return in_array( $wp->request, $this->get_ssl_forced_page_urls(true) );
+	}
+
+	/**
+	 * Excludes page permalinks
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $permalink
+	 * @param $post_id
+	 * @param $leavename
+	 *
+	 * @return string
+	 */
+	function exclude_page_links( $permalink, $post_id, $leavename  ){
+
+		if( empty($post_id) || $this->is_original_domain( $permalink ) ) return $permalink;
+
+		if( $this->is_excluded_by_id( $post_id) ){
+			return $this->unswap_url( $permalink );
+		}
+		return $permalink;
+	}
+
+	/**
+	 * Forces excluded pages to land on the main domain
+	 *
+	 * @since 4.3.0
+	 */
+	function force_page_exclusion(){
+		global $post;
+
+		if( $this->is_mapped_domain()  &&  ( $this->is_excluded_by_id( $post->ID ) || $this->is_excluded_by_request() ) ){
+			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
+			$current_url = $this->unswap_url( $current_url );
+			wp_redirect( $current_url );
+			die;
+		}
+	}
+
+	/**
+	 * Checks to see if the given page should be forced to https
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $post_id
+	 *
+	 * @return bool
+	 */
+	function is_ssl_forced_by_id( $post_id ){
+		if( is_null( $post_id ) ) return false;
+		return in_array( $post_id, self::get_ssl_forced_pages( true )  );
+	}
+
+
+	/**
+	 * SSL force page permalinks
+	 *
+	 * @since 4.3.0
+	 *
+	 * @param $permalink
+	 * @param $post_id
+	 * @param $leavename
+	 *
+	 * @return string
+	 */
+	function ssl_force_page_links( $permalink, $post_id, $leavename  ){
+
+		if( empty( $post_id )) return $permalink;
+
+		if( $this->is_ssl_forced_by_id( $post_id ) ){
+			$permalink = set_url_scheme( $permalink, "https" ) ;
+			return  $permalink;
+		}
+		return $permalink;
+	}
 }

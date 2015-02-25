@@ -30,6 +30,10 @@
  */
 class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
+	function __construct($tabs, $active, $data){
+		parent::__construct($tabs, $active, $data);
+		$this->_save_excluded_pages();
+	}
 	/**
 	 * Determines whether ability to map multi domains is enabled or not.
 	 *
@@ -137,8 +141,17 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 						</form>
 					</li>
 				</ul>
+				<br/>
+
 			</div>
-		</div><?php
+
+		<?php $this->_render_excluded_pages(); ?>
+		</div>
+
+
+
+		<?php
+
 	}
 
 	/**
@@ -202,8 +215,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		?><li>
       <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle forced schema', 'domainmap' ) ?>"></a>
 
-      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain, $current_site->path ?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ), $current_site->path ?>
+      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ) ?>
 			</a>
 
       <?php self::render_health_column( $row->domain ) ?>
@@ -231,6 +244,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		), admin_url( 'admin-ajax.php' ) );
 
 		$health = get_site_transient( "domainmapping-{$domain}-health" );
+
 		$health_message = __( 'needs revalidation', 'domainmap' );
 		$health_class = ' domainmapping-need-revalidate';
 		if ( $health !== false ) {
@@ -249,5 +263,79 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	}
 
 
+	/**
+	 * Renders excluded pages list
+	 *
+	 * @since 4.3.0
+	 *
+	 */
+	private function _render_excluded_pages(){
+
+		/**
+		 * @param $page WP_Post
+		 */
+		?>
+
+		<h3  title="<?php _e("Pages selected here will not be mapped and can optionally force https", domain_map::Text_Domain); ?>">
+			<span class="dashicons-before dashicons-admin-comments"></span>
+			<?php _e("Excluded pages: ", domain_map::Text_Domain); ?>
+			<span class="description">
+				<?php _e('Pages selected here will not be mapped and can optionally force https, If you set the domain to use https, the following "force/unforce SSL will be ignored" ', domain_map::Text_Domain); ?>
+			</span>
+		</h3>
+		<br/>
+		<?php
+		$table = new Domainmap_Table_ExcludedPages_Listing();
+		$table->prepare_items();
+		$table->display();
+		?>
+		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo add_query_arg( 'noheader', 'true' ) ?>">
+			<input type="hidden" name="page" value="domainmapping"/>
+			<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
+			<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
+			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
+			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
+
+			<h4 class="domain-mapping-or-urls-title">
+				<?php _e('Add page urls bellow to have excluded:', domain_map::Text_Domain); ?>
+			</h4>
+			<textarea name="dm_excluded_page_urls" id="dm_excluded_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_excluded_page_urls()); ?></textarea>
+			<p class="description">
+				<?php _e('Please enter absolute URLs (starting with http:// or https://), URLs should be comma separated', domain_map::Text_Domain); ?>
+			</p>
+			<br/>
+			<br/>
+			<h4 class="domain-mapping-or-urls-title">
+				<?php _e('Add page urls bellow to force https:', domain_map::Text_Domain); ?>
+			</h4>
+			<textarea name="dm_ssl_forced_page_urls" id="dm_ssl_forced_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_ssl_forced_page_urls()); ?></textarea>
+			<p class="description">
+				<?php _e('Please enter absolute URLs (starting with http:// or https://), URLs should be comma separated', domain_map::Text_Domain); ?>
+			</p>
+			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
+		</form>
+		<?php
+
+	}
+
+	/**
+	 * Updates excluded pages
+	 *
+	 * @since 4.3.0
+	 */
+	private function _save_excluded_pages()	{
+		if( isset( $_POST['dm-save-exluded-pages'] ) && wp_verify_nonce($nonce = filter_input( INPUT_POST, "_save-exluded-pages" ), "save-exluded-pages") ){
+			update_option( "dm_excluded_pages", strip_tags($_POST['dm_excluded_pages']) );
+			update_option( "dm_ssl_forced_pages", strip_tags($_POST['dm_ssl_forced_pages']) );
+			update_option( "dm_excluded_page_urls", strip_tags($_POST['dm_excluded_page_urls']) );
+			update_option( "dm_ssl_forced_page_urls", strip_tags($_POST['dm_ssl_forced_page_urls']) );
+			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
+				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				exit;
+			}
+		}
+
+	}
 
 }
+

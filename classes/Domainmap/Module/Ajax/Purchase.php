@@ -81,7 +81,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
-		if ( $this->_validate_domain_name( $domain ) ) {
+		$is_valid = $this->_validate_domain_name( $domain );
+		if ( $is_valid ) {
 			$reseller = $this->_plugin->get_reseller();
 
 			$price = false;
@@ -104,7 +105,11 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 					: sprintf( '<div class="domainmapping-info domainmapping-info-error"><b>%s</b> %s.</div>', $domain, __( 'is not available to purchase', 'domainmap' ) ),
 			) );
 		} else {
-			$message = __( 'Domain name is invalid.', 'domainmap' );
+			if( $is_valid === false ){
+				$message = __( 'Domain name is invalid.', 'domainmap' );
+			}else{
+				$message = __( 'Domain name is prohibited.', 'domainmap' );
+			}
 		}
 
 		wp_send_json_error( array( 'message' => $message ) );
@@ -129,8 +134,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 				wp_set_auth_cookie( $user_id, true, true );
 
 				// redirect to https version of this page
-//				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
-//				exit;
+				wp_redirect( add_query_arg( array_map( 'urlencode', $_GET ), admin_url( 'admin-ajax.php', 'https' ) ) );
+				exit;
 			} else {
 				// redirect to login form
 				$this->redirect_to_login_form();
@@ -213,7 +218,8 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 	 */
 	private function _map_domain( $domain, $blog_id = false ) {
 		if ( !$blog_id ) {
-			$blog_id = intval( $this->_wpdb->blogid );
+			global $blog_id;
+			$blog_id = intval( $blog_id );
 		}
 
 		// check if mapped domains are 0 or multi domains are enabled

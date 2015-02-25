@@ -40,6 +40,10 @@ abstract class Domainmap_Render_Site extends Domainmap_Render_Tabbed {
 	protected function _render_header() {
 		?><div class="icon32" id="icon-tools"><br/></div>
 		<h2><?php _e( 'Domain Mapping', 'domainmap' ) ?></h2><?php
+
+		if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
+			echo '<div id="message" class="updated fade">', __( 'Options updated.', domain_map::Text_Domain ), '</div>';
+		endif;
 	}
 
 }

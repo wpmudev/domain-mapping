@@ -84,7 +84,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_site_options_page() {
-		if ( $this->_wpdb->blogid > 1 && $this->_plugin->is_site_permitted() ) {
+		global $blog_id;
+		if ( $blog_id > 1 && $this->_plugin->is_site_permitted() ) {
 			$title = __( 'Domain Mapping', 'domainmap' );
 			$this->_admin_page = add_management_page( $title, $title, 'manage_options', 'domainmapping', array( $this, 'render_site_options_page' ) );
 			$this->_register_wpmudev_notices();
@@ -100,11 +101,11 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	 * @access public
 	 */
 	public function render_site_options_page() {
-
+		global $blog_id;
 		$reseller = $this->_plugin->get_reseller();
 		$tabs = array( 'mapping' => __( 'Map domain', 'domainmap' ) );
 
-		if ( $reseller && $reseller->is_valid() ) {
+		if ( $reseller && $reseller->is_valid() && count( $reseller->get_tld_list() ) ) {
 			$tabs['purchase'] = __( 'Purchase domain', 'domainmap' );
 		}
 
@@ -141,8 +142,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 
 			// prepare template
 			$page = new Domainmap_Render_Site_Map( $tabs, $activetab, $options );
-			$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $this->_wpdb->blogid ) );
-			$page->domains = (array)$this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->_wpdb->blogid ) );
+			$page->origin = $this->_wpdb->get_row( "SELECT * FROM {$this->_wpdb->blogs} WHERE blog_id = " . intval( $blog_id ) );
+			$page->domains = (array)$this->_wpdb->get_results( sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, (int) $blog_id ) );
 			$page->ips = $ips;
 		}
 
@@ -205,9 +206,12 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_crossautologin_infooter'] = filter_input( INPUT_POST, 'map_crossautologin_infooter', FILTER_VALIDATE_BOOLEAN );
 			$options['map_crossautologin_async'] = filter_input( INPUT_POST, 'map_crossautologin_async', FILTER_VALIDATE_BOOLEAN );
 			$options['map_verifydomain'] = filter_input( INPUT_POST, 'map_verifydomain', FILTER_VALIDATE_BOOLEAN );
+			$options['map_check_domain_health'] = filter_input( INPUT_POST, 'map_check_domain_health', FILTER_VALIDATE_BOOLEAN );
 			$options['map_force_admin_ssl'] = $this->server_supports_ssl() ?  filter_input( INPUT_POST, 'map_force_admin_ssl', FILTER_VALIDATE_BOOLEAN ) : 0;
 			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_INT );
 			$options['map_instructions'] = current_user_can('unfiltered_html') ? filter_input( INPUT_POST, 'map_instructions' ) : wp_kses_post( filter_input( INPUT_POST, 'map_instructions' ) );
+			$options['map_disallow_subdomain'] = filter_input( INPUT_POST, 'dm_disallow_subdomain', FILTER_VALIDATE_BOOLEAN );
+			$options['map_prohibited_domains'] = filter_input( INPUT_POST, 'dm_prohibited_domains', FILTER_SANITIZE_STRING );
 
 			// update options
 			update_site_option( 'domain_mapping', $options );

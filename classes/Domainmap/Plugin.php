@@ -196,6 +196,7 @@ class Domainmap_Plugin {
 				$this->_options['map_crossautologin_infooter'] = 0;
 				$this->_options['map_crossautologin_async'] = 0;
 				$this->_options['map_verifydomain'] = 1;
+				$this->_options['map_check_domain_health'] = 0;
 				$this->_options['map_force_admin_ssl'] = 0;
 				$this->_options['map_force_frontend_ssl'] = 0;
 				$this->_options['map_instructions'] = '';
@@ -553,6 +554,23 @@ class Domainmap_Plugin {
 			'ZM' => "Zambia",
 			'ZW' => "Zimbabwe",
 		);
+	}
+
+	function is_prohibited_domain( $domain, $check_subdomains = true ){
+		$probibited_domains = $this->get_option("map_prohibited_domains");
+		$probibited_domains = empty( $probibited_domains ) ?  array() : explode(",", $probibited_domains )  ;
+
+		if( !count( $probibited_domains ) ) return false;
+
+		$probibited_domains = array_map('trim',$probibited_domains);
+		if( $check_subdomains ){
+			foreach( $probibited_domains  as $probibited_domain){
+				if( $domain === $probibited_domain || strpos( $domain, "." . $probibited_domain ) !== false  )
+					return true;
+			}
+		}
+
+		return in_array($domain, $probibited_domains);
 	}
 
 }

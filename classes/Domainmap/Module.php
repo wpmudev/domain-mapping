@@ -153,6 +153,34 @@ class Domainmap_Module {
 	}
 
 
+
+	/**
+	 * Validates health status of a domain.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @access private
+	 * @param string $domain The domain name to validate.
+	 * @return boolean TRUE if the domain name works, otherwise FALSE.
+	 */
+	protected function _validate_health_status( $domain ) {
+		$check = sha1( time() );
+
+		switch_to_blog( 1 );
+		$ajax_url = admin_url( 'admin-ajax.php' );
+		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
+		restore_current_blog();
+		$response = wp_remote_request( add_query_arg( array(
+			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
+			'check'  => $check,
+		), $ajax_url ), array( 'sslverify' => false ) );
+		$status = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
+		$this->set_valid_transient( $domain, $status );
+		return $status;
+	}
+
+
+
 	protected function get_original_domain( $with_www = false ){
 		$home = network_home_url( '/' );
 		$original_domain = parse_url( $home, PHP_URL_HOST );
@@ -163,11 +191,12 @@ class Domainmap_Module {
 	 *
 	 * @since 4.2.0
 	 *
+	 * @param string $domain
 	 * @return bool true if it's original domain, false if not
 	 */
-	protected function is_original_domain(){
-		$current_domain = parse_url( $this->_http->hostinfo  , PHP_URL_HOST );
-		return $current_domain === $this->get_original_domain() || strpos($current_domain, "." . $this->get_original_domain());
+	protected function is_original_domain( $domain = null ){
+		$domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
+		return $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
 	}
 
 	/**
@@ -266,5 +295,23 @@ class Domainmap_Module {
 			$string = substr_replace($string, $replace, $pos, strlen($search));
 
 		return $string;
+	}
+
+
+	/**
+	 * Checks to see if domain is valid, then sets appropriate transient and returns validity boolean
+	 *
+	 * @since 4.3.0
+	 * @param $domain
+	 * @param $status bool to set as domain's health status
+	 *
+	 * @return bool
+	 */
+	protected function set_valid_transient( $domain, $status = null ) {
+		if( is_null( $status ) ) {
+			$valid = $this->_validate_health_status( $domain );
+		}
+		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? 4 * WEEK_IN_SECONDS  : 10 * MINUTE_IN_SECONDS );
+		return $valid;
 	}
 }

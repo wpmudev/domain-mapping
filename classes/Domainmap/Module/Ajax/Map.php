@@ -162,13 +162,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function map_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_MAP_DOMAIN );
 
 		$message = $hide_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_POST, 'domain' ) ) );
 		$scheme = strtolower( trim( filter_input( INPUT_POST, 'scheme' ) ) );
         $domain = Domainmap_Punycode::encode( $domain );
-		if ( $this->_validate_domain_name( $domain, true ) ) {
+		$is_valid = $this->_validate_domain_name( $domain, true );
+		if ( $is_valid ) {
 
 			// check if mapped domains are 0 or multi domains are enabled
 			$count = $this->_get_domains_count();
@@ -181,7 +183,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 				if ( is_null( $blog ) && is_null( $map ) ) {
 					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
-						'blog_id' => $this->_wpdb->blogid,
+						'blog_id' => (int) $blog_id,
 						'domain'  => $domain,
 						'active'  => 1,
                         "scheme" => $scheme,
@@ -189,7 +191,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
 						// fire the action when a new domain is added
-						do_action( 'domainmapping_added_domain', $domain, $this->_wpdb->blogid );
+						do_action( 'domainmapping_added_domain', $domain, $blog_id );
 
 						// send success response
 						ob_start();
@@ -215,7 +217,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				$hide_form = true;
 			}
 		} else {
-			$message = __( 'Domain name is invalid.', 'domainmap' );
+			if( $is_valid === false ){
+				$message = __( 'Domain name is invalid.', 'domainmap' );
+			}else{
+				$message = __( 'Domain name is prohibited.', 'domainmap' );
+			}
 		}
 
 		wp_send_json_error( array(
@@ -234,6 +240,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function unmap_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_UNMAP_DOMAIN );
 
 		$show_form = false;
@@ -255,7 +262,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
              * @param string $domain deleted domain name
              * @param int $blog_id
              */
-            do_action( 'domainmapping_deleted_domain', $domain, $this->_wpdb->blogid );
+            do_action( 'domainmapping_deleted_domain', $domain, $blog_id);
 		}
 
         if( $success ){
@@ -263,29 +270,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
         }else{
             wp_send_json_error( array( 'show_form' => $show_form ) );
         }
-	}
-
-	/**
-	 * Validates health status of a domain.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @access private
-	 * @param string $domain The domain name to validate.
-	 * @return boolean TRUE if the domain name works, otherwise FALSE.
-	 */
-	private function _validate_health_status( $domain ) {
-		$check = sha1( time() );
-
-		switch_to_blog( 1 );
-		$ajax_url = admin_url( 'admin-ajax.php' );
-		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
-		restore_current_blog();
-		$response = wp_remote_request( add_query_arg( array(
-			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
-			'check'  => $check,
-		), $ajax_url ), array( 'sslverify' => false ) );
-		return  !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 	}
 
 	/**
@@ -301,10 +285,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		if ( !$this->_validate_domain_name( $domain ) ) {
 			wp_send_json_error();
 		}
-
-		$valid = $this->_validate_health_status( $domain );
-		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? WEEK_IN_SECONDS : 10 * MINUTE_IN_SECONDS );
-
+		$this->set_valid_transient( $domain );
 		ob_start();
 		Domainmap_Render_Site_Map::render_health_column( $domain );
 		wp_send_json_success( array( 'html' => ob_get_clean() ) );
@@ -330,13 +311,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function select_primary_domain() {
+		global $blog_id;
+
 		self::_check_premissions( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN );
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
 			// unset all domains
             $domain = filter_input( INPUT_GET, 'domain' );
 
-            $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
+            $blog_id = $blog_id == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $blog_id;
 
           if( is_numeric($blog_id) && $blog_id !== 0 )
           {
@@ -372,11 +355,12 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 */
 	public function deselect_primary_domain() {
+		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN );
 
 		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
           $domain = filter_input( INPUT_GET, 'domain' );
-          $blog_id = $this->_wpdb->blogid == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : $this->_wpdb->blogid;
+          $blog_id = $blog_id == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : (int)  $blog_id;
 
           // deselect primary domains
 			$this->_wpdb->update(
@@ -434,4 +418,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
        wp_send_json_error();
      }
    }
+
+
 }
