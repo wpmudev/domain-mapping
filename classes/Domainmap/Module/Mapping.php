@@ -711,7 +711,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 *
 	 * @return string
 	 */
-	function post_preview_link_from_original_domain_to_mapped_domain($url, $post){
+	function post_preview_link_from_original_domain_to_mapped_domain($url, $post = null){
 		$url_fragments = parse_url( $url );
 		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
 		if( $hostinfo !== $this->_http->hostInfo ){
