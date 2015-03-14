@@ -341,7 +341,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
      * @return mixed
      */
     private function _callback_extract_tld( $item ){
-        return str_replace( ".", "",  $item['tld'] );
+	    return preg_replace('/./', '', $item['tld'] , 1);
     }
 
 	/**
