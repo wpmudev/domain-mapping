@@ -597,7 +597,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$orig_components = self::_parse_mb_url( self::$_original_domains[$blog_id] );
 
 		if ( self::$_force_protocol ) {
-			$url_components['scheme'] = is_ssl() ? 'htts' : 'http';
+			$url_components['scheme'] = is_ssl() ? 'https' : 'http';
 		}
 
 		$url_components['host'] = $orig_components['host'];
