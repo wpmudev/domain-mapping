@@ -34,6 +34,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	const ACTION_SETUP_CDSSO    = 'domainmap-setup-cdsso';
 	const ACTION_AUTHORIZE_USER = 'domainmap-authorize-user';
+	const ACTION_AUTHORIZE_USER_IFRAME = 'domainmap-authorize-user-iframe';
+	const ACTION_AUTHORIZE_USER_IFRAME_SUBSITE = 'domainmap-authorize-user-iframe-subsite';
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
 	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 
@@ -92,24 +94,29 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_async =  $plugin->get_option("map_crossautologin_async");
 
 		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
-		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
-		$this->_add_filter( 'login_message', 'get_login_message' );
-		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
+//		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
+//		$this->_add_filter( 'login_message', 'get_login_message' );
+//		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
 
 
 
-		$this->_add_action( $this->_load_in_footer ?  'wp_footer' :  'wp_head', 'add_auth_script', 0 );
+//		$this->_add_action( $this->_load_in_footer ?  'wp_footer' :  'wp_head', 'add_auth_script', 0 );
+		$this->_add_action('wp_head', 'add_auth_script', 0 );
 
-		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
+//		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_footer', 'add_propagation_script' );
+//		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
+//		$this->_add_action( 'login_footer', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
-		$this->_add_action( 'plugins_loaded', 'authorize_user' );
+//		$this->_add_action( 'plugins_loaded', 'authorize_user' );
 
-		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
-		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
+		$this->_add_ajax_action( self::ACTION_AUTHORIZE_USER_IFRAME, 'iframe_authorize_user', true, true );
+		$this->_add_ajax_action( self::ACTION_AUTHORIZE_USER_IFRAME_SUBSITE, 'iframe_authorize_user_subsite', true, true );
+//		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
+//		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+		add_filter('query_vars', array( $this, "add_query_var_for_endpoint" ));
+		add_action('template_redirect', array( $this, 'check_for_endpoint' ));
 
 	}
 
@@ -323,8 +330,33 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
-		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, $this->get_main_ajax_url() );
-		$this->_add_script( $url );
+		$url = add_query_arg( array(
+				'dm_sso_setup' => 1,
+				'action' => self::ACTION_AUTHORIZE_USER_IFRAME,
+				'domain' => $this->_http->hostInfo,
+		), $this->_get_sso_endpoint());
+//		$this->_add_script( $url );
+		?>
+		<script type="text/javascript">
+			(function(window) {
+				var document = window.document;
+				var url = '<?php echo $url; ?>';
+				var iframe = document.createElement('iframe');
+				(iframe.frameElement || iframe).style.cssText =
+					"width: 0; height: 0; border: 0";
+				iframe.src = "javascript:false";
+				var where = document.getElementsByTagName('script')[0];
+				where.parentNode.insertBefore(iframe, where);
+				var doc = iframe.contentWindow.document;
+				doc.open().write('<body onload="'+
+				'var js = document.createElement(\'script\');'+
+				'js.src = \''+ url +'\';'+
+				'document.body.appendChild(js);">');
+				doc.close();
+
+			}(parent.window));
+		</script>
+		<?php
 	}
 
 	/**
@@ -434,4 +466,82 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 
+	function add_query_var_for_endpoint($vars) {
+		$vars[] = 'dm_sso_setup';
+		return $vars;
+	}
+
+	function check_for_endpoint(){
+		if(  intval(get_query_var('dm_sso_setup')) !== 1) return;
+		define('DOING_AJAX', true);
+		header('Content-Type: text/html');
+		send_nosniff_header();
+		header('Cache-Control: no-cache');
+		header('Pragma: no-cache');
+
+		$this->iframe_authorize_user();
+
+	}
+	private function _get_sso_endpoint(){
+//		return plugins_url( '/', DOMAINMAP_BASEFILE ) . "inc/sso-endpoint.php";
+		return network_home_url();
+	}
+
+	function iframe_authorize_user(){
+
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
+		if ( !is_user_logged_in()  ) {
+			header( "Vary: Accept-Encoding" ); // Handle proxies
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + MINUTE_IN_SECONDS ) . " GMT" );
+			exit;
+		}
+
+		?>
+		// Starting Domain Mapping SSO
+		<?php
+		$admin_ajax = trailingslashit( filter_input( INPUT_GET, 'domain' ) ) . "wp-admin/admin-ajax.php";
+		$user = wp_get_current_user();
+
+		$url = add_query_arg( array(
+			"action" => self::ACTION_AUTHORIZE_USER_IFRAME_SUBSITE,
+			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
+//			'nonce' => wp_create_nonce(self::ACTION_AUTHORIZE_USER_IFRAME_SUBSITE),
+//			'user' => $user->get("user_nicename")
+		), $admin_ajax );
+
+		?>
+			(function(window) {
+				var document = window.top.document;
+				var url = '<?php echo $url; ?>';
+				var iframe = document.createElement('iframe');
+				(iframe.frameElement || iframe).style.cssText =
+					"width: 0; height: 0; border: 0";
+				iframe.src = "javascript:false";
+				var where = document.getElementsByTagName('script')[0];
+				where.parentNode.insertBefore(iframe, where);
+				var doc = iframe.contentWindow.document;
+				doc.open().write('<body onload="'+
+				'var js = document.createElement(\'script\');'+
+				'js.src = \''+ url +'\';'+
+				'document.body.appendChild(js);">');
+				doc.close();
+
+			}(parent.top.window));
+		<?php
+		exit;
+	}
+
+	function iframe_authorize_user_subsite() {
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
+
+		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+
+		if ( $user_id ) {
+			wp_set_auth_cookie( $user_id );
+			?>
+			window.top.location.reload();
+			<?php
+		}
+		exit;
+	}
 }
