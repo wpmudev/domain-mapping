@@ -343,8 +343,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
-
-		$protocol = is_ssl() || $force_ssl ? 'https://' : 'http://';
+		$protocol_bool = $this->is_original_domain() ? self::force_ssl_on_mapped_domain() : is_ssl();
+		$protocol = $protocol_bool || $force_ssl ? 'https://' : 'http://';
 		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
 		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
 
