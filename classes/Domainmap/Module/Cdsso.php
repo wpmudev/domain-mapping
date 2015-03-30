@@ -26,6 +26,7 @@
  *
  * @since 4.0.2
  */
+
 class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	const NAME = __CLASS__;
@@ -38,7 +39,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	const ACTION_AUTHORIZE_USER_IFRAME_SUBSITE = 'domainmap-authorize-user-iframe-subsite';
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
 	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
-
+	const SSO_ENDPOINT          = 'dm-sso-endpoint';
 	/**
 	 * Determines whether we need to propagate user to the original blog or not.
 	 *
@@ -115,7 +116,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 //		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
 //		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
-		add_filter('query_vars', array( $this, "add_query_var_for_endpoint" ));
+		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
 		add_action('template_redirect', array( $this, 'check_for_endpoint' ));
 
 	}
@@ -331,9 +332,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			return;
 		}
 		$url = add_query_arg( array(
-				'dm_sso_setup' => 1,
 				'action' => self::ACTION_AUTHORIZE_USER_IFRAME,
-				'domain' => $this->_http->hostInfo,
+				'domain' => $_SERVER['HTTP_HOST'],
 		), $this->_get_sso_endpoint());
 //		$this->_add_script( $url );
 		?>
@@ -467,12 +467,18 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 
 	function add_query_var_for_endpoint($vars) {
-		$vars[] = 'dm_sso_setup';
+		add_rewrite_endpoint( self::SSO_ENDPOINT, EP_ALL );
+		$vars[] = self::SSO_ENDPOINT;
+		flush_rewrite_rules();
 		return $vars;
 	}
 
 	function check_for_endpoint(){
-		if(  intval(get_query_var('dm_sso_setup')) !== 1) return;
+
+		global $wp_query, $wp_rewrite;
+
+		if( !isset( $wp_query->query_vars[ self::SSO_ENDPOINT ] ) ) return;
+
 		define('DOING_AJAX', true);
 		header('Content-Type: text/html');
 		send_nosniff_header();
@@ -482,9 +488,14 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->iframe_authorize_user();
 
 	}
+
+
 	private function _get_sso_endpoint(){
-//		return plugins_url( '/', DOMAINMAP_BASEFILE ) . "inc/sso-endpoint.php";
-		return network_home_url();
+
+		global $wp_rewrite;
+		$url  = trailingslashit( network_home_url() );
+
+		return $wp_rewrite->using_permalinks() ? $url . self::SSO_ENDPOINT . "/" . time() . "/" : $url . "?" . self::SSO_ENDPOINT . "=" . time() ;
 	}
 
 	function iframe_authorize_user(){
@@ -499,14 +510,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		?>
 		// Starting Domain Mapping SSO
 		<?php
-		$admin_ajax = trailingslashit( filter_input( INPUT_GET, 'domain' ) ) . "wp-admin/admin-ajax.php";
-		$user = wp_get_current_user();
+		$admin_ajax = "http://" . trailingslashit( filter_input( INPUT_GET, 'domain' )  ) . "wp-admin/admin-ajax.php";
 
 		$url = add_query_arg( array(
 			"action" => self::ACTION_AUTHORIZE_USER_IFRAME_SUBSITE,
-			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
-//			'nonce' => wp_create_nonce(self::ACTION_AUTHORIZE_USER_IFRAME_SUBSITE),
-//			'user' => $user->get("user_nicename")
+			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS )
 		), $admin_ajax );
 
 		?>
