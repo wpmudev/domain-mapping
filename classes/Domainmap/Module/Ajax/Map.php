@@ -377,7 +377,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	}
 
 	/**
-	 * Changes frotn end mapping for current blog.
+	 * Changes front end mapping for current blog.
 	 *
 	 * @since 4.1.2
 	 *
