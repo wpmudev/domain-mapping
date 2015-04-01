@@ -196,6 +196,19 @@ class Domainmap_Module {
 	 */
 	protected function is_original_domain( $domain = null ){
 		$domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
+
+        /** MULTI DOMAINS INTEGRATION */
+        if( class_exists( 'multi_domain' ) ){
+            global $multi_dm;
+            if( is_array( $multi_dm->domains ) ){
+                foreach( $multi_dm->domains as $key => $domain_item){
+                    if( $domain === $domain_item['domain_name'] || strpos($domain, "." . $domain_item['domain_name']) ){
+                        return true;
+                    }
+                }
+            }
+        }
+
 		return $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
 	}
 
