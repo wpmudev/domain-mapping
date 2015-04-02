@@ -493,7 +493,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _get_sso_endpoint(){
 
 		global $wp_rewrite;
-		$url  = trailingslashit( network_home_url() );
+		$admin_scheme = $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http";
+
+		$url  = trailingslashit( network_home_url("/", $admin_scheme) );
 
 		return $wp_rewrite->using_permalinks() ? $url . self::SSO_ENDPOINT . "/" . time() . "/" : $url . "?" . self::SSO_ENDPOINT . "=" . time() ;
 	}
