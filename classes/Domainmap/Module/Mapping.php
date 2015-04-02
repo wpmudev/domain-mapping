@@ -95,6 +95,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
 		$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
 		$this->_add_action( 'template_redirect',       'force_schema', 12 );
+		$this->_add_action( 'admin_init',              'force_admin_scheme', 12 );
+		$this->_add_action( 'login_init',              'force_admin_scheme', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
@@ -622,15 +624,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function force_schema(){
 		global $post;
-		if( $this->is_original_domain() && !is_ssl()  ){
-			/**
-			 * Login and Admin pages
-			 */
-
-			force_ssl_admin( $this->_plugin->get_option("map_force_admin_ssl") );
-			force_ssl_login( $this->_plugin->get_option("map_force_admin_ssl") );
-		}
-
 		$current_url = $this->_http->getHostInfo("http") . $this->_http->getUrl();
 		$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
 		$force_schema = true;
@@ -686,6 +679,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 
+	}
+
+	/**
+	 * Forces scheme in admin|login of original domain
+	 *
+	 * @since 4.2
+	 *
+	 * @uses force_ssl_admin
+	 * @uses force_ssl_login
+	 * @uses wp_redirect
+	 */
+	function force_admin_scheme(){
+
+		if( $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
+			$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
+			wp_redirect( $current_url_secure );
+		}
 	}
 
 	/**
