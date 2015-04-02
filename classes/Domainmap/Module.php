@@ -257,8 +257,9 @@ class Domainmap_Module {
 	 */
 	protected  function server_supports_ssl(){
 		$request = wp_remote_head(  $this->_http->getHostInfo("https") );
+
 		if( is_wp_error( $request ) ){
-			if( isset( $request->errors['http_request_failed'] ) && isset( $request->errors['http_request_failed'][0] ) && $request->errors['http_request_failed'][0] === "SSL: certificate verification failed (result: 5)")
+			if( isset( $request->errors['http_request_failed'] ) && isset( $request->errors['http_request_failed'][0] ) && strpos($request->errors['http_request_failed'][0], "SSL") !== false)
 				return true;
 
 			return false;
