@@ -692,5 +692,14 @@ class domain_map {
 		$wp_list_table = new Domainmap_Table_ExcludedPages_Listing();
 		$wp_list_table->ajax_response();
 	}
+
+	/**
+	 * Allow multiple domain mappings
+	 * @return bool|mixed
+	 */
+	public static function allow_multiple(){
+		if( defined("DOMAINMAPPING_ALLOWMULTI") ) return (bool) DOMAINMAPPING_ALLOWMULTI;
+		return Domainmap_Plugin::instance()->get_option("map_allow_multiple", false);
+	}
 }
 

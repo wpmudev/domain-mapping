@@ -224,7 +224,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		// check if mapped domains are 0 or multi domains are enabled
 		$count = $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . $blog_id );
-		$allowmulti = defined( 'DOMAINMAPPING_ALLOWMULTI' );
+		$allowmulti = domain_map::allow_multiple();
 		if ( $count == 0 || $allowmulti ) {
 
 			// check if domain has not been mapped

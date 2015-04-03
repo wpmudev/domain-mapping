@@ -34,17 +34,6 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		parent::__construct($tabs, $active, $data);
 		$this->_save_excluded_pages();
 	}
-	/**
-	 * Determines whether ability to map multi domains is enabled or not.
-	 *
-	 * @since 4.0.3
-	 *
-	 * @static
-	 * @return boolean TRUE if multi domains mapping enabled, otherwise FALSE.
-	 */
-	public static function _is_multi_enabled() {
-		return defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN );
-	}
 
 	/**
 	 * Renders instructions how to configure DNS records.
@@ -84,15 +73,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	protected function _render_tab() {
 
 		$schema = ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) ? 'https' : 'http';
-		$form_class = count( $this->domains ) > 0 && !self::_is_multi_enabled() ? ' domainmapping-form-hidden' : '';
-		$admin_ajax = esc_url( admin_url( 'admin-ajax.php' ) );
+		$form_class = count( $this->domains ) > 0 && !domain_map::allow_multiple() ? ' domainmapping-form-hidden' : '';
 
-		$mapping = get_option( 'domainmap_frontend_mapping', 'mapped' );
-		$mapping_types = array(
-			'user'     => __( 'disabled and entered domain should be used', 'domainmap' ),
-			'mapped'   => __( 'directed to mapped (primary) domain', 'domainmap' ),
-			'original' => __( 'directed to original domain', 'domainmap' ),
-		);
 
 		$this->_render_instructions();
 
@@ -112,34 +94,12 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 					<?php foreach( $this->domains as $row ) : ?>
 						<?php self::render_mapping_row( $row ) ?>
 					<?php endforeach; ?>
-					<li class="domainmapping-form">
-						<form id="domainmapping-front-mapping" action="<?php echo $admin_ajax ?>" method="post">
-							<?php wp_nonce_field( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'nonce' ) ?>
-							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT ?>">
-							<span><?php esc_html_e( 'Front end redirect should be', 'domainmap' ) ?></span>
-							<select name="mapping">
-								<?php foreach ( $mapping_types as $key => $label ) : ?>
-								<option value="<?php echo $key ?>"<?php selected( $key, $mapping ) ?>><?php echo esc_html( $label ) ?></option>
-								<?php endforeach; ?>
-							</select>
-						</form>
-						<form id="domainmapping-form-map-domain" action="<?php echo $admin_ajax ?>" method="post">
-							<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
-							<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
-							<select type="text" name="scheme" class="domainmapping-input-prefix">
-                                <option value="0">http://</option>
-                                <option value="1">https://</option>
-                                <option value="2"><?php _e("Force none", domain_map::Text_Domain); ?></option>
-                            </select>
-							<div class="domainmapping-controls-wrapper">
-								<input type="text" class="domainmapping-input-domain" autofocus name="domain">
-							</div>
-							<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
-							<button type="submit" class="button button-primary domainmapping-button dashicons-before dashicons-admin-site"><?php _e( 'Map domain', 'domainmap' ) ?></button>
-                          <i class="icon-globe icon-white"></i>
-							<div class="domainmapping-clear"></div>
-						</form>
-					</li>
+
+
+					<?php
+						if( count($this->domains) === 0 || domain_map::allow_multiple() )
+							$this->_render_mapping_form();
+					?>
 				</ul>
 				<br/>
 
@@ -182,7 +142,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			}
 		}
 
-		$multi = self::_is_multi_enabled();
+		$multi = domain_map::allow_multiple();
 		$admin_ajax =  admin_url( 'admin-ajax.php' ) ;
 
 		$remove_link = esc_url( add_query_arg( array(
@@ -341,5 +301,46 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 	}
 
+	private function _render_mapping_form(){
+		$admin_ajax = esc_url( admin_url( 'admin-ajax.php' ) );
+
+		$mapping = get_option( 'domainmap_frontend_mapping', 'mapped' );
+		$mapping_types = array(
+			'user'     => __( 'disabled and entered domain should be used', 'domainmap' ),
+			'mapped'   => __( 'directed to mapped (primary) domain', 'domainmap' ),
+			'original' => __( 'directed to original domain', 'domainmap' ),
+		);
+		?>
+		<li class="domainmapping-form">
+			<form id="domainmapping-front-mapping" action="<?php echo $admin_ajax ?>" method="post">
+				<?php wp_nonce_field( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'nonce' ) ?>
+				<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT ?>">
+				<span><?php esc_html_e( 'Front end redirect should be', 'domainmap' ) ?></span>
+				<select name="mapping">
+					<?php foreach ( $mapping_types as $key => $label ) : ?>
+						<option value="<?php echo $key ?>"<?php selected( $key, $mapping ) ?>><?php echo esc_html( $label ) ?></option>
+					<?php endforeach; ?>
+				</select>
+			</form>
+			<form id="domainmapping-form-map-domain" action="<?php echo $admin_ajax ?>" method="post">
+				<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
+				<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
+				<select type="text" name="scheme" class="domainmapping-input-prefix">
+					<option value="0">http://</option>
+					<option value="1">https://</option>
+					<option value="2"><?php _e("Force none", domain_map::Text_Domain); ?></option>
+				</select>
+				<div class="domainmapping-controls-wrapper">
+					<input type="text" class="domainmapping-input-domain" autofocus name="domain">
+				</div>
+				<input type="text" class="domainmapping-input-sufix" readonly disabled value="/">
+				<button type="submit" class="button button-primary domainmapping-button dashicons-before dashicons-admin-site"><?php _e( 'Map domain', 'domainmap' ) ?></button>
+				<i class="icon-globe icon-white"></i>
+				<div class="domainmapping-clear"></div>
+			</form>
+		</li>
+
+	<?php
+	}
 }
 

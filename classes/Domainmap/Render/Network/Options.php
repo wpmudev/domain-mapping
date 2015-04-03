@@ -116,16 +116,16 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 //
 //			echo '<div class="domainmapping-info">', $str, '</div>';
 //		}
-
-		if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
-			echo '<div class="domainmapping-info">';
-				printf(
-					__( "If you want to allow your users to map multiple domains, then please add %s in the %s file.", 'domainmap' ),
-					"<code>define( 'DOMAINMAPPING_ALLOWMULTI', 1 );</code>",
-					'<b>wp-config.php</b>'
-				);
-			echo '</div>';
-		}
+//
+//		if ( !domain_map::allow_multiple() ) {
+//			echo '<div class="domainmapping-info">';
+//				printf(
+//					__( "If you want to allow your users to map multiple domains, then please add %s in the %s file.", 'domainmap' ),
+//					"<code>define( 'DOMAINMAPPING_ALLOWMULTI', 1 );</code>",
+//					'<b>wp-config.php</b>'
+//				);
+//			echo '</div>';
+//		}
 	}
 
 	/**
@@ -141,6 +141,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 
 		// options
 		$this->_render_domain_configuration();
+		$this->_render_allow_multiple();
 		$this->_render_administration_mapping();
 		$this->_render_login_mapping();
 		$this->_render_cross_autologin();
@@ -475,6 +476,21 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_forced_urls" name="map_allow_forced_urls" value="1" <?php checked( $allow_force_ssl, 1  ) ?> >
 			<?php _e( "Allow site admins to set https-forced urls", 'domainmap' ) ?>
 		</label>
+
+
+	<?php
+	}
+
+	private function _render_allow_multiple(){
+		$allow_multiple = isset( $this->map_allow_multiple ) ? (int) $this->map_allow_multiple : 0;
+		?>
+		<h4 class="domainmapping-block-header"><?php _e( "Allow mutiple mappings", 'domainmap' ) ?></h4>
+		<label for="map_allow_multiple">
+			<input type="checkbox" class="domainmapping-radio" id="map_allow_multiple" name="map_allow_multiple" value="1" <?php checked( $allow_multiple, true ) ?> >
+			<?php _e( "Allow site admins to set multiple mapped domains", 'domainmap' ) ?><br>
+		</label>
+
+
 
 
 	<?php

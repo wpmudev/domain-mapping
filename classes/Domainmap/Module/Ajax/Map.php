@@ -174,7 +174,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 			// check if mapped domains are 0 or multi domains are enabled
 			$count = $this->_get_domains_count();
-			$allowmulti = defined( 'DOMAINMAPPING_ALLOWMULTI' );
+			$allowmulti = domain_map::allow_multiple();
 			if ( $count == 0 || $allowmulti ) {
 
 				// check if domain has not been mapped
@@ -252,7 +252,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			delete_transient( "domainmapping-{$domain}-health" );
 
 			// check if we need to show form
-			$show_form = $this->_get_domains_count() == 0 || defined( 'DOMAINMAPPING_ALLOWMULTI' );
+			$show_form = $this->_get_domains_count() == 0 || domain_map::allow_multiple();
 
 
             /**
@@ -315,7 +315,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		self::_check_premissions( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN );
 
-		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( domain_map::allow_multiple() ) {
 			// unset all domains
             $domain = filter_input( INPUT_GET, 'domain' );
 
@@ -358,7 +358,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		global $blog_id;
 		self::_check_premissions( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN );
 
-		if ( defined( 'DOMAINMAPPING_ALLOWMULTI' ) && filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( domain_map::allow_multiple() ) {
           $domain = filter_input( INPUT_GET, 'domain' );
           $blog_id = $blog_id == 1 ? (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `blog_id` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) ) : (int)  $blog_id;
 

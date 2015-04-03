@@ -35,7 +35,7 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
 }
 
 // UnComment the line bellow to allow multiple domain mappings per blog
-//define('DOMAINMAPPING_ALLOWMULTI', 'yes');
+//define('DOMAINMAPPING_ALLOWMULTI', true);
 
 // WPMUDev Dashboard Notices
 //load dashboard notice
@@ -100,9 +100,9 @@ function domainmap_setup_constants() {
 		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
 	}
 
-	if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
-		define( 'DOMAINMAPPING_ALLOWMULTI', false );
-	}
+//	if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
+//		define( 'DOMAINMAPPING_ALLOWMULTI', false );
+//	}
 
 	// setup db tables
 	$prefix = isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix;

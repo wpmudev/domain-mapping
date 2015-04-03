@@ -393,10 +393,10 @@ table.domains .domainmapping-mapped{
 .domainmapping-domains-wrapper-locked .domainmapping-locker {
     display: block
 }
-
-.domainmapping-form-hidden #domainmapping-form-map-domain {
+.domainmapping-form-hidden .domainmapping-form{
     display: none
 }
+
 
 .domainmapping-form-hidden li:nth-last-child(2) {
     border-bottom-width: 0

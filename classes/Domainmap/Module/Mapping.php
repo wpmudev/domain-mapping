@@ -390,7 +390,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		} else {
 			// fetch mapped domain
 			$errors = $this->_wpdb->suppress_errors();
-			$sql = filter_var( DOMAINMAPPING_ALLOWMULTI, FILTER_VALIDATE_BOOLEAN )
+			$sql = domain_map::allow_multiple()
 				? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
 				: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
 			$domain = $this->_wpdb->get_var( $sql );
