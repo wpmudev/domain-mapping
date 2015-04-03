@@ -176,6 +176,10 @@ function domainmap_plugin_activate() {
 }
 register_activation_hook( __FILE__, 'domainmap_plugin_activate' );
 
+function domainmap_plugin_deactivate() {
+	do_action("domainmap_plugin_deactivated");
+}
+register_deactivation_hook( __FILE__, 'domainmap_plugin_deactivate' );
 /*================== Global Functions =======================*/
 
 /**

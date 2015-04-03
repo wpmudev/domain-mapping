@@ -39,7 +39,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
 	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 	const SSO_ENDPOINT          = 'dm-sso-endpoint';
-	const FLUSHED_REWRITE_RULES = 'domainmap-sso-flushed-rules';
+
 	/**
 	 * Determines whether we need to propagate user to the original blog or not.
 	 *
@@ -106,7 +106,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_footer', 'add_propagation_script' );
+		$this->_add_action( 'login_head', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
 
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
@@ -125,7 +125,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function set_auth_script_for_login() {
-		$this->_add_action( $this->_load_in_footer ? "login_footer" : 'login_head', 'add_auth_script', 0 );
+		$this->_add_action( 'login_head', 'add_auth_script', 0 );
 	}
 
 	/**
@@ -308,6 +308,13 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
+		if( $this->server_supports_ssl() ){
+			$url = add_query_arg( array(
+				'action' => self::ACTION_PROPAGATE_USER,
+				'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
+			), $this->get_main_ajax_url("https") );
+		}
+
 		$this->_add_script( $url );
 
 	}
@@ -431,9 +438,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.3.1
 	 */
 	function _flush_rewrite_rules(){
-		if( !get_site_option( self::FLUSHED_REWRITE_RULES ) ){
+		$key =  domain_map::FLUSHED_REWRITE_RULES . get_current_blog_id();
+		if( !get_site_option( $key ) ){
 			flush_rewrite_rules();
-			update_site_option( self::FLUSHED_REWRITE_RULES , true);
+			update_site_option( $key , true);
 		}
 	}
 	/**

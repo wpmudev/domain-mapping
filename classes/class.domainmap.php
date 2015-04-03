@@ -46,6 +46,14 @@ class domain_map {
      */
     const Text_Domain = "domainmap";
 
+	/**
+	 * Options key set when rewrite rules are flushed
+	 *
+	 * @since 4.3.1
+	 * @param string FLUSHED_REWRITE_RULES
+	 */
+	const FLUSHED_REWRITE_RULES = 'domainmap-flushed-rules-';
+
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
@@ -70,6 +78,7 @@ class domain_map {
 		add_action('wp_ajax_update_excluded_pages_list', array($this, 'ajax_update_excluded_pages_list'));
 
 		add_action("domainmap_plugin_activated", array($this, "flush_rewrite_rules"));
+		add_action("domainmap_plugin_deactivated", array($this, "remove_rewrite_rule_flush_trace"));
 	}
 
 
@@ -711,5 +720,20 @@ class domain_map {
 	function flush_rewrite_rules(){
 		flush_rewrite_rules(true);
 	}
-}
 
+	/**
+	 * Removes trace of rewrite rule flush from db so that later on they can be flashed when the plugin gets activated again
+	 *
+	 * @since 4.3.1
+	 */
+	function remove_rewrite_rule_flush_trace(){
+		global $wpdb;
+
+		/**
+		 * @param $wpdb WPDB
+		 */
+		$prefix = self::FLUSHED_REWRITE_RULES;
+
+		$wpdb->query("DELETE FROM $wpdb->sitemeta WHERE `meta_key` LIKE '$prefix%'");
+	}
+}

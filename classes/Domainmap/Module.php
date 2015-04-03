@@ -284,10 +284,11 @@ class Domainmap_Module {
 	 * Returns ajax url based on the main domain
 	 *
 	 * @since 4.2.0.4
+	 * @param string $scheme The scheme to use. Default is 'admin', which obeys force_ssl_admin() and is_ssl(). 'http' or 'https' can be passed to force those schemes.
 	 * @return mixed
 	 */
-	protected function get_main_ajax_url(){
-		return  $this->_replace_last_occurence('network/', '', network_admin_url( 'admin-ajax.php' ) );
+	protected function get_main_ajax_url( $scheme = 'admin'  ){
+		return  $this->_replace_last_occurence('network/', '', network_admin_url( 'admin-ajax.php', $scheme ) );
 	}
 
 	/**
