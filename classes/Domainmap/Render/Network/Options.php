@@ -147,6 +147,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_domain_validation();
         $this->_render_ssl_forced_pages();
         $this->_render_prohibited_domains();
+		$this->_render_excluded_forced_section();
 		$this->_render_pro_site();
 
 		?><p class="submit">
@@ -460,4 +461,22 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<?php
 	}
 
+	private function _render_excluded_forced_section(){
+		$allow_exclusion = isset( $this->map_allow_excluded_urls ) ? (int) $this->map_allow_excluded_urls : 1;
+		$allow_force_ssl = isset( $this->map_allow_forced_urls ) ? (int) $this->map_allow_forced_urls : 1;
+		?>
+		<h4 class="domainmapping-block-header"><?php _e( "Enable excluded/forced urls", 'domainmap' ) ?></h4>
+		<label for="map_allow_excluded_urls">
+			<input type="checkbox" class="domainmapping-radio" id="map_allow_excluded_urls" name="map_allow_excluded_urls" value="1" <?php checked( $allow_exclusion, 1  ) ?> >
+			<?php _e( "Allow site admins to set map-excluded urls", 'domainmap' ) ?><br>
+		</label>
+
+		<label for="map_allow_forced_urls">
+			<input type="checkbox" class="domainmapping-radio" id="map_allow_forced_urls" name="map_allow_forced_urls" value="1" <?php checked( $allow_force_ssl, 1  ) ?> >
+			<?php _e( "Allow site admins to set https-forced urls", 'domainmap' ) ?>
+		</label>
+
+
+	<?php
+	}
 }

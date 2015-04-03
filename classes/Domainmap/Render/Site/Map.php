@@ -288,14 +288,14 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		$table = new Domainmap_Table_ExcludedPages_Listing();
 		$table->prepare_items();
 		$table->display();
+
 		?>
 		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo add_query_arg( 'noheader', 'true' ) ?>">
 			<input type="hidden" name="page" value="domainmapping"/>
 			<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
 			<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
+		<?php if( Domainmap_Plugin::instance()->get_option("map_allow_excluded_urls", true) ): ?>
 			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
-			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
-
 			<h4 class="domain-mapping-or-urls-title">
 				<?php _e('Add page urls bellow to have excluded:', domain_map::Text_Domain); ?>
 			</h4>
@@ -305,6 +305,9 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			</p>
 			<br/>
 			<br/>
+		<?php endif; ?>
+		<?php if( Domainmap_Plugin::instance()->get_option("map_allow_forced_urls", true) ): ?>
+			<input type="hidden" name="dm_ssl_forced_pages" id="dm_ssl_forced_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_ssl_forced_pages(); ?>"/>
 			<h4 class="domain-mapping-or-urls-title">
 				<?php _e('Add page urls bellow to force https:', domain_map::Text_Domain); ?>
 			</h4>
@@ -314,6 +317,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			</p>
 			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 		</form>
+		<?php endif; ?>
 		<?php
 
 	}

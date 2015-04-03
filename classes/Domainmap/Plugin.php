@@ -29,7 +29,7 @@
 class Domainmap_Plugin {
 
 	const NAME    = 'domainmap';
-	const VERSION = '4.2.0.1';
+	const VERSION = '4.3.1';
 	const SUNRISE = '1.0.3.1';
 
 	const ACTION_CHECK_DOMAIN_AVAILABILITY  = 'domainmapping_check_domain';
@@ -200,12 +200,14 @@ class Domainmap_Plugin {
 				$this->_options['map_force_admin_ssl'] = 0;
 				$this->_options['map_force_frontend_ssl'] = 0;
 				$this->_options['map_instructions'] = '';
+				$this->_options['map_allow_excluded_urls'] = 1;
+				$this->_options['map_allow_forced_urls'] = 1;
 
 				update_site_option('domain_mapping', $this->_options);
 			}
 		}
 
-		return $this->_options;
+		return apply_filters("dm_get_option",  $this->_options);
 	}
 
 	/**
@@ -220,7 +222,8 @@ class Domainmap_Plugin {
 	 */
 	public function get_option( $option, $default = false ) {
 		$options = $this->get_options();
-		return array_key_exists( $option, $options ) ? $options[$option] : $default;
+		$opt = array_key_exists( $option, $options ) ? $options[$option] : $default;
+		return apply_filters("dm_get_option", $opt);
 	}
 
 	/**
@@ -253,7 +256,7 @@ class Domainmap_Plugin {
 			}
 		}
 
-		return $this->_permitted;
+		return apply_filters("dm_is_site_permitted", $this->_permitted);
 	}
 
 	/**
@@ -569,8 +572,8 @@ class Domainmap_Plugin {
 					return true;
 			}
 		}
-
-		return in_array($domain, $probibited_domains);
+		$is_prohibited = in_array($domain, $probibited_domains);
+		return apply_filters("dm_is_domain_prohibited", $is_prohibited, $probibited_domains);
 	}
 
 }

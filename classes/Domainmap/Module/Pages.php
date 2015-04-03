@@ -211,7 +211,8 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_force_frontend_ssl'] = filter_input( INPUT_POST, 'map_force_frontend_ssl', FILTER_VALIDATE_INT );
 			$options['map_instructions'] = current_user_can('unfiltered_html') ? filter_input( INPUT_POST, 'map_instructions' ) : wp_kses_post( filter_input( INPUT_POST, 'map_instructions' ) );
 			$options['map_disallow_subdomain'] = filter_input( INPUT_POST, 'dm_disallow_subdomain', FILTER_VALIDATE_BOOLEAN );
-			$options['map_prohibited_domains'] = filter_input( INPUT_POST, 'dm_prohibited_domains', FILTER_SANITIZE_STRING );
+			$options['map_allow_excluded_urls'] = filter_input( INPUT_POST, 'map_allow_excluded_urls', FILTER_VALIDATE_INT );
+			$options['map_allow_forced_urls'] = filter_input( INPUT_POST, 'map_allow_forced_urls', FILTER_VALIDATE_INT );
 
 			// update options
 			update_site_option( 'domain_mapping', $options );
