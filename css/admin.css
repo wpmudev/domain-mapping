@@ -394,7 +394,7 @@ table.domains .domainmapping-mapped{
     display: block
 }
 
-.domainmapping-form-hidden .domainmapping-form {
+.domainmapping-form-hidden #domainmapping-form-map-domain {
     display: none
 }
 
