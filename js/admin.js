@@ -58,11 +58,16 @@
 		var $domains = $('.domainmapping-domains');
 
 		$('#domainmapping-front-mapping select').change(function() {
-			var form = $(this).parents('form');
-			$.post(form.attr('action'), form.serialize());
+			var form = $(this).parents('form'),
+                $spinner = $("#domainmapping-front-mapping-spinner");
+
+            $spinner.css({visibility: "visible"});
+			$.post(form.attr('action'), form.serialize(), function(){
+                $spinner.css({visibility: "hidden"});
+            });
 		});
 
-		$('#domainmapping-form-map-domain').submit(function() {
+		$('#domainmapping-form-map-domain').on("submit", function() {
 			var self = this,
 				$self = $(self),
 				domain = $.trim($self.find('.domainmapping-input-domain').val()),
@@ -70,6 +75,7 @@
 
 			if (domain) {
 				wrapper.addClass('domainmapping-domains-wrapper-locked');
+
 				$.post($self.attr('action'), $self.serialize(), function(response) {
 					wrapper.removeClass('domainmapping-domains-wrapper-locked');
 
@@ -78,7 +84,8 @@
 					}
 
 					if (response.success) {
-						$(response.data.html).insertBefore($self.parent());
+                        $(".domainmapping-domains-list li").not(".domainmapping-form").last().after(response.data.html);
+                        $(".domainmapping-front-mapping-form-row").show();
 						self.reset();
 					} else {
 						if (response.data.message) {
@@ -103,7 +110,8 @@
 			var $self = $(this),
 				parent = $self.parent(),
                 $tr = $self.closest("tr"),
-				wrapper = $self.parents('.domainmapping-domains-wrapper');
+				wrapper = $self.parents('.domainmapping-domains-wrapper'),
+                $dropdown_row = $(".domainmapping-front-mapping-form-row");
 
 			if (confirm(domainmapping.message.unmap)) {
 				$.get($self.attr('data-href'), {}, function(response) {
@@ -117,6 +125,10 @@
                         $tr.fadeOut(300, function() {
                             $tr.remove();
                         });
+
+                     if( $(".domainmapping-domains-list li").not(".domainmapping-form").length === 2 ){
+                         $dropdown_row.fadeOut(300);
+                     }
                     }else{
                         show_error(domainmapping.message.unmap_error);
                     }

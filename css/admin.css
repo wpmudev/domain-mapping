@@ -215,7 +215,8 @@ table.domains .domainmapping-mapped{
 .domainmapping-box .domainmapping-form {
     text-align: left;
     border-bottom-width: 0;
-    margin-top: 10px
+    margin-top: 10px;
+    clear: both;
 }
 
 .domainmapping-form input[type="text"],
@@ -358,11 +359,13 @@ table.domains .domainmapping-mapped{
 }
 .domainmapping-invalid-domain,
 .domainmapping-need-revalidate {
-    color: red
+    color: red;
+    text-transform: capitalize;
 }
 
 .domainmapping-valid-domain {
-    color: green
+    color: green;
+    text-transform: capitalize;
 }
 
 .domainmapping-wait-status-refresh {
@@ -393,11 +396,14 @@ table.domains .domainmapping-mapped{
 .domainmapping-domains-wrapper-locked .domainmapping-locker {
     display: block
 }
-.domainmapping-form-hidden .domainmapping-form{
+.domainmapping-form-hidden #domainmapping-form-map-domain {
     display: none
 }
 
-
+#domainmapping-form-map-domain h4{
+    padding-top: 15px;
+    border-top: 1px solid #00487f;
+}
 .domainmapping-form-hidden li:nth-last-child(2) {
     border-bottom-width: 0
 }
@@ -612,7 +618,7 @@ input.domainmapping-radio {
 }
 
 .domainmapping-request-invalid {
-    background-color: #DB4A4A
+    background-color: #DB4A4A;
 }
 
 .domainmapping-request-valid {
@@ -855,4 +861,13 @@ table.domains td.column-actions a{
 }
 .domainmapping-domains.domainmapping-box .tablenav{
     padding: 0 10px;
+}
+#domainmapping-front-mapping-spinner.spinner{
+    visibility: hidden;
+    margin-top: 0px;
+    display: block;
+}
+.domainmapping-front-mapping-form-row p{
+    font-weight: bold;
+    font-size: 13px;
 }

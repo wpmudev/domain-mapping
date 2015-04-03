@@ -94,12 +94,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 					<?php foreach( $this->domains as $row ) : ?>
 						<?php self::render_mapping_row( $row ) ?>
 					<?php endforeach; ?>
-
-
-					<?php
-						if( count($this->domains) === 0 || domain_map::allow_multiple() )
-							$this->_render_mapping_form();
-					?>
+					<?php $this->_render_mapping_form();?>
 				</ul>
 				<br/>
 
@@ -306,23 +301,33 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 		$mapping = get_option( 'domainmap_frontend_mapping', 'mapped' );
 		$mapping_types = array(
-			'user'     => __( 'disabled and entered domain should be used', 'domainmap' ),
-			'mapped'   => __( 'directed to mapped (primary) domain', 'domainmap' ),
-			'original' => __( 'directed to original domain', 'domainmap' ),
+			'user'     => __( 'Disabled and entered domain should be used', 'domainmap' ),
+			'mapped'   => __( 'Directed to mapped (primary) domain', 'domainmap' ),
+			'original' => __( 'Directed to original domain', 'domainmap' ),
 		);
 		?>
-		<li class="domainmapping-form">
+		<li class="domainmapping-form domainmapping-front-mapping-form-row <?php echo count($this->domains) === 0 ? "domainmapping-hidden" : "" ?>">
+
 			<form id="domainmapping-front-mapping" action="<?php echo $admin_ajax ?>" method="post">
 				<?php wp_nonce_field( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'nonce' ) ?>
 				<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT ?>">
-				<span><?php esc_html_e( 'Front end redirect should be', 'domainmap' ) ?></span>
+				<p>
+					<?php esc_html_e( 'Front end redirect should be:', 'domainmap' ) ?>
+					<span id="domainmapping-front-mapping-spinner" class="spinner"></span>
+				</p>
 				<select name="mapping">
 					<?php foreach ( $mapping_types as $key => $label ) : ?>
 						<option value="<?php echo $key ?>"<?php selected( $key, $mapping ) ?>><?php echo esc_html( $label ) ?></option>
 					<?php endforeach; ?>
 				</select>
+
 			</form>
+		</li>
+		<li class="domainmapping-form"></li>
+
+		<li class="domainmapping-form">
 			<form id="domainmapping-form-map-domain" action="<?php echo $admin_ajax ?>" method="post">
+				<h4><?php _e("Map new domain name:", domain_map::Text_Domain); ?></h4>
 				<?php wp_nonce_field( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'nonce' ) ?>
 				<input type="hidden" name="action" value="<?php echo Domainmap_Plugin::ACTION_MAP_DOMAIN ?>">
 				<select type="text" name="scheme" class="domainmapping-input-prefix">
@@ -339,7 +344,6 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 				<div class="domainmapping-clear"></div>
 			</form>
 		</li>
-
 	<?php
 	}
 }
