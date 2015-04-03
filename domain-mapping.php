@@ -44,6 +44,7 @@ $wpmudev_notices[] = array( 'id'=> 99,'name'=> 'Domain Mapping', 'screens' => ar
 require_once 'extra/wpmudev-dash-notification.php';
 
 // main domain mapping class
+require_once 'inc/DM_Currencies.php';
 require_once 'classes/class.domainmap.php';
 
 /**

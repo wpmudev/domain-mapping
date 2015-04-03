@@ -248,6 +248,23 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
        <?php
     }
 
+	private function _render_currency_settings(){
+		$currencies = DM_Currencies::get_currency_list();
+		$current = $this->_reseller()->get_currency();
+		?><h4 class="domainmapping-block-header"><?php _e( 'Currency:', 'domainmap' ) ?></h4>
+		<div>
+			<label for="map_reseller_currency" id="whmcs_currency_label">
+				<select name="map_reseller_currency" id="map_reseller_currency">
+					<?php foreach($currencies as $key => $currency): ?>
+						<option value="<?php echo $key ?>" <?php selected($current, $key); ?> ><?php echo $currency[0]; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</label>
+		</div>
+
+	<?php
+	}
+
 	/**
 	 * Renders template.
 	 *
@@ -260,6 +277,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 		$this->_render_account_settings();
         $this->_render_registration_settings();
         $this->_render_domain_pricing();
+		$this->_render_currency_settings();
 		$this->_render_payment_settings();
 	}
 

@@ -93,7 +93,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
                 $pricing = $p['price'];
             }
         }
-        $currency = "$";
+        $currency = Domainmap_Plugin::instance()->get_reseller()->get_currency_symbol();
         ?>
         <p>
             <label for="dm_whmcs_domain_period" class="domainmapping-label"><?php _e( 'Domain Period:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>

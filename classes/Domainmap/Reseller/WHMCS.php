@@ -163,6 +163,9 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         // client registration
         $options[self::RESELLER_ID]['enable_registration'] = (bool) filter_input( INPUT_POST, 'map_reseller_whmcs_client_registration' );
 
+
+        $options[self::RESELLER_ID]['currency'] =  filter_input( INPUT_POST, 'map_reseller_currency', FILTER_SANITIZE_STRING );
+
 		// validate credentials
 		$options[self::RESELLER_ID]['valid'] = $need_health_check || ( isset( $options[self::RESELLER_ID]['valid'] ) && $options[self::RESELLER_ID]['valid'] === false )
 			? $this->_validate_credentials()
@@ -573,9 +576,10 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
         ob_start();
 
         printf(
-            '<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<div class="domainmapping-clear"></div>',
+            '<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>%s%s</b> %s.<div class="domainmapping-clear"></div>',
             strtoupper( "{$sld}.{$tld}" ),
             __( 'is available to purchase for', 'domainmap' ),
+	        $this->get_currency_symbol(),
             $this->get_tld_price( $tld ),
             __( 'per year', 'domainmap' )
         );
@@ -746,4 +750,16 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 
         $this->_log_request( $type, $valid, $errors, $object );
     }
+
+	/**
+	 * Returns currenct currency code
+	 *
+	 * @sicne 4.3.1
+	 * @return string
+	 */
+	public function get_currency(){
+		$options = Domainmap_Plugin::instance()->get_options();
+		return isset( $options[self::RESELLER_ID]['currency'] ) ?  $options[self::RESELLER_ID]['currency'] : "USD";
+	}
+
 }

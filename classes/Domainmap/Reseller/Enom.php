@@ -972,4 +972,14 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		return $response && isset( $response->ErrCount ) && $response->ErrCount == 0;
 	}
 
+	/**
+	 * Returns currenct currency code
+	 *
+	 * @sicne 4.3.1
+	 * @return string
+	 */
+	public function get_currency(){
+		$options = Domainmap_Plugin::instance()->get_options();
+		return isset( $options[self::RESELLER_ID]['currency'] ) ?  $options[self::RESELLER_ID]['currency'] : "USD";
+	}
 }

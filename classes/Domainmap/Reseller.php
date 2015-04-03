@@ -383,9 +383,10 @@ abstract class Domainmap_Reseller {
 		}
 
 		return sprintf(
-			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>$%s</b> %s.<br>%s<div class="domainmapping-clear"></div></div>',
+			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>IRR%s</b> %s.<br>%s<div class="domainmapping-clear"></div></div>',
 			strtoupper( "{$sld}.{$tld}" ),
 			__( 'is available to purchase for', 'domainmap' ),
+			domain_map::get_currency_symbol(),
 			$this->get_tld_price( $tld ),
 			__( 'per year', 'domainmap' ),
 			$purchase_link
@@ -508,4 +509,16 @@ abstract class Domainmap_Reseller {
 		return $remote_ip;
 	}
 
+
+	/**
+	 * Retrieves current currency symbol
+	 *
+	 * To provide compatibility to older php version, sub-class method is not directly called
+	 *
+	 * @since 4.3.1
+	 * @return string
+	 */
+	public function get_currency_symbol(){
+		return DM_Currencies::get_symbol( Domainmap_Plugin::instance()->get_reseller()->get_currency() );
+	}
 }
