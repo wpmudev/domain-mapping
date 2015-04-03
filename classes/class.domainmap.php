@@ -69,6 +69,7 @@ class domain_map {
 		$this->add_domain_mapping_filters();
 		add_action('wp_ajax_update_excluded_pages_list', array($this, 'ajax_update_excluded_pages_list'));
 
+		add_action("domainmap_plugin_activated", array($this, "flush_rewrite_rules"));
 	}
 
 
@@ -700,6 +701,15 @@ class domain_map {
 	public static function allow_multiple(){
 		if( defined("DOMAINMAPPING_ALLOWMULTI") ) return (bool) DOMAINMAPPING_ALLOWMULTI;
 		return Domainmap_Plugin::instance()->get_option("map_allow_multiple", false);
+	}
+
+	/**
+	 * Flushes rewrite rules on plugin activation
+	 *
+	 * @since 4.3.1
+	 */
+	function flush_rewrite_rules(){
+		flush_rewrite_rules(true);
 	}
 }
 

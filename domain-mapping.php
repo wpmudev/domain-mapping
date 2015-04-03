@@ -161,6 +161,8 @@ function domainmap_launch() {
 			$plugin->set_module( Domainmap_Module_Admin::NAME );
 		}
 	}
+
+
 }
 
 // register autoloader function
@@ -169,6 +171,10 @@ spl_autoload_register( 'domainmap_autoloader' );
 // launch the plugin
 domainmap_launch();
 
+function domainmap_plugin_activate() {
+	do_action("domainmap_plugin_activated");
+}
+register_activation_hook( __FILE__, 'domainmap_plugin_activate' );
 
 /*================== Global Functions =======================*/
 
