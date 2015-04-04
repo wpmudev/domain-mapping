@@ -270,9 +270,10 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			<p class="description">
 				<?php _e('Please enter absolute URLs (starting with http:// or https://), URLs should be comma separated', domain_map::Text_Domain); ?>
 			</p>
+		<?php endif; ?>
 			<?php submit_button( __( 'Save excluded pages', domain_map::Text_Domain ), 'primary', "dm-save-exluded-pages", false, array( 'id' => 'save-exluded-pages' ) ); 		?>
 		</form>
-		<?php endif; ?>
+
 		<?php
 
 	}
