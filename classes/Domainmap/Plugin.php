@@ -201,6 +201,7 @@ class Domainmap_Plugin {
 				$this->_options['map_force_frontend_ssl'] = 0;
 				$this->_options['map_instructions'] = '';
 				$this->_options['map_allow_excluded_urls'] = 1;
+				$this->_options['dm_prohibited_domains'] = "";
 				$this->_options['map_allow_forced_urls'] = 1;
 				$this->_options['map_allow_multiple'] = 0;
 
