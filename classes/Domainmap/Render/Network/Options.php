@@ -285,19 +285,19 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				</li><?php
 			endforeach;
 		?></ul>
-		<br/>
-		<div class="domainmapping-child-list domainmapping-child-list-crossautologin <?php echo $selected ? '' : 'domainmapping-child-list-hidden' ?>" >
-			<label>
-				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_async" value="1" <?php checked( $async, 1 ) ?> >
-				<?php _e( "Load Cross-domain autologin asynchronously", 'domainmap' ) ?><br>
-			</label>
-
-			<label>
-				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_infooter" value="1" <?php checked( $infooter, 1 ) ?> >
-				<?php _e( "Add Cross-domain autologin scripts in footer", 'domainmap' ) ?><br>
-			</label>
-
-		</div>
+<!--		<br/>-->
+<!--		<div class="domainmapping-child-list domainmapping-child-list-crossautologin --><?php //echo $selected ? '' : 'domainmapping-child-list-hidden' ?><!--" >-->
+<!--			<label>-->
+<!--				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_async" value="1" --><?php //checked( $async, 1 ) ?><!-- >-->
+<!--				--><?php //_e( "Load Cross-domain autologin asynchronously", 'domainmap' ) ?><!--<br>-->
+<!--			</label>-->
+<!---->
+<!--			<label>-->
+<!--				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_infooter" value="1" --><?php //checked( $infooter, 1 ) ?><!-- >-->
+<!--				--><?php //_e( "Add Cross-domain autologin scripts in footer", 'domainmap' ) ?><!--<br>-->
+<!--			</label>-->
+<!---->
+<!--		</div>-->
 	<?php
 	}
 
@@ -484,7 +484,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_allow_multiple(){
 		$allow_multiple = isset( $this->map_allow_multiple ) ? (int) $this->map_allow_multiple : 0;
 		?>
-		<h4 class="domainmapping-block-header"><?php _e( "Allow mutiple mappings", 'domainmap' ) ?></h4>
+		<h4 class="domainmapping-block-header"><?php _e( "Allow multiple mappings per site", 'domainmap' ) ?></h4>
 		<label for="map_allow_multiple">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_multiple" name="map_allow_multiple" value="1" <?php checked( $allow_multiple, true ) ?> >
 			<?php _e( "Allow site admins to set multiple mapped domains", 'domainmap' ) ?><br>

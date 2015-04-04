@@ -329,4 +329,15 @@ class Domainmap_Module {
 		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? 4 * WEEK_IN_SECONDS  : 10 * MINUTE_IN_SECONDS );
 		return $valid;
 	}
+
+	/**
+	 * Returns current domain
+	 *
+	 * @since 4.3.1
+	 * @return mixed
+	 */
+	protected function get_current_domain(){
+		$home = home_url( '/' );
+		return parse_url( $home, PHP_URL_HOST );
+	}
 }

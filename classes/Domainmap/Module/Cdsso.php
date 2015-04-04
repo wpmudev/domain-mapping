@@ -61,16 +61,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private $_do_logout = false;
 
 	/**
-	 * Whether to load the sso scripts in footer
-	 *
-	 * @since 4.2.1
-	 *
-	 * @access private
-	 * @var bool
-	 */
-	private $_load_in_footer = false;
-
-	/**
 	 * Whether to load the sso scripts asynchronously
 	 *
 	 * @since 4.2.1
@@ -91,7 +81,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		$this->_load_in_footer =  $plugin->get_option("map_crossautologin_infooter");
 		$this->_async =  $plugin->get_option("map_crossautologin_async");
 
 		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
@@ -106,10 +95,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_head', 'add_propagation_script' );
+		$this->_add_action( 'login_footer', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
 
-		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
 		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
 		add_action('template_redirect', array( $this, 'dispatch_ajax_request' ));
@@ -241,12 +229,17 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
 		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
-			$home = home_url( '/' );
-			$current_domain = parse_url( $home, PHP_URL_HOST );
-			$original_domain = parse_url( apply_filters( 'unswap_url', $home ), PHP_URL_HOST );
-			if ( $current_domain != $original_domain || $this->is_subdomain() ) {
-				$interim_login = $this->_do_propagation = true;
+			if ( !$this->is_original_domain() || $this->is_subdomain() ) {
+//				$interim_login = $this->_do_propagation = true;
+				$url = add_query_arg( array(
+					'dm_action' => self::ACTION_PROPAGATE_USER,
+					'redirect_to' => urlencode( $redirect_to ),
+					"auth" => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS )
+				), $this->_get_sso_endpoint_url(false, $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http" ) );
+				wp_redirect( $url );
+				exit;
 			}
+
 		}
 
 		return $redirect_to;
@@ -266,57 +259,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		return $this->_do_propagation
 			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
 			: $message;
-	}
-
-	/**
-	 * Adds propagation scripts at interim login page after successfull login.
-	 *
-	 * @since 4.1.2
-	 * @access login_footer
-	 *
-	 * @access public
-	 * @global string $redirect_to The redirection URL.
-	 * @global WP_User $user Current user.
-	 */
-	public function add_propagation_script() {
-		global $redirect_to, $user;
-
-		if ( !$this->_do_propagation ) {
-			return;
-		}
-
-		if ( ( empty( $redirect_to ) || $redirect_to == 'wp-admin/' || $redirect_to == admin_url() ) ) {
-			// If the user doesn't belong to a blog, send them to user admin. If the user can't edit posts, send them to their profile.
-			if ( is_multisite() && !get_active_blog_for_user( $user->ID ) && !is_super_admin( $user->ID ) ) {
-				$redirect_to = user_admin_url();
-			} elseif ( is_multisite() && !$user->has_cap( 'read' ) ) {
-				$redirect_to = get_dashboard_url( $user->ID );
-			} elseif ( !$user->has_cap( 'edit_posts' ) ) {
-				$redirect_to = admin_url( 'profile.php' );
-			}
-		}
-		?>
-		<script type="text/javascript">
-			function domainmap_do_redirect() { window.location = "<?php echo $redirect_to ?>"; }
-			setTimeout(domainmap_do_redirect, 5000);
-		</script>
-
-		<?php
-
-		$url = add_query_arg( array(
-			'action' => self::ACTION_PROPAGATE_USER,
-			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
-		), $this->get_main_ajax_url() );
-
-		if( $this->server_supports_ssl() ){
-			$url = add_query_arg( array(
-				'action' => self::ACTION_PROPAGATE_USER,
-				'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
-			), $this->get_main_ajax_url("https") );
-		}
-
-		$this->_add_script( $url );
-
 	}
 
 	/**
@@ -361,30 +303,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			}(parent.window));
 		</script>
 		<?php
-	}
-
-	/**
-	 * Propagates user to the network root block.
-	 *
-	 * @since 4.1.2
-	 * @action wp_ajax_domainmap-propagate-user
-	 * @action wp_ajax_nopriv_domainmap-propagate-user
-	 *
-	 * @access public
-	 */
-	public function propagate_user() {
-		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
-
-		if ( get_current_blog_id() == 1 ) {
-			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-			if ( $user_id ) {
-				wp_set_auth_cookie( $user_id );
-				echo 'if (typeof domainmap_do_redirect === "function") domainmap_do_redirect();';
-				exit;
-			}
-		}
-
-		exit;
 	}
 
 	/**
@@ -557,5 +475,24 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			window.top.location.reload();
 			<?php
 		}
+	}
+
+	/**
+	 * Propagates user
+	 *
+	 * Logs in the user on the main site
+	 *
+	 * @since 4.3.1
+	 *
+	 */
+	function propagate_user(){
+		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+		$redirect_to = filter_input( INPUT_GET, 'redirect_to' );
+		if ( $user_id )
+			wp_set_auth_cookie( $user_id );
+
+
+		wp_safe_redirect($redirect_to);
+		exit;
 	}
 }
