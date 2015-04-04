@@ -95,7 +95,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_footer', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
 
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );

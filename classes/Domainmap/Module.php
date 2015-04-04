@@ -231,7 +231,9 @@ class Domainmap_Module {
 	 * @return bool
 	 */
 	protected function is_login(){
-		return in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ));
+		global $pagenow;
+		$needle = isset( $pagenow ) ? $pagenow : str_replace("/", "", $this->_http->getRequestUri() );
+		return  in_array( $needle, array( 'wp-login.php', 'wp-register.php' ) );
 	}
 
 	/**

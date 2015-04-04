@@ -141,7 +141,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access public
 	 * @global object $current_blog Current blog object.
 	 * @global object $current_site Current site object.
-	 * @param book $force_ssl
+	 * @param bool $force_ssl
 	 */
 	public function redirect_to_orig_domain( $force_ssl ) {
 		global $current_blog, $current_site;
@@ -180,8 +180,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @access private
 	 * @param string $redirect_to The direction to redirect to.
 	 * @param bool $force_ssl
+	 * @param bool $is_front is it related to frontend.
 	 */
-	private function _redirect_to_area( $redirect_to, $force_ssl = false ) {
+	private function _redirect_to_area( $redirect_to, $force_ssl = false, $is_front = true ) {
 
 		/**
 		 * Don't map if this page is exluded from mapping
@@ -194,7 +195,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		switch ( $redirect_to ) {
 			case 'mapped':
-				$this->redirect_to_mapped_domain( $force_ssl );
+				$this->redirect_to_mapped_domain( $force_ssl, $is_front );
 				break;
 			case 'original':
 				if ( defined( 'DOMAIN_MAPPING' ) ) {
@@ -214,7 +215,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function redirect_admin_area() {
 		$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original' ?  $this->_plugin->get_option("map_force_admin_ssl") : false;
-		$this->_redirect_to_area( $this->_plugin->get_option( 'map_admindomain' ), $force_ssl );
+		$this->_redirect_to_area( $this->_plugin->get_option( 'map_admindomain' ), $force_ssl, false );
 	}
 
 	/**
@@ -231,7 +232,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
-			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl );
+			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl, false );
 		}
 	}
 
@@ -309,16 +310,20 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return $mapping;
 	}
 
+
 	/**
 	 * Redirects to mapped domain.
 	 *
 	 * @since 4.0.3
 	 *
 	 * @param bool $force_ssl
+	 * @param bool $is_front is it related to frontend
 	 * @access public
+	 *
+	 * @return void
 	 */
-	public function redirect_to_mapped_domain( $force_ssl = false ) {
-		global $current_blog, $current_site, $post;
+	public function redirect_to_mapped_domain( $force_ssl = false, $is_front = true ) {
+		global $current_blog, $current_site;
 
 		/**
 		 * do not redirect if headers were sent or site is not permitted to use domain mapping
@@ -329,7 +334,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 
-		$mapped_domain = $this->_get_mapped_domain();
+		$mapped_domain = $this->_get_mapped_domain(false, $is_front);
 		// do not redirect if there is no mapped domain
 		if ( !$mapped_domain ) {
 			return;
@@ -370,10 +375,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @since 4.0.3
 	 *
 	 * @access private
-	 * @param int $blog_id The id of a blog to get mapped domain for.
+	 * @param int|bool $blog_id The id of a blog to get mapped domain for.
+	 * @param bool $is_front is it related to frontend
 	 * @return string|boolean Mapped domain on success, otherwise FALSE.
 	 */
-	private function _get_mapped_domain( $blog_id = false ) {
+	private function _get_mapped_domain( $blog_id = false, $is_front = true ) {
 		// use current blog id if $blog_id is empty
 		if ( !$blog_id ) {
 			$blog_id = get_current_blog_id();
@@ -385,16 +391,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$domain = '';
-		if ( $this->_get_frontend_redirect_type() == 'user' ) {
+		if ( $is_front && $this->_get_frontend_redirect_type() == 'user'  ) {
 			$domain = is_admin() && $this->is_original_domain() ? $domain : $_SERVER['HTTP_HOST'];
 		} else {
 			// fetch mapped domain
-			$errors = $this->_wpdb->suppress_errors();
-			$sql = domain_map::allow_multiple()
-				? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
-				: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
-			$domain = $this->_wpdb->get_var( $sql );
-			$this->_wpdb->suppress_errors( $errors );
+			$domain = $this->_fetch_mapped_domain( $blog_id );
 		}
 
 		// save mapped domain into local cache
@@ -624,6 +625,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function force_schema(){
 		global $post;
+
 		$current_url = $this->_http->getHostInfo("http") . $this->_http->getUrl();
 		$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
 		$force_schema = true;
@@ -691,7 +693,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses wp_redirect
 	 */
 	function force_admin_scheme(){
-
 		if( $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
 			$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
 			wp_redirect( $current_url_secure );
@@ -1005,4 +1006,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 		return $permalink;
 	}
+
+	/**
+	 * Fetches mapped domain from the db
+	 *
+	 * @since 4.3.1
+	 * @param $blog_id
+	 *
+	 * @return null|string
+	 */
+	private function _fetch_mapped_domain( $blog_id ) {
+		$errors = $this->_wpdb->suppress_errors();
+		$sql    = domain_map::allow_multiple()
+			? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
+			: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
+		$domain = $this->_wpdb->get_var( $sql );
+		$this->_wpdb->suppress_errors( $errors );
+
+		return $domain;
+}
 }
