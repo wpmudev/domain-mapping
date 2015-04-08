@@ -1,4 +1,14 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.3.1 ==
+* Better integration with Multi-Domains plugin
+* Revamped SSO to improve performance and solve issue with out of date token nag, now fully async
+* Added: Ability to disable single url scheme forcing and mapping exclusion
+* Added: Better UX for adding and managing mapped domains
+* Added: Ability to enable multiple mapped domains from admin of the main site
+* Fixed: Bug when  going from an excluded page to the mapped domain
+* Fixed: Forcing https for admin and login
+* Fixed: Better UX for adding and managing mapped domains
+
 == 4.3.0.4 ==
 * Fixed issue with excluded pages problem on homepage
 
