@@ -36,6 +36,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	const ACTION_SETUP_CDSSO    = 'domainmap-setup-cdsso';
 	const ACTION_CHECK_LOGIN_STATUS = 'domainmap-check-login-status';
 	const ACTION_AUTHORIZE_USER = 'domainmap-authorize-user';
+	const ACTION_AUTHORIZE_USER_ASYNC = 'domainmap-authorize-user_async';
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
 	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 	const SSO_ENDPOINT          = 'dm-sso-endpoint';
@@ -96,8 +97,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
+		if( !$this->_async ){
+			$this->_add_action( 'plugins_loaded', 'authorize_user' );
+		}
 
+
+		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
+		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+
 		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
 		add_action('template_redirect', array( $this, 'dispatch_ajax_request' ));
 
@@ -261,6 +269,50 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
+	 * Adds propagation scripts at interim login page after successfull login.
+	 *
+	 * @since 4.1.2
+	 * @access login_footer
+	 *
+	 * @access public
+	 * @global string $redirect_to The redirection URL.
+	 * @global WP_User $user Current user.
+	 */
+	public function add_propagation_script() {
+		global $redirect_to, $user;
+
+		if ( !$this->_do_propagation ) {
+			return;
+		}
+
+		if ( ( empty( $redirect_to ) || $redirect_to == 'wp-admin/' || $redirect_to == admin_url() ) ) {
+			// If the user doesn't belong to a blog, send them to user admin. If the user can't edit posts, send them to their profile.
+			if ( is_multisite() && !get_active_blog_for_user( $user->ID ) && !is_super_admin( $user->ID ) ) {
+				$redirect_to = user_admin_url();
+			} elseif ( is_multisite() && !$user->has_cap( 'read' ) ) {
+				$redirect_to = get_dashboard_url( $user->ID );
+			} elseif ( !$user->has_cap( 'edit_posts' ) ) {
+				$redirect_to = admin_url( 'profile.php' );
+			}
+		}
+		?>
+		<script <?php echo $this->_async ? "async='true'" : ""; ?>  type="text/javascript">
+			function domainmap_do_redirect() { window.location = "<?php echo $redirect_to ?>"; }
+			setTimeout(domainmap_do_redirect, 5000);
+		</script>
+
+		<?php
+
+		$url = add_query_arg( array(
+			'action' => self::ACTION_PROPAGATE_USER,
+			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
+		), $this->get_main_ajax_url() );
+
+		$this->_add_script( $url );
+
+	}
+
+	/**
 	 * Adds authorization script to the current page header.
 	 *
 	 * @since 4.1.2
@@ -271,13 +323,29 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function add_auth_script() {
 
+		if($this->_async)
+			$this->_add_auth_script_async();
+		else
+			$this->_add_auth_script_sync();
+
+	}
+
+	private function _add_auth_script_sync(){
+		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+			return;
+		}
+		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, $this->get_main_ajax_url() );
+		$this->_add_script( $url );
+	}
+
+	private function _add_auth_script_async(){
 		if (   is_user_logged_in() ||  1  === get_current_blog_id()  ) {
 			return;
 		}
 
 		$url = add_query_arg( array(
-				'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
-				'domain' =>  $_SERVER['HTTP_HOST'] ,
+			'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
+			'domain' =>  $_SERVER['HTTP_HOST'] ,
 		), $this->_get_sso_endpoint_url()
 		);
 
@@ -301,7 +369,34 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 			}(parent.window));
 		</script>
+	<?php
+	}
+
+	/**
+	 * Setups CDSSO for logged in user. (sync)
+	 *
+	 * @since 4.1.2
+	 * @action wp_ajax_domainmap-setup-cdsso
+	 * @action wp_ajax_nopriv_domainmap-setup-cdsso
+	 *
+	 * @access public
+	 */
+	public function setup_cdsso() {
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
+		if ( !is_user_logged_in() || empty( $_SERVER['HTTP_REFERER'] ) ) {
+			header( "Vary: Accept-Encoding" ); // Handle proxies
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() +  ( 2 * MINUTE_IN_SECONDS ) ) . " GMT" );
+			exit;
+		}
+
+		$url = add_query_arg( array(
+			self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
+			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + ( 2 * MINUTE_IN_SECONDS ) ),
+		), $_SERVER['HTTP_REFERER'] );
+		?>
+		window.location.replace("<?php echo $url ?>");
 		<?php
+		exit;
 	}
 
 	/**
@@ -433,7 +528,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		<?php
 
 		$url = add_query_arg( array(
-			"dm_action" => self::ACTION_AUTHORIZE_USER,
+			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
 			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS )
 		), $this->_get_sso_endpoint_url( true, $domain_name ) );
 
@@ -460,19 +555,43 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	/**
 	 * Sets auth cookie for the user on the subsite
+	 * Used by plugins_loaded action hook
+	 *
+	 * @since 4.2.1
+	 */
+	function authorize_user() {
+		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+			if ( $user_id ) {
+				wp_set_auth_cookie( $user_id );
+
+				$redirect_to = in_array( $GLOBALS['pagenow'], array( 'wp-login.php' ) ) && filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL )
+					? $_GET['redirect_to']
+					: add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) );
+
+				wp_redirect( $redirect_to );
+				exit;
+			} else {
+				wp_die( __( "Incorrect or out of date login key", 'domainmap' ) );
+			}
+		}
+	}
+
+	/**
+	 * Sets auth cookie for the user on the subsite ( async )
 	 *
 	 * @since 4.3.1
 	 */
-	function authorize_user() {
+	private function authorize_user_async(){
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
 		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 
 		if ( $user_id ) {
-			wp_set_auth_cookie( $user_id );
-			?>
-			window.top.location.reload();
-			<?php
+		wp_set_auth_cookie( $user_id );
+		?>
+		window.top.location.reload();
+		<?php
 		}
 	}
 
@@ -481,17 +600,26 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 * Logs in the user on the main site
 	 *
+	 * @uses Domainmap_Module_Cdsso::_propagate_user_sync
+	 * @uses Domainmap_Module_Cdsso::_propagate_user_async
 	 * @since 4.3.1
 	 *
 	 */
 	function propagate_user(){
-		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-		$redirect_to = filter_input( INPUT_GET, 'redirect_to' );
-		if ( $user_id )
-			wp_set_auth_cookie( $user_id );
 
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
-		wp_safe_redirect($redirect_to);
+		if ( get_current_blog_id() == 1 ) {
+			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+			if ( $user_id ) {
+				wp_set_auth_cookie( $user_id );
+				echo 'if (typeof domainmap_do_redirect === "function") domainmap_do_redirect();';
+				exit;
+			}
+		}
+
 		exit;
+
 	}
+
 }
