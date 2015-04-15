@@ -56,7 +56,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	protected function _render_header() {
 		parent::_render_header();
 
-		 if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
+		if ( filter_input( INPUT_GET, 'saved', FILTER_VALIDATE_BOOLEAN ) ) :
 			echo '<div id="message" class="updated fade">', __( 'Options updated.', 'domainmap' ), '</div>';
 		endif;
 	}
@@ -72,21 +72,21 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		// sunrise.php notification
 		if ( !file_exists( WP_CONTENT_DIR . '/sunrise.php' ) ) {
 			echo '<div class="domainmapping-info domainmapping-info-error">';
-				printf(
-					__( "Please copy the sunrise.php to %s and uncomment the %s setting in the %s file", 'domainmap' ),
-					'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
-					'<code>SUNRISE</code>',
-					'<b>' . ABSPATH . 'wp-config.php</b>'
-				);
+			printf(
+				__( "Please copy the sunrise.php to %s and uncomment the %s setting in the %s file", 'domainmap' ),
+				'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
+				'<code>SUNRISE</code>',
+				'<b>' . ABSPATH . 'wp-config.php</b>'
+			);
 			echo '</div>';
 		} else {
 			if ( !defined( 'DOMAINMAPPING_SUNRISE_VERSION' ) || version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' ) ) {
 				echo '<div class="domainmapping-info domainmapping-info-error">';
-					printf(
-						__( 'You use old version of %s file. Please, replace that file with new version which is located by following path: %s.', 'domainmap' ),
-						'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
-						'<b>' . DOMAINMAP_ABSPATH . '/sunrise.php</b>'
-					);
+				printf(
+					__( 'You use old version of %s file. Please, replace that file with new version which is located by following path: %s.', 'domainmap' ),
+					'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
+					'<b>' . DOMAINMAP_ABSPATH . '/sunrise.php</b>'
+				);
 				echo '</div>';
 			}
 		}
@@ -94,12 +94,12 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		// SUNRISE constant notification
 		if ( !defined( 'SUNRISE' ) ) {
 			echo '<div class="domainmapping-info domainmapping-info-warning">';
-				printf(
-					__( "If you've not already added %s then please do so. If you added the constant be sure to uncomment this line: %s in the %s file.", 'domainmap' ),
-					"<code>define('SUNRISE', 'on');</code>",
-					"<code>//define('SUNRISE', 'on');</code>",
-					'<b>wp-config.php</b>'
-				);
+			printf(
+				__( "If you've not already added %s then please do so. If you added the constant be sure to uncomment this line: %s in the %s file.", 'domainmap' ),
+				"<code>define('SUNRISE', 'on');</code>",
+				"<code>//define('SUNRISE', 'on');</code>",
+				'<b>wp-config.php</b>'
+			);
 			echo '</div>';
 		}
 
@@ -146,15 +146,15 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$this->_render_login_mapping();
 		$this->_render_cross_autologin();
 		$this->_render_domain_validation();
-        $this->_render_ssl_forced_pages();
-        $this->_render_prohibited_domains();
+		$this->_render_ssl_forced_pages();
+		$this->_render_prohibited_domains();
 		$this->_render_excluded_forced_section();
 		$this->_render_pro_site();
 
 		?><p class="submit">
-			<button type="submit" class="button button-primary domainmapping-button">
-				<i class="icon-ok icon-white"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
-			</button>
+		<button type="submit" class="button button-primary domainmapping-button">
+			<i class="icon-ok icon-white"></i> <?php _e( 'Save Changes', 'domainmap' ) ?>
+		</button>
 		</p><?php
 	}
 
@@ -182,14 +182,14 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		</p>
 
 		<?php if ( !empty( $ips ) ) : ?>
-		<div class="domainmapping-info">
-			<p><?php
-				_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field bellow:', 'domainmap' )
-			?></p>
-			<p>
-				<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
-			</p>
-		</div>
+			<div class="domainmapping-info">
+				<p><?php
+					_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field bellow:', 'domainmap' )
+					?></p>
+				<p>
+					<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
+				</p>
+			</div>
 		<?php endif; ?>
 
 		<div>
@@ -218,14 +218,14 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
-			foreach ( $this->_get_mapping_options() as $map => $label ) :
-				?><li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_admindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_admindomain ) ?>>
-						<?php echo $label ?>
-					</label>
-				</li><?php
-			endforeach;
+		foreach ( $this->_get_mapping_options() as $map => $label ) :
+			?><li>
+			<label>
+				<input type="radio" class="domainmapping-radio" name="map_admindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_admindomain ) ?>>
+				<?php echo $label ?>
+			</label>
+			</li><?php
+		endforeach;
 		?></ul><?php
 	}
 
@@ -243,14 +243,14 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
-			foreach ( $this->_get_mapping_options() as $map => $label ) :
-				?><li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_logindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_logindomain ) ?>>
-						<?php echo $label ?>
-					</label>
-				</li><?php
-			endforeach;
+		foreach ( $this->_get_mapping_options() as $map => $label ) :
+			?><li>
+			<label>
+				<input type="radio" class="domainmapping-radio" name="map_logindomain" value="<?php echo $map ?>"<?php checked( $map, $this->map_logindomain ) ?>>
+				<?php echo $label ?>
+			</label>
+			</li><?php
+		endforeach;
 		?></ul><?php
 	}
 
@@ -278,13 +278,20 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<ul class="domainmapping-compressed-list"><?php
 			foreach ( $options as $option => $label ) :
 				?><li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_crossautologin" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
-						<?php echo $label ?>
-					</label>
+				<label>
+					<input type="radio" class="domainmapping-radio" name="map_crossautologin" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
+					<?php echo $label ?>
+				</label>
 				</li><?php
 			endforeach;
-		?></ul>
+			?></ul>
+		<br/>
+		<div class="domainmapping-child-list domainmapping-child-list-crossautologin <?php echo $selected ? '' : 'domainmapping-child-list-hidden' ?>" >
+			<label>
+				<input type="checkbox" class="domainmapping-checkbox" name="map_crossautologin_async" value="1" <?php checked( $async, 1 ) ?> >
+				<?php _e( "Load Cross-domain autologin asynchronously", 'domainmap' ) ?><br>
+			</label>
+		</div>
 	<?php
 	}
 
@@ -312,13 +319,13 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<ul class="domainmapping-compressed-list"><?php
 			foreach ( $options as $option => $label ) :
 				?><li>
-					<label>
-						<input type="radio" class="domainmapping-radio" name="map_verifydomain" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
-						<?php echo $label ?>
-					</label>
+				<label>
+					<input type="radio" class="domainmapping-radio" name="map_verifydomain" value="<?php echo $option ?>"<?php checked( $option, $selected ) ?>>
+					<?php echo $label ?>
+				</label>
 				</li><?php
 			endforeach;
-		?></ul>
+			?></ul>
 
 		<h4 class="domainmapping-block-header"><?php _e( "Check domain propagation before mapping", 'domainmap' ) ?></h4>
 		<p>
@@ -339,57 +346,57 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	<?php
 	}
 
-    /**
-     * Renders forcing of http or https for admin, login and frontend
-     *
-     * @since 4.2.0
-     *
-     * @access private
-     */
-    private function _render_ssl_forced_pages() {
-        $admin_ssl = isset( $this->map_force_admin_ssl ) ? (int) $this->map_force_admin_ssl : 0;
-        $front_ssl = isset( $this->map_force_frontend_ssl ) ? (int) $this->map_force_frontend_ssl : 0;
-        $options = array(
-            1 => __( 'Yes', 'domainmap' ),
-            0 => __( 'No', 'domainmap' )
-        );
+	/**
+	 * Renders forcing of http or https for admin, login and frontend
+	 *
+	 * @since 4.2.0
+	 *
+	 * @access private
+	 */
+	private function _render_ssl_forced_pages() {
+		$admin_ssl = isset( $this->map_force_admin_ssl ) ? (int) $this->map_force_admin_ssl : 0;
+		$front_ssl = isset( $this->map_force_frontend_ssl ) ? (int) $this->map_force_frontend_ssl : 0;
+		$options = array(
+			1 => __( 'Yes', 'domainmap' ),
+			0 => __( 'No', 'domainmap' )
+		);
 
-        ?>
-        <h4 class="domainmapping-block-header"><?php _e( "Force http/https (Only for original domain)", 'domainmap' ) ?></h4>
-        <p>
-            <?php _e( "Would you like to force <strong>https</strong> in login and admin pages:", 'domainmap' ) ?><br>
-        </p>
+		?>
+		<h4 class="domainmapping-block-header"><?php _e( "Force http/https (Only for original domain)", 'domainmap' ) ?></h4>
+		<p>
+			<?php _e( "Would you like to force <strong>https</strong> in login and admin pages:", 'domainmap' ) ?><br>
+		</p>
 
-        <ul class="domainmapping-compressed-list"><?php
-        foreach ( $options as $option => $label ) :
-            ?><li>
-            <label>
-                <input type="radio" class="domainmapping-radio" name="map_force_admin_ssl" value="<?php echo $option ?>"<?php checked( $option, $admin_ssl ) ?>>
-                <?php echo $label ?>
-            </label>
-            </li><?php
-        endforeach;
-        ?></ul>
-        <p>
-            <?php _e( "Would you like to force <strong>http/https</strong> in front-end pages:", 'domainmap' ) ?><br>
-        </p>
+		<ul class="domainmapping-compressed-list"><?php
+			foreach ( $options as $option => $label ) :
+				?><li>
+				<label>
+					<input type="radio" class="domainmapping-radio" name="map_force_admin_ssl" value="<?php echo $option ?>"<?php checked( $option, $admin_ssl ) ?>>
+					<?php echo $label ?>
+				</label>
+				</li><?php
+			endforeach;
+			?></ul>
+		<p>
+			<?php _e( "Would you like to force <strong>http/https</strong> in front-end pages:", 'domainmap' ) ?><br>
+		</p>
 
-        <ul class="domainmapping-compressed-list"><?php
-        $options = array(
-            0 => __( 'No', 'domainmap' ),
-            1 => __( 'Force http', 'domainmap' ),
-            2 => __( 'Force https', 'domainmap' )
-        );
-        foreach ( $options as $option => $label ) :
-            ?><li>
-            <label>
-                <input type="radio" class="domainmapping-radio" name="map_force_frontend_ssl" value="<?php echo $option ?>"<?php checked( $option, $front_ssl ) ?>>
-                <?php echo $label ?>
-            </label>
-            </li><?php
-        endforeach;
-        ?></ul><?php
-    }
+		<ul class="domainmapping-compressed-list"><?php
+		$options = array(
+			0 => __( 'No', 'domainmap' ),
+			1 => __( 'Force http', 'domainmap' ),
+			2 => __( 'Force https', 'domainmap' )
+		);
+		foreach ( $options as $option => $label ) :
+			?><li>
+			<label>
+				<input type="radio" class="domainmapping-radio" name="map_force_frontend_ssl" value="<?php echo $option ?>"<?php checked( $option, $front_ssl ) ?>>
+				<?php echo $label ?>
+			</label>
+			</li><?php
+		endforeach;
+		?></ul><?php
+	}
 
 	/**
 	 * Renders pro site section.
@@ -407,20 +414,20 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<p><?php _e( 'Make this functionality only available to certain Pro Site levels', 'domainmap' ) ?></p>
 
 		<ul class="domainmapping-compressed-list"><?php
-			$levels = (array)get_site_option( 'psts_levels' );
-			if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
-				$keys = array_keys( $levels );
-				$this->map_supporteronly = array( $keys[0] );
-			endif;
+		$levels = (array)get_site_option( 'psts_levels' );
+		if ( !is_array( $this->map_supporteronly ) && !empty( $levels ) && $this->map_supporteronly == '1' ) :
+			$keys = array_keys( $levels );
+			$this->map_supporteronly = array( $keys[0] );
+		endif;
 
-			foreach ( $levels as $level => $value ) :
-				?><li>
-					<label>
-						<input type="checkbox" class="domainmapping-radio" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
-						<?php echo $level, ': ', esc_html( $value['name'] ) ?>
-					</label>
-				</li><?php
-			endforeach;
+		foreach ( $levels as $level => $value ) :
+			?><li>
+			<label>
+				<input type="checkbox" class="domainmapping-radio" name="map_supporteronly[]" value="<?php echo $level ?>"<?php checked( in_array( $level, (array)$this->map_supporteronly ) ) ?>>
+				<?php echo $level, ': ', esc_html( $value['name'] ) ?>
+			</label>
+			</li><?php
+		endforeach;
 		?></ul><?php
 	}
 
@@ -446,7 +453,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		</ul>
 
 
-		<?php
+	<?php
 	}
 
 	private function _render_excluded_forced_section(){
