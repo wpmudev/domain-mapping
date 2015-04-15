@@ -122,7 +122,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
 		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
-		$this->_add_filter( 'logout_url', "filter_logout_url" );
+		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
 
 	}
 
