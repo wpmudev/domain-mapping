@@ -99,6 +99,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_init',              'force_admin_scheme', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
+		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
 		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
@@ -121,6 +122,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
 		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
+		$this->_add_filter( 'logout_url', "filter_logout_url" );
+
 	}
 
 	/**
@@ -228,7 +231,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function redirect_login_area() {
 
-		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS || filter_input( INPUT_GET, 'action' ) === "logout" || filter_input( INPUT_GET, 'loggedout' ) === "true"  ) return;
 
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
@@ -458,6 +461,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$path = isset( $components['path'] ) ? $components['path'] : '';
 		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
 		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
+
 		return  $scheme . str_replace("//", "/", $user . $pass . $host . $port . $path . $query . $fragment );
 	}
 
@@ -479,6 +483,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
+		global $current_site, $current_blog;
 		// do not swap URL if customizer is running
 		if ( $this->_suppress_swapping ) {
 			return $url;
@@ -1024,5 +1029,33 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_wpdb->suppress_errors( $errors );
 
 		return $domain;
-}
+	}
+
+	/**
+	 * Force logout url to logout the site on current domain
+	 *
+	 * @param $logout_url
+	 * @param $redirect
+	 *
+	 * @since 4.3.1
+	 * @return string
+	 */
+	function filter_logout_url( $logout_url, $redirect  ){
+		if( $this->is_mapped_domain() ){
+			return $this->swap_mapped_url( $logout_url, "wp-login.php" );
+		}
+		return $logout_url;
+	}
+
+	/**
+	 * After logout redirects user to mapped or original domain depending on options settings.
+	 *
+	 * @since 4.3.1
+	 * @action wp_logout
+	 * @access public
+	 */
+	public function redirect_logged_out() {
+		$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
+		$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl, false );
+	}
 }
