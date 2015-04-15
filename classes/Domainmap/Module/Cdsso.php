@@ -101,9 +101,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
 		}
 
-
-		$this->_add_ajax_action( self::ACTION_SETUP_CDSSO, 'setup_cdsso', true, true );
-		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
 
 		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
@@ -234,10 +231,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string The income redirection URL.
 	 */
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
-		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
 			if ( !$this->is_original_domain() || $this->is_subdomain() ) {
-//				$interim_login = $this->_do_propagation = true;
 				$url = add_query_arg( array(
 					'dm_action' => self::ACTION_PROPAGATE_USER,
 					'redirect_to' => urlencode( $redirect_to ),
@@ -334,7 +329,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
-		$url = add_query_arg( 'action', self::ACTION_SETUP_CDSSO, $this->get_main_ajax_url() );
+		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
 		$this->_add_script( $url );
 	}
 
@@ -512,12 +507,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	?>
 		// Starting Domain Mapping SSO
 		<?php
-
 		$url = add_query_arg( array(
 			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
 			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS )
 		), $this->_get_sso_endpoint_url( true, $domain_name ) );
-
 		?>
 			(function(window) {
 				var document = window.top.document;
@@ -546,6 +539,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.2.1
 	 */
 	function authorize_user() {
+
 		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 			if ( $user_id ) {
@@ -586,24 +580,17 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 * Logs in the user on the main site
 	 *
-	 * @uses Domainmap_Module_Cdsso::_propagate_user_sync
-	 * @uses Domainmap_Module_Cdsso::_propagate_user_async
 	 * @since 4.3.1
 	 *
 	 */
 	function propagate_user(){
+		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+		$redirect_to = filter_input( INPUT_GET, 'redirect_to' );
+		if ( $user_id )
+			wp_set_auth_cookie( $user_id );
 
-		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
-		if ( get_current_blog_id() == 1 ) {
-			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-			if ( $user_id ) {
-				wp_set_auth_cookie( $user_id );
-				echo 'if (typeof domainmap_do_redirect === "function") domainmap_do_redirect();';
-				exit;
-			}
-		}
-
+		wp_safe_redirect($redirect_to);
 		exit;
 
 	}
