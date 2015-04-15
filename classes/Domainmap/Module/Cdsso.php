@@ -409,23 +409,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	private function _add_script( $url )
 	{
-		if( $this->_async ):
-		?>
-		<script type="text/javascript">
-			(function(d, t) {
-				var g = d.createElement(t),
-					s = d.getElementsByTagName(t)[0];
-				g.src = '<?php echo $url ?>';
-				g.async = true;
-				s.parentNode.insertBefore(g, s);
-			}(document, 'script'));
-		</script>
-		<?php
-		else:
 		?>
 			<script type="text/javascript" src="<?php echo $url; ?>"></script>
 		<?php
-		endif;
 	}
 
 
