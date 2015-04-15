@@ -1,4 +1,14 @@
 <?php
+function _mb_strlen($str) {
+	$charset = get_option( 'blog_charset' );
+	return !in_array( $charset, array('utf8', 'utf-8', 'UTF8', 'UTF-8') ) ? strlen(utf8_decode($str)) : strlen($str);
+}
+
+if ( !function_exists('mb_strlen') ):
+	function mb_strlen( $str ) {
+		return _mb_strlen($str);
+	}
+endif;
 
 /**
  * Punycode implementation as described in RFC 3492
