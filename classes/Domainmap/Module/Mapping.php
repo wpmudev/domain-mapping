@@ -310,7 +310,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
-		return $mapping;
+		return apply_filters("dm_current_mapping_type", $mapping, $option);
 	}
 
 
@@ -404,7 +404,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		// save mapped domain into local cache
 		self::$_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
 
-		return $domain;
+		return apply_filters("dm_mapped_domain", $domain, $blog_id, $is_front);
 	}
 
 	/**
@@ -462,7 +462,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$query = isset( $components['query'] ) ? '?' . $components['query'] : '';
 		$fragment = isset( $components['fragment'] ) ? '#' . $components['fragment'] : '';
 
-		return  $scheme . str_replace("//", "/", $user . $pass . $host . $port . $path . $query . $fragment );
+		$url = $scheme . str_replace("//", "/", $user . $pass . $host . $port . $path . $query . $fragment );
+		return apply_filters("dm_built_url", $url, $components) ;
 	}
 
 	/**
@@ -493,20 +494,20 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$components = self::_parse_mb_url( $url );
 
 		if ( empty( $components['host'] ) || $this->is_excluded_by_url( $url ) ) {
-			return $url;
+			return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
 		}
 
 
 		// find mapped domain
 		$mapped_domain = $this->_get_mapped_domain( $blog_id );
 		if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
-			return $url;
+			return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
 		}
 
 		$components['host'] = $mapped_domain;
 		$components['path'] = "/" . $path;
 
-		return self::_build_url( $components );
+		return apply_filters("dm_swap_mapped_url", self::_build_url( $components ), $path, $orig_scheme, $blog_id);
 	}
 
 
@@ -527,12 +528,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// do not swap URL if customizer is running or front end redirection is disabled
 		if ( $this->_suppress_swapping ) {
-			return $url;
+			return apply_filters("dm_swap_root_url", $url);
 		}
 
 		$domain = $this->_get_mapped_domain();
 		if ( !$domain ){
-			return $url;
+			return apply_filters("dm_swap_root_url", $url);
 		}
 
 		$protocol = 'http://';
@@ -544,10 +545,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if ( $this->is_excluded_by_url( $url ) ) {
 			$_url = $current_site->domain . $current_blog->path .$current_site->path;
-			return untrailingslashit( $protocol .  str_replace("//", "/", $_url) );
+			$destination = untrailingslashit( $protocol .  str_replace("//", "/", $_url) );
 		}
 
-		return $destination;
+		return apply_filters("dm_swap_root_url", $destination);
 	}
 
 	/**
@@ -614,7 +615,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$url_path = isset( $url_components['path'] ) && $include_path ? $url_components['path'] : '';
 
 		$url_components['path'] = str_replace( '//', '/', $current_site->path . $orig_path . $url_path );
-		return self::_build_url( $url_components );
+		$unwapped_url = self::_build_url( $url_components );
+
+		return apply_filters("dm_unswaped_url", $unwapped_url, $url, $blog_id, $include_path ) ;
 	}
 
 
@@ -631,9 +634,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function force_schema(){
 		global $post;
 
+		do_action("dm_before_force_schema");
+
 		$current_url = $this->_http->getHostInfo("http") . $this->_http->getUrl();
+		$current_url = apply_filters("dm_force_schema_current_url", $current_url);
 		$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
-		$force_schema = true;
+		$current_url_secure = apply_filters("dm_force_schema_current_secure_url", $current_url_secure);
+		$force_schema = apply_filters("dm_force_schema", true, $current_url, $current_url_secure);
+
 		/**
 		 * Filters if schema should be forced
 		 *
@@ -698,7 +706,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses wp_redirect
 	 */
 	function force_admin_scheme(){
-		if( $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
+		do_action("dm_before_force_admin_schema");
+		$force_admin_schema = apply_filters("dm_force_admin_schema", true,  $this->_http->getUrl());
+		if( $force_admin_schema && $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
 			$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
 			wp_redirect( $current_url_secure );
 		}
@@ -774,7 +784,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $excluded_pages === "" ? array() :  array_map("intval", array_map("trim", explode(",", $excluded_pages)) );
 		}
 
-		return $excluded_pages === "" ? false : $excluded_pages;
+		$excluded_pages = $excluded_pages === "" ? false : $excluded_pages;
+		return apply_filters("dm_excluded_pages", $excluded_pages);
 	}
 
 	/**
@@ -812,7 +823,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $paths;
 		}
 
-		return $excluded_page_urls;
+		return apply_filters("dm_excluded_pages_url", $excluded_page_urls, $return_array);
 	}
 
 	/**
@@ -826,13 +837,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public static function get_ssl_forced_page_urls( $return_array = false ){
 		global $current_blog;
-		$excluded_page_urls =  trim( get_option( "dm_ssl_forced_page_urls", "") );
+		$ssl_forced_page_urls =  trim( get_option( "dm_ssl_forced_page_urls", "") );
 
-		if( empty(  $excluded_page_urls   ) ) return $return_array ? array() : "";
+		if( empty(  $ssl_forced_page_urls   ) ) return $return_array ? array() : "";
 
 		if( $return_array ){
 
-			$urls = array_map("trim", explode(",", $excluded_page_urls));
+			$urls = array_map("trim", explode(",", $ssl_forced_page_urls));
 			$parseds = array_map("parse_url", $urls);
 			$paths = array();
 			foreach( $parseds as $parsed ){
@@ -846,7 +857,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $paths;
 		}
 
-		return $excluded_page_urls;
+		return apply_filters("dm_ssl_forced_page_urls", $ssl_forced_page_urls, $return_array);
 	}
 
 	/**
@@ -861,10 +872,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public static function get_ssl_forced_pages( $return_array = false ){
 		$forced_pages = get_option( "dm_ssl_forced_pages", "");
 		if( $return_array ){
-			return  $forced_pages == "" ? array() :  array_map("intval", array_map("trim", explode(",", $forced_pages)) );
+			$forced_pages =  $forced_pages == "" ? array() :  array_map("intval", array_map("trim", explode(",", $forced_pages)) );
 		}
 
-		return $forced_pages;
+		return apply_filters("dm_ssl_forced_pages", $forced_pages, $return_array);
 	}
 
 	/**
@@ -877,8 +888,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function is_excluded_by_id( $post_id ){
-		if( is_null( $post_id ) ) return false;
-		return in_array( $post_id, self::get_excluded_pages( true )  );
+		if( is_null( $post_id ) ) return apply_filters("dm_is_excluded_by_id", false);
+		return apply_filters("dm_is_excluded_by_url", in_array( $post_id, self::get_excluded_pages( true )  ), $post_id);
 	}
 
 	/**
@@ -901,11 +912,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		{
 			if( isset( $comps['query'] ) && $query = $comps['query'] ){
 				foreach( $excluded_ids as $excluded_id ){
-					if( $query === "page_id=" . $excluded_id ) return true;
+					if( $query === "page_id=" . $excluded_id ) return apply_filters("dm_is_excluded_by_url", true, $url);
 				}
 			}
 
-			return false;
+			return apply_filters("dm_is_excluded_by_url", false, $url);
 		}
 
 
@@ -915,27 +926,27 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			foreach( $excluded_ids as $excluded_id ){
 				$post = get_post( $excluded_id );
 
-				if( strrpos( $path, $post->post_name ) ) return true;
+				if( strrpos( $path, $post->post_name ) ) return apply_filters("dm_is_excluded_by_url", true, $url);
 			}
 		}
 
 
-		return false;
+		return apply_filters("dm_is_excluded_by_url", false, $url);
 	}
 
 
 	function is_excluded_by_request(){
 		global $wp;
 
-		if( !isset( $wp ) || !isset( $wp->request ) ) return false;
-		return in_array( $wp->request, $this->get_excluded_page_urls(true) );
+		if( !isset( $wp ) || !isset( $wp->request ) ) return apply_filters("dm_is_excluded_by_request", false);
+		return apply_filters("dm_is_excluded_by_request", in_array( $wp->request, $this->get_excluded_page_urls(true) ));
 	}
 
 	function is_ssl_forced_by_request(){
 		global $wp;
 
-		if( !isset($wp) || !isset( $wp->request ) ) return false;
-		return in_array( $wp->request, $this->get_ssl_forced_page_urls(true) );
+		if( !isset($wp) || !isset( $wp->request ) ) return apply_filters("dm_is_ssl_forced_by_request", false);
+		return apply_filters("dm_is_ssl_forced_by_request", in_array( $wp->request, $this->get_ssl_forced_page_urls(true) ));
 	}
 
 	/**
@@ -951,7 +962,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function exclude_page_links( $permalink, $post_id, $leavename  ){
 
-		if( empty($post_id) || $this->is_original_domain( $permalink ) ) return $permalink;
+		$exclude = apply_filters("dm_exclude_page_links", true);
+
+		if(!$exclude || empty($post_id) || $this->is_original_domain( $permalink ) ) return $permalink;
+
 
 		if( $this->is_excluded_by_id( $post_id) ){
 			return $this->unswap_url( $permalink );
@@ -985,8 +999,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function is_ssl_forced_by_id( $post_id ){
-		if( is_null( $post_id ) ) return false;
-		return in_array( $post_id, self::get_ssl_forced_pages( true )  );
+		if( is_null( $post_id ) ) return apply_filters("dm_is_ssl_forced_by_id", false);
+		return apply_filters("dm_is_ssl_forced_by_id",  in_array( $post_id, self::get_ssl_forced_pages( true )  ), $post_id );
 	}
 
 
@@ -1007,9 +1021,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if( $this->is_ssl_forced_by_id( $post_id ) ){
 			$permalink = set_url_scheme( $permalink, "https" ) ;
-			return  $permalink;
 		}
-		return $permalink;
+		return apply_filters("dm_ssl_force_page_links", $permalink, $post_id, $leavename);
 	}
 
 	/**
@@ -1028,7 +1041,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$domain = $this->_wpdb->get_var( $sql );
 		$this->_wpdb->suppress_errors( $errors );
 
-		return $domain;
+		return apply_filters("dm_fetch_mapped_domain", $domain, $blog_id);
 	}
 
 	/**
@@ -1042,9 +1055,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function filter_logout_url( $logout_url, $redirect  ){
 		if( $this->is_mapped_domain() ){
-			return $this->swap_mapped_url( $logout_url, "wp-login.php" );
+			$logout_url = $this->swap_mapped_url( $logout_url, "wp-login.php" );
 		}
-		return $logout_url;
+		return apply_filters("dm_filter_logout_url", $logout_url, $redirect);
 	}
 
 	/**

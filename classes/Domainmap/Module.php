@@ -203,13 +203,14 @@ class Domainmap_Module {
             if( is_array( $multi_dm->domains ) ){
                 foreach( $multi_dm->domains as $key => $domain_item){
                     if( $domain === $domain_item['domain_name'] || strpos($domain, "." . $domain_item['domain_name']) ){
-                        return true;
+	                    return apply_filters("dm_is_original_domain", true, $domain);
                     }
                 }
             }
         }
 
-		return $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
+		$is_oroginal_domain = $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
+		return apply_filters("dm_is_original_domain", $is_oroginal_domain, $domain);
 	}
 
 	/**
@@ -233,7 +234,8 @@ class Domainmap_Module {
 	protected function is_login(){
 		global $pagenow;
 		$needle = isset( $pagenow ) ? $pagenow : str_replace("/", "", $this->_http->getRequestUri() );
-		return  in_array( $needle, array( 'wp-login.php', 'wp-register.php' ) );
+		$is_login = in_array( $needle, array( 'wp-login.php', 'wp-register.php' ) );
+		return apply_filters("dm_is_login", $is_login, $needle, $pagenow) ;
 	}
 
 	/**
@@ -248,7 +250,8 @@ class Domainmap_Module {
 		global $wpdb;
 		$current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 		$domain = $domain === "" ? $current_domain  : $domain;
-		return (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+		$force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+		return apply_filters("dm_force_ssl_on_mapped_domain", $force_ssl_on_mapped_domain) ;
 	}
 
 	/**
@@ -279,7 +282,7 @@ class Domainmap_Module {
 	 */
 	protected function is_subdomain(){
 		$network_domain =  parse_url( network_home_url(), PHP_URL_HOST );
-		return  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']);
+		return apply_filters("dm_is_subdomain",  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']));
 	}
 
 	/**
