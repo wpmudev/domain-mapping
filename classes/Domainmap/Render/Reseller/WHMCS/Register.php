@@ -78,20 +78,8 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
 	 * @access private
 	 */
 	private function _render_account_fields() {
-		$selected_question = filter_input( INPUT_POST, 'account_question_type' );
-		$questions = array(
-			'smaiden' => esc_html__( "What is your mother's maiden name?", 'domainmap' ),
-			'sbirth'  => esc_html__( 'What is your city of born?', 'domainmap' ),
-			'ssocial' => esc_html__( 'What is your last 4 digits of SSN?', 'domainmap' ),
-			'shigh'   => esc_html__( 'What is your high school?', 'domainmap' ),
-			'fteach'  => esc_html__( 'What is your favorite teacher?', 'domainmap' ),
-			'fvspot'  => esc_html__( 'What is your favorite vacation spot?', 'domainmap' ),
-			'fpet'    => esc_html__( 'What is your favorite pet?', 'domainmap' ),
-			'fmovie'  => esc_html__( 'What is your favorite movie?', 'domainmap' ),
-			'fbook'   => esc_html__( 'What is your favorite book?', 'domainmap' ),
-		);
-
-		?><h4><i class="icon-user"></i> <?php _e( 'Account Information', 'domainmap' ) ?></h4>
+		?>
+		<h4><i class="icon-user"></i> <?php _e( 'Account Information', 'domainmap' ) ?></h4>
 
         <p>
             <label for="account_email" class="domainmapping-label"><?php _e( 'Email:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
@@ -123,29 +111,7 @@ class Domainmap_Render_Reseller_WHMCS_Register extends Domainmap_Render_Reseller
             </span>
 		</p>
 
-
-
-		<p>
-			<label for="account_question_type" class="domainmapping-label"><?php _e( 'Security Question:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<select id="account_question_type" name="account_question_type" required>
-				<?php foreach ( $questions as $code => $question ) : ?>
-				<option value="<?php echo esc_attr( $code ) ?>"<?php selected( $code, $selected_question ) ?>><?php echo $question ?></option>
-				<?php endforeach; ?>
-			</select>
-			<span class="domainmapping-descr"><?php  esc_html_e( 'Select your security question, which will be used for identity verification.', 'domainmap' ) ?></span>
-            <span class="domainmapping-info-error domainmapping-registration-error domainmapping-hidden" id="account_question_type_err">
-                <?php _e("Please select a security question", domain_map::Text_Domain); ?>
-            </span>
-		</p>
-
-		<p>
-			<label for="account_question_answer" class="domainmapping-label"><?php _e( 'Security Answer:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
-			<input type="text" id="account_question_answer" required name="account_question_answer" maxlength="50" value="<?php echo esc_attr( filter_input( INPUT_POST, 'account_question_answer' ) ) ?>">
-			<span class="domainmapping-descr"><?php  esc_html_e( 'Enter your answer to the security question. The maximum length is 50 characters.', 'domainmap' ) ?></span>
-            <span class="domainmapping-info-error domainmapping-registration-error domainmapping-hidden" id="account_question_answer_err">
-                <?php _e("Please answer your security question", domain_map::Text_Domain); ?>
-            </span>
-		</p><?php
+		<?php
 	}
 
 	/**
