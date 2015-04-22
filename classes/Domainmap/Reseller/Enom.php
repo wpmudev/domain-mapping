@@ -344,7 +344,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$template->gateways = $this->_get_gateways();
 		$template->gateway = $this->_get_gateway( $options );
 		$template->environment = $this->_get_environment( $options );
-		$template->register_link = $register_link;
+		$template->register_link = esc_url( $register_link );
 		$template->errors = get_site_transient( 'enom_errors_' . get_current_user_id() );
 
 		$template->render();
@@ -538,10 +538,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
 			restore_current_blog();
 
-			$response = wp_remote_request( add_query_arg( array(
+			$response = wp_remote_request( esc_url_raw( add_query_arg( array(
 				'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 				'check'  => $check,
-			), $ajax_url ) );
+			), $ajax_url ) ) );
 
 			$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check;
 		}
@@ -736,7 +736,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'LOCALECODE'                     => $psts->get_setting( 'pypl_site' ),
 			'NOSHIPPING'                     => 1,
 			'ALLOWNOTE'                      => 0,
-			'RETURNURL'                      => $returnurl,
+			'RETURNURL'                      => esc_url_raw( $returnurl ),
 			'CANCELURL'                      => site_url( "{$cancelurl['path']}?{$cancelurl['query']}" ),
 			'HDRIMG'                         => $psts->get_setting( 'pypl_header_img' ),
 			'HDRBORDERCOLOR'                 => $psts->get_setting( 'pypl_header_border' ),

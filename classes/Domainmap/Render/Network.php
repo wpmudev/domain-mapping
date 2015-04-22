@@ -67,7 +67,7 @@ abstract class Domainmap_Render_Network extends Domainmap_Render_Tabbed {
 	 * @access protected
 	 */
 	protected function _to_html() {
-		?><form action="<?php echo add_query_arg( 'noheader', 'true' ) ?>" method="post">
+		?><form action="<?php echo esc_url_raw( add_query_arg( 'noheader', 'true' ) ) ?>" method="post">
 			<?php if ( $this->_nonce_action ) : ?>
 				<?php wp_nonce_field( $this->_nonce_action ) ?>
 			<?php endif; ?>

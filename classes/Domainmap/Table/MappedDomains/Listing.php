@@ -255,7 +255,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
         ?>
         <div class="domainmapping-domains">
-            <a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo $url ?>" title="<?php _e( 'Refresh health status', 'domainmap' ) ?>">
+            <a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo esc_url( $url ) ?>" title="<?php _e( 'Refresh health status', 'domainmap' ) ?>">
                 <?php echo $health_message ?>
             </a>
         </div>
@@ -298,11 +298,11 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 
     public function column_actions( $item ) {
 
-        $remove_link = add_query_arg( array(
+        $remove_link = esc_url( add_query_arg( array(
             'action' => Domainmap_Plugin::ACTION_UNMAP_DOMAIN,
             'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_UNMAP_DOMAIN ),
             'domain' => $item->mapped_domain,
-        ), admin_url( 'admin-ajax.php' ) );
+        ), admin_url( 'admin-ajax.php' ) ) );
         $primary_class = $item->is_primary == 1 ? 'dashicons-star-filled' : 'dashicons-star-empty';
         $admin_ajax =  admin_url( 'admin-ajax.php' ) ;
 

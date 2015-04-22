@@ -170,10 +170,10 @@ class Domainmap_Module {
 		$ajax_url = admin_url( 'admin-ajax.php' );
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
 		restore_current_blog();
-		$response = wp_remote_request( add_query_arg( array(
+		$response = wp_remote_request( esc_url_raw( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
-		), $ajax_url ), array( 'sslverify' => false ) );
+		), $ajax_url )), array( 'sslverify' => false ) );
 		$status = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 		$this->set_valid_transient( $domain, $status );
 		return $status;

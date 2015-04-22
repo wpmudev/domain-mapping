@@ -492,10 +492,10 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), current( $ips ), $ajax_url );
 			restore_current_blog();
 
-			$response = wp_remote_request( add_query_arg( array(
+			$response = wp_remote_request( esc_url_raw( add_query_arg( array(
 				'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 				'check'  => $check,
-			), $ajax_url ) );
+			), $ajax_url ) ) );
 
 			$dedicated = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && wp_remote_retrieve_body( $response ) == $check;
 		}
@@ -614,7 +614,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                     <p>
                         <strong>
                         <?php
-                            printf( __("Or <a href='%s' id='dm_whmcs_register_client'>click to signup as a new client</a>", domain_map::Text_Domain), $register_link );
+                            printf( __("Or <a href='%s' id='dm_whmcs_register_client'>click to signup as a new client</a>", domain_map::Text_Domain), esc_url( $register_link ) );
                         ?>
                         </strong>
                     </p>

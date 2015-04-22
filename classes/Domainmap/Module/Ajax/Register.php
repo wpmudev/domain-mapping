@@ -74,11 +74,11 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 				wp_set_auth_cookie( $user_id, true, true );
 
 				// redirect to https version of this registration page
-				wp_redirect( add_query_arg( array(
+				wp_redirect( esc_url_raw( add_query_arg( array(
 					'action'   => Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM,
 					'nonce'    => wp_create_nonce( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM ),
 					'reseller' => filter_input( INPUT_GET, 'reseller' ),
-				), admin_url( 'admin-ajax.php', 'https' ) ) );
+				), admin_url( 'admin-ajax.php', 'https' ) ) ) );
 				exit;
 			} else {
 				// redirect to login form
@@ -113,11 +113,11 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 
 		// process post request
 		if ( $_SERVER['REQUEST_METHOD'] == 'POST' && $reseller->regiser_account() ) {
-			wp_redirect( add_query_arg( array(
+			wp_redirect( esc_url_raw( add_query_arg( array(
 				'page'       => 'domainmapping_options',
 				'tab'        => 'reseller-options',
 				'registered' => 'true',
-			), network_admin_url( 'settings.php', 'http' ) ) );
+			), network_admin_url( 'settings.php', 'http' ) ) ) );
 			exit;
 		}
 

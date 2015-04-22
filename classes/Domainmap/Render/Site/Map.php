@@ -177,7 +177,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
       <?php self::render_health_column( $row->domain ) ?>
 			<a class="domainmapping-map-remove dashicons-before dashicons-trash" href="#" data-href="<?php echo esc_url( $remove_link ) ?>" title="<?php _e( 'Remove the domain', 'domainmap' ) ?>"></a>
 			<?php if ( $multi ) : ?>
-			<a class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo $select_primary ?>" data-deselect-href="<?php echo $deselect_primary ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
+			<a class="domainmapping-map-primary dashicons-before <?php echo $primary_class ?>" href="#" data-select-href="<?php echo esc_url( $select_primary ) ?>" data-deselect-href="<?php echo esc_url( $deselect_primary ) ?>" title="<?php _e( 'Select as primary domain', 'domainmap' ) ?>"></a>
 			<?php endif; ?>
 		</li><?php
 	}
@@ -212,7 +212,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			}
 		}
 
-		?><a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo $health_link ?>" title="<?php _e( 'Refresh health status', 'domainmap' ) ?>"><?php
+		?><a class="domainmapping-map-state<?php echo $health_class ?>" href="<?php echo esc_url( $health_link ) ?>" title="<?php _e( 'Refresh health status', 'domainmap' ) ?>"><?php
 			echo $health_message
 		?></a><?php
 	}
@@ -245,7 +245,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		$table->display();
 
 		?>
-		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo add_query_arg( 'noheader', 'true' ) ?>">
+		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo esc_url_raw( add_query_arg( 'noheader', 'true' ) ) ?>">
 			<input type="hidden" name="page" value="domainmapping"/>
 			<input type="hidden" name="paged" value="<?php echo isset( $_REQUEST['paged'] ) ? $_REQUEST['paged'] : "" ?>"/>
 			<?php wp_nonce_field("save-exluded-pages", "_save-exluded-pages"); ?>
@@ -290,7 +290,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			update_option( "dm_excluded_page_urls", strip_tags($_POST['dm_excluded_page_urls']) );
 			update_option( "dm_ssl_forced_page_urls", strip_tags($_POST['dm_ssl_forced_page_urls']) );
 			if ( filter_input( INPUT_GET, 'noheader', FILTER_VALIDATE_BOOLEAN ) ) {
-				wp_safe_redirect( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) );
+				wp_safe_redirect( esc_url_raw( add_query_arg( array( 'noheader' => false, 'saved' => 'true' ) ) ) );
 				exit;
 			}
 		}

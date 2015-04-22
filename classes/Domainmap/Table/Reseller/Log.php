@@ -97,29 +97,29 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		$actions = array(
 			'view'   => sprintf(
 				'<a href="%s" target="_blank">%s</a>',
-				add_query_arg( array(
+				esc_url( add_query_arg( array(
 					'nonce'                => $nonce,
 					'noheader'             => 'true',
 					'action'               => 'reseller-log-view',
 					$this->_args['plural'] => $item['id'],
-				) ),
+				) ) ),
 				__( 'View Details', 'domainmap' )
 			),
 			'delete' => sprintf(
 				'<a href="%s" onclick="return showNotice.warn();">%s</a>',
-				add_query_arg( array(
+				esc_url(add_query_arg( array(
 					'nonce'                => $nonce,
 					'noheader'             => 'true',
 					'action'               => 'reseller-log-delete',
 					$this->_args['plural'] => $item['id'],
-				) ),
+				) ) ),
 				__( 'Delete', 'domainmap' )
 			),
 		);
 
 		return sprintf(
 			'<a href="%s"><b>%s</b></a> %s',
-			add_query_arg( 's', $item['user_id'], network_admin_url( 'users.php' ) ),
+			esc_url( add_query_arg( 's', $item['user_id'], network_admin_url( 'users.php' ) ) ),
 			$item['user_name'],
 			$this->row_actions( $actions )
 		);
@@ -187,21 +187,21 @@ class Domainmap_Table_Reseller_Log extends Domainmap_Table {
 		return array(
 			'all' => sprintf(
 				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-				add_query_arg( array( 'valid' => false, 'paged' => false ) ),
+				esc_url( add_query_arg( array( 'valid' => false, 'paged' => false ) ) ),
 				!isseT( $_GET['valid'] ) ? ' class="current"' : '',
 				__( 'All', 'domainmap' ),
 				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s" . $type, $provider ) ) )
 			),
 			'valid' => sprintf(
 				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-				add_query_arg( array( 'valid' => '1', 'paged' => false ) ),
+				esc_url( add_query_arg( array( 'valid' => '1', 'paged' => false ) ) ),
 				$valid > 0 ? ' class="current"' : '',
 				__( 'Success', 'domainmap' ),
 				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s AND valid > 0" . $type, $provider ) ) )
 			),
 			'invalid' => sprintf(
 				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-				add_query_arg( array( 'valid' => '0', 'paged' => false ) ),
+				esc_url( add_query_arg( array( 'valid' => '0', 'paged' => false ) ) ),
 				$valid === 0 ? ' class="current"' : '',
 				__( 'Failed', 'domainmap' ),
 				intval( $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . DOMAINMAP_TABLE_RESELLER_LOG . " WHERE provider = %s AND valid = 0" . $type, $provider ) ) )

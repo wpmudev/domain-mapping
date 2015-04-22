@@ -103,7 +103,7 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 	 */
 	public function redirect_to_login_form() {
 
-		wp_redirect( wp_login_url( add_query_arg() ) );
+		wp_redirect( wp_login_url( esc_url_raw( add_query_arg() ) ) );
 		exit;
 	}
 

@@ -741,7 +741,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$url_fragments = parse_url( $url );
 		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
 		if( $hostinfo !== $this->_http->hostInfo ){
-			return add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  ));
+			return esc_url_raw( add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  )) );
 		}
 
 		return $url;

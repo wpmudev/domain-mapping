@@ -377,7 +377,7 @@ abstract class Domainmap_Reseller {
 
 			$purchase_link = sprintf(
 				'<a class="domainmapping-purchase-link" href="%s"><b>%s</b></a>',
-				$purchase_link,
+				esc_url( $purchase_link ),
 				__( 'Purchase this domain.', 'domainmap' )
 			);
 		}
@@ -389,7 +389,7 @@ abstract class Domainmap_Reseller {
 			domain_map::get_currency_symbol(),
 			$this->get_tld_price( $tld ),
 			__( 'per year', 'domainmap' ),
-			$purchase_link
+			esc_url( $purchase_link )
 		);
 	}
 

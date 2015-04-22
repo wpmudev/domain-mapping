@@ -58,7 +58,7 @@ abstract class Domainmap_Render_Tabbed extends Domainmap_Render {
 	 * @access protected
 	 */
 	protected function _to_html() {
-		$baseurl = add_query_arg( 'page', filter_input( INPUT_GET, 'page' ), current( explode( '?', $_SERVER['REQUEST_URI'] ) ) );
+		$baseurl = esc_url_raw( add_query_arg( 'page', filter_input( INPUT_GET, 'page' ), current( explode( '?', $_SERVER['REQUEST_URI'] ) ) ) );
 
 		?><div id="domainmapping-content" class="wrap">
 			<?php $this->_render_header() ?>

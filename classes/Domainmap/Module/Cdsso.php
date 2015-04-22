@@ -138,7 +138,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$redirect_domain = parse_url( $redirect_to, PHP_URL_HOST );
 		if ( $login_domain != $redirect_domain ) {
 			$redirect_to = str_replace( "://{$redirect_domain}", "://{$login_domain}", $redirect_to );
-			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_url );
+			$login_url = esc_url_raw( add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_url ) );
 		}
 
 		return $login_url;
@@ -168,7 +168,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function add_logout_marker( $redirect_to ) {
 		if ( $this->_do_logout ) {
-			$redirect_to = add_query_arg( self::ACTION_KEY, self::ACTION_LOGOUT_USER, $redirect_to );
+			$redirect_to = esc_url_raw( add_query_arg( self::ACTION_KEY, self::ACTION_LOGOUT_USER, $redirect_to ) );
 		}
 
 		return $redirect_to;
@@ -189,7 +189,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, $this->get_main_ajax_url() );
-		$this->_add_script( $url );
+		$this->_add_script( esc_url_raw( $url ) );
 	}
 
 	/**
@@ -213,7 +213,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		wp_clear_auth_cookie();
 		$url = add_query_arg( self::ACTION_KEY, false, $_SERVER['HTTP_REFERER'] );
 
-		echo 'window.location = "', $url, '";';
+		echo 'window.location = "', esc_url_raw( $url ), '";';
 		exit;
 	}
 
@@ -238,7 +238,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 					'redirect_to' => urlencode( $redirect_to ),
 					"auth" => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS )
 				), $this->_get_sso_endpoint_url(false, $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http" ) );
-				wp_redirect( $url );
+				wp_redirect( esc_url_raw( $url ) );
 				exit;
 			}
 
@@ -303,7 +303,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
-		$this->_add_script( $url );
+		$this->_add_script( esc_url_raw( $url ) );
 
 	}
 
@@ -330,7 +330,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			return;
 		}
 		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
-		$this->_add_script( $url );
+		$this->_add_script( esc_url_raw( $url ) );
 	}
 
 	private function _add_auth_script_async(){
@@ -348,7 +348,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		<script type="text/javascript">
 			(function(window) {
 				var document = window.document;
-				var url = '<?php echo $url; ?>';
+				var url = '<?php echo esc_url_raw( $url ); ?>';
 				var iframe = document.createElement('iframe');
 				(iframe.frameElement || iframe).style.cssText =
 					"width: 0; height: 0; border: 0";
@@ -389,7 +389,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + ( 2 * MINUTE_IN_SECONDS ) ),
 		), $_SERVER['HTTP_REFERER'] );
 		?>
-		window.location.replace("<?php echo $url ?>");
+		window.location.replace("<?php echo esc_url_raw( $url ) ?>");
 		<?php
 		exit;
 	}
@@ -514,7 +514,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		?>
 			(function(window) {
 				var document = window.top.document;
-				var url = '<?php echo $url; ?>';
+				var url = '<?php echo esc_url_raw( $url ); ?>';
 				var iframe = document.createElement('iframe');
 				(iframe.frameElement || iframe).style.cssText =
 					"width: 0; height: 0; border: 0";
@@ -549,7 +549,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 					? $_GET['redirect_to']
 					: add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) );
 
-				wp_redirect( $redirect_to );
+				wp_redirect( esc_url_raw( $redirect_to ) );
 				exit;
 			} else {
 				wp_die( __( "Incorrect or out of date login key", 'domainmap' ) );
