@@ -142,7 +142,7 @@ class domain_map {
 				$url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
 				// remove the http and https parts of the original url
 				$url = str_replace( array( 'https://', 'http://' ), '', $url );
-var_dump($urlstrpos($url, "admin-ajax.php"));
+
 				// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
 				if ( $path != 'admin-ajax.php' && strpos($url, "admin-ajax.php") !== false ) {
 					// swap the mapped url with the original one
