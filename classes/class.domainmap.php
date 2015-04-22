@@ -144,7 +144,7 @@ class domain_map {
 				$url = str_replace( array( 'https://', 'http://' ), '', $url );
 
 				// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
-				if ( $path != 'admin-ajax.php' ) {
+				if ( $path != 'admin-ajax.php' && strpos($admin_url, "admin-ajax.php") === false ) {
 					// swap the mapped url with the original one
 					$admin_url = str_replace( $mapped_url, $url, $admin_url );
 				} else {
