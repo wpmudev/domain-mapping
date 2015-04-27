@@ -96,10 +96,16 @@ function domainmap_setup_constants() {
 	define( 'DOMAINMAP_ABSURL',   plugins_url( '/', __FILE__ ) );
 	define( 'DOMAINMAP_ABSPATH',  dirname( __FILE__ ) );
 
-	if ( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
-		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
-	}
+/**
+ * @deprecate DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN
+ */
+//	if ( !defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) ) {
+//		define( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN', false );
+//	}
 
+/**
+ * @deprecate DOMAINMAPPING_ALLOWMULTI
+ */
 //	if ( !defined( 'DOMAINMAPPING_ALLOWMULTI' ) ) {
 //		define( 'DOMAINMAPPING_ALLOWMULTI', false );
 //	}

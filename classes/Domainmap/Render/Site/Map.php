@@ -71,8 +71,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access protected
 	 */
 	protected function _render_tab() {
-
-		$schema = ( defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN && is_ssl() ) ? 'https' : 'http';
+		$schema = Domainmap_Plugin::instance()->get_option("map_force_frontend_ssl") === 2 ? 'https' : 'http';
 		$form_class = count( $this->domains ) > 0 && !domain_map::allow_multiple() ? ' domainmapping-form-hidden' : '';
 
 

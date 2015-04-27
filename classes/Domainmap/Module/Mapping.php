@@ -70,15 +70,24 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	private $_suppress_swapping = false;
 
+
 	/**
-	 * Determines whether we need to force protocol on mapped domain or not.
+	 * Determines whether we need to force ssl frontend of original domain
 	 *
-	 * @since 4.1.0
+	 * @since 4.3.1
 	 *
-	 * @access private
-	 * @var boolean
+	 * @var bool|mixed
 	 */
-	private static $_force_protocol = false;
+	private static $_force_front_ssl = false;
+
+	/**
+	 * Determines whether we need to force ssl admin of original domain
+	 *
+	 * @since 4.3.1
+	 *
+	 * @var bool|mixed
+	 */
+	private static $_force_admin_ssl = false;
 
 	/**
 	 * Constructor.
@@ -90,7 +99,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
-		self::$_force_protocol = defined( 'DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN' ) && filter_var( DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, FILTER_VALIDATE_BOOLEAN );
+
+		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
+		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
 		$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
@@ -537,7 +548,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$protocol = 'http://';
-		if ( self::$_force_protocol && is_ssl() ) {
+		if ( self::force_ssl_on_mapped_domain( $domain ) && is_ssl() ) {
 			$protocol = 'https://';
 		}
 
@@ -605,8 +616,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$url_components = self::_parse_mb_url( $url );
 		$orig_components = self::_parse_mb_url( self::$_original_domains[$blog_id] );
 
-		if ( self::$_force_protocol ) {
-			$url_components['scheme'] = is_ssl() ? 'https' : 'http';
+		$url_components['scheme'] = self::$_force_front_ssl ? 'https' : 'http';
+
+		if ( strpos($url, "/wp-admin") !== false && strpos($url, $include_path) !== false ) {
+			$url_components['scheme'] = self::$_force_admin_ssl ? 'https' : 'http';
 		}
 
 		$url_components['host'] = $orig_components['host'];
