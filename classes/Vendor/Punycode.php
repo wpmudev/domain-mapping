@@ -1,8 +1,18 @@
 <?php
-function _mb_strlen($str) {
-	$charset = get_option( 'blog_charset' );
-	return !in_array( $charset, array('utf8', 'utf-8', 'UTF8', 'UTF-8') ) ? strlen(utf8_decode($str)) : strlen($str);
+if( !function_exists("_mb_strlen") ){
+	function _mb_strlen($str) {// From WP v.4.2 for backward compatibility
+		// The solution below works only for UTF-8,
+		// so in case of a different charset just use built-in strlen()
+		$charset = get_option( 'blog_charset' );
+		if ( ! in_array( $charset, array( 'utf8', 'utf-8', 'UTF8', 'UTF-8' ) ) ) {
+			return strlen( $str );
+		}
+		// Use the regex unicode support to separate the UTF-8 characters into an array
+		preg_match_all( '/./us', $str, $match );
+		return count( $match[0] );
+	}
 }
+
 
 if ( !function_exists('mb_strlen') ):
 	function mb_strlen( $str ) {
@@ -10,6 +20,7 @@ if ( !function_exists('mb_strlen') ):
 	}
 endif;
 
+if( !class_exists("Punycode") ):
 /**
  * Punycode implementation as described in RFC 3492
  *
@@ -315,3 +326,5 @@ class Punycode
         }
     }
 }
+
+endif;
