@@ -699,8 +699,7 @@
 
 
 (function($) {
-    list = {
-
+    var list = {
         init: function() {
             var timer;
             var delay = 500;
@@ -753,7 +752,7 @@
             var $spinner = $("#dm_excluded_pages_search_spinner"),
                 $excluded_pages =  $("#dm_exluded_pages_hidden_field"),
                 get_excluded_pages_ids = function(){
-                    return $excluded_pages.val().replace(/ /g,'').split(",")
+                    return $excluded_pages.length ?  $excluded_pages.val().replace(/ /g,'').split(",") : [];
                 };
 
             $.ajax({
@@ -815,6 +814,6 @@
             }
             return false;
         }
-    }
+    };
     list.init();
 })(jQuery);
