@@ -11,6 +11,7 @@
 * Fixed: Forcing https for admin and login
 * Fixed: Better UX for adding and managing mapped domains
 * Fixed: Punycode class compatibility when some  extensions are not installed
+* Fixed: WP add_query_var and remove_query_var vulnerability
 * Removed: DM_FORCE_PROTOCOL_ON_MAPPED_DOMAIN, the schema forcing for mapped domains as well as original domain is only possible from the setting pages
 
 == 4.3.1 ==
