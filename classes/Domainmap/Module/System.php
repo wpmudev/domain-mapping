@@ -268,7 +268,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 
         $this->_exec_queries( array(
             $this->_alter_table( DOMAINMAP_TABLE_MAP, array(
-                'ADD COLUMN `scheme` TINYINT UNSIGNED NOT NULL DEFAULT 0  AFTER `active`',
+                'ADD COLUMN `scheme` TINYINT UNSIGNED NOT NULL DEFAULT 2  AFTER `active`',
             ) ),
         ) );
 
