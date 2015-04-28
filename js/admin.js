@@ -594,20 +594,35 @@
         var $this = $(this),
             $link = $this.closest("li").length ? $this.closest("li").find(".domainmapping-mapped") : $this.closest("tr").find(".domainmapping-mapped"),
             current_link = $link.html(),
-            href = $this.data("href");
+            href = $this.data("href"),
+            $spinner = $(".spinner").first().clone().removeAttr("id").css({ visibility: "visible", marginTop: 0 });
+
         e.preventDefault();
 
+        $this.closest("li").find(".spinner").remove();
+        $link.append( $spinner.show() );
         $.ajax({
             type        : "get",
             url         : href,
             success     : function(res){
+                $spinner.remove();
                 if( res.success ){
                     current_link = current_link.replace("<del>", "");
                     current_link = current_link.replace("</del>", "");
-                    current_link =  res.data.schema === 0  ? current_link.replace("https://", "http://") : current_link.replace("http://", "https://");
+
+
+                    current_link.replace("https://", "http://");
+                    if( res.data.schema === 1 ){
+                        current_link = current_link.replace("http://", "https://");
+                    }else if( res.data.schema === 2 ){
+                        current_link = current_link.replace("https://", "http://");
+                        current_link = current_link.replace("http://", "<del>http://</del>");
+                    }
+
                     $link.toggle("highlight");
                     $link.html( current_link );
                     $link.toggle("highlight");
+
                 }
 
             }

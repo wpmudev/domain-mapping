@@ -117,21 +117,22 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 	 * @access public
 	 * @global stdClass $current_site Current site object.
 	 * @param object $row The mapped domain name.
-	 * @param string $schema The current schema.
+	 * @param string|bool $schema The current schema.
 	 */
 	public static function render_mapping_row( $row, $schema = false ) {
 		global $current_site;
 
 		if ( !$schema ) {
-			switch( Domainmap_Module::force_ssl_on_mapped_domain( $row->domain ) ){
+			$force_type = Domainmap_Module::force_ssl_on_mapped_domain( $row->domain );
+			switch( $force_type ){
 				case 1:
-					$schema = 'https';
+					$schema = 'https://';
 					break;
 				case 2:
-					$schema = '<del>http</del>';
+					$schema = '<del>http://</del>';
 					break;
 				default:
-					$schema = 'http';
+					$schema = 'http://';
 					break;
 			}
 		}
@@ -167,10 +168,10 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		}
 
 		?><li>
-      <a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle forced schema', 'domainmap' ) ?>"></a>
+		<a class="domainmapping-map-toggle-scheme dashicons-before dashicons-admin-network" href="#" data-href="<?php echo esc_url( $toggle_scheme_link ) ?>" title="<?php _e( 'Toggle forced schema', 'domainmap' ) ?>"></a>
 
-      <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?>://<?php echo $row->domain?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
-				 <?php echo $schema ?>://<?php echo Domainmap_Punycode::decode( $row->domain ) ?>
+        <a class="domainmapping-mapped" href="<?php echo strip_tags($schema) ?><?php echo $row->domain?>" target="_blank" title="<?php _e( 'Go to this domain', 'domainmap' ) ?>">
+				 <?php echo $schema ?><?php echo Domainmap_Punycode::decode( $row->domain ) ?>
 			</a>
 
       <?php self::render_health_column( $row->domain ) ?>

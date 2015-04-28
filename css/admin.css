@@ -871,3 +871,9 @@ table.domains td.column-actions a{
     font-weight: bold;
     font-size: 13px;
 }
+#mapping-tab del a{
+    text-decoration: line-through;
+}
+#mapping-tab a del{
+    color: #bbb;
+}
