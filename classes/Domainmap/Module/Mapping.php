@@ -647,6 +647,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function force_schema(){
 		global $post;
 
+		$post_id = isset( $post ) ? $post->ID : null;
+
+		if( filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
+
 		do_action("dm_before_force_schema");
 
 		$current_url = $this->_http->getHostInfo("http") . $this->_http->getUrl();
@@ -688,10 +692,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		/**
 		 * Force single page
 		 */
-		if( !is_admin() && ( ( isset($post->ID ) && $this->is_ssl_forced_by_id( $post->ID ) ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
+		if( !is_admin() && ( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
 			wp_redirect( $current_url_secure  );
 			exit();
-		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) ){
+		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) ){
 			/**
 			 * Force mapped domains
 			 */
@@ -754,7 +758,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$url_fragments = parse_url( $url );
 		$hostinfo = $url_fragments['scheme'] . "://" . $url_fragments['host'];
 		if( $hostinfo !== $this->_http->hostInfo ){
-			return esc_url_raw( add_query_arg(array("dm" => self::BYPASS ),  $this->unswap_mapped_url( $url  )) );
+			return esc_url_raw( add_query_arg(array("dm" => self::BYPASS ),   set_url_scheme($this->unswap_mapped_url( $url  ), is_ssl() ) ) );
 		}
 
 		return $url;
@@ -993,8 +997,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function force_page_exclusion(){
 		global $post;
+		$post_id = isset( $post ) ? $post->ID : null;
 
-		if( $this->is_mapped_domain()  &&  ( $this->is_excluded_by_id( $post->ID ) || $this->is_excluded_by_request() ) ){
+		if( $this->is_mapped_domain()  &&  ( $this->is_excluded_by_id( $post_id ) || $this->is_excluded_by_request() ) ){
 			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
 			$current_url = $this->unswap_url( $current_url );
 			wp_redirect( $current_url );
