@@ -58,15 +58,15 @@ abstract class Domainmap_Reseller {
 	 */
 	protected $_last_errors;
 
-    /**
-     * Whether to cache tlds
-     *
-     * @since 4.2.0
-     *
-     * @access protected
-     * @var bool
-     */
-    protected $cache_tlds = true;
+	/**
+	 * Whether to cache tlds
+	 *
+	 * @since 4.2.0
+	 *
+	 * @access protected
+	 * @var bool
+	 */
+	protected $cache_tlds = true;
 
 	/**
 	 * Returns last errors returned by reseller API.
@@ -153,13 +153,13 @@ abstract class Domainmap_Reseller {
 	 * @return array The array of TLD accepted by reseller.
 	 */
 	public function get_tld_list() {
-        $transient = 'reseller-' . $this->get_reseller_id() . '-tlds';
-        if( $this->cache_tlds ){
-            $tlds = get_site_transient( $transient );
-            if ( is_array( $tlds ) && !empty( $tlds ) ) {
-                return $tlds;
-            }
-        }
+		$transient = 'reseller-' . $this->get_reseller_id() . '-tlds';
+		if( $this->cache_tlds ){
+			$tlds = get_site_transient( $transient );
+			if ( is_array( $tlds ) && !empty( $tlds ) ) {
+				return $tlds;
+			}
+		}
 
 		$tlds = $this->_get_tld_list();
 		sort( $tlds, SORT_STRING );
@@ -227,12 +227,12 @@ abstract class Domainmap_Reseller {
 	 */
 	public function get_tld_price( $tld, $period = 1 ) {
 		$transient = sprintf( 'reseller-%s-%s-price', $this->get_reseller_id(), $tld );
-	    if( $this->cache_tlds ){
-            $price = get_site_transient( $transient );
-            if ( $price != false ) {
-                return $price;
-            }
-        }
+		if( $this->cache_tlds ){
+			$price = get_site_transient( $transient );
+			if ( $price != false ) {
+				return $price;
+			}
+		}
 		$price = $this->_get_tld_price( $tld, $period );
 		set_site_transient( $transient, $price, DAY_IN_SECONDS );
 
@@ -383,13 +383,13 @@ abstract class Domainmap_Reseller {
 		}
 
 		return sprintf(
-			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>IRR%s</b> %s.<br>%s<div class="domainmapping-clear"></div></div>',
+			'<div class="domainmapping-info domainmapping-info-success"><b>%s</b> %s <b>%s</b> %s &nbsp;%s.<div class="domainmapping-clear"></div>%s</div>',
 			strtoupper( "{$sld}.{$tld}" ),
 			__( 'is available to purchase for', 'domainmap' ),
-			domain_map::get_currency_symbol(),
+			$this->get_currency_symbol(),
 			$this->get_tld_price( $tld ),
 			__( 'per year', 'domainmap' ),
-			esc_url( $purchase_link )
+			$purchase_link
 		);
 	}
 
