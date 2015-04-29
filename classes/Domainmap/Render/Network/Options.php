@@ -184,7 +184,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<?php if ( !empty( $ips ) ) : ?>
 			<div class="domainmapping-info">
 				<p><?php
-					_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field bellow:', 'domainmap' )
+					_e( 'Looks like we are able to resolve your DNS A record(s) for your main domain and fetch the IP address(es) assigned to it. You can use the following IP address(es) to enter in the <b>Server IP Address</b> field below:', 'domainmap' )
 					?></p>
 				<p>
 					<b><?php echo implode( '</b>, <b>', $ips ) ?></b>
@@ -199,7 +199,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 			</div>
 		</div>
 
-		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area bellow to enter your instructions or leave it blank to show the default text.' ) ?></p>
+		<p><?php _e( 'If you want to display your own instructions on the Domain Mapping page, then use the text area below to enter your instructions or leave it blank to show the default text.' ) ?></p>
 
 		<textarea name="map_instructions" class="widefat" cols="150" rows="5"><?php echo esc_textarea( $this->map_instructions ) ?></textarea><?php
 	}
@@ -457,19 +457,36 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	}
 
 	private function _render_excluded_forced_section(){
+		$allow_excluded_pages = isset( $this->map_allow_excluded_pages ) ? (int) $this->map_allow_excluded_pages : 1;
 		$allow_exclusion = isset( $this->map_allow_excluded_urls ) ? (int) $this->map_allow_excluded_urls : 1;
+		$allow_ssl_forced_pages = isset( $this->map_allow_forced_pages ) ? (int) $this->map_allow_forced_pages : 1;
 		$allow_force_ssl = isset( $this->map_allow_forced_urls ) ? (int) $this->map_allow_forced_urls : 1;
 		?>
 		<h4 class="domainmapping-block-header"><?php _e( "Enable excluded/forced urls", 'domainmap' ) ?></h4>
+		<label for="map_allow_excluded_pages">
+			<input type="checkbox" class="domainmapping-radio" id="map_allow_excluded_pages" name="map_allow_excluded_pages" value="1" <?php checked( $allow_excluded_pages, 1  ) ?> >
+			<?php _e( "Allow site admins to set map-excluded pages", 'domainmap' ) ?><br>
+		</label>
+
 		<label for="map_allow_excluded_urls">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_excluded_urls" name="map_allow_excluded_urls" value="1" <?php checked( $allow_exclusion, 1  ) ?> >
 			<?php _e( "Allow site admins to set map-excluded urls", 'domainmap' ) ?><br>
 		</label>
 
+		<br/>
+		<br/>
+
+		<label for="map_allow_forced_pages">
+			<input type="checkbox" class="domainmapping-radio" id="map_allow_forced_pages" name="map_allow_forced_pages" value="1" <?php checked( $allow_ssl_forced_pages, 1  ) ?> >
+			<?php _e( "Allow site admins to set https-forced pages", 'domainmap' ) ?>
+		</label>
+		<br/>
 		<label for="map_allow_forced_urls">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_forced_urls" name="map_allow_forced_urls" value="1" <?php checked( $allow_force_ssl, 1  ) ?> >
 			<?php _e( "Allow site admins to set https-forced urls", 'domainmap' ) ?>
 		</label>
+
+
 
 
 	<?php

@@ -34,7 +34,7 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
    return;
 }
 
-// UnComment the line bellow to allow multiple domain mappings per blog
+// UnComment the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', true);
 
 // WPMUDev Dashboard Notices

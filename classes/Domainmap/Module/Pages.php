@@ -213,7 +213,9 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 			$options['map_disallow_subdomain'] = filter_input( INPUT_POST, 'dm_disallow_subdomain', FILTER_VALIDATE_BOOLEAN );
 			$options['map_prohibited_domains'] = filter_input( INPUT_POST, 'dm_prohibited_domains', FILTER_SANITIZE_STRING );
 			$options['map_allow_excluded_urls'] = filter_input( INPUT_POST, 'map_allow_excluded_urls', FILTER_VALIDATE_INT );
+			$options['map_allow_excluded_pages'] = filter_input( INPUT_POST, 'map_allow_excluded_pages', FILTER_VALIDATE_INT );
 			$options['map_allow_forced_urls'] = filter_input( INPUT_POST, 'map_allow_forced_urls', FILTER_VALIDATE_INT );
+			$options['map_allow_forced_pages'] = filter_input( INPUT_POST, 'map_allow_forced_pages', FILTER_VALIDATE_INT );
 			$options['map_allow_multiple'] = filter_input( INPUT_POST, 'map_allow_multiple', FILTER_VALIDATE_BOOLEAN );
 
 			// update options

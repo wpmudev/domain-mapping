@@ -292,7 +292,7 @@ msgstr ""
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
-"address(es) to enter in the <b>Server IP Address</b> field bellow:"
+"address(es) to enter in the <b>Server IP Address</b> field below:"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:196
@@ -302,7 +302,7 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:202
 msgid ""
 "If you want to display your own instructions on the Domain Mapping page, "
-"then use the text area bellow to enter your instructions or leave it blank "
+"then use the text area below to enter your instructions or leave it blank "
 "to show the default text."
 msgstr ""
 
@@ -486,7 +486,7 @@ msgstr ""
 #, php-format
 msgid ""
 "You are about to purchase domain name %s and pay %s for 1 year of usage. "
-"Please, fill in the form bellow and click on purchase button. Pay attention "
+"Please, fill in the form below and click on purchase button. Pay attention "
 "that all fields marked with red asterisk are required and has to be filled "
 "with appropriate information."
 msgstr ""
@@ -748,7 +748,7 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:57
 msgid ""
 "You are about to register for a new eNom account. Please, fill in the form "
-"bellow and click on the register button. Pay attention that all fields "
+"below and click on the register button. Pay attention that all fields "
 "marked with a red asterisk are required and must be filled with appropriate "
 "information."
 msgstr ""
@@ -1006,7 +1006,7 @@ msgstr ""
 #, php-format
 msgid ""
 "You are about to order domain name %s for the selected period. Please, "
-"confirm the period bellow and click on order button."
+"confirm the period below and click on order button."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:99
@@ -1029,7 +1029,7 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/WHMCS/Register.php:49
 msgid ""
 "You are about to register for a new WHMCS client account. Please, fill in "
-"the form bellow and click on the register button. Pay attention that all "
+"the form below and click on the register button. Pay attention that all "
 "fields marked with a red asterisk are required and must be filled with "
 "appropriate information."
 msgstr ""
@@ -1242,7 +1242,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:255
-msgid "Add page urls bellow to have excluded:"
+msgid "Add page urls below to have excluded:"
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:259
@@ -1253,7 +1253,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:267
-msgid "Add page urls bellow to force https:"
+msgid "Add page urls below to force https:"
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:274
