@@ -1,5 +1,10 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.0.1 ==
+* Fixed: Post preview link issue
+* Fixed: Bug in eNom purchase functionality
+* Fixed: Some minor bugs
+
 == 4.4.0 ==
 * Better integration with Multi-Domains plugin
 * Revamped SSO to improve performance and solve issue with out of date token nag, now fully async
