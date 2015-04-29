@@ -229,6 +229,11 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		/**
 		 * @param $page WP_Post
 		 */
+		if( !Domainmap_Plugin::instance()->get_option("map_allow_excluded_pages", true)
+		    && !Domainmap_Plugin::instance()->get_option("map_allow_excluded_urls", true)
+		    && !Domainmap_Plugin::instance()->get_option("map_allow_forced_pages", true)
+		    && !Domainmap_Plugin::instance()->get_option("map_allow_forced_urls", true)
+		) return;
 		?>
 
 		<h3  title="<?php _e("Pages selected here will not be mapped and can optionally force https", domain_map::Text_Domain); ?>">
@@ -240,9 +245,11 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		</h3>
 		<br/>
 		<?php
-		$table = new Domainmap_Table_ExcludedPages_Listing();
-		$table->prepare_items();
-		$table->display();
+		if( Domainmap_Plugin::instance()->get_option("map_allow_excluded_pages", true) || Domainmap_Plugin::instance()->get_option("map_allow_forced_pages", true) ){
+			$table = new Domainmap_Table_ExcludedPages_Listing();
+			$table->prepare_items();
+			$table->display();
+		}
 
 		?>
 		<form  method="post" id="dm_save_excluded_pages_form" action="<?php echo esc_url_raw( add_query_arg( 'noheader', 'true' ) ) ?>">

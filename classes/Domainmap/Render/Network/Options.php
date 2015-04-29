@@ -440,7 +440,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<textarea name="dm_prohibited_domains" id="dm_prohibited_domains" cols="60" rows="3"><?php echo $this->map_prohibited_domains; ?></textarea>
 
 		<p class="description">
-			<?php _e( "Please separate domain names with comma", 'domainmap' ) ?>
+			<?php _e( "Please separate domain names with commas", 'domainmap' ) ?>
 		</p>
 
 		<ul>

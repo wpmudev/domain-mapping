@@ -417,7 +417,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:443
-msgid "Please separate domain names with comma"
+msgid "Please separate domain names with commas"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:450
