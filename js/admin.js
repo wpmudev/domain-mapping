@@ -703,7 +703,7 @@
         init: function() {
             var timer;
             var delay = 500;
-            $('.tablenav-pages a, .manage-column.sortable a, .manage-column.sorted a').on('click', function(e) {
+            $('.domainmapping-box .tablenav-pages a, .domainmapping-box .manage-column.sortable a, .domainmapping-box .manage-column.sorted a').on('click', function(e) {
                 e.preventDefault();
                 var query = this.search.substring( 1 );
 

@@ -97,7 +97,7 @@ class Domainmap_Table_ExcludedPages_Listing extends Domainmap_Table {
 	 *
 	 * @return array
 	 */
-	protected function get_sortable_columns() {
+	public function get_sortable_columns() {
 		return array(
 			'title'=> "title"
 		);
