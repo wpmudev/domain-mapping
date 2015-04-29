@@ -100,7 +100,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
+		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl") === 1;
 		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
