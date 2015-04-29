@@ -100,7 +100,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function __construct( Domainmap_Plugin $plugin ) {
 		parent::__construct( $plugin );
 
-		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl") === 1;
+		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
 		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
 		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
@@ -688,7 +688,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		/**
 		 * Force single page
 		 */
-		if( !is_admin() && ( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
+		if( !is_admin() && ( ( isset($post->ID ) && $this->is_ssl_forced_by_id( $post->ID ) ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
 			wp_redirect( $current_url_secure  );
 			exit();
 		}elseif(  $this->is_mapped_domain() && self::force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post->ID ) || $this->is_ssl_forced_by_request() ) ){
