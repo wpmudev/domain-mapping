@@ -1,5 +1,12 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.0.2 ==
+* Added: More control over excluded and ssl-forced pages and urls ( for super admin )
+* Fixed: Issue with prohibited domains and disallowed subdomains
+* Fixed: Issue with php v.5.2.x and Punycode Class ( used for International Domain Names )
+* Fixed: Some js issues in mapped domain table pagination
+* Fixed: Some typos
+
 == 4.4.0.1 ==
 * Fixed: Post preview link issue
 * Fixed: Bug in eNom purchase functionality
