@@ -88,24 +88,23 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
-
-
-
+		$this->_add_action( 'login_init', 'reauthenticate_user', 10 );
 		$this->_add_action('wp_head', 'add_auth_script', 0 );
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
+		$this->_add_action( 'login_footer', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
 		if( !$this->_async ){
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
 		}
 
-		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
-
 		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
 		add_action('template_redirect', array( $this, 'dispatch_ajax_request' ));
 
+		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
+		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 	}
 
 	/**
@@ -231,17 +230,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string The income redirection URL.
 	 */
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
-		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
-			if ( !$this->is_original_domain() || $this->is_subdomain() ) {
-				$url = add_query_arg( array(
-					'dm_action' => self::ACTION_PROPAGATE_USER,
-					'redirect_to' => urlencode( $redirect_to ),
-					"auth" => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS )
-				), $this->_get_sso_endpoint_url(false, $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http" ) );
-				wp_redirect( esc_url_raw( $url ) );
-				exit;
-			}
 
+		global $interim_login;
+		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
+			if ( $this->is_mapped_domain()  || $this->is_subdomain() ) {
+				$interim_login = $this->_do_propagation = true;
+			}
 		}
 
 		return $redirect_to;
@@ -259,7 +253,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function get_login_message( $message ) {
 		return $this->_do_propagation
-			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
+			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 1 seconds.', 'domainmap' ) . '</p>'
 			: $message;
 	}
 
@@ -293,7 +287,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		?>
 		<script <?php echo $this->_async ? "async='true'" : ""; ?>  type="text/javascript">
 			function domainmap_do_redirect() { window.location = "<?php echo $redirect_to ?>"; }
-			setTimeout(domainmap_do_redirect, 5000);
+			setTimeout(domainmap_do_redirect, 1000);
 		</script>
 
 		<?php
@@ -303,8 +297,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
-		$this->_add_script( esc_url_raw( $url ) );
-
+		$this->_add_script( $url );
 	}
 
 	/**
@@ -395,7 +388,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
-	 * Prints async javascript script
+	 * Prints sync javascript script
 	 *
 	 * @since 4.2.1
 	 *
@@ -437,6 +430,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			update_site_option( $key , true);
 		}
 	}
+
 	/**
 	 * Returns relevant endpoint url
 	 *
@@ -492,6 +486,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	/**
 	 * Checks login status of the user on the main site
 	 *
+	 * @uses authorize_user_async
 	 * @since 4.3.1
 	 */
 	function check_login_status(){
@@ -584,15 +579,39 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 */
 	function propagate_user(){
-		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-		$redirect_to = filter_input( INPUT_GET, 'redirect_to' );
-		if ( $user_id )
-			wp_set_auth_cookie( $user_id );
+		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
+		if ( get_current_blog_id() == 1 ) {
+			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+			if ( $user_id ) {
+				wp_set_auth_cookie( $user_id );
+				echo 'if (typeof domainmap_do_redirect === "function") domainmap_do_redirect();';
+				exit;
+			}
+		}
 
-		wp_safe_redirect($redirect_to);
 		exit;
+	}
 
+	/**
+	 * Reeuthenticates user
+	 *
+	 * It tries to reauth user if it is logged on the mapped domain and then lands in the
+	 * login page of the sub-site with the original domain
+	 *
+	 * @hook login_init
+	 *
+	 * @since 4.4.0.3
+	 */
+	function reauthenticate_user(){
+		global $current_user;
+
+		if( !empty( $current_user->ID ) && !isset( $_REQUEST['loggedout'] ) && !isset( $_REQUEST['action'] ) ){
+			$redirect_to = filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL );
+			wp_set_auth_cookie( $current_user->ID );
+			wp_redirect( $redirect_to );
+			exit();
+		}
 	}
 
 }
