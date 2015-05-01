@@ -1,5 +1,10 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.0.3 ==
+* Fixed: Issue in login from mapped domain
+* Fixed: Issue in visiting admin with the secondary mapped domains
+* Fixed: Ability to remove prohibited domains from mapped domains table
+
 == 4.4.0.2 ==
 * Added: More control over excluded and ssl-forced pages and urls ( for super admin )
 * Fixed: Issue with prohibited domains and disallowed subdomains
