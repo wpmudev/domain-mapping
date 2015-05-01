@@ -111,4 +111,21 @@ class Domainmap_Module_Ajax extends Domainmap_Module {
 		exit;
 	}
 
+	/**
+	 * Checks if $domain can be a domain
+	 *
+	 * @param $domain_name
+	 *
+	 * @since 4.4.0.3
+	 * @return bool
+	 */
+	protected function _is_domain( $domain_name ){
+
+		if( false === strpos($domain_name, ".") || empty( $domain_name ) ) return false;
+
+		$domain_name = str_replace(array("http://", "www."), array("", ""), $domain_name);
+		$domain_name = "http://" . $domain_name;
+		return (bool) filter_var($domain_name, FILTER_VALIDATE_URL);
+	}
+
 }
