@@ -119,7 +119,7 @@ class domain_map {
 				break;
 		}
 
-		return $login_url;
+		return $this->options['map_force_admin_ssl'] ? set_url_scheme($login_url, "https") : $login_url;
 	}
 
 	function domain_mapping_admin_url( $admin_url, $path = '/', $_blog_id = false ) {
