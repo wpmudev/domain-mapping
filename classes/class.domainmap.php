@@ -139,25 +139,26 @@ class domain_map {
 				// remove the http and https parts of the url
 				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
 				// get the original url now with our filter removed
-				$url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
+				$orig_url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
 				// remove the http and https parts of the original url
-				$url = str_replace( array( 'https://', 'http://' ), '', $url );
+				$orig_url = str_replace( array( 'https://', 'http://' ), '', $orig_url );
 
 				// Check if we are looking at the admin-ajax.php and if so, we want to leave the domain as mapped
-				if ( $path != 'admin-ajax.php' && strpos($url, "admin-ajax.php") !== false ) {
+				if ( $path != 'admin-ajax.php' && strpos($admin_url, "admin-ajax.php") === false ) {
 					// swap the mapped url with the original one
-					$admin_url = str_replace( $mapped_url, $url, $admin_url );
+					$admin_url = str_replace( $mapped_url, $orig_url, $admin_url );
 				} else {
 					if ( !is_admin() ) {
 						// swap the original url with the mapped one
-						$admin_url = str_replace( $url, $mapped_url, $admin_url );
+						$admin_url = str_replace( $orig_url, $mapped_url, $admin_url );
 					}
 				}
 
 				break;
 		}
 
-		return $admin_url;
+
+		return $this->options['map_force_admin_ssl'] ? set_url_scheme($admin_url, "https") : $admin_url;
 	}
 
 	function add_domain_mapping_filters() {
