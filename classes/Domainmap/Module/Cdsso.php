@@ -471,9 +471,24 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		send_nosniff_header();
 		header('Cache-Control: no-cache');
 		header('Pragma: no-cache');
-		$action = $_REQUEST["dm_action"];
 
-		if( !empty( $_REQUEST["dm_action"] ) ){
+		if( isset( $_REQUEST["dm_action"] ) ){
+			$action = $_REQUEST["dm_action"];
+		}elseif( isset( $_REQUEST["q"] ) ){
+			$q = $_REQUEST["q"];
+			$parsed = parse_url($q );
+
+			if( isset( $parsed['query'] ) && strpos($parsed['query'], "dm_action") !== false ){ // if query is set
+				$action = str_replace("dm_action=", "", $parsed['query']);
+			}else{
+				$prefix = "?dm_action=";
+				$pos = strpos( $q, $prefix );
+				$action = substr($q, $pos + strlen($prefix));
+			}
+
+		}
+
+		if( !empty( $action ) ){
 			$method = str_replace(array("domainmap-", "-"), array("", "_"), $action);
 			if( method_exists("Domainmap_Module_Cdsso", $method) )
 				call_user_func(array($this, $method));
