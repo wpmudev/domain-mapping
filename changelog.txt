@@ -1,5 +1,10 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.0.4 ==
+* Fixed: Admin url issues on mapped site
+* Fixed: Sso endpoint resolution issues
+* Fixed: Bug in admin and login mapping uppon login
+
 == 4.4.0.3 ==
 * Fixed: Issue in login from mapped domain
 * Fixed: Issue in visiting admin with the secondary mapped domains
