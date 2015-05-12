@@ -218,10 +218,12 @@ class Domainmap_Module {
 	 *
 	 * @since 4.2.0
 	 *
+	 * @param null $domain
+	 *
 	 * @return bool
 	 */
-	protected function is_mapped_domain(){
-		return !$this->is_original_domain();
+	protected function is_mapped_domain( $domain = null ){
+		return !$this->is_original_domain( $domain );
 	}
 
 	/**

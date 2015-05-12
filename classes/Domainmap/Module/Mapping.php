@@ -40,6 +40,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 *
 	 */
 	const BYPASS = "bypass";
+
+	/**
+	 * @const
+	 *
+	 * since 4.4.0.4
+	 */
+	const TRIED_SYNC = 'domainmap_tried_sync_auth';
+
 	/**
 	 * The array of mapped domains.
 	 *
@@ -110,6 +118,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_init',              'force_admin_scheme', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
+
 		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
@@ -135,6 +144,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
 		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
 
+
+		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
+		$this->_add_action( 'site_url', 'set_login_form_action', 10, 4);
 	}
 
 	/**
@@ -175,6 +187,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a{$current_blog->path}", "/", "/a{$_SERVER['REQUEST_URI']}" );
+
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $url . $request, true, 301 );
@@ -242,7 +255,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	public function redirect_login_area() {
 
-		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS || filter_input( INPUT_GET, 'action' ) === "logout" || filter_input( INPUT_GET, 'loggedout' ) === "true"  ) return;
+
+		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS
+		     || filter_input( INPUT_GET, 'action' ) === "logout"
+			|| ( $this->is_login() &&  isset( $_POST['pwd'] ) )
+		) return;
+
 
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
@@ -390,10 +408,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 *
 	 * @access private
 	 * @param int|bool $blog_id The id of a blog to get mapped domain for.
-	 * @param bool $is_front is it related to frontend
+	 * @param bool $consider_front_redirect_type is it related to frontend
 	 * @return string|boolean Mapped domain on success, otherwise FALSE.
 	 */
-	private function _get_mapped_domain( $blog_id = false, $is_front = true ) {
+	private function _get_mapped_domain( $blog_id = false, $consider_front_redirect_type = true ) {
 		// use current blog id if $blog_id is empty
 		if ( !$blog_id ) {
 			$blog_id = get_current_blog_id();
@@ -405,7 +423,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$domain = '';
-		if ( $is_front && $this->_get_frontend_redirect_type() == 'user'  ) {
+
+		if ( $consider_front_redirect_type && $this->_get_frontend_redirect_type() == 'user'  ) {
 			$domain = is_admin() && $this->is_original_domain() ? $domain : $_SERVER['HTTP_HOST'];
 		} else {
 			// fetch mapped domain
@@ -415,7 +434,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		// save mapped domain into local cache
 		self::$_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
 
-		return apply_filters("dm_mapped_domain", $domain, $blog_id, $is_front);
+		return apply_filters("dm_mapped_domain", $domain, $blog_id, $consider_front_redirect_type);
 	}
 
 	/**
@@ -491,12 +510,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @param bool $path
 	 * @param bool $orig_scheme
 	 * @param bool $blog_id
+	 * @param bool $consider_front_redirect_type
 	 *
 	 * @return string
 	 */
-	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false ) {
+	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false, $consider_front_redirect_type = true ) {
 		global $current_site, $current_blog;
 		// do not swap URL if customizer is running
+
 		if ( $this->_suppress_swapping ) {
 			return $url;
 		}
@@ -510,7 +531,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 		// find mapped domain
-		$mapped_domain = $this->_get_mapped_domain( $blog_id );
+		$mapped_domain = $this->_get_mapped_domain( $blog_id, $consider_front_redirect_type );
 		if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
 			return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
 		}
@@ -1088,5 +1109,62 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	public function redirect_logged_out() {
 		$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
 		$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl, false );
+	}
+
+	/**
+	 * Sets proper $redirect_to based on admin mapping opted in settings
+	 *
+	 * @since 4.4.0.4
+	 *
+	 * @param $redirect_to
+	 * @param $requested_redirect_to
+	 * @param $user
+	 *
+	 * @uses login_redirect filter
+	 *
+
+	 * @return string
+	 */
+	function set_proper_login_redirect( $redirect_to, $requested_redirect_to, $user ){
+		if( $this->_plugin->get_option( 'map_admindomain' ) == "original" && $this->is_mapped_domain( $redirect_to ) ){
+			return $this->unswap_mapped_url( $redirect_to, false, true );
+		}
+
+		if( $this->_plugin->get_option( 'map_admindomain' ) == "mapped" && $this->is_original_domain( $redirect_to ) ){
+			return $this->swap_mapped_url( $redirect_to, false, false, false, false );
+		}
+
+		return $redirect_to;
+	}
+
+
+	/**
+	 * Sets proper login form action attribute based on admin mapping opted in settings
+	 *
+	 * @since 4.4.0.4
+	 *
+	 * @param $url
+	 * @param $path
+	 * @param $scheme
+	 * @param $blog_id
+	 *
+	 * @uses site_url filter
+	 *
+	 * @return string
+	 */
+	function set_login_form_action($url, $path, $scheme, $blog_id ){
+		if( !$this->is_login() || is_main_site() ) return $url;
+
+		if( $path === "wp-login.php" ){
+			header("access-control-allow-origin: *");
+			if( $this->_plugin->get_option( 'map_admindomain' ) == "mapped" ){
+				return $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
+			}
+
+			if( $this->_plugin->get_option( 'map_admindomain' ) == "original" ){
+				return $this->unswap_mapped_url($url, $blog_id);
+			}
+		}
+		return $url;
 	}
 }
