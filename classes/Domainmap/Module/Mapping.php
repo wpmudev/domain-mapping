@@ -1156,7 +1156,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if( !$this->is_login() || is_main_site() ) return $url;
 
 		if( $path === "wp-login.php" ){
-			header("access-control-allow-origin: *");
+
 			if( $this->_plugin->get_option( 'map_admindomain' ) == "mapped" ){
 				return $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
 			}
