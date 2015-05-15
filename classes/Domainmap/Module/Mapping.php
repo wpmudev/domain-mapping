@@ -1161,7 +1161,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				return $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
 			}
 
-			if( $this->_plugin->get_option( 'map_admindomain' ) == "original" ){
+			if( $this->_plugin->get_option( 'map_admindomain' ) == "original" && $this->is_mapped_domain( $url ) ){
 				return $this->unswap_mapped_url($url, $blog_id);
 			}
 		}
