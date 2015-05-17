@@ -227,6 +227,7 @@ class Domainmap_Plugin {
 	public function get_option( $option, $default = false ) {
 		$options = $this->get_options();
 		$opt = array_key_exists( $option, $options ) ? $options[$option] : $default;
+
 		return apply_filters("dm_get_option", $opt);
 	}
 

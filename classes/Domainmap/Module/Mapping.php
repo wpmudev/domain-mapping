@@ -119,7 +119,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
 
-		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
+//		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
 		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
@@ -263,7 +263,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
-			$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
+
+			if( $this->is_original_domain() )
+				$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
+
+			if( $this->is_mapped_domain() )
+				$force_ssl = $this->force_ssl_on_mapped_domain();
+
 			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl, false );
 		}
 	}
@@ -384,12 +390,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$protocol_bool = $this->is_original_domain() ? self::force_ssl_on_mapped_domain() : is_ssl();
 		$protocol = $protocol_bool || $force_ssl ? 'https://' : 'http://';
-		$current_url = untrailingslashit( $protocol . $current_blog->domain . $current_site->path );
+		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
+		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
 		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
 
 		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
+			var_dump($request != $_SERVER['REQUEST_URI']);
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $request, true, 301 );
@@ -637,11 +645,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$url_components = self::_parse_mb_url( $url );
 		$orig_components = self::_parse_mb_url( self::$_original_domains[$blog_id] );
 
-		$url_components['scheme'] = self::$_force_front_ssl ? 'https' : 'http';
-
-		if ( strpos($url, "/wp-admin") !== false && strpos($url, $include_path) !== false ) {
-			$url_components['scheme'] = self::$_force_admin_ssl ? 'https' : 'http';
-		}
+//		$url_components['scheme'] = self::$_force_front_ssl || is_ssl() ? 'https' : 'http';
+//
+//		if ( strpos($url, "/wp-admin") !== false && strpos($url, $include_path) !== false ) {
+//			$url_components['scheme'] = self::$_force_admin_ssl ? 'https' : 'http';
+//		}
 
 		$url_components['host'] = $orig_components['host'];
 
@@ -1006,7 +1014,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 		if( $this->is_excluded_by_id( $post_id) ){
-			return $this->unswap_url( $permalink );
+			return self::unswap_url( $permalink );
 		}
 		return $permalink;
 	}
@@ -1022,7 +1030,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if( $this->is_mapped_domain()  &&  ( $this->is_excluded_by_id( $post_id ) || $this->is_excluded_by_request() ) ){
 			$current_url = is_ssl() ? $this->_http->getHostInfo("https") . $this->_http->getUrl() : $this->_http->getHostInfo("http") . $this->_http->getUrl();
-			$current_url = $this->unswap_url( $current_url );
+			$current_url = self::unswap_url( $current_url );
 			wp_redirect( $current_url );
 			die;
 		}
@@ -1126,12 +1134,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string
 	 */
 	function set_proper_login_redirect( $redirect_to, $requested_redirect_to, $user ){
-		if( $this->_plugin->get_option( 'map_admindomain' ) == "original" && $this->is_mapped_domain( $redirect_to ) ){
-			return $this->unswap_mapped_url( $redirect_to, false, true );
+		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
+
+		$scheme = "relative";
+		if( $this->is_admin_url( $redirect_to ) ){
+			$scheme = self::$_force_admin_ssl ? "https" : "http";
+		}else{
+			$parsed = parse_url( $redirect_to );
+			$scheme = isset( $parsed["scheme"] ) ? $parsed["scheme"] : $scheme;
 		}
 
-		if( $this->_plugin->get_option( 'map_admindomain' ) == "mapped" && $this->is_original_domain( $redirect_to ) ){
-			return $this->swap_mapped_url( $redirect_to, false, false, false, false );
+
+		if( $admin_mapping == "original" && $this->is_mapped_domain( $redirect_to )  ){
+			return set_url_scheme( $this->unswap_mapped_url( $redirect_to, false, true ), $scheme );
+		}
+
+		if( $admin_mapping == "mapped" && $this->is_original_domain( $redirect_to ) ){
+			return set_url_scheme( $this->swap_mapped_url( $redirect_to, false, false, false, false ), $scheme );
 		}
 
 		return $redirect_to;
@@ -1155,14 +1174,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function set_login_form_action($url, $path, $scheme, $blog_id ){
 		if( !$this->is_login() || is_main_site() ) return $url;
 
+		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
+		$scheme = self::$_force_admin_ssl ? "https" : "http";
 		if( $path === "wp-login.php" ){
 
-			if( $this->_plugin->get_option( 'map_admindomain' ) == "mapped" ){
-				return $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
+			if( $admin_mapping  == "mapped" ){
+				return set_url_scheme( $this->swap_mapped_url($url, $path, $scheme, $blog_id, false), $scheme );
 			}
 
-			if( $this->_plugin->get_option( 'map_admindomain' ) == "original" && $this->is_mapped_domain( $url ) ){
-				return $this->unswap_mapped_url($url, $blog_id);
+			if( $admin_mapping == "original" && $this->is_mapped_domain( $url ) ){
+				return set_url_scheme( $this->unswap_mapped_url($url, $blog_id), $scheme );
 			}
 		}
 		return $url;

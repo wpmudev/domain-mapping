@@ -241,6 +241,18 @@ class Domainmap_Module {
 	}
 
 	/**
+	 * Checks to see if the passed $url is an admin url
+	 *
+	 * @param $url
+	 *
+	 * @return bool
+	 */
+	protected function is_admin_url( $url ){
+		$parsed = parse_url( urldecode(  $url ) );
+
+		return isset( $parsed['path'] ) ? strpos($parsed['path'], "/wp-admin") !== false : false;
+	}
+	/**
 	 * Checks if give domain should be forced to use https
 	 *
 	 * @since 4.2.0

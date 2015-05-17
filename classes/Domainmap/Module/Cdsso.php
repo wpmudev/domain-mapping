@@ -88,7 +88,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
-		$this->_add_action( 'login_init', 'reauthenticate_user', 10 );
+//		$this->_add_action( 'login_init', 'reauthenticate_user', 10 );
 		$this->_add_action('wp_head', 'add_auth_script', 0 );
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
@@ -444,7 +444,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		global $wp_rewrite;
 		if( $subsite ){
-			$admin_scheme = self::force_ssl_on_mapped_domain( $domain ) ? "https://" : "http://";
+			$admin_scheme = is_ssl() ? "https://" : "http://";
 			$url  = $admin_scheme . $domain . "/";
 		}else{
 			$admin_scheme = $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http";
