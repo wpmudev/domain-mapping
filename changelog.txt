@@ -1,5 +1,6 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+
 == 4.4.0.5 ==
 * Fixed: Bug in login form action attribute on mapped domain
 
