@@ -322,7 +322,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
-		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
+
 		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
 		$this->_add_script( esc_url_raw( $url ) );
 	}

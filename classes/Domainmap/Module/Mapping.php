@@ -146,7 +146,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
 		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
-		$this->_add_action( 'site_url', 'set_login_form_action', 10, 4);
+		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
 	}
 
 	/**
@@ -261,14 +261,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			|| ( $this->is_login() &&  isset( $_POST['pwd'] ) )
 		) return;
 
-
 		if ( filter_input( INPUT_GET, 'action' ) != 'postpass' ) {
 
 			if( $this->is_original_domain() )
 				$force_ssl = $this->_get_current_mapping_type( 'map_admindomain' ) === 'original'  ? $this->_plugin->get_option("map_force_admin_ssl") : false;
 
 			if( $this->is_mapped_domain() )
-				$force_ssl = $this->force_ssl_on_mapped_domain();
+				$force_ssl = $this->force_ssl_on_mapped_domain() == 2 ? false : $this->force_ssl_on_mapped_domain() ;
 
 			$this->_redirect_to_area( $this->_plugin->get_option( 'map_logindomain' ), $force_ssl, false );
 		}
@@ -754,8 +753,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function force_admin_scheme(){
 		do_action("dm_before_force_admin_schema");
 		$force_admin_schema = apply_filters("dm_force_admin_schema", true,  $this->_http->getUrl());
-		if( $force_admin_schema && $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
-			$current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
+        if( $force_admin_schema && $this->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || $this->is_login() ) ){
+            $current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
 			wp_redirect( $current_url_secure );
 		}
 	}
@@ -1186,6 +1185,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				return set_url_scheme( $this->unswap_mapped_url($url, $blog_id), $scheme );
 			}
 		}
-		return $url;
+
+        return set_url_scheme( $url, $scheme );
 	}
 }
