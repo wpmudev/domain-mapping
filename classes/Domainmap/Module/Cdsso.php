@@ -36,7 +36,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	const ACTION_SETUP_CDSSO    = 'domainmap-setup-cdsso';
 	const ACTION_CHECK_LOGIN_STATUS = 'domainmap-check-login-status';
 	const ACTION_AUTHORIZE_USER = 'domainmap-authorize-user';
-	const ACTION_AUTHORIZE_USER_ASYNC = 'domainmap-authorize-user_async';
+	const ACTION_AUTHORIZE_USER_ASYNC = 'domainmap-authorize-user-async';
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
 	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 	const SSO_ENDPOINT          = 'dm-sso-endpoint';
@@ -322,6 +322,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
+		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
 		$this->_add_script( esc_url_raw( $url ) );
 	}
@@ -337,27 +338,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		), $this->_get_sso_endpoint_url()
 		);
 
-		?>
-		<script type="text/javascript">
-			(function(window) {
-				var document = window.document;
-				var url = '<?php echo esc_url_raw( $url ); ?>';
-				var iframe = document.createElement('iframe');
-				(iframe.frameElement || iframe).style.cssText =
-					"width: 0; height: 0; border: 0";
-				iframe.src = "javascript:false";
-				var where = document.getElementsByTagName('script')[0];
-				where.parentNode.insertBefore(iframe, where);
-				var doc = iframe.contentWindow.document;
-				doc.open().write('<body onload="'+
-				'var js = document.createElement(\'script\');'+
-				'js.src = \''+ url +'\';'+
-				'document.body.appendChild(js);">');
-				doc.close();
-
-			}(parent.window));
-		</script>
-	<?php
+		$this->_add_iframe( esc_url_raw( $url ) );
 	}
 
 	/**
@@ -440,14 +421,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 * @return string
 	 */
-	private function _get_sso_endpoint_url( $subsite = false, $domain = null ){
-
+	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
 		global $wp_rewrite;
+
+		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 		if( $subsite ){
-			$admin_scheme = is_ssl() ? "https://" : "http://";
+			$admin_scheme = $admin_mapping ? "https://" : "http://";
 			$url  = $admin_scheme . $domain . "/";
 		}else{
-			$admin_scheme = $this->_plugin->get_option("map_force_admin_ssl") ? "https" : "http";
+			$admin_scheme = $admin_mapping ? "https" : "http";
 			$url  = trailingslashit( network_home_url("/", $admin_scheme) );
 		}
 
@@ -490,6 +472,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		if( !empty( $action ) ){
 			$method = str_replace(array("domainmap-", "-"), array("", "_"), $action);
+
 			if( method_exists("Domainmap_Module_Cdsso", $method) )
 				call_user_func(array($this, $method));
 			else
@@ -514,17 +497,43 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$domain_name = filter_input( INPUT_GET, 'domain' );
+		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 	?>
 		// Starting Domain Mapping SSO
 		<?php
-		$url = add_query_arg( array(
+		$args = array(
 			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
-			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS )
-		), $this->_get_sso_endpoint_url( true, $domain_name ) );
+			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
+			'refresh' => 1
+		);
+		if( $admin_mapping ){
+			$args["refresh"] = 0;
+		}
+		$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
+
+		$url = set_url_scheme( $url, "http" );
+		$this->_add_inner_iframe( esc_url_raw( $url ) );
+
+		if( $admin_mapping ){ // set user cookie for https as well and refresh
+			$args["refresh"] = 1;
+			$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
+			$this->_add_inner_iframe( esc_url_raw( $url ) );
+		}
+	}
+
+	/**
+	 * Adds iframe
+	 *
+	 *
+	 * @since 4.4.0
+	 * @param $url
+	 */
+	private function _add_iframe( $url ){
 		?>
+		<script type="text/javascript">
 			(function(window) {
-				var document = window.top.document;
-				var url = '<?php echo esc_url_raw( $url ); ?>';
+				var document = window.document;
+				var url = '<?php echo $url; ?>';
 				var iframe = document.createElement('iframe');
 				(iframe.frameElement || iframe).style.cssText =
 					"width: 0; height: 0; border: 0";
@@ -538,10 +547,38 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 				'document.body.appendChild(js);">');
 				doc.close();
 
-			}(parent.top.window));
+			}(parent.window));
+		</script>
 		<?php
 	}
+	/**
+	 * Adds iframe inside the parent iframe
+	 *
+	 *
+	 * @since 4.4.0
+	 * @param $url
+	 */
+	private function _add_inner_iframe( $url ){
+		?>
+		(function(window) {
+		var document = window.top.document;
+		var url = '<?php echo $url; ?>';
+		var iframe = document.createElement('iframe');
+		(iframe.frameElement || iframe).style.cssText =
+		"width: 0; height: 0; border: 0";
+		iframe.src = "javascript:false";
+		var where = document.getElementsByTagName('script')[0];
+		where.parentNode.insertBefore(iframe, where);
+		var doc = iframe.contentWindow.document;
+		doc.open().write('<body onload="'+
+					'var js = document.createElement(\'script\');'+
+					'js.src = \''+ url +'\';'+
+					'document.body.appendChild(js);">');
+	doc.close();
 
+	}(parent.top.window));
+		<?php
+	}
 	/**
 	 * Sets auth cookie for the user on the subsite
 	 * Used by plugins_loaded action hook
@@ -576,12 +613,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
 		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+		$refresh = filter_input( INPUT_GET, 'refresh' );
 
 		if ( $user_id ) {
 		wp_set_auth_cookie( $user_id );
-		?>
-		window.top.location.reload();
-		<?php
+			if( $refresh ){
+			?>
+				window.top.location.reload();
+			<?php
+			}
 		}
 	}
 

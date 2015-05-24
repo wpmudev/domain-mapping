@@ -71,7 +71,7 @@ class domain_map {
 
 		add_filter( 'allowed_redirect_hosts', array( $this, 'allowed_redirect_hosts' ), 10 );
 
-		add_action( 'login_head', array( $this, 'build_logout_cookie' ) );
+//		add_action( 'login_head', array( $this, 'build_logout_cookie' ) );
 
 		// Add in the filters for domain mapping early on to get any information covered before the init action is hit
 		$this->add_domain_mapping_filters();
@@ -118,7 +118,7 @@ class domain_map {
 
 				break;
 		}
-
+return $login_url;
 		return $this->options['map_force_admin_ssl'] ? set_url_scheme($login_url, "https") : $login_url;
 	}
 
@@ -157,7 +157,6 @@ class domain_map {
 				break;
 		}
 
-
 		return $this->options['map_force_admin_ssl'] ? set_url_scheme($admin_url, "https") : $admin_url;
 	}
 
@@ -169,7 +168,7 @@ class domain_map {
 			// Jump in just before header output to change base_url - until a neater method can be found
 			add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
 
-			add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+//			add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
 
 			add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
 
@@ -189,10 +188,15 @@ class domain_map {
 			if(is_admin()) {
 				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
+//				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
 				add_filter( 'authenticate', array(&$this, 'authenticate'), 999, 3);
 			}
 		}
+
+		add_filter("root_rewrite_rules", function( $root_rewrite ){
+//			var_dump(maybe_unserialize($root_rewrite));die;
+			return $root_rewrite;
+		});
 
 	}
 
