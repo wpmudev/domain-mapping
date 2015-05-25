@@ -396,7 +396,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
-			var_dump($request != $_SERVER['REQUEST_URI']);
+
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $request, true, 301 );
