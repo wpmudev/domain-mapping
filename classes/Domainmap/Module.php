@@ -27,7 +27,7 @@ include_once  dirname(__FILE__) . "../../Vendor/CHttpRequest.php";
  *
  * @since 4.0.0
  */
-class Domainmap_Module {
+class Domainmap_Module extends domain_map{
 
 	/**
 	 * The instance of wpdb class.
@@ -167,106 +167,20 @@ class Domainmap_Module {
 		$check = sha1( time() );
 
 		switch_to_blog( 1 );
-		$ajax_url = admin_url( 'admin-ajax.php' );
+        $scheme = self::get_mapped_domain_scheme( $domain );
+		$ajax_url =  $scheme ?  set_url_scheme( admin_url( 'admin-ajax.php' ), $scheme ) : set_url_scheme( admin_url( 'admin-ajax.php' ), "http" );
 		$ajax_url = str_replace( parse_url( $ajax_url, PHP_URL_HOST ), $domain, $ajax_url );
 		restore_current_blog();
 		$response = wp_remote_request( esc_url_raw( add_query_arg( array(
 			'action' => Domainmap_Plugin::ACTION_HEARTBEAT_CHECK,
 			'check'  => $check,
 		), $ajax_url )), array( 'sslverify' => false ) );
+
 		$status = !is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) == 200 && preg_replace('/\W*/', '', wp_remote_retrieve_body( $response ) ) == $check ? 1 : 0;
 		$this->set_valid_transient( $domain, $status );
 		return $status;
 	}
 
-
-
-	protected function get_original_domain( $with_www = false ){
-		$home = network_home_url( '/' );
-		$original_domain = parse_url( $home, PHP_URL_HOST );
-		return $with_www ? "www." . $original_domain : $original_domain ;
-	}
-	/**
-	 * Checks if current site resides in original domain
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param string $domain
-	 * @return bool true if it's original domain, false if not
-	 */
-	protected function is_original_domain( $domain = null ){
-		$domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
-
-        /** MULTI DOMAINS INTEGRATION */
-        if( class_exists( 'multi_domain' ) ){
-            global $multi_dm;
-            if( is_array( $multi_dm->domains ) ){
-                foreach( $multi_dm->domains as $key => $domain_item){
-                    if( $domain === $domain_item['domain_name'] || strpos($domain, "." . $domain_item['domain_name']) ){
-	                    return apply_filters("dm_is_original_domain", true, $domain);
-                    }
-                }
-            }
-        }
-
-		$is_oroginal_domain = $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
-		return apply_filters("dm_is_original_domain", $is_oroginal_domain, $domain);
-	}
-
-	/**
-	 * Checks if current site resides in mapped domain
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param null $domain
-	 *
-	 * @return bool
-	 */
-	protected function is_mapped_domain( $domain = null ){
-		return !$this->is_original_domain( $domain );
-	}
-
-	/**
-	 * Checks if current page is login page
-	 *
-	 * @since 4.2.0
-	 *
-	 * @return bool
-	 */
-	protected function is_login(){
-		global $pagenow;
-		$needle = isset( $pagenow ) ? $pagenow : str_replace("/", "", $this->_http->getRequestUri() );
-		$is_login = in_array( $needle, array( 'wp-login.php', 'wp-register.php' ) );
-		return apply_filters("dm_is_login", $is_login, $needle, $pagenow) ;
-	}
-
-	/**
-	 * Checks to see if the passed $url is an admin url
-	 *
-	 * @param $url
-	 *
-	 * @return bool
-	 */
-	protected function is_admin_url( $url ){
-		$parsed = parse_url( urldecode(  $url ) );
-
-		return isset( $parsed['path'] ) ? strpos($parsed['path'], "/wp-admin") !== false : false;
-	}
-	/**
-	 * Checks if give domain should be forced to use https
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param string $domain
-	 * @return bool
-	 */
-	public static function force_ssl_on_mapped_domain( $domain = "" ){
-		global $wpdb;
-		$current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
-		$domain = $domain === "" ? $current_domain  : $domain;
-		$force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
-		return apply_filters("dm_force_ssl_on_mapped_domain", $force_ssl_on_mapped_domain) ;
-	}
 
 	/**
 	 * Checks if server supports ssl
@@ -342,10 +256,12 @@ class Domainmap_Module {
 	 * @return bool
 	 */
 	protected function set_valid_transient( $domain, $status = null ) {
+        $valid = $status;
 		if( is_null( $status ) ) {
 			$valid = $this->_validate_health_status( $domain );
 		}
 		set_site_transient( "domainmapping-{$domain}-health", $valid, $valid ? 4 * WEEK_IN_SECONDS  : 10 * MINUTE_IN_SECONDS );
+
 		return $valid;
 	}
 

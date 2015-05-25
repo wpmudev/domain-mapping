@@ -88,7 +88,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
-//		$this->_add_action( 'login_init', 'reauthenticate_user', 10 );
+		$this->_add_action( 'login_init', 'reauthenticate_user', 10 );
 		$this->_add_action('wp_head', 'add_auth_script', 0 );
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );

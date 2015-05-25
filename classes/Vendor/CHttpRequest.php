@@ -1012,44 +1012,13 @@ class CHttpRequest
 		return $cookie;
 	}
 
-	/**
-	 * Performs the CSRF validation.
-	 * This is the event handler responding to {@link CApplication::onBeginRequest}.
-	 * The default implementation will compare the CSRF token obtained
-	 * from a cookie and from a POST field. If they are different, a CSRF attack is detected.
-	 * @param CEvent $event event parameter
-	 * @throws Exception if the validation fails
-	 */
-	public function validateCsrfToken($event)
-	{
-		if ($this->getIsPostRequest() ||
-			$this->getIsPutRequest() ||
-			$this->getIsDeleteRequest())
-		{
-			$cookies=$this->getCookies();
-
-			$method=$this->getRequestType();
-			switch($method)
-			{
-				case 'POST':
-					$userToken=$this->getPost($this->csrfTokenName);
-				break;
-				case 'PUT':
-					$userToken=$this->getPut($this->csrfTokenName);
-				break;
-				case 'DELETE':
-					$userToken=$this->getDelete($this->csrfTokenName);
-			}
-
-			if (!empty($userToken) && $cookies->contains($this->csrfTokenName))
-			{
-				$cookieToken=$cookies->itemAt($this->csrfTokenName)->value;
-				$valid=$cookieToken===$userToken;
-			}
-			else
-				$valid = false;
-			if (!$valid)
-				throw new Exception(400, 'The CSRF token could not be verified.');
-		}
-	}
+    /**
+     * Returns current scheme
+     *
+     *
+     * @return string
+     */
+    function currentScheme(){
+        return $this->isSecureConnection ? "https" : "http";
+    }
 }
