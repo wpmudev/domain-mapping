@@ -1,5 +1,11 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.0.6 ==
+* Fixed: Issue in login functionality when both admin and login mappings are original
+* Fixed: Bugs in unswap url and login and sso from https pages
+* Fixed: Mapping bugs with https scheme
+* Fixed: Some domain validations issues
+
 
 == 4.4.0.5 ==
 * Fixed: Bug in login form action attribute on mapped domain
