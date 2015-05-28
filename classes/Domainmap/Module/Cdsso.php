@@ -659,14 +659,50 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.4.0.3
 	 */
 	function reauthenticate_user(){
-		global $current_user;
+		global $current_user, $redirect_to;
 
 		if( !empty( $current_user->ID ) && !isset( $_REQUEST['loggedout'] ) && !isset( $_REQUEST['action'] ) ){
-			$redirect_to = filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL );
+
+
+            if( !isset( $redirect_to ) )
+                $redirect_to = $this->_get_reauthenticate_redirect_to();
+
 			wp_set_auth_cookie( $current_user->ID );
 			wp_redirect( $redirect_to );
 			exit();
 		}
 	}
+
+    /**
+     * Returns $redirect_to variable on reauthentication
+     *
+     *
+     * @since 4.4.0.7
+     * @return mixed|string|void
+     */
+    private function _get_reauthenticate_redirect_to(){
+        $secure_cookie = false;
+        // If the user wants ssl but the session is not ssl, force a secure cookie.
+        if ( !empty($_POST['log']) && !force_ssl_admin() ) {
+            $user_name = sanitize_user($_POST['log']);
+            if ( $user = get_user_by('login', $user_name) ) {
+                if ( get_user_option('use_ssl', $user->ID) ) {
+                    $secure_cookie = true;
+                    force_ssl_admin(true);
+                }
+            }
+        }
+
+        if ( isset( $_REQUEST['redirect_to'] ) ) {
+            $redirect_to = $_REQUEST['redirect_to'];
+            // Redirect to https if user wants ssl
+            if ( $secure_cookie && false !== strpos($redirect_to, 'wp-admin') )
+                $redirect_to = preg_replace('|^http://|', 'https://', $redirect_to);
+        } else {
+            $redirect_to = admin_url();
+        }
+
+        return $redirect_to;
+    }
 
 }
