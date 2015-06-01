@@ -301,15 +301,20 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
-	 * Adds authorization script to the current page header.
+	 * Adds authorization script to the current page header. (Subsite)
 	 *
 	 * @since 4.1.2
 	 * @action wp_head 0
 	 * @action login_head 0
 	 *
+     * @uses _add_auth_script_sync
+     * @uses _add_auth_script_async
+     *
 	 * @access public
 	 */
 	public function add_auth_script() {
+
+        if (   is_user_logged_in() ||  1  === get_current_blog_id()  )  return;
 
 		if($this->_async)
 			$this->_add_auth_script_async();
@@ -319,23 +324,20 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	private function _add_auth_script_sync(){
-		if (   is_user_logged_in() ||  1  === get_current_blog_id() || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
 			return;
 		}
 
-		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
+		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url( true ) );
 		$this->_add_script( esc_url_raw( $url ) );
 	}
 
 	private function _add_auth_script_async(){
-		if (   is_user_logged_in() ||  1  === get_current_blog_id()  ) {
-			return;
-		}
 
 		$url = add_query_arg( array(
 			'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
 			'domain' =>  $_SERVER['HTTP_HOST'] ,
-		), $this->_get_sso_endpoint_url()
+		), $this->_get_sso_endpoint_url(true)
 		);
 
 		$this->_add_iframe( esc_url_raw( $url ) );
@@ -422,11 +424,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string
 	 */
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
-		global $wp_rewrite;
+		global $wp_rewrite, $current_blog, $current_site;;
 
 		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 		if( $subsite ){
-			$admin_scheme = $admin_mapping ? "https://" : "http://";
+            $domain = is_null( $domain ) ? $current_blog->domain : $domain;
+			$admin_scheme = is_ssl() ? "https://" : "http://";
 			$url  = $admin_scheme . $domain . "/";
 		}else{
 			$admin_scheme = $admin_mapping ? "https" : "http";
