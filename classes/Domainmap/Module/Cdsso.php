@@ -314,7 +314,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function add_auth_script() {
 
-        if (   is_user_logged_in() ||  1  === get_current_blog_id()  )  return;
+        if (   is_user_logged_in()
+            ||  1  === get_current_blog_id()
+            ||  filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER
+            || isset( $_POST["pwd"] )
+            || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_LOGOUT_USER
+        )  return;
 
 		if($this->_async)
 			$this->_add_auth_script_async();
@@ -324,11 +329,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	private function _add_auth_script_sync(){
-		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
-			return;
-		}
 
-		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url( true ) );
+		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
 		$this->_add_script( esc_url_raw( $url ) );
 	}
 
@@ -337,7 +339,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$url = add_query_arg( array(
 			'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
 			'domain' =>  $_SERVER['HTTP_HOST'] ,
-		), $this->_get_sso_endpoint_url(true)
+		), $this->_get_sso_endpoint_url()
 		);
 
 		$this->_add_iframe( esc_url_raw( $url ) );
@@ -426,13 +428,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
 		global $wp_rewrite, $current_blog, $current_site;;
 
-		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
+        $admin_scheme = is_ssl() ? "https://" : "http://";
+
 		if( $subsite ){
             $domain = is_null( $domain ) ? $current_blog->domain : $domain;
-			$admin_scheme = is_ssl() ? "https://" : "http://";
 			$url  = $admin_scheme . $domain . "/";
 		}else{
-			$admin_scheme = $admin_mapping ? "https" : "http";
 			$url  = trailingslashit( network_home_url("/", $admin_scheme) );
 		}
 
