@@ -253,7 +253,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function get_login_message( $message ) {
 		return $this->_do_propagation
-			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 1 seconds.', 'domainmap' ) . '</p>'
+			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
 			: $message;
 	}
 
@@ -287,7 +287,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		?>
 		<script <?php echo $this->_async ? "async='true'" : ""; ?>  type="text/javascript">
 			function domainmap_do_redirect() { window.location = "<?php echo $redirect_to ?>"; }
-			setTimeout(domainmap_do_redirect, 1000);
+			setTimeout(domainmap_do_redirect, 5000);
 		</script>
 
 		<?php
