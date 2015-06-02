@@ -66,8 +66,6 @@ class domain_map {
 
 		// Set up the plugin
 		add_action( 'init', array( $this, 'setup_plugin' ) );
-		// Add in the cross domain logins
-		add_action( 'init', array( &$this, 'build_stylesheet_for_cookie' ) );
 
 		add_filter( 'allowed_redirect_hosts', array( $this, 'allowed_redirect_hosts' ), 10 );
 
@@ -78,13 +76,6 @@ class domain_map {
 		add_action("domainmap_plugin_activated", array($this, "flush_rewrite_rules"));
 		add_action("domainmap_plugin_deactivated", array($this, "remove_rewrite_rule_flush_trace"));
 	}
-
-
-
-	function shibboleth_session_initiator_url($initiator_url) {
-		return $initiator_url;
-	}
-
 
 	function domain_mapping_login_url( $login_url, $redirect = '' ) {
 
@@ -171,8 +162,6 @@ class domain_map {
 			// Jump in just before header output to change base_url - until a neater method can be found
 			add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
 
-			add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
-
 			add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
 
 			add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
@@ -191,7 +180,6 @@ class domain_map {
 			if(is_admin()) {
 				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-				add_filter( 'wp_redirect', array(&$this, 'wp_redirect'), 999, 2 );
 				add_filter( 'authenticate', array(&$this, 'authenticate'), 999, 3);
 			}
 		}
@@ -241,85 +229,6 @@ class domain_map {
 		$dm_logout = true;
 	}
 
-	function wp_redirect($location) {
-		global $dm_authenticated, $dm_logout, $dm_csc_building_urls;
-
-		if ( $dm_authenticated ) {
-			if ( !defined( 'DONOTCACHEPAGE' ) ) {
-				define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-			}
-
-			header("HTTP/1.1 301 Moved Permanently", true, 301);
-			header("Location: {$location}", true, 301);
-
-			?><!DOCTYPE html>
-			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
-				<head>
-					<meta name="robots" content="noindex,nofollow" />
-					<title><?php _e('Authenticating...', 'domainmap'); ?></title>
-					<?php
-					if ( !empty( $dm_authenticated ) && !empty( $dm_authenticated->ID ) ) {
-						$this->build_cookie( 'login', $dm_authenticated, $location );
-					} else {
-						$this->build_cookie( 'logout' );
-					}
-
-					if ( count( $dm_csc_building_urls ) > 0 ) {
-						$dm_csc_building_urls[] = rawurlencode( $location );
-
-						$location = rawurldecode( array_shift( $dm_csc_building_urls ) );
-						$location .= '&follow_through=' . implode( ',', $dm_csc_building_urls );
-					}
-					?>
-					<meta http-equiv="refresh" content="3;url=<?php echo $location; ?>" />
-				</head>
-				<body>
-					<h1><?php _e('Please wait...', 'domainmap'); ?></h1>
-					<p><?php echo sprintf(__('If it doesn\'t redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap'), $location); ?></p>
-					<!-- Hej -->
-				</body>
-			</html>
-			<?php
-			// @ob_flush();
-			exit();
-		}
-
-		if ($dm_logout) {
-			define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-			header("HTTP/1.1 301 Moved Permanently", true, 301);
-			header("Location: {$location}", true, 301);
-			?>
-			<!DOCTYPE html>
-			<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
-				<head>
-					<meta name="robots" content="noindex,nofollow" />
-					<title><?php _e('Authenticating...', 'domainmap'); ?></title>
-					<?php
-					$this->build_cookie('logout');
-
-					if (count($dm_csc_building_urls) > 0) {
-						$dm_csc_building_urls[] = rawurlencode($location);
-
-						$location = rawurldecode(array_shift($dm_csc_building_urls));
-						$location .= '&follow_through='.join(',', $dm_csc_building_urls);
-					}
-					?>
-					<meta http-equiv="refresh" content="3;url=<?php echo $location; ?>" />
-				</head>
-				<body>
-					<h1><?php _e('Please wait...', 'domainmap'); ?></h1>
-					<p><?php echo sprintf(__('If it doesn\'t redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap'), $location); ?></p>
-					<!-- Hej då -->
-				</body>
-			</html>
-			<?php
-			// @ob_flush();
-			exit();
-		}
-
-		return $location;
-	}
-
 	function allowed_redirect_hosts( $allowed_hosts ) {
 		if ( !empty( $_REQUEST['redirect_to'] ) ) {
 			$redirect_url = parse_url( $_REQUEST['redirect_to'] );
@@ -344,64 +253,6 @@ class domain_map {
 		}
 
 		return $allowed_hosts;
-	}
-
-	function build_stylesheet_for_cookie() {
-
-		if( !isset( $_GET['build'] ) || !isset( $_GET['uid'] ) ) {
-			return;
-		}
-
-		if ( addslashes( $_GET['build'] ) == date( 'Ymd', strtotime( '-24 days' ) ) ) {
-			// We have a stylesheet with a build and a matching date - so grab the hash
-			$hash = basename( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ) );
-			$key = (array)get_user_meta( $_GET['uid'], 'cross_domain', true );
-			if ( isset( $key[$hash]['action'] ) ) {
-				// Set the cookies
-				if ( !is_user_logged_in() ) {
-					if ( $key[$hash]['action'] == 'login' ) {
-						wp_set_auth_cookie( $key[$hash]['user_id'] );
-					}
-				} else {
-					if ( $key[$hash]['action'] == 'logout' ) {
-						wp_clear_auth_cookie();
-					}
-				}
-			}
-		}
-
-		define( 'DONOTCACHEPAGE', 1 ); // don't let wp-super-cache cache this page.
-		if ( !isset( $_REQUEST['follow_through'] ) ) {
-			header( "Content-type: text/css" );
-			echo "/* Sometimes me think what is love, and then me think love is what last cookie is for. Me give up the last cookie for you. */";
-			exit;
-		}
-
-		$follow_through = explode( ',', $_REQUEST['follow_through'] );
-		$location = count( $follow_through ) > 0
-			? rawurldecode( array_pop( $follow_through ) )
-			: site_url();
-
-		?><!DOCTYPE html>
-		<html>
-			<head>
-				<meta charset="<?php bloginfo( 'charset' ) ?>">
-				<title><?php _e( 'Authenticating...', 'domainmap' ); ?></title>
-				<meta name="robots" content="noindex,nofollow">
-				<?php foreach ( $follow_through as $dm_csc_style_location ) : ?>
-				<link rel="stylesheet" href="<?php echo rawurldecode( $dm_csc_style_location ) ?>" type="text/css" media="screen">
-				<?php endforeach; ?>
-			</head>
-			<body>
-				<h1><?php _e( 'Please wait...', 'domainmap' ) ?></h1>
-				<p><?php echo sprintf( __( 'If it does not redirect in 5 seconds please click <a href="%s">here</a>.', 'domainmap' ), $location ) ?></p>
-				<script type="text/javascript">
-					window.location = '<?php echo $location ?>';
-				</script>
-			</body>
-		</html><?php
-
-		exit;
 	}
 
 	function reset_script_url($return) {
