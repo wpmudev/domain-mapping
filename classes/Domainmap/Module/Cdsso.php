@@ -96,6 +96,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
 		$this->_add_action( 'wp_logout', 'set_logout_var' );
+
 		if( !$this->_async ){
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
 		}
@@ -209,8 +210,11 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			exit;
 		}
 
-		wp_clear_auth_cookie();
-		$url = add_query_arg( self::ACTION_KEY, false, $_SERVER['HTTP_REFERER'] );
+
+        wp_destroy_all_sessions();
+        wp_clear_auth_cookie();
+
+        $url = add_query_arg( self::ACTION_KEY, false, $_SERVER['HTTP_REFERER'] );
 
 		echo 'window.location = "', esc_url_raw( $url ), '";';
 		exit;
@@ -269,6 +273,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function add_propagation_script() {
 		global $redirect_to, $user;
+
 
 		if ( !$this->_do_propagation ) {
 			return;
