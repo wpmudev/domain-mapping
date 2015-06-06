@@ -118,6 +118,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_init',              'force_login_scheme', 12 );
 		$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		$this->_add_action( 'login_init',              'redirect_login_area' );
+        $this->_add_action( 'login_init',              'allow_crosslogin' );
 
 //		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
@@ -1232,4 +1233,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
         return $scheme ?  set_url_scheme( $url, $scheme ) : $url ;
 	}
+
+    /**
+     * Allows login from mapped domain to the original domain and vise versa by bypassing testcookie nag
+     *
+     * @since 4.4.0.7
+     *
+     */
+    function allow_crosslogin(){
+        if( isset( $_POST['testcookie'] ) &&  empty( $_COOKIE[ TEST_COOKIE ] ) )
+            unset( $_POST['testcookie'] );
+    }
 }
