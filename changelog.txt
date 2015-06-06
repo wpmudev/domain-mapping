@@ -1,4 +1,14 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.4.0.7 ==
+* Fixed: Blank page in sso reauthenticate function when redirect_to is null
+* Fixed: Bug in setting correct scheme for the endpoint
+* Fixed: Https admin ajax url in none https page
+* Fixed: Bug in sso endpoing url scheme,
+* Fixed: Inability to logout from mapped domain
+* Fixed: Bug in SSO that prevented it from working on slower installs
+* Fixed: Cross-login issue and cookie nag
+
+
 
 == 4.4.0.6 ==
 * Fixed: Issue in login functionality when both admin and login mappings are original
