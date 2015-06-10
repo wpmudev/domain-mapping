@@ -146,6 +146,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$this->_add_filter( $filter, 'setup_database', 1 );
 		$this->_add_filter( $filter, 'upgrade_to_4_0_3', 10 );
 		$this->_add_filter( $filter, 'upgrade_to_4_2', 10 );
+		$this->_add_filter( $filter, 'upgrade_to_4_4_0_8', 10 );
 
 
         /**
@@ -269,6 +270,33 @@ class Domainmap_Module_System extends Domainmap_Module {
         $this->_exec_queries( array(
             $this->_alter_table( DOMAINMAP_TABLE_MAP, array(
                 'ADD COLUMN `scheme` TINYINT UNSIGNED NOT NULL DEFAULT 2  AFTER `active`',
+            ) ),
+        ) );
+
+        return $this_version;
+    }
+
+    /**
+     * Upgrades database to version 4.4.0.8
+     *
+     * Changes domain column's length to 191 to the max length in InnoDB for utf8mb4
+     *
+     * @since 4.4.0.8
+     *
+     * @access public
+     * @param string $current_version The current plugin version.
+     * @return string Upgraded version if the current version is less, otherwise current version.
+     */
+    public function upgrade_to_4_4_0_8( $current_version ) {
+        $this_version = '4.4.0.8';
+
+        if ( version_compare( $current_version, $this_version, '>=' ) ) {
+            return $current_version;
+        }
+
+        $this->_exec_queries( array(
+            $this->_alter_table( DOMAINMAP_TABLE_MAP, array(
+                'MODIFY COLUMN `domain` VARCHAR(191) NOT NULL',
             ) ),
         ) );
 
