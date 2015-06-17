@@ -148,6 +148,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
 		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
+
+        $this->_add_action("dm_disable_mapping", "disable_mapping", 10, 2);
 	}
 
 	/**
@@ -1243,5 +1245,28 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
     function allow_crosslogin(){
         if( isset( $_POST['testcookie'] ) &&  empty( $_COOKIE[ TEST_COOKIE ] ) )
             unset( $_POST['testcookie'] );
+    }
+
+
+    /**
+     * Disables mapping
+     *
+     * @uses dm_disable_mapping
+     *
+     * @param $blog_id
+     * @param $domain
+     * @return false|int
+     *
+     * @since 4.4.0.8
+     */
+    function disable_mapping( $blog_id, $domain ){
+
+        if( !empty( $blog_id ) ){
+            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => 0 ), array( "blog_id" => $blog_id ) );
+        }
+
+        if( !empty( $blog_id ) ){
+            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => 0 ), array( "domain" => $domain ) );
+        }
     }
 }
