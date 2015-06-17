@@ -149,7 +149,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
 		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
 
-        $this->_add_action("dm_disable_mapping", "disable_mapping", 10, 2);
+        $this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
 	}
 
 	/**
@@ -1249,24 +1249,27 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 
     /**
-     * Disables mapping
+     * Toggles mapping to $toggle_value based on the provided $blog_id or $domain
      *
-     * @uses dm_disable_mapping
+     * @uses dm_toggle_mapping
      *
-     * @param $blog_id
-     * @param $domain
+     * @param int $blog_id
+     * @param string $domain
+     * @param int $toggle_value 1|0
      * @return false|int
      *
      * @since 4.4.0.8
      */
-    function disable_mapping( $blog_id, $domain ){
+    function toggle_mapping($toggle_value = 0, $blog_id = null, $domain = null ){
 
         if( !empty( $blog_id ) ){
-            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => 0 ), array( "blog_id" => $blog_id ) );
+            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "blog_id" => $blog_id ) );
         }
 
         if( !empty( $blog_id ) ){
-            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => 0 ), array( "domain" => $domain ) );
+            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "domain" => $domain ) );
         }
+
+        return false;
     }
 }
