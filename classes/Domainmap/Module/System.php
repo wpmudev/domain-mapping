@@ -204,7 +204,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 			$this->_create_table( DOMAINMAP_TABLE_MAP, array(
 				'`id` BIGINT NOT NULL AUTO_INCREMENT',
 				'`blog_id` BIGINT NOT NULL',
-				'`domain` VARCHAR(255) NOT NULL',
+				'`domain` VARCHAR(191) NOT NULL',
 				'`active` TINYINT DEFAULT 1',
 				'PRIMARY KEY (`id`)',
 				'KEY `blog_id` (`blog_id`, `domain`, `active`)',
@@ -213,7 +213,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 			$this->_create_table( DOMAINMAP_TABLE_RESELLER_LOG, array(
 				'`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT',
 				'`user_id` BIGINT UNSIGNED NOT NULL',
-				'`provider` VARCHAR(255) NOT NULL',
+				'`provider` VARCHAR(191) NOT NULL',
 				'`requested_at` DATETIME NOT NULL',
 				'`type` TINYINT UNSIGNED NOT NULL',
 				'`valid` TINYINT UNSIGNED NOT NULL',
@@ -297,6 +297,12 @@ class Domainmap_Module_System extends Domainmap_Module {
         $this->_exec_queries( array(
             $this->_alter_table( DOMAINMAP_TABLE_MAP, array(
                 'MODIFY COLUMN `domain` VARCHAR(191) NOT NULL',
+            ) ),
+        ) );
+
+        $this->_exec_queries( array(
+            $this->_alter_table( DOMAINMAP_TABLE_RESELLER_LOG, array(
+                'MODIFY COLUMN `provider` VARCHAR(191) NOT NULL',
             ) ),
         ) );
 
