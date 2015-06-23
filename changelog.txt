@@ -1,4 +1,8 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.4.0.8 ==
+* Add dm_toggle_mapping action hook to toggle mapped domain active flag
+* Fix bug in domain mapping domain column length when used with InnoDB
+
 == 4.4.0.7 ==
 * Fixed: Blank page in sso reauthenticate function when redirect_to is null
 * Fixed: Bug in setting correct scheme for the endpoint
