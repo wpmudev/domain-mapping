@@ -266,6 +266,7 @@ class domain_map {
 	function domain_mapping_post_content( $post_content ) {
 		static $orig_urls = array();
 		$blog_id = get_current_blog_id();
+
 		if ( !isset( $orig_urls[$blog_id] ) ) {
 
             /**
@@ -279,6 +280,7 @@ class domain_map {
 			$orig_urls[$blog_id] = is_ssl()
 				? str_replace( "http://", "https://", $orig_url )
 				: str_replace( "https://", "http://", $orig_url );
+
 		} else {
 			// we have a cached entry so just return that
 			$orig_url = $orig_urls[$blog_id];
@@ -296,8 +298,11 @@ class domain_map {
 			return $post_content;
 		}
 
+        $orig_url = trailingslashit( $orig_url );
+        $url = trailingslashit( $url );
+
 		// replace all the original urls with the new ones and then return the content
-		return str_replace( trailingslashit( $orig_url ), trailingslashit( $url ), $post_content );
+		return str_replace( array($orig_url,  $this->swap_url_scheme( $orig_url ) ) , $url , $post_content );
 	}
 
     /**
@@ -501,5 +506,24 @@ class domain_map {
         }
 
         return $scheme;
+    }
+
+    /**
+     * Swaps url scheme from http to https and vice versa
+     *
+     * @since 4.4.0.9
+     * @param $url provided url
+     * @return string
+     */
+    function swap_url_scheme( $url ){
+        $parse_original_url = parse_url( $url );
+        $alternative_scheme = null;
+        if( isset( $parse_original_url['scheme'] ) &&  $parse_original_url['scheme'] === "https"  ){
+            $alternative_scheme = "http";
+        }elseif(  isset( $parse_original_url['scheme'] ) &&  $parse_original_url['scheme'] === "http" ){
+            $alternative_scheme = "https";
+        }
+
+        return set_url_scheme( $url, $alternative_scheme );
     }
 }
