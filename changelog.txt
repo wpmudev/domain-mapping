@@ -1,4 +1,7 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.4.0.9 ==
+* Fixed: Mixed urls in contents under ssl
+
 == 4.4.0.8 ==
 * Add dm_toggle_mapping action hook to toggle mapped domain active flag
 * Fix bug in domain mapping domain column length when used with InnoDB
