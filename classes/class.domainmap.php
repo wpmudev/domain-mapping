@@ -150,7 +150,14 @@ class domain_map {
          * If admin ssl is forced and user is viewing admin page, then force https
          * Other than the above set scheme based on the current viewed scheme
          */
-         return $this->options['map_force_admin_ssl'] && is_admin() ? set_url_scheme($admin_url, "https") :  set_url_scheme( $admin_url, is_ssl() ? 'https' : 'http' );
+        $scheme = "http";
+        if( $this->is_mapped_domain( $admin_url ) ){
+            $scheme = self::force_ssl_on_mapped_domain() ? "https" : $scheme;
+        }else{
+            $scheme = $this->options['map_force_admin_ssl'] ? "https" : ( is_ssl() ? 'https' : 'http'  );
+        }
+
+         return set_url_scheme($admin_url, $scheme);
 
 	}
 
@@ -411,6 +418,7 @@ class domain_map {
      * @return bool true if it's original domain, false if not
      */
     protected function is_original_domain( $domain = null ){
+
         $domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
 
         /** MULTI DOMAINS INTEGRATION */
