@@ -346,6 +346,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
             "idprotection" => "on",
             "paymentmethod" => $whmcs->get_gateway()
         ), $this->_get_current_domain_nameservers()) );
+        $whmcs->log_whmcs_request(Domainmap_Reseller_WHMCS::COMMAND_ADD_ORDER, $object);
         if( !is_wp_error($object) ){
             $this->_map_domain( $domain);
             wp_send_json_success( array(

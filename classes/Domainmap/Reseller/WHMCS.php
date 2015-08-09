@@ -185,7 +185,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 	 */
 	private function _validate_credentials() {
 		$json = $this->_exec_command( self::COMMAND_CHECK_LOGIN_CREDS );
-        $this->_log_whmcs_request(self::REQUEST_VALIDATE_CREDENTIALS, $json);
+        $this->log_whmcs_request(self::REQUEST_VALIDATE_CREDENTIALS, $json);
         $valid = is_object( $json ) && !is_wp_error( $json ) ? $json->result === 'success' : false;
 
         $transient = 'whmcs_errors_' . get_current_user_id();
@@ -362,7 +362,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			'domain' => $sld . "." . $tld,
 		) );
 
-		$this->_log_whmcs_request( self::REQUEST_CHECK_DOMAIN, $json );
+		$this->log_whmcs_request( self::REQUEST_CHECK_DOMAIN, $json );
 
         return isset( $json->status ) ? $json->status === "available" : false;
 	}
@@ -436,7 +436,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			'RegistrantFax'              => $registrant_fax,
 		) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
 
-		$this->_log_whmcs_request( self::REQUEST_PURCHASE_DOMAIN, $response );
+		$this->log_whmcs_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
 		if ( $response && isset( $response->RRPCode ) && $response->RRPCode == 200 ) {
 			$this->_populate_dns_records( $tld, $sld );
@@ -531,7 +531,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
 			$args['tld'] = $tld;
 
 			$response = $this->_exec_command( self::COMMAND_SET_HOSTS, $args );
-			$this->_log_whmcs_request( self::REQUEST_SET_DNS_RECORDS, $response );
+			$this->log_whmcs_request( self::REQUEST_SET_DNS_RECORDS, $response );
 		}
 	}
 
@@ -722,11 +722,11 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
      *
      * @since 4.2.0
      *
-     * @access protected
+     * @access public
      * @param int $type The request type.
      * @param SimpleXMLElement $response The response information, received on request.
      */
-    private function _log_whmcs_request( $type, $object ) {
+    public  function log_whmcs_request( $type, $object ) {
         if ( !is_object( $object ) ) {
             return;
         }
