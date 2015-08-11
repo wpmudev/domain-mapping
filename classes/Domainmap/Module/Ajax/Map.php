@@ -182,33 +182,39 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 				$map = $this->_wpdb->get_row( $this->_wpdb->prepare( "SELECT blog_id FROM " . DOMAINMAP_TABLE_MAP . " WHERE domain = %s", $domain ) );
 
 				if ( is_null( $blog ) && is_null( $map ) ) {
-					$this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
+					$added = $this->_wpdb->insert( DOMAINMAP_TABLE_MAP, array(
 						'blog_id' => (int) $blog_id,
 						'domain'  => $domain,
 						'active'  => 1,
                         "scheme" => $scheme,
 					), array( '%d', '%s', '%d', '%d') );
 
-					if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
-						// fire the action when a new domain is added
-						do_action( 'domainmapping_added_domain', $domain, $blog_id );
+                    if( !$added ){
+                        $message = $this->_wpdb->last_error;
+                    }else{
+                        if ( $this->_plugin->get_option( 'map_verifydomain', true ) == false || $this->_validate_health_status( $domain ) ) {
+                            // fire the action when a new domain is added
+                            do_action( 'domainmapping_added_domain', $domain, $blog_id );
 
-						// send success response
-						ob_start();
-						$row = array( 'domain' => $domain, 'is_primary' => 0 );
-						Domainmap_Render_Site_Map::render_mapping_row( (object)$row );
-						wp_send_json_success( array(
-							'html'      => ob_get_clean(),
-							'hide_form' => !$allowmulti,
-						) );
-					} else {
-						$this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
-						$message = sprintf(
-							'<b>%s</b><br><small>%s</small>',
-							__( 'Domain name is unavailable to access.', 'domainmap' ),
-							__( "We can’t access your new domain. Mapping a new domains can take as little as 15 minutes to resolve but in some cases can take up to 72 hours, so please wait if you just bought it. If it is an existing domain and has already been fully propagated, check your DNS records are configured correctly.", 'domainmap' )
-						);
-					}
+                            // send success response
+                            ob_start();
+                            $row = array( 'domain' => $domain, 'is_primary' => 0 );
+                            Domainmap_Render_Site_Map::render_mapping_row( (object)$row );
+                            wp_send_json_success( array(
+                                'html'      => ob_get_clean(),
+                                'hide_form' => !$allowmulti,
+                            ) );
+                        } else {
+                            $this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
+                            $message = sprintf(
+                                '<b>%s</b><br><small>%s</small>',
+                                __( 'Domain name is unavailable to access.', 'domainmap' ),
+                                __( "We can’t access your new domain. Mapping a new domains can take as little as 15 minutes to resolve but in some cases can take up to 72 hours, so please wait if you just bought it. If it is an existing domain and has already been fully propagated, check your DNS records are configured correctly.", 'domainmap' )
+                            );
+                        }
+                    }
+
+
 				} else {
 					$message = __( 'Domain is already mapped.', 'domainmap' );
 				}
