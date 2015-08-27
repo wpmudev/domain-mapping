@@ -230,6 +230,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 			}
 		}
 
+
+        // Set transient for scheme
+        set_transient( domain_map::FORCE_SSL_KEY_PREFIX . $domain, (int) $scheme );
+
+        // Send response json
 		wp_send_json_error( array(
 			'message'   => $message,
 			'hide_form' => $hide_form,

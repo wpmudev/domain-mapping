@@ -54,6 +54,15 @@ class domain_map {
 	 */
 	const FLUSHED_REWRITE_RULES = 'domainmap-flushed-rules-';
 
+    /**
+     * Key to cache force ssl state
+     *
+     * @since 4.4.0.10
+     * @param string  FORCE_SSL_KEY_PREFIX
+     */
+    const FORCE_SSL_KEY_PREFIX = 'dm_force_ssl_';
+
+
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
 
@@ -489,7 +498,16 @@ class domain_map {
         global $wpdb;
         $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
         $domain = $domain === "" ? $current_domain  : $domain;
-        $force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+        $transient_key = self::FORCE_SSL_KEY_PREFIX . $domain;
+        $force = get_transient( $transient_key );
+
+        if( $force === false ){
+            $force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+            set_transient($transient_key, $force_ssl_on_mapped_domain, 30 * MINUTE_IN_SECONDS);
+        }else{
+            $force_ssl_on_mapped_domain = $force;
+        }
+
         return apply_filters("dm_force_ssl_on_mapped_domain", $force_ssl_on_mapped_domain) ;
     }
 
