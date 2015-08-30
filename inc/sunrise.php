@@ -21,12 +21,11 @@ $wpdb->suppress_errors( $s_e );
 
 if ( !empty( $mapped ) ) {
     $GLOBALS['dm_mapped'] = $mapped;
-    $mapped_id = $mapped->blog_id;
 
-    $current_blog = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = %d LIMIT 1", $mapped_id ) );
+    $current_blog = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = %d LIMIT 1", $mapped->blog_id ) );
     $current_blog->domain = $_SERVER['HTTP_HOST'];
 
-    $blog_id = $mapped_id;
+    $blog_id = $mapped->blog_id;
     $site_id = $current_blog->site_id;
 
 
@@ -61,4 +60,4 @@ if ( !empty( $mapped ) ) {
 }
 
 // clean up temporary variables
-unset( $s_e, $using_domain, $mapped_id );
+unset( $s_e, $using_domain );
