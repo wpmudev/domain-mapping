@@ -583,6 +583,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		$protocol = 'http://';
+
 		if ( self::force_ssl_on_mapped_domain( $domain ) && is_ssl() ) {
 			$protocol = 'https://';
 		}

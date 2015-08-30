@@ -15,11 +15,14 @@ define( 'COOKIE_DOMAIN', $using_domain );
 $s_e = $wpdb->suppress_errors();
 
 // Check for the domain with and without the www. prefix
-$mapped_id = $wpdb->get_var( $wpdb->prepare( "SELECT blog_id FROM {$wpdb->dmtable} WHERE active=1 AND ( domain = %s OR domain = %s ) LIMIT 1", $using_domain, "www.{$using_domain}" ) );
+$mapped = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->dmtable} WHERE active=1 AND ( domain = %s OR domain = %s ) LIMIT 1", $using_domain, "www.{$using_domain}" ), OBJECT );
 
 $wpdb->suppress_errors( $s_e );
 
-if ( !empty( $mapped_id ) ) {
+if ( !empty( $mapped ) ) {
+    $GLOBALS['dm_mapped'] = $mapped;
+    $mapped_id = $mapped->blog_id;
+
     $current_blog = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->blogs} WHERE blog_id = %d LIMIT 1", $mapped_id ) );
     $current_blog->domain = $_SERVER['HTTP_HOST'];
 

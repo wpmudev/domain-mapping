@@ -495,17 +495,23 @@ class domain_map {
      * @return bool
      */
     public static function force_ssl_on_mapped_domain( $domain = "" ){
-        global $wpdb;
+        global $wpdb, $dm_mapped;
+
         $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
         $domain = $domain === "" ? $current_domain  : $domain;
         $transient_key = self::FORCE_SSL_KEY_PREFIX . $domain;
-        $force = get_transient( $transient_key );
 
-        if( $force === false ){
-            $force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
-            set_transient($transient_key, $force_ssl_on_mapped_domain, 30 * MINUTE_IN_SECONDS);
+        if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
+            $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
         }else{
-            $force_ssl_on_mapped_domain = $force;
+            $force = get_transient( $transient_key );
+
+            if( $force === false ){
+                $force_ssl_on_mapped_domain = (int) $wpdb->get_var( $wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+                set_transient($transient_key, $force_ssl_on_mapped_domain, 30 * MINUTE_IN_SECONDS);
+            }else{
+                $force_ssl_on_mapped_domain = $force;
+            }
         }
 
         return apply_filters("dm_force_ssl_on_mapped_domain", $force_ssl_on_mapped_domain) ;
