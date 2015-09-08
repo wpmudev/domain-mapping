@@ -38,7 +38,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	const ACTION_AUTHORIZE_USER = 'domainmap-authorize-user';
 	const ACTION_AUTHORIZE_USER_ASYNC = 'domainmap-authorize-user-async';
 	const ACTION_PROPAGATE_USER = 'domainmap-propagate-user';
-	const ACTION_LOGOUT_USER    = 'domainmap-logout-user';
 	const SSO_ENDPOINT          = 'dm-sso-endpoint';
 
 	/**
@@ -50,16 +49,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @var boolean
 	 */
 	private $_do_propagation = false;
-
-	/**
-	 * Determines whether we do logout process or not.
-	 *
-	 * @since 4.1.2
-	 *
-	 * @access private
-	 * @var boolean
-	 */
-	private $_do_logout = false;
 
 	/**
 	 * Whether to load the sso scripts asynchronously
@@ -84,7 +73,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$this->_async =  $plugin->get_option("map_crossautologin_async");
 
-		$this->_add_filter( 'wp_redirect', 'add_logout_marker' );
 		$this->_add_filter( 'login_redirect', 'set_interim_login', 10, 3 );
 		$this->_add_filter( 'login_message', 'get_login_message' );
 		$this->_add_filter( 'login_url', 'update_login_url', 10, 2 );
@@ -92,10 +80,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$this->_add_action('wp_head', 'add_auth_script', 0 );
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
-		$this->_add_action( 'wp_head', 'add_logout_propagation_script', 0 );
-		$this->_add_action( 'login_head', 'add_logout_propagation_script', 0 );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
-		$this->_add_action( 'wp_logout', 'set_logout_var' );
+        $this->_add_filter("logout_redirect", "logout_user_from_everywhere");
 
 		if( !$this->_async ){
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
@@ -104,7 +90,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		add_filter('init', array( $this, "add_query_var_for_endpoint" ));
 		add_action('template_redirect', array( $this, 'dispatch_ajax_request' ));
 
-		$this->_add_ajax_action( self::ACTION_LOGOUT_USER, 'logout_user', true, true );
 		$this->_add_ajax_action( self::ACTION_PROPAGATE_USER, 'propagate_user', true, true );
 	}
 
@@ -145,79 +130,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
-	 * Sets logout var to determine logout process.
+	 * Logout user from all sites
 	 *
-	 * @since 4.1.2
-	 * @access wp_logout
-	 *
-	 * @access public
-	 */
-	public function set_logout_var() {
-		$this->_do_logout = true;
-	}
-
-	/**
-	 * Adds logout marker if need be.
-	 *
-	 * @since 4.1.2
-	 * @filter wp_redirect
-	 *
-	 * @access public
-	 * @param string $redirect_to The initial redirect URL.
-	 * @return string Updated redirect URL.
-	 */
-	public function add_logout_marker( $redirect_to ) {
-		if ( $this->_do_logout ) {
-			$redirect_to = esc_url_raw( add_query_arg( self::ACTION_KEY, self::ACTION_LOGOUT_USER, $redirect_to ) );
-		}
-
-		return $redirect_to;
-	}
-
-	/**
-	 * Adds logout propagation script if need be.
-	 *
-	 * @since 4.1.2
-	 * @action wp_head 0
-	 * @action login_head 0
+	 * @since 4.4.1.0
 	 *
 	 * @access public
 	 */
-	public function add_logout_propagation_script() {
-		if ( is_user_logged_in() || get_current_blog_id() == 1 || filter_input( INPUT_GET, self::ACTION_KEY ) != self::ACTION_LOGOUT_USER ) {
-			return;
-		}
-
-		$url = add_query_arg( 'action', self::ACTION_LOGOUT_USER, $this->get_main_ajax_url() );
-		$this->_add_script( esc_url_raw( $url ) );
-	}
-
-	/**
-	 * Do logout from the main blog.
-	 *
-	 * @since 4.1.2
-	 * @action wp_ajax_domainmap-logout-user
-	 * @action wp_ajax_no_priv_domainmap-logout-user
-	 *
-	 * @access public
-	 */
-	public function logout_user() {
-		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
-
-		if ( !is_user_logged_in() || empty( $_SERVER['HTTP_REFERER'] ) ) {
-			header( "Vary: Accept-Encoding" ); // Handle proxies
-			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + MINUTE_IN_SECONDS ) . " GMT" );
-			exit;
-		}
-
-
-        wp_destroy_all_sessions();
-        wp_clear_auth_cookie();
-
-        $url = add_query_arg( self::ACTION_KEY, false, $_SERVER['HTTP_REFERER'] );
-
-		echo 'window.location = "', esc_url_raw( $url ), '";';
-		exit;
+	public function logout_user_from_everywhere($redirect_to) {
+        WP_User_Meta_Session_Tokens::drop_sessions();
+        return $redirect_to;
 	}
 
 	/**
@@ -323,7 +244,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
             ||  1  === get_current_blog_id()
             ||  filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER
             || isset( $_POST["pwd"] )
-            || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_LOGOUT_USER
         )  return;
 
 		if($this->_async)
