@@ -221,7 +221,7 @@ class Domainmap_Module extends domain_map{
 	 * @return mixed
 	 */
 	protected function get_main_ajax_url( $scheme = 'admin'  ){
-		return  $this->_replace_last_occurence('network/', '', network_admin_url( 'admin-ajax.php', $scheme ) );
+		return  $this->_replace_last_occurrence('network/', '', network_admin_url( 'admin-ajax.php', $scheme ) );
 	}
 
 	/**
@@ -235,7 +235,7 @@ class Domainmap_Module extends domain_map{
 	 *
 	 * @return mixed
 	 */
-	private function _replace_last_occurence($search, $replace, $string)
+	private function _replace_last_occurrence($search, $replace, $string)
 	{
 		$pos = strrpos($string, $search);
 
