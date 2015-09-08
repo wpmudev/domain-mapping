@@ -192,7 +192,7 @@ class Domainmap_Module extends domain_map{
 		$request = wp_remote_head(  $this->_http->getHostInfo("https") );
 
 		if( is_wp_error( $request ) ){
-			if( isset( $request->errors['http_request_failed'] ) && isset( $request->errors['http_request_failed'][0] ) && strpos($request->errors['http_request_failed'][0], "SSL") !== false)
+			if( isset( $request->errors['http_request_failed'] ) && isset( $request->errors['http_request_failed'][0] ) && ( strpos($request->errors['http_request_failed'][0], "SSL") !== false || strpos($request->errors['http_request_failed'][0], "ssl") !== false) )
 				return true;
 
 			return false;
