@@ -1,8 +1,23 @@
 <?php
+function domainmapping_is_dm_active(){
+    global $wpdb;
+    $dmmd_active_plugins = wp_cache_get("dmmd_active_plugins");
+    if( !$dmmd_active_plugins ){
+        $dmmd_active_plugins = unserialize( $wpdb->get_var("SELECT `meta_value` FROM " . $wpdb->sitemeta ." WHERE `meta_key`='active_sitewide_plugins'") );
+        wp_cache_set("dm_active_plugins", $dmmd_active_plugins);
+    }
+
+    return is_array($dmmd_active_plugins) ? in_array("domain-mapping/domain-mapping.php", array_keys($dmmd_active_plugins)) : false;
+}
+
+
+if( !domainmapping_is_dm_active() ) return;
+
 define( 'DOMAINMAPPING_SUNRISE_VERSION', '1.0.3.1' );
+global $wpdb;
 
 // domain mapping plugin to handle VHOST and non VHOST installation
-global $wpdb;
+
 $wpdb->dmtable = ( isset( $wpdb->base_prefix ) ? $wpdb->base_prefix : $wpdb->prefix ) . 'domain_mapping';
 
 if ( defined( 'COOKIE_DOMAIN' ) ) {
