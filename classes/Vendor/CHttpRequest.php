@@ -58,6 +58,7 @@
  * @package system.web
  * @since 1.0
  */
+if( !class_exists("CHttpRequest") ):
 class CHttpRequest
 {
 	/**
@@ -1022,3 +1023,4 @@ class CHttpRequest
         return $this->isSecureConnection ? "https" : "http";
     }
 }
+endif;

@@ -62,6 +62,7 @@ class domain_map {
      */
     const FORCE_SSL_KEY_PREFIX = 'dm_force_ssl_';
 
+    private $_http;
 
 	function __construct() {
 		global $wpdb, $dm_cookie_style_printed, $dm_logout, $dm_authenticated;
@@ -72,7 +73,8 @@ class domain_map {
 
 		$this->db = $wpdb;
 		$this->dmtable = DOMAINMAP_TABLE_MAP;
-
+        $this->_http = new CHttpRequest();
+        $this->_http->init();
 		// Set up the plugin
 		add_action( 'init', array( $this, 'setup_plugin' ) );
 
@@ -427,6 +429,9 @@ class domain_map {
      * @return bool true if it's original domain, false if not
      */
     protected function is_original_domain( $domain = null ){
+
+        $this->_http = new CHttpRequest();
+        $this->_http->init();
 
         $domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
 
