@@ -473,6 +473,8 @@ class domain_map {
      */
     protected function is_login(){
         global $pagenow;
+		$this->_http = new CHttpRequest();
+		$this->_http->init();
         $needle = isset( $pagenow ) ? $pagenow : str_replace("/", "", $this->_http->getRequestUri() );
         $is_login = in_array( $needle, array( 'wp-login.php', 'wp-register.php' ) );
         return apply_filters("dm_is_login", $is_login, $needle, $pagenow) ;
