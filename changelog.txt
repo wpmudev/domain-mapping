@@ -1,4 +1,14 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+
+== 4.4.1.0 ==
+* Added: Cache scheme variables with transients
+* Added: Make sunrise inclusion smarter
+* Fixed: Scheme mismatch in admin_url hook under mapped domain
+* Fixed: Make sure purchase in whmcs reseller is logged
+* Fixed: Meaningful error message in case domain is not correctly added as mapped domain
+* Fixed: Less requests to db when checking force_ssl_on_mapped_domain for domain
+* Fixed: Bug in is_original_domain method
+
 == 4.4.0.9 ==
 * Fixed: Mixed urls in contents under ssl
 
