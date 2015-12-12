@@ -494,7 +494,7 @@ class domain_map {
     }
 
     /**
-     * Checks if give domain should be forced to use https
+     * Checks if given domain should be forced to use https
      *
      * @since 4.2.0
      *

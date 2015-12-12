@@ -424,9 +424,11 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
      }
 
      if( $result ){
-       wp_send_json_success(array( "schema" => $new_schema ));
+		$transient_key = self::FORCE_SSL_KEY_PREFIX . $domain;
+		set_transient($transient_key, $new_schema, 30 * MINUTE_IN_SECONDS);
+		wp_send_json_success(array( "schema" => $new_schema ));
      }else{
-       wp_send_json_error();
+		wp_send_json_error();
      }
    }
 
