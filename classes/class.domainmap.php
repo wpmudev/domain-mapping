@@ -503,7 +503,8 @@ class domain_map {
      */
     public static function force_ssl_on_mapped_domain( $domain = "" ){
         global $wpdb, $dm_mapped;
-
+		$_parsed = parse_url( $domain, PHP_URL_HOST );
+		$domain = $_parsed ? $_parsed : $domain;
         $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
         $domain = $domain === "" ? $current_domain  : $domain;
         $transient_key = self::FORCE_SSL_KEY_PREFIX . $domain;

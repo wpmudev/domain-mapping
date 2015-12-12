@@ -275,4 +275,23 @@ class Domainmap_Module extends domain_map{
 		$home = home_url( '/' );
 		return parse_url( $home, PHP_URL_HOST );
 	}
+
+	/**
+	 * Imposes url scheme for mapped domains based on the settings
+	 *
+	 * @param $url
+	 * @return string
+	 */
+	protected function force_mapped_domain_url_scheme( $url ){
+		switch( self::force_ssl_on_mapped_domain( $url )  ){
+			case 1:
+				return set_url_scheme( $url, "https" );
+				break;
+			case 0:
+				return set_url_scheme( $url, "https" );
+				break;
+			default:
+				return $url;
+		}
+	}
 }

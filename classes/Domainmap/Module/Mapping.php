@@ -127,6 +127,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
+		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
@@ -135,6 +137,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'content_url',        'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'plugins_url',        'swap_mapped_url', 10, 3 );
+
+
 		} elseif ( is_admin() ) {
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
@@ -532,7 +536,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		global $current_site, $current_blog;
 		// do not swap URL if customizer is running
 
-		if ( $this->_suppress_swapping ) {
+		if ( $this->_suppress_swapping || $this->is_mapped_domain( $url ) ) {
 			return $url;
 		}
 
@@ -1273,4 +1277,41 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
         return false;
     }
+
+
+	/**
+	 * Imposes url scheme for mapped domains based on the settings
+	 *
+	 * @param $url
+	 * @return string
+	 */
+	function force_mapped_domain_url_scheme( $url ){
+		switch( self::force_ssl_on_mapped_domain( $url )  ){
+			case 1:
+				return set_url_scheme( $url, "https" );
+			break;
+			case 0:
+				return set_url_scheme( $url, "http" );
+			break;
+			default:
+				return $url;
+		}
+	}
+
+	/**
+	 * Do url scheme manipulation when needed
+	 * @param $url
+	 * @param $path
+	 * @param $orig_scheme
+	 * @param $blog_id
+	 * @return string
+	 */
+	function home_url_scheme($url, $path, $orig_scheme, $blog_id){
+		$path = empty( $path ) ? "/" : $path;
+		if( class_exists("Upfront") && false !== strpos(  $path, "editmode=true" )  ){
+			return $this->is_mapped_domain( $url ) ?  $this->force_mapped_domain_url_scheme( $url ) : $url;
+		}
+
+		return $url;
+	}
 }
