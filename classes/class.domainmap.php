@@ -163,7 +163,7 @@ class domain_map {
          */
         $scheme = "http";
         if( $this->is_mapped_domain( $admin_url ) ){
-            $scheme = self::force_ssl_on_mapped_domain() ? "https" : $scheme;
+            $scheme = 1 === self::force_ssl_on_mapped_domain()  ? "https" : $scheme;
         }else{
             $scheme = $this->options['map_force_admin_ssl'] ? "https" : ( is_ssl() ? 'https' : 'http'  );
         }
@@ -566,4 +566,23 @@ class domain_map {
 
         return set_url_scheme( $url, $alternative_scheme );
     }
+
+	/**
+	 * Imposes url scheme for mapped domains based on the settings
+	 *
+	 * @param $url
+	 * @return string
+	 */
+	protected function force_mapped_domain_url_scheme( $url ){
+		switch( self::force_ssl_on_mapped_domain( $url )  ){
+			case 1:
+				return set_url_scheme( $url, "https" );
+				break;
+			case 0:
+				return set_url_scheme( $url, "http" );
+				break;
+			default:
+				return $url;
+		}
+	}
 }

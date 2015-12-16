@@ -106,6 +106,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @param Domainmap_Plugin $plugin The current plugin.
 	 */
 	public function __construct( Domainmap_Plugin $plugin ) {
+
 		parent::__construct( $plugin );
 
 		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
@@ -120,7 +121,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action( 'login_init',              'redirect_login_area' );
         $this->_add_action( 'login_init',              'allow_crosslogin' );
 
-//		$this->_add_action( 'wp_logout',               'redirect_logged_out' );
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
 		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
@@ -132,7 +132,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
-			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
+//			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'site_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'content_url',        'swap_mapped_url', 10, 2 );
@@ -1278,25 +1278,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
         return false;
     }
 
-
-	/**
-	 * Imposes url scheme for mapped domains based on the settings
-	 *
-	 * @param $url
-	 * @return string
-	 */
-	function force_mapped_domain_url_scheme( $url ){
-		switch( self::force_ssl_on_mapped_domain( $url )  ){
-			case 1:
-				return set_url_scheme( $url, "https" );
-			break;
-			case 0:
-				return set_url_scheme( $url, "http" );
-			break;
-			default:
-				return $url;
-		}
-	}
 
 	/**
 	 * Do url scheme manipulation when needed
