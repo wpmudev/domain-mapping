@@ -41,49 +41,6 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
         ), $args ) );
     }
 
-    /**
-     * Get a list of all, hidden and sortable columns, with filter applied
-     *
-     * @since 4.2.0
-     * @access protected
-     *
-     * @return array
-     */
-    function get_column_info() {
-        if ( isset( $this->_column_headers ) )
-            return $this->_column_headers;
-        $columns = get_column_headers( $this->screen );
-        $hidden = get_hidden_columns( $this->screen );
-
-        $sortable_columns = $this->get_sortable_columns();
-        /**
-         * Filter the list table sortable columns for a specific screen.
-         *
-         * The dynamic portion of the hook name, $this->screen->id, refers
-         * to the ID of the current screen, usually a string.
-         *
-         * @since 4.2.0
-         *
-         * @param array $sortable_columns An array of sortable columns.
-         */
-        $_sortable = apply_filters( "manage_{$this->screen->id}_sortable_columns", $sortable_columns );
-
-        $sortable = array();
-        foreach ( $_sortable as $id => $data ) {
-            if ( empty( $data ) )
-                continue;
-
-            $data = (array) $data;
-            if ( !isset( $data[1] ) )
-                $data[1] = false;
-
-            $sortable[$id] = $data;
-        }
-
-        $this->_column_headers = array( $columns, $hidden, $sortable );
-        return $this->_column_headers;
-    }
-
 
     /**
      * Returns table columns.
