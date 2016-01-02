@@ -159,7 +159,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		global $interim_login;
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
-			if ( $this->is_mapped_domain()  || $this->is_subdomain() ) {
+			if ( self::utils()->is_mapped_domain()  || $this->is_subdomain() ) {
 				$interim_login = $this->_do_propagation = true;
 			}
 		}

@@ -123,7 +123,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		global $current_site;
 
 		if ( !$schema ) {
-			$force_type = Domainmap_Module::force_ssl_on_mapped_domain( $row->domain );
+			$force_type = domain_map::utils()->force_ssl_on_mapped_domain( $row->domain );
 			switch( $force_type ){
 				case 1:
 					$schema = 'https://';
@@ -196,7 +196,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			'action' => Domainmap_Plugin::ACTION_HEALTH_CHECK,
 			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_HEALTH_CHECK ),
 			'domain' => $domain,
-		), set_url_scheme(  admin_url( 'admin-ajax.php' ), domain_map::get_mapped_domain_scheme( $domain ) ) );
+		), set_url_scheme(  admin_url( 'admin-ajax.php' ), domain_map::utils()->get_mapped_domain_scheme( $domain ) ) );
 
 		$health = get_site_transient( "domainmapping-{$domain}-health" );
 

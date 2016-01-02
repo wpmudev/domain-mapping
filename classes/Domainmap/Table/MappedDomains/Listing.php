@@ -195,7 +195,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
             'action' => Domainmap_Plugin::ACTION_HEALTH_CHECK,
             'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_HEALTH_CHECK ),
             'domain' => $item->mapped_domain,
-        ),  set_url_scheme( admin_url( 'admin-ajax.php' ), domain_map::get_mapped_domain_scheme( $item->mapped_domain ) )  );
+        ),  set_url_scheme( admin_url( 'admin-ajax.php' ), domain_map::utils()->get_mapped_domain_scheme( $item->mapped_domain ) )  );
 
         $health = get_site_transient( "domainmapping-{$item->mapped_domain}-health" );
         $health_message = __( 'needs revalidation', 'domainmap' );
