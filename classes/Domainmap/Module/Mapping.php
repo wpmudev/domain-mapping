@@ -132,7 +132,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
-//			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
+			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'site_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'content_url',        'swap_mapped_url', 10, 2 );
@@ -1220,6 +1220,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string
 	 */
 	function set_login_form_action($url, $path, $scheme, $blog_id ){
+
 		if( !$this->is_login() || is_main_site() ) return $url;
 
 		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
@@ -1227,7 +1228,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if( $path === "wp-login.php" ){
 
 			if( $admin_mapping  == "mapped" ){
-                $scheme =  self::get_mapped_domain_scheme();
+                $scheme =  self::get_mapped_domain_scheme( $url );
 				return $scheme ?  set_url_scheme( $this->swap_mapped_url($url, $path, $scheme, $blog_id, false), $scheme ) : $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
 			}
 
@@ -1236,7 +1237,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
-        $scheme = $this->is_mapped_domain( $url ) ? self::get_mapped_domain_scheme() : $scheme;
+        $scheme = $this->is_mapped_domain( $url ) ? self::get_mapped_domain_scheme( $url ) : $scheme;
 
         return $scheme ?  set_url_scheme( $url, $scheme ) : $url ;
 	}

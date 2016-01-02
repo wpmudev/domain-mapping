@@ -25,7 +25,7 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 }
 
 $using_domain = strtolower( preg_replace( "/^www\./", "", $_SERVER['HTTP_HOST'] ) );
-define( 'COOKIE_DOMAIN', $using_domain );
+define( 'COOKIE_DOMAIN', $_SERVER['HTTP_HOST'] );
 
 $s_e = $wpdb->suppress_errors();
 
