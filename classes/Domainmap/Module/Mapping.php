@@ -1053,7 +1053,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$exclude = apply_filters("dm_exclude_page_links", true);
 
-		if(!$exclude || empty($post_id) || $this->is_original_domain( $permalink ) ) return $permalink;
+		if(!$exclude || empty($post_id) || self::utils()->is_original_domain( $permalink ) ) return $permalink;
 
 
 		if( $this->is_excluded_by_id( $post_id) ){

@@ -92,6 +92,11 @@ class Domainmap_Utils{
         return $scheme;
     }
 
+    public function get_admin_scheme(){
+        if( $this->is_original_domain() )
+        return Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
+    }
+
     /**
      * Swaps url scheme from http to https and vice versa
      *

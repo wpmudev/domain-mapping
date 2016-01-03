@@ -32,6 +32,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 
 	function __construct($tabs, $active, $data){
 		parent::__construct($tabs, $active, $data);
+
 		$this->_save_excluded_pages();
 	}
 
@@ -196,7 +197,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			'action' => Domainmap_Plugin::ACTION_HEALTH_CHECK,
 			'nonce'  => wp_create_nonce( Domainmap_Plugin::ACTION_HEALTH_CHECK ),
 			'domain' => $domain,
-		), set_url_scheme(  admin_url( 'admin-ajax.php' ), domain_map::utils()->get_mapped_domain_scheme( $domain ) ) );
+		), set_url_scheme(  admin_url( 'admin-ajax.php' ), domain_map::utils()->get_admin_scheme() ) );
 
 		$health = get_site_transient( "domainmapping-{$domain}-health" );
 
