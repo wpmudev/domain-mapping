@@ -447,6 +447,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		} else {
 			// fetch mapped domain
 			$domain = $this->_fetch_mapped_domain( $blog_id );
+
 		}
 
 		// save mapped domain into local cache
@@ -581,7 +582,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return apply_filters("dm_swap_root_url", $url);
 		}
 
-		$domain = $this->_get_mapped_domain();
+		$domain = $this->_get_mapped_domain(false, !is_admin());
 		if ( !$domain ){
 			return apply_filters("dm_swap_root_url", $url);
 		}
@@ -1125,10 +1126,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	private function _fetch_mapped_domain( $blog_id ) {
 		$errors = $this->_wpdb->suppress_errors();
+
 		$sql    = domain_map::allow_multiple()
 			? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
 			: sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
 		$domain = $this->_wpdb->get_var( $sql );
+
 		$this->_wpdb->suppress_errors( $errors );
 
 		return apply_filters("dm_fetch_mapped_domain", $domain, $blog_id);

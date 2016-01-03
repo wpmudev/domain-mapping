@@ -404,7 +404,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
 		update_option( 'domainmap_frontend_mapping', $mapping );
 		wp_send_json_success();
-		exit;
 	}
 
 
