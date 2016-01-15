@@ -310,7 +310,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		 */
 		if( apply_filters( "dm_prevent_redirection_for_ssl", is_ssl() && $redirect_to !== "mapped"  ) ) return;
 
-		if ( $redirect_to != 'user' ) {
+		if ( $redirect_to != 'user' && $this->redirect_upfront_to_mapped_domain() ) {
 			$this->_redirect_to_area( $redirect_to, $force_ssl);
 		}
 	}
@@ -1293,12 +1293,25 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function home_url_scheme($url, $path, $orig_scheme, $blog_id){
 		$path = empty( $path ) ? "/" : $path;
+
 		if( class_exists("Upfront") && false !== strpos(  $path, "editmode=true" )  ){
-			return self::utils()->is_mapped_domain( $url ) ? self::utils()->force_mapped_domain_url_scheme( $url ) : $url;
+			return self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  $this->unswap_url( $url )  : $url;
 		}
 
 		return $url;
 	}
 
 
+	/**
+	 * Decide if upfront should be redirected to mapped domain
+	 *
+	 * @since 4.4.2.0
+	 * @return bool
+	 */
+	function redirect_upfront_to_mapped_domain(){
+		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) )
+			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' ) ;
+		else
+			return true;
+	}
 }

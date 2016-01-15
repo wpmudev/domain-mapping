@@ -105,11 +105,11 @@ class Domainmap_Utils{
      * @return string
      */
     public function swap_url_scheme( $url ){
-        $parse_original_url = parse_url( $url );
+        $parsed_original_url = parse_url( $url );
         $alternative_scheme = null;
-        if( isset( $parse_original_url['scheme'] ) &&  $parse_original_url['scheme'] === "https"  ){
+        if( isset( $parsed_original_url['scheme'] ) &&  $parsed_original_url['scheme'] === "https"  ){
             $alternative_scheme = "http";
-        }elseif(  isset( $parse_original_url['scheme'] ) &&  $parse_original_url['scheme'] === "http" ){
+        }elseif(  isset( $parsed_original_url['scheme'] ) &&  $parsed_original_url['scheme'] === "http" ){
             $alternative_scheme = "https";
         }
 
