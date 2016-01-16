@@ -184,7 +184,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	}
 
 	/**
-	 * Adds propagation scripts at interim login page after successfull login.
+	 * Adds propagation scripts at interim login page after successful login.
 	 *
 	 * @since 4.1.2
 	 * @access login_footer
@@ -254,12 +254,23 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 	}
 
+	/**
+	 * Adds sync authorization script to settup sso
+	 *
+	 *
+	 */
 	private function _add_auth_script_sync(){
 
 		$url = add_query_arg( 'dm_action', self::ACTION_SETUP_CDSSO, $this->_get_sso_endpoint_url() );
+		$url = apply_filters("dm_sync_auth_script_url", $url);
 		$this->_add_script( esc_url_raw( $url ) );
 	}
 
+	/**
+	 * Adds async authorization script to start to check login status
+	 *
+	 *
+	 */
 	private function _add_auth_script_async(){
 
 		$url = add_query_arg( array(
@@ -267,6 +278,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			'domain' =>  $_SERVER['HTTP_HOST'] ,
 		), $this->_get_sso_endpoint_url()
 		);
+
+
+		$url = apply_filters("dm_async_auth_script_url", $url);
 
 		$this->_add_iframe( esc_url_raw( $url ) );
 	}
@@ -418,7 +432,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.3.1
 	 */
 	function check_login_status(){
-
+		global $redirect_to;
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 		if ( !is_user_logged_in()  ) {
 			header( "Vary: Accept-Encoding" ); // Handle proxies
@@ -428,13 +442,20 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$domain_name = filter_input( INPUT_GET, 'domain' );
 		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
+
+		/**
+		 * @var $redirect_to string|false the url to which browser should redirect after login or false to allow refresh
+		 * variable to work
+		 */
+		$redirect_to = apply_filters("dm_async_sso_redirect", $redirect_to);
 	?>
 		// Starting Domain Mapping SSO
 		<?php
 		$args = array(
 			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
 			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
-			'refresh' => 1
+			'refresh' => 1,
+			"redirect_to" => $redirect_to
 		);
 		if( $admin_mapping ){
 			$args["refresh"] = 0;
@@ -526,6 +547,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 					? $_GET['redirect_to']
 					: add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) );
 
+				$redirect_to = apply_filters("dm_sync_sso_redirect", $redirect_to);
+
 				wp_redirect( esc_url_raw( $redirect_to ) );
 				exit;
 			} else {
@@ -544,10 +567,18 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
 		$refresh = filter_input( INPUT_GET, 'refresh' );
+		$redirect_to = filter_input( INPUT_GET, 'redirect_to' );
+
 
 		if ( $user_id ) {
 		wp_set_auth_cookie( $user_id );
-			if( $refresh ){
+
+			if( !empty( $redirect_to ) && is_string( $redirect_to ) ){
+				?>
+				window.top.location.href = "<?php echo $redirect_to; ?>";
+				<?php
+			}
+			elseif( $refresh ){
 			?>
 				window.top.location.reload();
 			<?php
