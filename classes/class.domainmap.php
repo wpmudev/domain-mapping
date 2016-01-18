@@ -161,7 +161,7 @@ class domain_map {
          * Other than the above set scheme based on the current viewed scheme
          */
         if( self::utils()->is_mapped_domain( $admin_url ) ){
-            $scheme = self::utils()->get_mapped_domain_scheme( $admin_url );
+            $scheme = is_ssl() ? "https" : self::utils()->get_mapped_domain_scheme( $admin_url );
         }else{
             $scheme = $this->options['map_force_admin_ssl'] ? "https" : ( is_ssl() ? 'https' : 'http'  );
         }
