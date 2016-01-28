@@ -272,7 +272,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 *
 	 */
 	private function _add_auth_script_async(){
-
+		global $redirect_to;
 		$url = add_query_arg( array(
 			'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
 			'domain' =>  $_SERVER['HTTP_HOST'] ,
@@ -282,7 +282,12 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$url = apply_filters("dm_async_auth_script_url", $url);
 
-		$this->_add_iframe( esc_url_raw( $url ) );
+		/**
+		 * @var $redirect_to string|false the url to which browser should redirect after login or false to allow refresh
+		 * variable to work
+		 */
+		$redirect_to = apply_filters("dm_async_sso_redirect", $redirect_to);
+		$this->_add_iframe( esc_url_raw( $url ), $redirect_to );
 	}
 
 	/**
@@ -432,7 +437,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.3.1
 	 */
 	function check_login_status(){
-		global $redirect_to;
+
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 		if ( !is_user_logged_in()  ) {
 			header( "Vary: Accept-Encoding" ); // Handle proxies
@@ -443,19 +448,13 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$domain_name = filter_input( INPUT_GET, 'domain' );
 		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 
-		/**
-		 * @var $redirect_to string|false the url to which browser should redirect after login or false to allow refresh
-		 * variable to work
-		 */
-		$redirect_to = apply_filters("dm_async_sso_redirect", $redirect_to);
 	?>
 		// Starting Domain Mapping SSO
 		<?php
 		$args = array(
 			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
 			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
-			'refresh' => 1,
-			"redirect_to" => $redirect_to
+			'refresh' => 1
 		);
 		if( $admin_mapping ){
 			$args["refresh"] = 0;
@@ -463,6 +462,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
 
 		$url = set_url_scheme( $url, "http" );
+
+
+
 		$this->_add_inner_iframe( esc_url_raw( $url ) );
 
 		if( $admin_mapping ){ // set user cookie for https as well and refresh
@@ -470,6 +472,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
 			$this->_add_inner_iframe( esc_url_raw( $url ) );
 		}
+
 	}
 
 	/**
@@ -479,10 +482,17 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.4.0
 	 * @param $url
 	 */
-	private function _add_iframe( $url ){
+	private function _add_iframe( $url, $redirect_to ){
 		?>
 		<script type="text/javascript">
 			(function(window) {
+				window.dm_redirect_to = function(){
+					if( "<?php echo $redirect_to ?>" ){
+						window.location.href = "<?php echo $redirect_to ?>";
+					}else{
+						window.location.reload();
+					}
+				};
 				var document = window.document;
 				var url = '<?php echo $url; ?>';
 				var iframe = document.createElement('iframe');
@@ -580,7 +590,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			}
 			elseif( $refresh ){
 			?>
-				window.top.location.reload();
+<!--				window.top.location.reload();-->
+			window.top.dm_redirect_to();
 			<?php
 			}
 		}
