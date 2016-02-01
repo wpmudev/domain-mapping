@@ -257,10 +257,8 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
         $success = false;
-		if ( $this->_is_domain( $domain ) ) {
-            $success = (bool) $this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
-
-			delete_transient( "domainmapping-{$domain}-health" );
+		if ( self::utils()->is_domain( $domain ) ) {
+            $success = $this->delete_mapped_domain( $domain );
 
 			// check if we need to show form
 			$show_form = $this->_get_domains_count() == 0 || domain_map::allow_multiple();

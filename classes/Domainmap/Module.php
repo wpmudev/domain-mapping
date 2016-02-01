@@ -74,6 +74,8 @@ class Domainmap_Module extends domain_map{
 		$this->_plugin = $plugin;
 		$this->_http = new CHttpRequest();
 		$this->_http->init();
+
+		$this->_add_action("domainmapping_delete_mapped_domain", "delete_mapped_domain");
 	}
 
 	/**
@@ -276,4 +278,15 @@ class Domainmap_Module extends domain_map{
 		return parse_url( $home, PHP_URL_HOST );
 	}
 
+	/**
+	 * Deletes a map domain
+	 *
+	 * @param $domain
+	 * @return bool
+	 */
+	public function delete_mapped_domain($domain ){
+		$result  = (bool) $this->_wpdb->delete( DOMAINMAP_TABLE_MAP, array( 'domain' => $domain ), array( '%s' ) );
+		delete_transient( "domainmapping-{$domain}-health" );
+		return $result;
+	}
 }

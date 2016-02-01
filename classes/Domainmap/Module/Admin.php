@@ -53,6 +53,7 @@ class Domainmap_Module_Admin extends Domainmap_Module {
 
 		$this->_add_action( 'manage_sites_custom_column', 'render_mapped_domain_column', 1, 2 );
 		$this->_add_action( 'delete_blog', 'delete_blog_mappings', 1, 2 );
+		$this->_add_action( 'domainmapping_delete_blog_mappings', 'delete_blog_mappings', 1, 2 );
 
 		$this->_add_filter( 'wpmu_blogs_columns', 'register_mapped_domain_column' );
 	}
