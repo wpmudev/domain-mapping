@@ -256,16 +256,6 @@ class Domainmap_Module extends domain_map{
 		return $valid;
 	}
 
-	/**
-	 * Returns current domain
-	 *
-	 * @since 4.3.1
-	 * @return mixed
-	 */
-	protected function get_current_domain(){
-		$home = home_url( '/' );
-		return parse_url( $home, PHP_URL_HOST );
-	}
 
 	/**
 	 * Deletes a map domain

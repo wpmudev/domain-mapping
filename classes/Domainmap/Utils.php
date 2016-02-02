@@ -243,4 +243,15 @@ class Domainmap_Utils{
         $network_domain =  parse_url( network_home_url(), PHP_URL_HOST );
         return apply_filters("dm_is_subdomain",  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']));
     }
+
+    /**
+     * Returns current domain
+     *
+     * @since 4.3.1
+     * @return mixed
+     */
+    public function get_current_domain(){
+        $home = home_url( '/' );
+        return parse_url( $home, PHP_URL_HOST );
+    }
 }
