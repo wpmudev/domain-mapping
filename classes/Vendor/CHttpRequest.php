@@ -117,42 +117,7 @@ class CHttpRequest
 	 */
 	public function init()
 	{
-		$this->normalizeRequest();
-	}
 
-	/**
-	 * Normalizes the request data.
-	 * This method strips off slashes in request data if get_magic_quotes_gpc() returns true.
-	 * It also performs CSRF validation if {@link enableCsrfValidation} is true.
-	 */
-	protected function normalizeRequest()
-	{
-		// normalize request
-		if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
-		{
-			if(isset($_GET))
-				$_GET=$this->stripSlashes($_GET);
-			if(isset($_POST))
-				$_POST=$this->stripSlashes($_POST);
-			if(isset($_REQUEST))
-				$_REQUEST=$this->stripSlashes($_REQUEST);
-			if(isset($_COOKIE))
-				$_COOKIE=$this->stripSlashes($_COOKIE);
-		}
-
-
-	}
-
-
-	/**
-	 * Strips slashes from input data.
-	 * This method is applied when magic quotes is enabled.
-	 * @param mixed $data input data to be processed
-	 * @return mixed processed data
-	 */
-	public function stripSlashes(&$data)
-	{
-		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
 	}
 
 	/**
