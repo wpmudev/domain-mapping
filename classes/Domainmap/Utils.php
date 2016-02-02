@@ -232,4 +232,15 @@ class Domainmap_Utils{
         $domain_name = "http://" . $domain_name;
         return (bool) filter_var($domain_name, FILTER_VALIDATE_URL);
     }
+
+    /**
+     * Checks if current domain is a subdomain
+     *
+     * @since 4.2.0.4
+     * @return bool
+     */
+    function is_subdomain(){
+        $network_domain =  parse_url( network_home_url(), PHP_URL_HOST );
+        return apply_filters("dm_is_subdomain",  (bool) str_replace( $network_domain, "", $_SERVER['HTTP_HOST']));
+    }
 }
