@@ -1,5 +1,15 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.2.0 ==
+* Added: Ability to define redirect_to after SSO happens
+* Added: Hooks for other plugins to use
+* Improved: Upfront compatibility
+* Improved: Single sign on functionality
+* Improved: Request scheme handling in backend and frontend
+* Improved: Mapped domain validity and validity check
+* Improved: Compatibility with older versions of PHP
+* Fixed: Logging out from a user would log out on all users
+
 == 4.4.1.0 ==
 * Added: Cache scheme variables with transients
 * Added: Make sunrise inclusion smarter
