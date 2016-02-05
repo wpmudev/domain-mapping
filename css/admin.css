@@ -374,7 +374,9 @@ table.domains .domainmapping-mapped{
     background-repeat: no-repeat;
     height: 21px
 }
-
+.domainmapping-domains.domainmapping-wait-status-refresh{
+    background-position: center left;
+}
 .domainmapping-domains-wrapper {
     position: relative
 }
