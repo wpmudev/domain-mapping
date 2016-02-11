@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2015-05-26 16:57+0330\n"
-"PO-Revision-Date: 2015-05-26 16:57+0330\n"
+"POT-Creation-Date: 2016-02-11 17:12+0330\n"
+"PO-Revision-Date: 2016-02-11 17:14+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8\n"
+"X-Generator: Poedit 1.8.7\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: domain-mapping.php\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -20,16 +20,16 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: classes/Domainmap/Module/Admin.php:73
-#: classes/Domainmap/Table/MappedDomains/Listing.php:98
+#: classes/Domainmap/Module/Admin.php:74
+#: classes/Domainmap/Table/MappedDomains/Listing.php:55
 msgid "Mapped Domain"
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:208
+#: classes/Domainmap/Module/Ajax/Map.php:211
 msgid "Domain name is unavailable to access."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:209
+#: classes/Domainmap/Module/Ajax/Map.php:212
 msgid ""
 "We can’t access your new domain. Mapping a new domains can take as little as "
 "15 minutes to resolve but in some cases can take up to 72 hours, so please "
@@ -37,20 +37,20 @@ msgid ""
 "fully propagated, check your DNS records are configured correctly."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:213
+#: classes/Domainmap/Module/Ajax/Map.php:219
 msgid "Domain is already mapped."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:216
+#: classes/Domainmap/Module/Ajax/Map.php:222
 msgid "Multiple domains are not allowed."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:221
+#: classes/Domainmap/Module/Ajax/Map.php:227
 #: classes/Domainmap/Module/Ajax/Purchase.php:109
 msgid "Domain name is invalid."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Map.php:223
+#: classes/Domainmap/Module/Ajax/Map.php:229
 #: classes/Domainmap/Module/Ajax/Purchase.php:111
 msgid "Domain name is prohibited."
 msgstr ""
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Session Expired, please login again"
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:357
+#: classes/Domainmap/Module/Ajax/Purchase.php:358
 msgid "Error ordering the domain"
 msgstr ""
 
@@ -87,26 +87,24 @@ msgstr ""
 msgid "Error registering client account."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:256
+#: classes/Domainmap/Module/Cdsso.php:183
 msgid ""
 "You have logged in successfully. You will be redirected to desired page "
-"during next 1 seconds."
+"during next 5 seconds."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:602
+#: classes/Domainmap/Module/Cdsso.php:566
 msgid "Incorrect or out of date login key"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
-#: classes/Domainmap/Module/Pages.php:89
-#: classes/Domainmap/Module/Pages.php:164
-#: classes/Domainmap/Render/Network.php:59
-#: classes/Domainmap/Render/Site.php:42
+#: classes/Domainmap/Module/Pages.php:89 classes/Domainmap/Module/Pages.php:164
+#: classes/Domainmap/Render/Network.php:59 classes/Domainmap/Render/Site.php:42
 msgid "Domain Mapping"
 msgstr ""
 
 #: classes/Domainmap/Module/Pages.php:106
-#: classes/Domainmap/Render/Site/Map.php:350
+#: classes/Domainmap/Render/Site/Map.php:351
 msgid "Map domain"
 msgstr ""
 
@@ -252,207 +250,208 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:76
 #, php-format
 msgid ""
-"Please copy the sunrise.php to %s and uncomment the %s setting in the %s file"
+"Please copy the sunrise.php from your plugin folder %s into %s.<br/>In your "
+"%s file please uncomment or add (if not available) the following code: %s"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:86
+#: classes/Domainmap/Render/Network/Options.php:87
 #, php-format
 msgid ""
 "You use old version of %s file. Please, replace that file with new version "
 "which is located by following path: %s."
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:98
+#: classes/Domainmap/Render/Network/Options.php:99
 #, php-format
 msgid ""
 "If you've not already added %s then please do so. If you added the constant "
 "be sure to uncomment this line: %s in the %s file."
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:156
+#: classes/Domainmap/Render/Network/Options.php:157
 #: classes/Domainmap/Render/Network/Resellers.php:118
 msgid "Save Changes"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:178
+#: classes/Domainmap/Render/Network/Options.php:179
 msgid "Domain mapping configuration"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:180
+#: classes/Domainmap/Render/Network/Options.php:181
 msgid ""
 "Enter the IP address users need to point their DNS A records at. If you "
 "don't know what it is, ping this site to get the IP address."
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:181
+#: classes/Domainmap/Render/Network/Options.php:182
 msgid ""
 "If you have more than one IP address, separate them with a comma. This "
 "message is displayed on the Domain mapping page for your users."
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:187
+#: classes/Domainmap/Render/Network/Options.php:188
 msgid ""
 "Looks like we are able to resolve your DNS A record(s) for your main domain "
 "and fetch the IP address(es) assigned to it. You can use the following IP "
 "address(es) to enter in the <b>Server IP Address</b> field below:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:196
+#: classes/Domainmap/Render/Network/Options.php:197
 msgid "Server IP Address: "
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:202
+#: classes/Domainmap/Render/Network/Options.php:203
 msgid ""
 "If you want to display your own instructions on the Domain Mapping page, "
 "then use the text area below to enter your instructions or leave it blank to "
 "show the default text."
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:215
+#: classes/Domainmap/Render/Network/Options.php:216
 msgid "Administration mapping"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:217
+#: classes/Domainmap/Render/Network/Options.php:218
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
 "or the original domain (your website url):"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:240
+#: classes/Domainmap/Render/Network/Options.php:241
 msgid "Login mapping"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:242
+#: classes/Domainmap/Render/Network/Options.php:243
 msgid ""
 "How should your members access the login page of their website, this can be "
 "through the domain they enter, or restrict it to either the Mapped domain or "
 "the original domain (your website url):"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:269
-#: classes/Domainmap/Render/Network/Options.php:310
-#: classes/Domainmap/Render/Network/Options.php:360
-#: classes/Domainmap/Table/MappedDomains/Listing.php:214
-#: classes/Domainmap/Table/MappedDomains/Listing.php:225
-msgid "Yes"
-msgstr ""
-
 #: classes/Domainmap/Render/Network/Options.php:270
 #: classes/Domainmap/Render/Network/Options.php:311
 #: classes/Domainmap/Render/Network/Options.php:361
-#: classes/Domainmap/Render/Network/Options.php:386
-#: classes/Domainmap/Table/MappedDomains/Listing.php:214
-#: classes/Domainmap/Table/MappedDomains/Listing.php:225
+#: classes/Domainmap/Table/MappedDomains/Listing.php:171
+#: classes/Domainmap/Table/MappedDomains/Listing.php:182
+msgid "Yes"
+msgstr ""
+
+#: classes/Domainmap/Render/Network/Options.php:271
+#: classes/Domainmap/Render/Network/Options.php:312
+#: classes/Domainmap/Render/Network/Options.php:362
+#: classes/Domainmap/Render/Network/Options.php:387
+#: classes/Domainmap/Table/MappedDomains/Listing.php:171
+#: classes/Domainmap/Table/MappedDomains/Listing.php:182
 msgid "No"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:273
+#: classes/Domainmap/Render/Network/Options.php:274
 msgid "Cross-domain autologin"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:275
+#: classes/Domainmap/Render/Network/Options.php:276
 msgid ""
 "Would you like for your members to be logged into all sites within your "
 "network regardless of domain name:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:292
+#: classes/Domainmap/Render/Network/Options.php:293
 msgid "Load Cross-domain autologin asynchronously"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:314
+#: classes/Domainmap/Render/Network/Options.php:315
 msgid "Verify domain's DNS settings"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:316
+#: classes/Domainmap/Render/Network/Options.php:317
 msgid ""
 "Would you like to verify domain's DNS settings before they will be mapped by "
 "your members:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:330
+#: classes/Domainmap/Render/Network/Options.php:331
 msgid "Check domain propagation before mapping"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:332
+#: classes/Domainmap/Render/Network/Options.php:333
 msgid "Would you like to check domain health and propagation before mapping:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:365
+#: classes/Domainmap/Render/Network/Options.php:366
 msgid "Force http/https (Only for original domain)"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:367
+#: classes/Domainmap/Render/Network/Options.php:368
 msgid ""
 "Would you like to force <strong>https</strong> in login and admin pages:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:381
+#: classes/Domainmap/Render/Network/Options.php:382
 msgid "Would you like to force <strong>http/https</strong> in front-end pages:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:387
+#: classes/Domainmap/Render/Network/Options.php:388
 msgid "Force http"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:388
+#: classes/Domainmap/Render/Network/Options.php:389
 msgid "Force https"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:413
+#: classes/Domainmap/Render/Network/Options.php:414
 msgid "Select Pro Sites Levels:"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:414
+#: classes/Domainmap/Render/Network/Options.php:415
 msgid "Make this functionality only available to certain Pro Site levels"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:436
+#: classes/Domainmap/Render/Network/Options.php:437
 msgid "Prohibited mappings"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:438
+#: classes/Domainmap/Render/Network/Options.php:439
 msgid ""
 "Domains that sub-sites shouldn't use as primary(mapped) domain, please comma "
 "separate domain name"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:443
+#: classes/Domainmap/Render/Network/Options.php:444
 msgid "Please separate domain names with commas"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:450
+#: classes/Domainmap/Render/Network/Options.php:451
 msgid ""
 "Disallow sub-domains of the original domain to be used as mapped (primary) "
 "domain for sub-sites"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:465
+#: classes/Domainmap/Render/Network/Options.php:466
 msgid "Enable excluded/forced urls"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:468
+#: classes/Domainmap/Render/Network/Options.php:469
 msgid "Allow site admins to set map-excluded pages"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:473
+#: classes/Domainmap/Render/Network/Options.php:474
 msgid "Allow site admins to set map-excluded urls"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:481
+#: classes/Domainmap/Render/Network/Options.php:482
 msgid "Allow site admins to set https-forced pages"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:486
+#: classes/Domainmap/Render/Network/Options.php:487
 msgid "Allow site admins to set https-forced urls"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:498
+#: classes/Domainmap/Render/Network/Options.php:499
 msgid "Allow multiple mappings per site"
 msgstr ""
 
-#: classes/Domainmap/Render/Network/Options.php:501
+#: classes/Domainmap/Render/Network/Options.php:502
 msgid "Allow site admins to set multiple mapped domains"
 msgstr ""
 
@@ -1164,133 +1163,133 @@ msgstr ""
 msgid "Currency:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:52
+#: classes/Domainmap/Render/Site/Map.php:53
 msgid ""
 "If your domain name includes a sub-domain such as \"blog\" then you can add "
 "a CNAME for that hostname in your DNS pointing at this blog URL."
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:57
+#: classes/Domainmap/Render/Site/Map.php:58
 msgid ""
 "If you want to redirect a domain you will need to add multiple DNS \"A\" "
 "records pointing at the IP addresses of this server: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:59
+#: classes/Domainmap/Render/Site/Map.php:60
 msgid ""
 "If you want to redirect a domain you will need to add a DNS \"A\" record "
 "pointing at the IP address of this server: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:82
+#: classes/Domainmap/Render/Site/Map.php:83
 msgid "Domain(s) mapped to"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:89
+#: classes/Domainmap/Render/Site/Map.php:90
 msgid "Mapped domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:90
+#: classes/Domainmap/Render/Site/Map.php:91
 msgid "Health status"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:91
-#: classes/Domainmap/Table/MappedDomains/Listing.php:104
+#: classes/Domainmap/Render/Site/Map.php:92
+#: classes/Domainmap/Table/MappedDomains/Listing.php:61
 msgid "Actions"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:171
+#: classes/Domainmap/Render/Site/Map.php:172
 msgid "Toggle forced schema"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:173
+#: classes/Domainmap/Render/Site/Map.php:174
 msgid "Go to this domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:178
+#: classes/Domainmap/Render/Site/Map.php:179
 msgid "Remove the domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:180
-#: classes/Domainmap/Table/MappedDomains/Listing.php:330
+#: classes/Domainmap/Render/Site/Map.php:181
+#: classes/Domainmap/Table/MappedDomains/Listing.php:287
 msgid "Select as primary domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:203
-#: classes/Domainmap/Table/MappedDomains/Listing.php:244
+#: classes/Domainmap/Render/Site/Map.php:204
+#: classes/Domainmap/Table/MappedDomains/Listing.php:201
 msgid "needs revalidation"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:208
-#: classes/Domainmap/Table/MappedDomains/Listing.php:249
+#: classes/Domainmap/Render/Site/Map.php:209
+#: classes/Domainmap/Table/MappedDomains/Listing.php:206
 msgid "valid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:211
-#: classes/Domainmap/Table/MappedDomains/Listing.php:252
+#: classes/Domainmap/Render/Site/Map.php:212
+#: classes/Domainmap/Table/MappedDomains/Listing.php:209
 msgid "invalid"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:215
-#: classes/Domainmap/Table/MappedDomains/Listing.php:258
+#: classes/Domainmap/Render/Site/Map.php:216
+#: classes/Domainmap/Table/MappedDomains/Listing.php:215
 msgid "Refresh health status"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:239
+#: classes/Domainmap/Render/Site/Map.php:240
 msgid "Pages selected here will not be mapped and can optionally force https"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:241
+#: classes/Domainmap/Render/Site/Map.php:242
 msgid "Excluded pages: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:243
+#: classes/Domainmap/Render/Site/Map.php:244
 msgid ""
 "Pages selected here will not be mapped and can optionally force https, If "
 "you set the domain to use https, the following \"force/unforce SSL will be "
 "ignored\" "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:262
+#: classes/Domainmap/Render/Site/Map.php:263
 msgid "Add page urls below to have excluded:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:266
-#: classes/Domainmap/Render/Site/Map.php:278
+#: classes/Domainmap/Render/Site/Map.php:267
+#: classes/Domainmap/Render/Site/Map.php:279
 msgid ""
 "Please enter absolute URLs (starting with http:// or https://), URLs should "
 "be comma separated"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:274
+#: classes/Domainmap/Render/Site/Map.php:275
 msgid "Add page urls below to force https:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:281
+#: classes/Domainmap/Render/Site/Map.php:282
 msgid "Save excluded pages"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:312
+#: classes/Domainmap/Render/Site/Map.php:313
 msgid "Disabled and entered domain should be used"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:313
+#: classes/Domainmap/Render/Site/Map.php:314
 msgid "Directed to mapped (primary) domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:314
+#: classes/Domainmap/Render/Site/Map.php:315
 msgid "Directed to original domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:323
+#: classes/Domainmap/Render/Site/Map.php:324
 msgid "Front end redirect should be:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:338
+#: classes/Domainmap/Render/Site/Map.php:339
 msgid "Map new domain name:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:344
+#: classes/Domainmap/Render/Site/Map.php:345
 msgid "Force none"
 msgstr ""
 
@@ -1443,39 +1442,39 @@ msgid_plural "%s items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:97
+#: classes/Domainmap/Table/MappedDomains/Listing.php:54
 msgid "Site ID"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:99
+#: classes/Domainmap/Table/MappedDomains/Listing.php:56
 msgid "Original Address"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:100
+#: classes/Domainmap/Table/MappedDomains/Listing.php:57
 msgid "Health Status"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:101
+#: classes/Domainmap/Table/MappedDomains/Listing.php:58
 msgid "DNS Configuration"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:102
+#: classes/Domainmap/Table/MappedDomains/Listing.php:59
 msgid "Primary"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:103
+#: classes/Domainmap/Table/MappedDomains/Listing.php:60
 msgid "Active"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:328
+#: classes/Domainmap/Table/MappedDomains/Listing.php:285
 msgid "Switch schema"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:328
+#: classes/Domainmap/Table/MappedDomains/Listing.php:285
 msgid "Toggle scheme"
 msgstr ""
 
-#: classes/Domainmap/Table/MappedDomains/Listing.php:332
+#: classes/Domainmap/Table/MappedDomains/Listing.php:289
 msgid "Remove Mapping"
 msgstr ""
 
@@ -1536,29 +1535,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: classes/class.domainmap.php:263 classes/class.domainmap.php:300
-#: classes/class.domainmap.php:593
-msgid "Authenticating..."
-msgstr ""
-
-#: classes/class.domainmap.php:281 classes/class.domainmap.php:314
-#: classes/class.domainmap.php:600
-msgid "Please wait..."
-msgstr ""
-
-#: classes/class.domainmap.php:282 classes/class.domainmap.php:315
-#, php-format
-msgid ""
-"If it doesn't redirect in 5 seconds please click <a href=\"%s\">here</a>."
-msgstr ""
-
-#: classes/class.domainmap.php:601
-#, php-format
-msgid ""
-"If it does not redirect in 5 seconds please click <a href=\"%s\">here</a>."
-msgstr ""
-
-#: classes/class.domainmap.php:682
+#: classes/class.domainmap.php:339
 msgid "IP not set by admin yet."
 msgstr ""
 
