@@ -1309,8 +1309,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return bool
 	 */
 	function redirect_upfront_to_mapped_domain(){
-		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) )
-			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' ) ;
+
+		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) )
+			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
 		else
 			return true;
 	}
