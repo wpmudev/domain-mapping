@@ -101,7 +101,7 @@ class domain_map {
 				// remove the http and https parts of the url
 				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
 				// get the original url now with our filter removed
-				$url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
+				$url = trailingslashit( self::utils()->unswap_url( get_option( 'siteurl' ) ) );
 				// again remove the http and https parts of the url
 				$url = str_replace( array( 'https://', 'http://' ), '', $url );
 
@@ -137,7 +137,7 @@ class domain_map {
 				// remove the http and https parts of the url
 				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
 				// get the original url now with our filter removed
-				$orig_url = trailingslashit( apply_filters( 'unswap_url', get_option( 'siteurl' ) ) );
+				$orig_url = trailingslashit( self::utils()->unswap_url( get_option( 'siteurl' ) ) );
 				// remove the http and https parts of the original url
 				$orig_url = str_replace( array( 'https://', 'http://' ), '', $orig_url );
 
@@ -145,6 +145,7 @@ class domain_map {
 				if ( $path != 'admin-ajax.php' && strpos($admin_url, "admin-ajax.php") === false ) {
 					// swap the mapped url with the original one
 					$admin_url = str_replace( $mapped_url, $orig_url, $admin_url );
+					$admin_url = set_url_scheme($admin_url, self::utils()->get_admin_scheme( $admin_url ) );
 				} else {
 					if ( !is_admin() ) {
 						// swap the original url with the mapped one
@@ -155,7 +156,7 @@ class domain_map {
 				break;
 		}
 
-         return set_url_scheme($admin_url, is_ssl() ? "https" : "http" );
+         return $admin_url;
 
 	}
 
@@ -280,7 +281,7 @@ class domain_map {
              * @since 1.0.0
              * @param string $orig_url the original url
              */
-            $orig_url = apply_filters( 'unswap_url', get_option( 'siteurl' ) );
+            $orig_url = self::utils()->unswap_url( get_option( 'siteurl' ) );
 			// switch the url to use the correct http or https and store the url in the cache
 			$orig_urls[$blog_id] = is_ssl()
 				? str_replace( "http://", "https://", $orig_url )

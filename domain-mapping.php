@@ -205,7 +205,7 @@ register_deactivation_hook( __FILE__, 'domainmap_plugin_deactivate' );
  */
 function dm_site_url( $path = '', $scheme = null ){
     $current_site_url = site_url( $path, $scheme );
-    return Domainmap_Module_Mapping::unswap_url( $current_site_url, false, (bool) $path );
+    return domain_map::utils()->unswap_url( $current_site_url, false, (bool) $path );
 }
 
 /**
@@ -225,6 +225,6 @@ function dm_site_url( $path = '', $scheme = null ){
  */
 function dm_home_url( $path = '', $scheme = null ){
     $current_home_url = home_url( $path, $scheme );
-    return Domainmap_Module_Mapping::unswap_url( $current_home_url, false, (bool) $path );
+    return domain_map::utils()->unswap_url( $current_home_url, false, (bool) $path );
 }
 
