@@ -2,6 +2,7 @@
 == 4.4.2.1 ==
 * Improved: Better compatibility with Upfront themes
 * Improved: Better schema forcing
+* Fixed: Depreciated notices
 
 == 4.4.2.0 ==
 * Added: Ability to define redirect_to after SSO happens

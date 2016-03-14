@@ -179,15 +179,15 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$old_table = ( isset( $this->_wpdb->base_prefix ) ? $this->_wpdb->base_prefix : $this->_wpdb->prefix ) . 'domain_map';
 		if ( is_a( $this->_wpdb, 'm_wpdb' ) && isset( $this->_wpdb->dbhglobal ) ) {
 			// multi db is used, so we need to use bare functions to escape m_wpdb compatibility issues
-			$result = @mysql_query( 'SHOW TABLES', $this->_wpdb->dbhglobal );
+			$result = @mysqli_query( 'SHOW TABLES', $this->_wpdb->dbhglobal );
 			if ( $result ) {
-				while ( ( $row = @mysql_fetch_array( $result, MYSQL_NUM ) ) ) {
+				while ( ( $row = @mysqli_fetch_array( $result, MYSQLI_NUM ) ) ) {
 					if ( $row[0] == $old_table ) {
 						$exists = true;
 						break;
 					}
 				}
-				@mysql_free_result( $result );
+				@mysqli_free_result( $result );
 			}
 		} else {
 			// standard wpdb is used
