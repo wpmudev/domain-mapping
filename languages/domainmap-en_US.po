@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2016-02-11 17:12+0330\n"
-"PO-Revision-Date: 2016-02-11 17:14+0330\n"
+"POT-Creation-Date: 2016-03-15 00:02+0330\n"
+"PO-Revision-Date: 2016-03-15 00:02+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -1535,7 +1535,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: classes/class.domainmap.php:339
+#: classes/class.domainmap.php:340
 msgid "IP not set by admin yet."
 msgstr ""
 
