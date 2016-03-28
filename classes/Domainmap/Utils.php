@@ -72,6 +72,13 @@ class Domainmap_Utils{
      */
     private static $_original_domains = array();
 
+    /**
+     * Original domain
+     *
+     * @var string
+     */
+    private static $_original_domain;
+
     function __construct()
     {
         global $wpdb;
@@ -128,8 +135,13 @@ class Domainmap_Utils{
      * @return mixed|string
      */
     public function get_original_domain( $with_www = false ){
-        $home = network_home_url( '/' );
-        $original_domain = parse_url( $home, PHP_URL_HOST );
+        if( self::$_original_domain ){
+            $original_domain = self::$_original_domain;
+        }else{
+            $home = network_home_url( '/' );
+            $original_domain = parse_url( $home, PHP_URL_HOST );
+            self::$_original_domain = $original_domain;
+        }
         return $with_www ? "www." . $original_domain : $original_domain ;
     }
 
@@ -296,7 +308,7 @@ class Domainmap_Utils{
                 }
             }
         }
-// var_dump($domain , $this->get_original_domain() );die;
+
         $is_original_domain = $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
         return apply_filters("dm_is_original_domain", $is_original_domain, $domain);
     }
