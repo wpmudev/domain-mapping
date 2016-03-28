@@ -161,8 +161,20 @@
          * Toggles domain is_primary attribute
          */
 		$domains.on('click', 'a.domainmapping-map-primary', function() {
-			var $this = $(this), message;
+			var $this = $(this),
+                message,
+                interval,
+                animate = function (){
+                    interval = setInterval(function(){
+                        $this.toggleClass('dashicons-star-empty dashicons-star-filled');
+                    }, 350);
 
+                },
+                stop_animation = function(){
+                    //clearInterval(interval);
+                };
+
+            animate();
 			if ($this.hasClass('dashicons-star-empty')) {
 				message = $this.parents('li').find('a.domainmapping-map-state').hasClass('domainmapping-valid-domain')
 					? domainmapping.message.valid_selection
@@ -170,13 +182,31 @@
 
 				if (confirm(message)) {
 					$domains.find('a.domainmapping-map-primary.dashicons-star').toggleClass('dashicons-star-filled dashicons-star-empty');
-					$this.toggleClass('dashicons-star-filled dashicons-star-empty');
-					$.get($this.attr('data-select-href'));
+					$.get($this.attr('data-select-href'), {}, function(data){
+                        clearInterval(interval);
+                        if( data &&  data.success ){
+                            $this.removeClass('dashicons-star-empty');
+                            $this.addClass('dashicons-star-filled');
+                        }else{
+                            $this.addClass('dashicons-star-empty');
+                            $this.removeClass('dashicons-star-filled');
+                        }
+
+                    });
 				}
 			} else {
 				if (confirm(domainmapping.message.deselect)) {
-					$this.toggleClass('dashicons-star-filled dashicons-star-empty');
-					$.get($this.attr('data-deselect-href'));
+					//$this.toggleClass('dashicons-star-filled dashicons-star-empty');
+					$.get($this.attr('data-deselect-href'), {}, function(data){
+                        clearInterval(interval);
+                        if( data &&  data.success ){
+                            $this.addClass('dashicons-star-empty');
+                            $this.removeClass('dashicons-star-filled');
+                        }else{
+                            $this.removeClass('dashicons-star-empty');
+                            $this.addClass('dashicons-star-filled');
+                        }
+                    });
 				}
 			}
 

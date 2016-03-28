@@ -53,6 +53,16 @@ class Domainmap_Utils{
     private static $_mapped_domains = array();
 
     /**
+     * The array of mapped domains.
+     *
+     * @since 4.4.2.2
+     *
+     * @access private
+     * @var array
+     */
+    private static $_mapped_primary_domains = array();
+
+    /**
      * The array of original domains.
      *
      * @since 4.1.0
@@ -82,9 +92,12 @@ class Domainmap_Utils{
      * @since 4.4.2.1
      */
     private function _set_mapped_domains(){
-        $results = $this->_wpdb->get_results( "SELECT blog_id, domain FROM " . DOMAINMAP_TABLE_MAP );
+        $results = $this->_wpdb->get_results( "SELECT blog_id, domain, is_primary  FROM " . DOMAINMAP_TABLE_MAP );
         foreach( $results as $result ){
-            self::$_mapped_domains[ $result->blog_id ] = $result->domain;
+            if( $result->is_primary  )
+                self::$_mapped_primary_domains[ $result->blog_id ] = $result->domain;
+            else
+                self::$_mapped_domains[ $result->blog_id ] = $result->domain;
         }
     }
 
@@ -97,6 +110,17 @@ class Domainmap_Utils{
     public function get_mapped_domains(){
         return self::$_mapped_domains;
     }
+
+    /**
+     * Returns primary mapped domains
+     *
+     * @since 4.4.2.1
+     * @return array|null|object
+     */
+    public function get_mapped_primary_domains(){
+        return self::$_mapped_primary_domains;
+    }
+
     /**
      * Returns original domain
      *
@@ -334,13 +358,13 @@ class Domainmap_Utils{
      *
      * @return null|string
      */
-    private function _fetch_mapped_domain( $blog_id ) {
+    public function _fetch_mapped_domain( $blog_id ) {
         $errors = $this->_wpdb->suppress_errors();
 
         $sql    = domain_map::allow_multiple()
-            ? sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
-            : sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
-        $domain = $this->_wpdb->get_var( $sql );
+            ? sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY is_primary DESC, id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id )
+            : sprintf( "SELECT domain, is_primary FROM %s WHERE blog_id = %d ORDER BY id ASC LIMIT 1", DOMAINMAP_TABLE_MAP, $blog_id );
+        $domain = $this->_wpdb->get_row( $sql, OBJECT );
 
         $this->_wpdb->suppress_errors( $errors );
 
@@ -364,6 +388,11 @@ class Domainmap_Utils{
         }
 
         // if we have already found mapped domain, then return it
+        if ( isset( self::$_mapped_primary_domains[$blog_id] ) ) {
+            return self::$_mapped_primary_domains[$blog_id];
+        }
+
+        // if we have already found mapped domain, then return it
         if ( isset( self::$_mapped_domains[$blog_id] ) ) {
             return self::$_mapped_domains[$blog_id];
         }
@@ -374,12 +403,17 @@ class Domainmap_Utils{
             $domain = is_admin() && $this->is_original_domain() ? $domain : $_SERVER['HTTP_HOST'];
         } else {
             // fetch mapped domain
-            $domain = $this->_fetch_mapped_domain( $blog_id );
+            $fetched_domain = $this->_fetch_mapped_domain( $blog_id );
 
+            $domain = isset( $fetched_domain->domain ) ? $fetched_domain->domain : false;
+            $is_primary = isset( $fetched_domain->is_primary ) ? $fetched_domain->is_primary : false;
         }
 
         // save mapped domain into local cache
-        self::$_mapped_domains[$blog_id] = !empty( $domain ) ? $domain : false;
+        if( $is_primary )
+            self::$_mapped_primary_domains[$blog_id] = $domain;
+        else
+            self::$_mapped_domains[$blog_id] = $domain;
 
         return apply_filters("dm_mapped_domain", $domain, $blog_id, $consider_front_redirect_type);
     }
