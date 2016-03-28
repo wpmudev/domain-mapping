@@ -225,7 +225,7 @@ class Domainmap_Utils{
         $domain = str_replace("www.", "", $domain );
         $_domain = $this->is_mapped_domain( $domain ) ? $domain : $this->swap_to_mapped_url( $domain );
 
-        if( $this->is_original_domain( $domain ) || $this->is_original_domain( $_domain ) ) return $dm_mapped->scheme;
+        if( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
         $transient_key = domain_map::FORCE_SSL_KEY_PREFIX . $_domain;
 
         if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
