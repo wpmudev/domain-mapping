@@ -380,7 +380,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		}
 
-		$protocol_bool = domain_map::utils()->is_original_domain() ? domain_map::utils()->force_ssl_on_mapped_domain() : is_ssl();
+		$protocol_bool = domain_map::utils()->is_mapped_domain() ? domain_map::utils()->force_ssl_on_mapped_domain() : is_ssl();
 		$protocol = $protocol_bool || $force_ssl ? 'https://' : 'http://';
 		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
 		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
@@ -425,31 +425,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false, $consider_front_redirect_type = true ) {
-		global $current_site, $current_blog;
 		// do not swap URL if customizer is running
-
 		if ( $this->_suppress_swapping || self::utils()->is_mapped_domain( $url ) ) {
 			return $url;
 		}
 
-		// parse current url
-		$components = self::utils()->parse_mb_url( $url );
-
-		if ( empty( $components['host'] ) || $this->is_excluded_by_url( $url ) ) {
+		if ( $this->is_excluded_by_url( $url ) ) {
 			return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
 		}
 
-
-		// find mapped domain
-		$mapped_domain = self::utils()->get_mapped_domain( $blog_id, $consider_front_redirect_type );
-		if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
-			return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
-		}
-
-		$components['host'] = $mapped_domain;
-		$components['path'] = "/" . $path;
-
-		return apply_filters("dm_swap_mapped_url", self::utils()->build_url( $components ), $path, $orig_scheme, $blog_id);
+		return self::utils()->swap_to_mapped_url( $url, $path, $orig_scheme, $blog_id, $consider_front_redirect_type );
 	}
 
 
@@ -579,6 +564,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			/**
 			 * Force mapped domains
 			 */
+			if(  domain_map::utils()->force_ssl_on_mapped_domain() === "0" ) die("here");
 			if( domain_map::utils()->force_ssl_on_mapped_domain() === 1 && !is_ssl()  ){ // force https
 				wp_redirect( $current_url_secure  );
 				exit();
@@ -1136,3 +1122,4 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return true;
 	}
 }
+

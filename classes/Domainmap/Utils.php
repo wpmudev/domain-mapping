@@ -69,7 +69,9 @@ class Domainmap_Utils{
         $this->_wpdb = $wpdb;
         $this->_http = new CHttpRequest();
         $this->_http->init();
-        $this->_set_mapped_domains();
+
+        if( array() === self::$_mapped_domains )
+            $this->_set_mapped_domains();
 
         return $this;
     }
@@ -80,7 +82,7 @@ class Domainmap_Utils{
      * @since 4.4.2.1
      */
     private function _set_mapped_domains(){
-       $results = $this->_wpdb->get_results( "SELECT blog_id, domain FROM " . DOMAINMAP_TABLE_MAP );
+        $results = $this->_wpdb->get_results( "SELECT blog_id, domain FROM " . DOMAINMAP_TABLE_MAP );
         foreach( $results as $result ){
             self::$_mapped_domains[ $result->blog_id ] = $result->domain;
         }
@@ -149,8 +151,7 @@ class Domainmap_Utils{
     }
 
     public function get_admin_scheme( $url = null ){
-        if( $this->is_original_domain( $url ) )
-        return Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
+        return $this->is_original_domain( $url ) && Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
     }
 
     /**
@@ -186,7 +187,11 @@ class Domainmap_Utils{
         $domain = $_parsed ? $_parsed : $domain;
         $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
         $domain = $domain === "" ? $current_domain  : $domain;
-        $transient_key = domain_map::FORCE_SSL_KEY_PREFIX . $domain;
+        $domain = str_replace("www.", "", $domain );
+        $_domain = $this->is_mapped_domain( $domain ) ? $domain : $this->swap_to_mapped_url( $domain );
+
+        if( $this->is_original_domain( $domain ) || $this->is_original_domain( $_domain ) ) return $dm_mapped->scheme;
+        $transient_key = domain_map::FORCE_SSL_KEY_PREFIX . $_domain;
 
         if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
             $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
@@ -253,9 +258,9 @@ class Domainmap_Utils{
      * @return bool true if it's original domain, false if not
      */
     public function is_original_domain( $domain = null ){
-
+        $domain = "http://" . str_replace(array("http://", "https://"), "", $domain);
         $domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
-
+        $domain = str_replace("www.", "", $domain);
         /** MULTI DOMAINS INTEGRATION */
         if( class_exists( 'multi_domain' ) ){
             global $multi_dm;
@@ -267,7 +272,7 @@ class Domainmap_Utils{
                 }
             }
         }
-
+// var_dump($domain , $this->get_original_domain() );die;
         $is_original_domain = $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
         return apply_filters("dm_is_original_domain", $is_original_domain, $domain);
     }
@@ -486,4 +491,45 @@ class Domainmap_Utils{
         return apply_filters("dm_unswaped_url", $unwapped_url, $url, $blog_id, $include_path ) ;
     }
 
+    /**
+     * Swaps URL from original to mapped one.
+     *
+     * @since 4.1.0
+     * @filter home_url 10 4
+     * @filter site_url 10 4
+     * @filter includes_url 10 2
+     * @filter content_url 10 2
+     * @filter plugins_url 10 3
+     *
+     * @param $url
+     * @param bool $path
+     * @param bool $orig_scheme
+     * @param bool $blog_id
+     * @param bool $consider_front_redirect_type
+     *
+     * @return string
+     */
+    public function swap_to_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false, $consider_front_redirect_type = true ) {
+
+        // parse current url
+        $components = $this->parse_mb_url( $url );
+
+        if ( empty( $components['host'] ) ) {
+            return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
+        }
+
+
+
+        // find mapped domain
+        $mapped_domain = $this->get_mapped_domain( $blog_id, $consider_front_redirect_type );
+
+        if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
+            return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
+        }
+
+        $components['host'] = $mapped_domain;
+        $components['path'] = "/" . $path;
+
+        return apply_filters("dm_swap_mapped_url", $this->build_url( $components ), $path, $orig_scheme, $blog_id);
+    }
 }
