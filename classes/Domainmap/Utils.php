@@ -101,10 +101,9 @@ class Domainmap_Utils{
     private function _set_mapped_domains(){
         $results = $this->_wpdb->get_results( "SELECT blog_id, domain, is_primary  FROM " . DOMAINMAP_TABLE_MAP );
         foreach( $results as $result ){
+            self::$_mapped_domains[ $result->blog_id ] = $result->domain;
             if( $result->is_primary  )
                 self::$_mapped_primary_domains[ $result->blog_id ] = $result->domain;
-            else
-                self::$_mapped_domains[ $result->blog_id ] = $result->domain;
         }
     }
 
@@ -255,6 +254,7 @@ class Domainmap_Utils{
      * @return bool
      */
     public function is_mapped_domain( $domain = null ){
+        if( in_array( $domain, self::$_mapped_domains )  ) return true;
         return !$this->is_original_domain( $domain );
     }
 
@@ -297,6 +297,7 @@ class Domainmap_Utils{
         $domain = "http://" . str_replace(array("http://", "https://"), "", $domain);
         $domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
         $domain = str_replace("www.", "", $domain);
+        if( in_array( $domain, self::$_original_domains ) ) return apply_filters("dm_is_original_domain", true, $domain);
         /** MULTI DOMAINS INTEGRATION */
         if( class_exists( 'multi_domain' ) ){
             global $multi_dm;
