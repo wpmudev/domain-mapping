@@ -186,7 +186,10 @@ class Domainmap_Utils{
     }
 
     public function get_admin_scheme( $url = null ){
-        return $this->is_original_domain( $url ) && Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
+        if( is_null( $url ) )
+            return  Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
+        else
+            return $this->is_original_domain( $url ) && Domainmap_Plugin::instance()->get_option("map_force_admin_ssl") ? "https" : null;
     }
 
     /**

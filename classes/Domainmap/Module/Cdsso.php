@@ -374,7 +374,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
 		global $wp_rewrite, $current_blog, $current_site;;
 
-        $admin_scheme = self::utils()->get_admin_scheme();
+        $admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : "http";
 
 		if( $subsite ){
             $domain = is_null( $domain ) ? $current_blog->domain : $domain;
@@ -438,7 +438,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.3.1
 	 */
 	function check_login_status(){
-
 		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 		if ( !is_user_logged_in()  ) {
 			header( "Vary: Accept-Encoding" ); // Handle proxies

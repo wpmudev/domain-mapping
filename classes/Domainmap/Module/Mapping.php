@@ -561,10 +561,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			wp_redirect( $current_url_secure  );
 			exit();
 		}elseif(  domain_map::utils()->is_mapped_domain() && domain_map::utils()->force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) ){
+
 			/**
 			 * Force mapped domains
 			 */
-			if(  domain_map::utils()->force_ssl_on_mapped_domain() === "0" ) die("here");
 			if( domain_map::utils()->force_ssl_on_mapped_domain() === 1 && !is_ssl()  ){ // force https
 				wp_redirect( $current_url_secure  );
 				exit();
