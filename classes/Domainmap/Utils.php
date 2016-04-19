@@ -297,8 +297,9 @@ class Domainmap_Utils{
      * @return bool true if it's original domain, false if not
      */
     public function is_original_domain( $domain = null ){
-        $domain = "http://" . str_replace(array("http://", "https://"), "", $domain);
-        $domain = parse_url( is_null( $domain ) ? $this->_http->hostinfo : $domain  , PHP_URL_HOST );
+        $domain = empty( $domain ) ? $this->_http->hostinfo : "http://" . str_replace(array("http://", "https://"), "", $domain);
+
+        $domain = parse_url( $domain , PHP_URL_HOST );
         $domain = str_replace("www.", "", $domain);
         if( in_array( $domain, self::$_original_domains ) ) return apply_filters("dm_is_original_domain", true, $domain);
         /** MULTI DOMAINS INTEGRATION */
@@ -314,6 +315,7 @@ class Domainmap_Utils{
         }
 
         $is_original_domain = $domain === $this->get_original_domain() || strpos($domain, "." . $this->get_original_domain());
+
         return apply_filters("dm_is_original_domain", $is_original_domain, $domain);
     }
 
