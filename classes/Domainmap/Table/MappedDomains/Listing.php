@@ -168,7 +168,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 	 * @param object $item current row's record
      */
     public function column_primary( $item ) {
-        echo $item->is_primary ? __("Yes", "domainmap") : __("No", "domainmap");
+        echo $item->is_primary ? __('Yes', "domainmap") : __('No', "domainmap");
     }
 
     /**
@@ -179,7 +179,7 @@ class Domainmap_Table_MappedDomains_Listing extends Domainmap_Table {
 	 * @param object $item current row's record
      */
     public function column_active( $item ) {
-        echo $item->active ? __("Yes", "domainmap") : __("No", "domainmap");
+        echo $item->active ? __('Yes', "domainmap") : __('No', "domainmap");
     }
 
 

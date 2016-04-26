@@ -562,7 +562,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 				wp_redirect( esc_url_raw( $redirect_to ) );
 				exit;
 			} else {
-				wp_die( __( "Incorrect or out of date login key", 'domainmap' ) );
+				wp_die( __( 'Incorrect or out of date login key', 'domainmap' ) );
 			}
 		}
 	}

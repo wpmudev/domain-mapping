@@ -154,7 +154,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 
                     <?php for ($i = 0 ; $i < $prices_count ; $i++): ?>
                         <th scope="col">
-                            <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)", domain_map::Text_Domain), $i+1 ); ?>
+                            <?php printf(__('<span class="dm_year_count">%d</span> Year(s)', domain_map::Text_Domain), $i+1 ); ?>
 
                             <button <?php echo $hide_delete_col ? "disabled='disabled'" : ""; ?> class="dashicons-before <?php echo $hide_delete_col ? "domainmapping-hidden" : ""; ?> dashicons-trash dm_whmcs_tlds_remove_col"></button>
 

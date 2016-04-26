@@ -105,7 +105,7 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 		// check whether reseller supports accounts registration
 		$reseller = $resellers[$reseller];
 		if ( !$reseller->support_account_registration() ) {
-			_default_wp_die_handler( __( "The reseller doesn't support account registration.", 'domainmap' ) );
+			_default_wp_die_handler( __( 'The reseller doesn\'t support account registration.', 'domainmap' ) );
 		}
 
 		// check ssl and security
@@ -155,15 +155,15 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
          * Validate
          */
         if( !is_email( $account_email ) ){
-            $errors->add("email", __("Invalid email address"));
+            $errors->add("email", __('Invalid email address', domain_map::Text_Domain));
         }
 
         if( $account_password !== $account_password_confirm ){
-            $errors->add("password", __("Passwords don't match"));
+            $errors->add("password", __('Passwords don\'t match', domain_map::Text_Domain));
         }
 
         if( empty($account_password) ||  empty($account_password_confirm) ){
-            $errors->add("password", __("Please provide a valid password"));
+            $errors->add("password", __('Please provide a valid password', domain_map::Text_Domain));
         }
 
         $object = Domainmap_Reseller_WHMCS::exec_command(Domainmap_Reseller_WHMCS::COMMAND_REGISTER_CLIENT, array(
@@ -205,7 +205,7 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 
         }else{
             wp_send_json_error( array(
-                "message" => __("Error registering client account.", domain_map::Text_Domain),
+                "message" => __('Error registering client account.', domain_map::Text_Domain),
                 "errors" =>   $object->get_error_message()
             ) );
         }

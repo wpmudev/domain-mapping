@@ -103,7 +103,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                return $error;
            }
         }else{
-            $error->add( $response_code, isset( $response_body->message ) ? $response_body->message : __("Unknown", domain_map::Text_Domain) );
+            $error->add( $response_code, isset( $response_body->message ) ? $response_body->message : __('Unknown', domain_map::Text_Domain) );
             return $error;
         }
     }
@@ -614,7 +614,7 @@ class Domainmap_Reseller_WHMCS extends Domainmap_Reseller {
                     <p>
                         <strong>
                         <?php
-                            printf( __("Or <a href='%s' id='dm_whmcs_register_client'>click to signup as a new client</a>", domain_map::Text_Domain), esc_url( $register_link ) );
+                            printf( __('Or <a href="%s" id="dm_whmcs_register_client">click to signup as a new client</a>', domain_map::Text_Domain), esc_url( $register_link ) );
                         ?>
                         </strong>
                     </p>

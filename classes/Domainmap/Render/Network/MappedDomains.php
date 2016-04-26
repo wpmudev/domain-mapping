@@ -48,7 +48,7 @@ class Domainmap_Render_Network_MappedDomains extends Domainmap_Render_Network {
         <div id="domainmapping-mapped-domains-table">
         <?php
         $this->table->views();
-        $this->table->search_box(__("Search mapped domains", domain_map::Text_Domain), "mapped_domain");
+        $this->table->search_box(__('Search mapped domains', domain_map::Text_Domain), "mapped_domain");
         $this->table->display();
         ?>
         </div>

@@ -99,7 +99,7 @@ class Domainmap_Render_Reseller_WHMCS_Purchase extends Domainmap_Render_Reseller
             <label for="dm_whmcs_domain_period" class="domainmapping-label"><?php _e( 'Domain Period:', 'domainmap' ) ?> <span class="domainmapping-field-required">*</span></label>
             <select  name="dm_whmcs_domain_period" id="dm_whmcs_domain_period">
             <?php $year = 1; foreach( $pricing as $key => $price ):?>
-                <option <?php selected("0", $key); ?> value="<?php echo $year?>"> <?php printf( __("%s Year - %s%s", domain_map::Text_Domain), $year , $currency, $price );  ?> </option>
+                <option <?php selected("0", $key); ?> value="<?php echo $year?>"> <?php printf( __('%s Year - %s%s', domain_map::Text_Domain), $year , $currency, $price );  ?> </option>
             <?php $year++; endforeach;?>
             </select>
         </p>

@@ -89,7 +89,7 @@ class Domainmap_Render_Reseller_Enom_Register extends Domainmap_Render_Reseller_
 	private function _render_account_fields() {
 		$selected_question = filter_input( INPUT_POST, 'account_question_type' );
 		$questions = array(
-			'smaiden' => esc_html__( "What is your mother's maiden name?", 'domainmap' ),
+			'smaiden' => esc_html__( 'What is your mother\'s maiden name?', 'domainmap' ),
 			'sbirth'  => esc_html__( 'What is your city of born?', 'domainmap' ),
 			'ssocial' => esc_html__( 'What is your last 4 digits of SSN?', 'domainmap' ),
 			'shigh'   => esc_html__( 'What is your high school?', 'domainmap' ),

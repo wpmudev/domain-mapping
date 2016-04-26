@@ -325,7 +325,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
         if( !$client_id ){
             wp_send_json_error( array(
                 "expired" => true,
-                "message" => __("Session Expired, please login again", domain_map::Text_Domain),
+                "message" => __('Session Expired, please login again', domain_map::Text_Domain),
             ) );
         }
 
@@ -355,7 +355,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
             ) );
         }else{
             wp_send_json_error( array(
-                "message" => __("Error ordering the domain", domain_map::Text_Domain),
+                "message" => __('Error ordering the domain', domain_map::Text_Domain),
             ) );
         }
 

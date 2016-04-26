@@ -180,7 +180,7 @@ class Domainmap_Render_Reseller_Enom_Settings extends Domainmap_Render {
 		<div>
 			<p><?php
 				printf(
-					__( "If you have a list of %scertificate authorities%s installed on your web server, then it is strongly recommended to enable SSL certificate verification (for communications between eNom and your server) for security reasons.", 'domainmap' ),
+					__( 'If you have a list of %scertificate authorities%s installed on your web server, then it is strongly recommended to enable SSL certificate verification (for communications between eNom and your server) for security reasons.', 'domainmap' ),
 					'<a href="http://en.wikipedia.org/wiki/Certificate_authority" target="_blank">',
 					'</a>'
 				)
