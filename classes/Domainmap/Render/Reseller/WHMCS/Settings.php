@@ -93,7 +93,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
             <tbody>
                 <tr>
                     <th scope="row">
-                        <label for="whmcs-api" class="domainmapping-label"><?php _e( 'WHMCS url:', 'domainmap' ) ?></label>
+                        <label for="whmcs-api" class="domainmapping-label"><?php _e( 'WHMCS URL:', 'domainmap' ) ?></label>
                     </th>
                     <td>
                         <input type="text" id="whmcs-api" class="regular-text" name="map_reseller_whmcs_api" value="<?php echo esc_attr( $this->api ) ?>" autocomplete="off">
@@ -149,12 +149,12 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
                 <thead>
                     <tr>
                         <th scope="col">
-                            TLD
+                            <?php _e("TLD", domain_map::Text_Domain); ?>
                         </th>
 
                     <?php for ($i = 0 ; $i < $prices_count ; $i++): ?>
                         <th scope="col">
-                            <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)"), $i+1 ); ?>
+                            <?php printf(__("<span class='dm_year_count'>%d</span> Year(s)", domain_map::Text_Domain), $i+1 ); ?>
 
                             <button <?php echo $hide_delete_col ? "disabled='disabled'" : ""; ?> class="dashicons-before <?php echo $hide_delete_col ? "domainmapping-hidden" : ""; ?> dashicons-trash dm_whmcs_tlds_remove_col"></button>
 
@@ -222,7 +222,7 @@ class Domainmap_Render_Reseller_WHMCS_Settings extends Domainmap_Render {
 			</ul>
             <?php else: ?>
             <div class="domainmapping-info domainmapping-info-error">
-                <?php _e("Please make sure you have correctly entered your login credentials and save again to retrieve your payment methods."); ?>
+                <?php _e("Please make sure you have correctly entered your login credentials and save again to retrieve your payment methods.", domain_map::Text_Domain); ?>
             </div>
             <?php endif; ?>
 		</div><?php

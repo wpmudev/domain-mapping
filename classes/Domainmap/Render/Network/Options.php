@@ -215,7 +215,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	private function _render_administration_mapping() {
 		?><h4 class="domainmapping-block-header"><?php _e( 'Administration mapping', 'domainmap' ) ?></h4>
 		<p>
-			<?php _e( 'You can allow your members to access the administration area of your site through the domain they enter, you can also restrict it to the Mapped domain or the original domain (your website url):', 'domainmap' ) ?>
+			<?php _e( 'You can allow your members to access the administration area of your site through the domain they enter, you can also restrict it to the Mapped domain or the original domain (your website URL):', 'domainmap' ) ?>
 		</p>
 
 		<ul class="domainmapping-compressed-list"><?php
@@ -463,7 +463,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		$allow_ssl_forced_pages = isset( $this->map_allow_forced_pages ) ? (int) $this->map_allow_forced_pages : 1;
 		$allow_force_ssl = isset( $this->map_allow_forced_urls ) ? (int) $this->map_allow_forced_urls : 1;
 		?>
-		<h4 class="domainmapping-block-header"><?php _e( "Enable excluded/forced urls", 'domainmap' ) ?></h4>
+		<h4 class="domainmapping-block-header"><?php _e( "Enable excluded/forced URLs", 'domainmap' ) ?></h4>
 		<label for="map_allow_excluded_pages">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_excluded_pages" name="map_allow_excluded_pages" value="1" <?php checked( $allow_excluded_pages, 1  ) ?> >
 			<?php _e( "Allow site admins to set map-excluded pages", 'domainmap' ) ?><br>
@@ -471,7 +471,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 
 		<label for="map_allow_excluded_urls">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_excluded_urls" name="map_allow_excluded_urls" value="1" <?php checked( $allow_exclusion, 1  ) ?> >
-			<?php _e( "Allow site admins to set map-excluded urls", 'domainmap' ) ?><br>
+			<?php _e( "Allow site admins to set map-excluded URLs", 'domainmap' ) ?><br>
 		</label>
 
 		<br/>
@@ -484,7 +484,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		<br/>
 		<label for="map_allow_forced_urls">
 			<input type="checkbox" class="domainmapping-radio" id="map_allow_forced_urls" name="map_allow_forced_urls" value="1" <?php checked( $allow_force_ssl, 1  ) ?> >
-			<?php _e( "Allow site admins to set https-forced urls", 'domainmap' ) ?>
+			<?php _e( "Allow site admins to set https-forced URLs", 'domainmap' ) ?>
 		</label>
 
 

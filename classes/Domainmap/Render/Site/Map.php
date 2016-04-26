@@ -260,7 +260,7 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 		<?php if( Domainmap_Plugin::instance()->get_option("map_allow_excluded_urls", true) ): ?>
 			<input type="hidden" name="dm_excluded_pages" id="dm_exluded_pages_hidden_field" value="<?php echo Domainmap_Module_Mapping::get_excluded_pages(); ?>"/>
 			<h4 class="domain-mapping-or-urls-title">
-				<?php _e('Add page urls below to have excluded:', domain_map::Text_Domain); ?>
+				<?php _e('Add page URLs below to have excluded:', domain_map::Text_Domain); ?>
 			</h4>
 			<textarea name="dm_excluded_page_urls" id="dm_excluded_page_urls"  rows="4"> <?php  echo esc_html(Domainmap_Module_Mapping::get_excluded_page_urls()); ?></textarea>
 			<p class="description">

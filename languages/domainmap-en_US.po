@@ -1,22 +1,22 @@
 msgid ""
 msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2016-03-15 00:02+0330\n"
-"PO-Revision-Date: 2016-03-15 00:02+0330\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_US\n"
+"POT-Creation-Date: 2016-04-26 17:51+0430\n"
+"PO-Revision-Date: 2016-04-26 17:55+0430\n"
+"Language-Team: WPMUDEV <info@wpmudev.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.7\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: domain-mapping.php\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Last-Translator: \n"
+"Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
@@ -76,7 +76,8 @@ msgid "Invalid email address"
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Register.php:162
-msgid "The passwords don't match"
+#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:110
+msgid "Passwords don't match"
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Register.php:166
@@ -93,7 +94,7 @@ msgid ""
 "during next 5 seconds."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:566
+#: classes/Domainmap/Module/Cdsso.php:565
 msgid "Incorrect or out of date login key"
 msgstr ""
 
@@ -315,7 +316,7 @@ msgstr ""
 msgid ""
 "You can allow your members to access the administration area of your site "
 "through the domain they enter, you can also restrict it to the Mapped domain "
-"or the original domain (your website url):"
+"or the original domain (your website URL):"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:241
@@ -428,7 +429,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:466
-msgid "Enable excluded/forced urls"
+msgid "Enable excluded/forced URLs"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:469
@@ -436,7 +437,7 @@ msgid "Allow site admins to set map-excluded pages"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:474
-msgid "Allow site admins to set map-excluded urls"
+msgid "Allow site admins to set map-excluded URLs"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:482
@@ -444,7 +445,7 @@ msgid "Allow site admins to set https-forced pages"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:487
-msgid "Allow site admins to set https-forced urls"
+msgid "Allow site admins to set https-forced URLs"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:499
@@ -468,7 +469,7 @@ msgid "Failed requests"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Resellers.php:65
-msgid "Disable loggin"
+msgid "Disable login"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Resellers.php:69
@@ -1061,10 +1062,6 @@ msgstr ""
 msgid "Please enter password confirmation"
 msgstr ""
 
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:110
-msgid "Passwords don't match"
-msgstr ""
-
 #: classes/Domainmap/Render/Reseller/WHMCS/Register.php:134
 msgid "First name can't be empty"
 msgstr ""
@@ -1129,7 +1126,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:96
-msgid "WHMCS url:"
+msgid "WHMCS URL:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:105
@@ -1138,6 +1135,10 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:145
 msgid "Define domain pricing:"
+msgstr ""
+
+#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:152
+msgid "TLD"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:157
@@ -1251,7 +1252,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:263
-msgid "Add page urls below to have excluded:"
+msgid "Add page URLs below to have excluded:"
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:267

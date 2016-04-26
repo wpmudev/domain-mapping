@@ -62,7 +62,7 @@ class Domainmap_Render_Network_Resellers extends Domainmap_Render_Network {
 		$log_levels = array(
 			Domainmap_Reseller::LOG_LEVEL_ALL      => __( 'All requests', 'domainmap' ),
 			Domainmap_Reseller::LOG_LEVEL_ERRORS   => __( 'Failed requests', 'domainmap' ),
-			Domainmap_Reseller::LOG_LEVEL_DISABLED => __( 'Disable loggin', 'domainmap' ),
+			Domainmap_Reseller::LOG_LEVEL_DISABLED => __( 'Disable login', 'domainmap' ),
 		);
 
 		?><div>

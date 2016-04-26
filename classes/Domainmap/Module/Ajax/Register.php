@@ -159,7 +159,7 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
         }
 
         if( $account_password !== $account_password_confirm ){
-            $errors->add("password", __("The passwords don't match"));
+            $errors->add("password", __("Passwords don't match"));
         }
 
         if( empty($account_password) ||  empty($account_password_confirm) ){
