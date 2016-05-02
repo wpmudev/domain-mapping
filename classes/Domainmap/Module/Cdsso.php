@@ -378,9 +378,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		if( $subsite ){
             $domain = is_null( $domain ) ? $current_blog->domain : $domain;
-			$url  = $admin_scheme . $domain . "/";
+			$url  = trailingslashit( set_url_scheme( "http://" . $domain ) );
 		}else{
-			$url  = trailingslashit( network_home_url("/", $admin_scheme) );
+			$url  = trailingslashit( network_home_url("/") );
 		}
 
 		return $wp_rewrite->using_permalinks() ? $url . self::SSO_ENDPOINT . "/" . time() . "/" : $url . "?" . self::SSO_ENDPOINT . "=" . time() ;
@@ -461,7 +461,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 		$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
 
-		$url = set_url_scheme( $url, "http" );
+		$url = set_url_scheme( $url );
 
 
 
