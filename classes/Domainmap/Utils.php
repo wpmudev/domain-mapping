@@ -79,6 +79,13 @@ class Domainmap_Utils{
      */
     private static $_original_domain;
 
+    /**
+     * Stores schemes for various domains
+     *
+     * @var array
+     */
+    private static $_schemes = array();
+
     function __construct()
     {
         global $wpdb;
@@ -229,18 +236,16 @@ class Domainmap_Utils{
         $_domain = $this->is_mapped_domain( $domain ) ? $domain : $this->swap_to_mapped_url( $domain );
 
         if( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
-        $transient_key = domain_map::FORCE_SSL_KEY_PREFIX . $_domain;
+
 
         if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
             $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
         }else{
-            $force = get_transient( $transient_key );
 
-            if( $force === false ){
-                $force_ssl_on_mapped_domain = (int) $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
-                set_transient($transient_key, $force_ssl_on_mapped_domain, 30 * MINUTE_IN_SECONDS);
+            if( !isset( self::$_schemes[ $domain  ] ) ){
+                $force_ssl_on_mapped_domain = self::$_schemes[ $domain ] = (int) $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
             }else{
-                $force_ssl_on_mapped_domain = $force;
+                $force_ssl_on_mapped_domain = self::$_schemes[ $domain ];
             }
         }
 

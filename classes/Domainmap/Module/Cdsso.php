@@ -81,7 +81,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
-        $this->_add_filter("logout_redirect", "logout_user_from_everywhere");
+		$this->_add_filter("logout_redirect", "logout_user_from_everywhere");
 
 		if( !$this->_async ){
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
@@ -116,8 +116,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string Updated login URL.
 	 */
 	public function update_login_url( $login_url, $redirect_to ) {
-        if( empty( $redirect_to ) )
-            return $login_url;
+		if( empty( $redirect_to ) )
+			return $login_url;
 
 		$login_domain = parse_url( $login_url, PHP_URL_HOST );
 		$redirect_domain = parse_url( $redirect_to, PHP_URL_HOST );
@@ -139,7 +139,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function logout_user_from_everywhere($redirect_to) {
 		$manager = WP_User_Meta_Session_Tokens::get_instance( get_current_user_id() );
 		$manager->destroy_all();
-        return $redirect_to;
+		return $redirect_to;
 	}
 
 	/**
@@ -180,8 +180,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function get_login_message( $message ) {
 		return $this->_do_propagation
-			? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
-			: $message;
+				? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
+				: $message;
 	}
 
 	/**
@@ -221,8 +221,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		<?php
 
 		$url = add_query_arg( array(
-			'action' => self::ACTION_PROPAGATE_USER,
-			'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
+				'action' => self::ACTION_PROPAGATE_USER,
+				'auth'   => wp_generate_auth_cookie( $user->ID, time() + MINUTE_IN_SECONDS ),
 		), $this->get_main_ajax_url() );
 
 		$this->_add_script( $url );
@@ -235,18 +235,18 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @action wp_head 0
 	 * @action login_head 0
 	 *
-     * @uses _add_auth_script_sync
-     * @uses _add_auth_script_async
-     *
+	 * @uses _add_auth_script_sync
+	 * @uses _add_auth_script_async
+	 *
 	 * @access public
 	 */
 	public function add_auth_script() {
 
-        if (   is_user_logged_in()
-            ||  1  === get_current_blog_id()
-            ||  filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER
-            || isset( $_POST["pwd"] )
-        )  return;
+		if (   is_user_logged_in()
+				||  1  === get_current_blog_id()
+				||  filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER
+				|| isset( $_POST["pwd"] )
+		)  return;
 
 		if($this->_async)
 			$this->_add_auth_script_async();
@@ -275,8 +275,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _add_auth_script_async(){
 		global $redirect_to;
 		$url = add_query_arg( array(
-			'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
-			'domain' =>  $_SERVER['HTTP_HOST'] ,
+				'dm_action' => self::ACTION_CHECK_LOGIN_STATUS,
+				'domain' =>  $_SERVER['HTTP_HOST'] ,
 		), $this->_get_sso_endpoint_url()
 		);
 
@@ -309,8 +309,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 
 		$url = add_query_arg( array(
-			self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
-			'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + ( 2 * MINUTE_IN_SECONDS ) ),
+				self::ACTION_KEY => self::ACTION_AUTHORIZE_USER,
+				'auth'           => wp_generate_auth_cookie( get_current_user_id(), time() + ( 2 * MINUTE_IN_SECONDS ) ),
 		), $_SERVER['HTTP_REFERER'] );
 		?>
 		window.location.replace("<?php echo esc_url_raw( $url ) ?>");
@@ -329,7 +329,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _add_script( $url )
 	{
 		?>
-			<script type="text/javascript" src="<?php echo $url; ?>"></script>
+		<script type="text/javascript" src="<?php echo $url; ?>"></script>
 		<?php
 	}
 
@@ -374,13 +374,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
 		global $wp_rewrite, $current_blog, $current_site;;
 
-        $admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : "http";
+
 
 		if( $subsite ){
-            $domain = is_null( $domain ) ? $current_blog->domain : $domain;
-			$url  = trailingslashit( set_url_scheme( "http://" . $domain ) );
+			$domain = is_null( $domain ) ? $current_blog->domain : $domain;
+			$subsite_scheme = self::utils()->get_mapped_domain_scheme( $domain );
+			$url  = trailingslashit( set_url_scheme( "http://" . $domain, $subsite_scheme ) );
 		}else{
-			$url  = trailingslashit( network_home_url("/") );
+			$admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : "http";
+			$url  = trailingslashit( set_url_scheme( network_home_url("/"), $admin_scheme ) );
 		}
 
 		return $wp_rewrite->using_permalinks() ? $url . self::SSO_ENDPOINT . "/" . time() . "/" : $url . "?" . self::SSO_ENDPOINT . "=" . time() ;
@@ -448,20 +450,19 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$domain_name = filter_input( INPUT_GET, 'domain' );
 		$admin_mapping = $this->_plugin->get_option("map_force_admin_ssl");
 
-	?>
+		?>
 		// Starting Domain Mapping SSO
 		<?php
 		$args = array(
-			"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
-			'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
-			'refresh' => 1
+				"dm_action" => self::ACTION_AUTHORIZE_USER_ASYNC,
+				'auth'   => wp_generate_auth_cookie( get_current_user_id(), time() + MINUTE_IN_SECONDS ),
+				'refresh' => 1
 		);
 		if( $admin_mapping ){
 			$args["refresh"] = 0;
 		}
 		$url = add_query_arg( $args, $this->_get_sso_endpoint_url( true, $domain_name ) );
 
-		$url = set_url_scheme( $url );
 
 
 
@@ -497,15 +498,15 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 				var url = '<?php echo $url; ?>';
 				var iframe = document.createElement('iframe');
 				(iframe.frameElement || iframe).style.cssText =
-					"width: 0; height: 0; border: 0";
+						"width: 0; height: 0; border: 0";
 				iframe.src = "javascript:false";
 				var where = document.getElementsByTagName('script')[0];
 				where.parentNode.insertBefore(iframe, where);
 				var doc = iframe.contentWindow.document;
 				doc.open().write('<body onload="'+
-				'var js = document.createElement(\'script\');'+
-				'js.src = \''+ url +'\';'+
-				'document.body.appendChild(js);">');
+						'var js = document.createElement(\'script\');'+
+						'js.src = \''+ url +'\';'+
+						'document.body.appendChild(js);">');
 				doc.close();
 
 			}(parent.window));
@@ -519,73 +520,73 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.4.0
 	 * @param $url
 	 */
-	private function _add_inner_iframe( $url ){
-		?>
-		(function(window) {
-		var document = window.top.document;
-		var url = '<?php echo $url; ?>';
-		var iframe = document.createElement('iframe');
-		(iframe.frameElement || iframe).style.cssText =
-		"width: 0; height: 0; border: 0";
-		iframe.src = "javascript:false";
-		var where = document.getElementsByTagName('script')[0];
-		where.parentNode.insertBefore(iframe, where);
-		var doc = iframe.contentWindow.document;
-		doc.open().write('<body onload="'+
+private function _add_inner_iframe( $url ){
+	?>
+	(function(window) {
+	var document = window.top.document;
+	var url = '<?php echo $url; ?>';
+	var iframe = document.createElement('iframe');
+	(iframe.frameElement || iframe).style.cssText =
+	"width: 0; height: 0; border: 0";
+	iframe.src = "javascript:false";
+	var where = document.getElementsByTagName('script')[0];
+	where.parentNode.insertBefore(iframe, where);
+	var doc = iframe.contentWindow.document;
+	doc.open().write('<body onload="'+
 					'var js = document.createElement(\'script\');'+
 					'js.src = \''+ url +'\';'+
 					'document.body.appendChild(js);">');
-	doc.close();
+doc.close();
 
-	}(parent.top.window));
-		<?php
-	}
-	/**
-	 * Sets auth cookie for the user on the subsite
-	 * Used by plugins_loaded action hook
-	 *
-	 * @since 4.2.1
-	 */
-	function authorize_user() {
+}(parent.top.window));
+<?php
+}
+/**
+ * Sets auth cookie for the user on the subsite
+ * Used by plugins_loaded action hook
+ *
+ * @since 4.2.1
+ */
+function authorize_user() {
 
-		if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
-			$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-			if ( $user_id ) {
-				wp_set_auth_cookie( $user_id );
+	if ( filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER ) {
+		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+		if ( $user_id ) {
+			wp_set_auth_cookie( $user_id );
 
-				$redirect_to = in_array( $GLOBALS['pagenow'], array( 'wp-login.php' ) ) && filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL )
+			$redirect_to = in_array( $GLOBALS['pagenow'], array( 'wp-login.php' ) ) && filter_input( INPUT_GET, 'redirect_to', FILTER_VALIDATE_URL )
 					? $_GET['redirect_to']
 					: add_query_arg( array( self::ACTION_KEY => false, 'auth' => false ) );
 
-				$redirect_to = apply_filters("dm_sync_sso_redirect", $redirect_to);
+			$redirect_to = apply_filters("dm_sync_sso_redirect", $redirect_to);
 
-				wp_redirect( esc_url_raw( $redirect_to ) );
-				exit;
-			} else {
-				wp_die( __( 'Incorrect or out of date login key', 'domainmap' ) );
-			}
+			wp_redirect( esc_url_raw( $redirect_to ) );
+			exit;
+		} else {
+			wp_die( __( 'Incorrect or out of date login key', 'domainmap' ) );
 		}
 	}
+}
 
-	/**
-	 * Sets auth cookie for the user on the subsite ( async )
-	 *
-	 * @since 4.3.1
-	 */
-	private function authorize_user_async(){
-		header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
+/**
+ * Sets auth cookie for the user on the subsite ( async )
+ *
+ * @since 4.3.1
+ */
+private function authorize_user_async(){
+header( "Content-Type: text/javascript; charset=" . get_bloginfo( 'charset' ) );
 
-		$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
-		$refresh = filter_input( INPUT_GET, 'refresh' );
+$user_id = wp_validate_auth_cookie( filter_input( INPUT_GET, 'auth' ), 'auth' );
+$refresh = filter_input( INPUT_GET, 'refresh' );
 
 
-		if ( $user_id ) {
-		wp_set_auth_cookie( $user_id );
-			?>
-				window.top.dm_redirect_to();
-			<?php
-		}
-	}
+if ( $user_id ) {
+wp_set_auth_cookie( $user_id );
+?>
+window.top.dm_redirect_to();
+	<?php
+}
+}
 
 	/**
 	 * Propagates user
@@ -627,8 +628,8 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if( !empty( $current_user->ID ) && !isset( $_REQUEST['loggedout'] ) && !isset( $_REQUEST['action'] ) ){
 
 
-            if( !isset( $redirect_to ) )
-                $redirect_to = $this->_get_reauthenticate_redirect_to();
+			if( !isset( $redirect_to ) )
+				$redirect_to = $this->_get_reauthenticate_redirect_to();
 
 			wp_set_auth_cookie( $current_user->ID );
 			wp_redirect( $redirect_to );
@@ -636,36 +637,36 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		}
 	}
 
-    /**
-     * Returns $redirect_to variable on reauthentication
-     *
-     *
-     * @since 4.4.0.7
-     * @return mixed|string|void
-     */
-    private function _get_reauthenticate_redirect_to(){
-        $secure_cookie = false;
-        // If the user wants ssl but the session is not ssl, force a secure cookie.
-        if ( !empty($_POST['log']) && !force_ssl_admin() ) {
-            $user_name = sanitize_user($_POST['log']);
-            if ( $user = get_user_by('login', $user_name) ) {
-                if ( get_user_option('use_ssl', $user->ID) ) {
-                    $secure_cookie = true;
-                    force_ssl_admin(true);
-                }
-            }
-        }
+	/**
+	 * Returns $redirect_to variable on reauthentication
+	 *
+	 *
+	 * @since 4.4.0.7
+	 * @return mixed|string|void
+	 */
+	private function _get_reauthenticate_redirect_to(){
+		$secure_cookie = false;
+		// If the user wants ssl but the session is not ssl, force a secure cookie.
+		if ( !empty($_POST['log']) && !force_ssl_admin() ) {
+			$user_name = sanitize_user($_POST['log']);
+			if ( $user = get_user_by('login', $user_name) ) {
+				if ( get_user_option('use_ssl', $user->ID) ) {
+					$secure_cookie = true;
+					force_ssl_admin(true);
+				}
+			}
+		}
 
-        if ( isset( $_REQUEST['redirect_to'] ) ) {
-            $redirect_to = $_REQUEST['redirect_to'];
-            // Redirect to https if user wants ssl
-            if ( $secure_cookie && false !== strpos($redirect_to, 'wp-admin') )
-                $redirect_to = preg_replace('|^http://|', 'https://', $redirect_to);
-        } else {
-            $redirect_to = admin_url();
-        }
+		if ( isset( $_REQUEST['redirect_to'] ) ) {
+			$redirect_to = $_REQUEST['redirect_to'];
+			// Redirect to https if user wants ssl
+			if ( $secure_cookie && false !== strpos($redirect_to, 'wp-admin') )
+				$redirect_to = preg_replace('|^http://|', 'https://', $redirect_to);
+		} else {
+			$redirect_to = admin_url();
+		}
 
-        return $redirect_to;
-    }
+		return $redirect_to;
+	}
 
 }
