@@ -233,7 +233,6 @@ class Domainmap_Utils{
         $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
         $domain = $domain === "" ? $current_domain  : $domain;
         $domain = str_replace("www.", "", $domain );
-        $_domain = $this->is_mapped_domain( $domain ) ? $domain : $this->swap_to_mapped_url( $domain );
 
         if( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
 
