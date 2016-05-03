@@ -261,7 +261,7 @@ class Domainmap_Utils{
      * @return bool
      */
     public function is_mapped_domain( $domain = null ){
-        if( in_array( $domain, self::$_mapped_domains )  ) return true;
+        if( !empty( $domain ) && in_array( $domain, self::$_mapped_domains )  ) return true;
         return !$this->is_original_domain( $domain );
     }
 

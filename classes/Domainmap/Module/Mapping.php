@@ -558,7 +558,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if( !is_admin() && ( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) && !is_ssl() ){
 			wp_redirect( $current_url_secure  );
 			exit();
-		}elseif(  domain_map::utils()->is_mapped_domain() && domain_map::utils()->force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) ){
+		}elseif(  self::utils()->is_mapped_domain() && self::utils()->force_ssl_on_mapped_domain() !== 2 && !( $this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request() ) ){
 
 			/**
 			 * Force mapped domains
