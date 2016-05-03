@@ -380,16 +380,14 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		}
 
-		$protocol_bool = domain_map::utils()->is_mapped_domain() ? domain_map::utils()->force_ssl_on_mapped_domain() : is_ssl();
-		$protocol = $protocol_bool || $force_ssl ? 'https://' : 'http://';
+		$protocol =  $is_front ? domain_map::utils()->get_mapped_domain_scheme( $mapped_domain ) : self::utils()->get_admin_scheme()  ;
 		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
 		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
-		$mapped_url = untrailingslashit( $protocol . $mapped_domain . $current_site->path );
+		$mapped_url = untrailingslashit( set_url_scheme( "http://" . $mapped_domain . $current_site->path,  $force_ssl ? 'https' :  $protocol) );
 
 		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
-
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $request, true, 301 );
