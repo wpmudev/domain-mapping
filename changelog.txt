@@ -1,5 +1,8 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.2.3 ==
+* Improved: Overall sanity and stabiligy
+
 == 4.4.2.2 ==
 * Improved: Mapping performance
 * Fixed: Issue with mapping scheme
