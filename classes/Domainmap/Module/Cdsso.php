@@ -137,6 +137,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function logout_user_from_everywhere($redirect_to) {
+		/**
+		 * @var $manager WP_User_Meta_Session_Tokens
+		 */
 		$manager = WP_User_Meta_Session_Tokens::get_instance( get_current_user_id() );
 		$manager->destroy_all();
 		return $redirect_to;
