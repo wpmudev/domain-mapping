@@ -479,8 +479,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			                                                          'RegistrantCountry'          => filter_input( INPUT_POST, 'registrant_country' ),
 			                                                          'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
 			                                                          'RegistrantPhone'            => $registrant_phone,
-			                                                          'RegistrantFax'              => $registrant_fax,
-																	  'NumYears' 				   => $this->_get_purchase_num_years(),
+			                                                          'RegistrantFax'              => $registrant_fax
 		                                                          ) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
@@ -984,17 +983,4 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		return isset( $options[self::RESELLER_ID]['currency'] ) ?  $options[self::RESELLER_ID]['currency'] : "USD";
 	}
 
-	/**
-	 * Returns number of years based on minimum of tld
-	 * eNom requires some tlds to meet a minimum num of years of more than 1
-	 *
-	 *
-	 * @since 4.4.2.4
-	 * @param $tld
-	 * @return int
-	 */
-	private function _get_purchase_num_years( $tld ){
-		$tlds = array( 'uk' );
-		return in_array( $tld, $tlds ) ? 2 : 1;
-	}
 }
