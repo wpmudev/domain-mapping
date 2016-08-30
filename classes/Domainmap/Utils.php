@@ -218,6 +218,7 @@ class Domainmap_Utils{
         return set_url_scheme( $url, $alternative_scheme );
     }
 
+
     /**
      * Checks if given domain should be forced to use https
      *
@@ -230,12 +231,10 @@ class Domainmap_Utils{
         global $dm_mapped;
         $_parsed = parse_url( $domain, PHP_URL_HOST );
         $domain = $_parsed ? $_parsed : $domain;
-        $current_domain = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
-        $domain = $domain === "" ? $current_domain  : $domain;
-        $domain = str_replace("www.", "", $domain );
+        $current_domain = parse_url( $this->_http->getHostInfo(), PHP_URL_HOST );
+        $domain = empty( $domain ) ? $current_domain  : $domain;
 
         if( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
-
 
         if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
             $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
@@ -588,5 +587,18 @@ class Domainmap_Utils{
         $components['path'] = "/" . $path;
 
         return apply_filters("dm_swap_mapped_url", $this->build_url( $components ), $path, $orig_scheme, $blog_id);
+    }
+
+    /**
+     * Returns name of caller of current function
+     *
+     * @since 4.4.2.5
+     *
+     * @return string
+     */
+    function get_function_caller() {
+        $trace = debug_backtrace();
+        $name = $trace[2]['function'];
+        return empty($name) ? 'global' : $name;
     }
 }
