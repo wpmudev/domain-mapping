@@ -77,7 +77,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				'<b>'.DOMAINMAP_ABSPATH.'/sunrise.php</b>',
 				'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
 				'<b>' . ABSPATH . 'wp-config.php</b>',
-				'<code>define( \'SUNRISE\', \'on\' )</code>'
+				'<code>define( \'SUNRISE\', \'on\' );</code>'
 			);
 			echo '</div>';
 		} else {
