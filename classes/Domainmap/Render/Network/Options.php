@@ -77,14 +77,14 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				'<b>'.DOMAINMAP_ABSPATH.'/sunrise.php</b>',
 				'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
 				'<b>' . ABSPATH . 'wp-config.php</b>',
-				'<code>define( \'SUNRISE\', \'on\' )</code>'
+				'<code>define( \'SUNRISE\', \'on\' );</code>'
 			);
 			echo '</div>';
 		} else {
 			if ( !defined( 'DOMAINMAPPING_SUNRISE_VERSION' ) || version_compare( DOMAINMAPPING_SUNRISE_VERSION, Domainmap_Plugin::SUNRISE, '<' ) ) {
 				echo '<div class="domainmapping-info domainmapping-info-error">';
 				printf(
-					__( 'You use old version of %s file. Please, replace that file with new version which is located by following path: %s.', 'domainmap' ),
+					__( 'You are using an old version of %s file. Please, replace that file with a new version which is located by following path: %s.', 'domainmap' ),
 					'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
 					'<b>' . DOMAINMAP_ABSPATH . '/sunrise.php</b>'
 				);
