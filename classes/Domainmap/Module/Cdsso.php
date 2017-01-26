@@ -346,6 +346,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return array
 	 */
 	function add_query_var_for_endpoint($vars) {
+		if (empty($vars)) {
+			// Prevent accessing empty string as array.
+			$vars = array();
+		}
 		add_rewrite_endpoint( self::SSO_ENDPOINT, EP_ALL );
 		$vars[] = self::SSO_ENDPOINT;
 		$this->_flush_rewrite_rules();
