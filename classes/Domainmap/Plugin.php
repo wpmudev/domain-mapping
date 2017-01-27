@@ -254,8 +254,11 @@ class Domainmap_Plugin {
 			}
 
 			$this->_permitted = false;
+
+			// For each ProSite Level.
 			foreach ( (array)$options['map_supporteronly'] as $level ) {
-				if( is_pro_site( false, $level ) ) {
+				// See if the current site is a DM enabled Pro Site.
+				if( is_pro_site( get_current_blog_id(), $level ) ) {
 					$this->_permitted = true;
 				}
 			}
