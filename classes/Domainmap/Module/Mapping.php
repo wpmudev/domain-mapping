@@ -162,7 +162,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		global $current_blog, $current_site;
 
 		// don't redirect AJAX requests
-		if ( defined( 'DOING_AJAX' ) ) {
+		// also check if customizer should use mapped or not.
+		if ( defined( 'DOING_AJAX' ) || $this->use_mapped_for_customizer()) {
 			return;
 		}
 
@@ -337,6 +338,24 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return apply_filters("dm_current_mapping_type", $mapping, $option);
 	}
 
+	/**
+	 * Find what settings are used and return correct customizer URL.
+	 *
+	 * @since 4.3
+	 *
+	 * @return boolean
+	 */
+	public function use_mapped_for_customizer() {
+		// See if Customizer.
+		if (is_customize_preview()) {
+			// If admin is forced to original domain, disable mapping to prevent non-matching domain errors.
+ 			if ($this->_plugin->get_option('map_admindomain') === 'original' ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 
 	/**
 	 * Redirects to mapped domain.
@@ -363,7 +382,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$mapped_domain = self::utils()->get_mapped_domain(false, $is_front);
 		// do not redirect if there is no mapped domain
-		if ( !$mapped_domain ) {
+		// Also check if customizer should use mapped or not.
+		if ( !$mapped_domain || !$this->use_mapped_for_customizer()) {
 			return;
 		}
 
