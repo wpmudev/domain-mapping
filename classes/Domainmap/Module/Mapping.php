@@ -278,7 +278,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$redirect_to = self::utils()->get_frontend_redirect_type();
 		$force_ssl = false;
-		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) || is_customize_preview() ) {
 			if ( $this->_get_current_mapping_type( 'map_admindomain' ) == 'original' ) {
 				$redirect_to = 'original';
 				$force_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
