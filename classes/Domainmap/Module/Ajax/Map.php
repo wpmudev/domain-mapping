@@ -4,20 +4,24 @@
 // | Copyright Incsub (http://incsub.com/)                                |
 // | Based on an original by Donncha (http://ocaoimh.ie/)                 |
 // +----------------------------------------------------------------------+
-// | This program is free software; you can redistribute it and/or modify |
+// | This program is free software;
+you can redistribute it and/or modify |
 // | it under the terms of the GNU General Public License, version 2, as  |
 // | published by the Free Software Foundation.                           |
 // |                                                                      |
 // | This program is distributed in the hope that it will be useful,      |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+// | but WITHOUT ANY WARRANTY;
+without even the implied warranty of       |
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
 // | GNU General Public License for more details.                         |
 // |                                                                      |
 // | You should have received a copy of the GNU General Public License    |
-// | along with this program; if not, write to the Free Software          |
+// | along with this program;
+if not, write to the Free Software          |
 // | Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,               |
 // | MA 02110-1301 USA                                                    |
 // +----------------------------------------------------------------------+
+
 
 /**
  * The module responsible for handling AJAX requests sent at domain mapping page.
@@ -28,10 +32,14 @@
  *
  * @since 4.0.0
  */
+
 class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
-
+	
+	
 	const NAME = __CLASS__;
-
+	
+	
+	
 	/**
 	 * Constructor.
 	 *
@@ -40,29 +48,48 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 * @param Domainmap_Plugin $plugin The instance of the Domainap_Plugin class.
 	 */
+	
 	public function __construct( Domainmap_Plugin $plugin ) {
+		
 		parent::__construct( $plugin );
-
-		// add ajax actions
+		
+		
+		// 		add ajax actions
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_MAP_DOMAIN, 'map_domain' );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_UNMAP_DOMAIN, 'unmap_domain' );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEALTH_CHECK, 'check_health_status', true, true );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_HEARTBEAT_CHECK, 'check_heartbeat', true, true );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SELECT_PRIMARY_DOMAIN, 'select_primary_domain' );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_DESELECT_PRIMARY_DOMAIN, 'deselect_primary_domain' );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_CHANGE_FRONTEND_REDIRECT, 'change_frontend_mapping' );
+		
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_TOGGLE_SCHEME, 'toggle_scheme' );
-
-		// add wpengine compatibility
+		
+		
+		// 		add wpengine compatibility
 		if ( !has_action( 'domainmapping_added_domain' ) ) {
+			
 			$this->_add_action( 'domainmapping_added_domain', 'add_domain_to_wpengine' );
+			
 		}
-
+		
+		
 		if ( !has_action( 'domainmapping_deleted_domain' ) ) {
+			
 			$this->_add_action( 'domainmapping_deleted_domain', 'remove_domain_from_wpengine' );
+			
 		}
+		
 	}
-
+	
+	
+	
 	/**
 	 * Returns count of mapped domains for current blog.
 	 *
@@ -71,10 +98,15 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access private
 	 * @return int The count of already mapped domains.
 	 */
+	
 	private function _get_domains_count() {
+		
 		return $this->_wpdb->get_var( 'SELECT COUNT(*) FROM ' . DOMAINMAP_TABLE_MAP . ' WHERE blog_id = ' . intval( $this->_wpdb->blogid ) );
+		
 	}
-
+	
+	
+	
 	/**
 	 * Locates WPEngine API and loads it.
 	 *
@@ -83,8 +115,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access private
 	 * @return boolean TRUE if WPE_API has been located, otherwise FALSE.
 	 */
+	
 	private function _locate_wpengine_api() {
-		// if WPE_API doesn't exist, then try to locate it
+		
+		// 		if WPE_API doesn't exist, then try to locate it
 		if ( !class_exists( 'WPE_API' ) ) {
 			// if WPEngine is not defined, then return
 			if ( !defined( 'WPE_PLUGIN_DIR' ) || !is_readable( WPE_PLUGIN_DIR . '/class-wpeapi.php' ) ) {
@@ -113,20 +147,29 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	public function add_domain_to_wpengine( $domain ) {
 		// return if we can't locate WPEngine API class
 		if ( !$this->_locate_wpengine_api() ) {
+			
 			return;
+			
 		}
-
-		// add domain to WPEngine
+		
+		
+		// 		add domain to WPEngine
 		$api = new WPE_API();
-
-		// set the method and domain
+		
+		
+		// 		set the method and domain
 		$api->set_arg( 'method', 'domain' );
+		
 		$api->set_arg( 'domain', $domain );
-
-		// do the api request
+		
+		
+		// 		do the api request
 		$api->get();
+		
 	}
-
+	
+	
+	
 	/**
 	 * Removes domain from WPEngine domains list when this domain is unmapped
 	 * from a blog.
@@ -137,8 +180,10 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 	 * @access public
 	 * @param string $domain The domain name to remove.
 	 */
+	
 	public function remove_domain_from_wpengine( $domain ) {
-		// return if we can't locate WPEngine API class
+		
+		// 		return if we can't locate WPEngine API class
 		if ( !$this->_locate_wpengine_api() ) {
 			return;
 		}
@@ -186,7 +231,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 						'blog_id' => (int) $blog_id,
 						'domain'  => $domain,
 						'active'  => 1,
-                        "scheme" => $scheme,
+                        "scheme"  => $scheme,
 					), array( '%d', '%s', '%d', '%d') );
 
                     if( !$added ){
@@ -413,6 +458,9 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
      $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );
      if( !is_null( $current_scheme ) ){
 	     $new_schema = ( $current_scheme + 1 ) % 3;
+		 if($new_schema == 0){
+			$new_schema = 1;
+		 }
        $result = $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array(
            "scheme" => $new_schema ,
        ), array(
