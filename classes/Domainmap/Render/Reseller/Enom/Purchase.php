@@ -50,12 +50,14 @@ class Domainmap_Render_Reseller_Enom_Purchase extends Domainmap_Render_Reseller_
 				<form id="domainmapping-iframe-form" method="post">
 					<input type="hidden" name="sld" value="<?php echo esc_attr( $this->sld ) ?>">
 					<input type="hidden" name="tld" value="<?php echo esc_attr( $this->tld ) ?>">
+					<input type="hidden" name="period" value="<?php echo esc_attr( $this->period ) ?>"> 
 					<input type="hidden" id="card_type" name="card_type">
 
 					<p class="domainmapping-info"><?php printf(
-						__( 'You are about to purchase domain name %s and pay %s for 1 year of usage. Please, fill in the form below and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
+						__( 'You are about to purchase domain name %s and pay %s for %d year of usage. Please, fill in the form below and click on purchase button. Pay attention that all fields marked with red asterisk are required and has to be filled with appropriate information.', 'domainmap' ),
 						'<b>' . esc_html( strtoupper( $this->domain ) ) . '</b>',
-						'<b>' . esc_html( $this->price ) . '</b>'
+						'<b>' . esc_html( $this->price ) . '</b>',
+						$this->period //Period could be more than 1 year
 					) ?></p>
 
 					<?php if ( is_wp_error( $this->errors ) ) : ?>

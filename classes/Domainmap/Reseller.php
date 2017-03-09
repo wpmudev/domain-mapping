@@ -521,4 +521,14 @@ abstract class Domainmap_Reseller {
 	public function get_currency_symbol(){
 		return DM_Currencies::get_symbol( Domainmap_Plugin::instance()->get_reseller()->get_currency() );
 	}
+
+	/**
+	 * Get the additional registration/renewal fiels required by some providers
+	 *
+	 * @since 4.4.2.4
+	 * @return String - the fields
+	 */
+	public function get_additional_search_fields(){
+
+	}
 }

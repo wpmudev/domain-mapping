@@ -78,17 +78,22 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 
 		$sld = strtolower( trim( filter_input( INPUT_POST, 'sld' ) ) );
 		$tld = strtolower( trim( filter_input( INPUT_POST, 'tld' ) ) );
+		$period = strtolower( trim( filter_input( INPUT_POST, 'period' ) ) );
 
 		$message = false;
 		$domain = "{$sld}.{$tld}";
 		$is_valid = $this->_validate_domain_name( $domain );
 		if ( $is_valid ) {
 			$reseller = $this->_plugin->get_reseller();
-
+			$domain_period = 1;
 			$price = false;
 			$available = $reseller->check_domain( $tld, $sld );
 			if ( $available ) {
-				$price = '$' . number_format( floatval( $reseller->get_tld_price( $tld ) ), 2 );
+				
+				if($period != null || $period != false){
+					$domain_period = $period;
+				}
+				$price = '$' . number_format( floatval( $reseller->get_tld_price( $tld, $domain_period ) ), 2 );
 			}
 
 			set_site_transient( $this->_get_transient_name( 'checkdomain' ), array(
@@ -96,6 +101,7 @@ class Domainmap_Module_Ajax_Purchase extends Domainmap_Module_Ajax {
 				'price'  => $price,
 				'sld'    => $sld,
 				'tld'    => $tld,
+				'period' => $domain_period,
 			), HOUR_IN_SECONDS );
 
 			wp_send_json_success( array(
