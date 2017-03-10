@@ -836,6 +836,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			return false;
 		}
 
+		$firstname = $details['FIRSTNAME'];
+		$lastname = $details['LASTNAME'];
+
 		// complete checkout
 		$response = $this->_call_paypal_api( 'DoExpressCheckoutPayment', array(
 			'PAYERID'                        => $details['PAYERID'],
@@ -856,6 +859,8 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
 		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
+		
+        
 
 		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
 			'sld'           => $sld,
@@ -863,6 +868,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'UseDNS'        => 'default',
 			'UseCreditCard' => 'no',
 			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
+			'Registered_For'=> $firstname.' '.$lastname,
+			'UK_Legal_Type' => $firstname.' '.$lastname,
+			'UK_Reg_Opt_Out'=> 'no'
 		) );
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
