@@ -528,7 +528,5 @@ abstract class Domainmap_Reseller {
 	 * @since 4.4.2.4
 	 * @return String - the fields
 	 */
-	public function get_additional_search_fields(){
-
-	}
+	public function get_additional_search_fields(){}
 }
