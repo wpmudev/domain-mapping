@@ -859,19 +859,24 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 
 		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
 		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
-		
-        
 
-		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+
+		$enom_request = array(
 			'sld'           => $sld,
 			'tld'           => $tld,
 			'UseDNS'        => 'default',
 			'UseCreditCard' => 'no',
-			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
-			'Registered_For'=> $firstname.' '.$lastname,
-			'UK_Legal_Type' => $firstname.' '.$lastname,
-			'UK_Reg_Opt_Out'=> 'no'
-		) );
+			'EndUserIP'     => $_SERVER['REMOTE_ADDR']
+		);
+		
+		//UK required parameters
+        if (preg_match('/uk/',$tld)){
+			$enom_request['Registered_For'] = $firstname.' '.$lastname;
+			$enom_request['UK_Legal_Type'] = $firstname.' '.$lastname;
+			$enom_request['UK_Reg_Opt_Out'] = 'no';
+		}
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, $enom_request);
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
