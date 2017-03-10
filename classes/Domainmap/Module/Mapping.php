@@ -88,6 +88,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private static $_force_admin_ssl = false;
 
 	/**
+	 * Has domain already been determined.
+	 *
+	 * @var bool
+	 */
+	private $_determined_domain = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.3
@@ -102,13 +109,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
 		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
-		$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
-		$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
-		$this->_add_action( 'template_redirect',       'force_schema', 12 );
-		$this->_add_action( 'admin_init',              'force_admin_scheme', 12 );
-		$this->_add_action( 'login_init',              'force_login_scheme', 12 );
-		$this->_add_action( 'admin_init',              'redirect_admin_area' );
-		$this->_add_action( 'login_init',              'redirect_login_area' );
+		$this->_add_action('admin_init', 'route_domain');
+		$this->_add_action('login_redirect', 'route_domain');
+		$this->_add_action('template_redirect', 'route_domain', 10);
+		//$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
+		//$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
+		//$this->_add_action( 'template_redirect',       'force_schema', 12 );
+		//$this->_add_action( 'admin_init',              'force_admin_scheme', 12 );
+		//$this->_add_action( 'login_init',              'force_login_scheme', 12 );
+		//$this->_add_action( 'admin_init',              'redirect_admin_area' );
+		//$this->_add_action( 'login_init',              'redirect_login_area' );
         $this->_add_action( 'login_init',              'allow_crosslogin' );
 
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
@@ -163,7 +173,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		// don't redirect AJAX requests
 		// also check if customizer should use mapped or not.
-		if ( defined( 'DOING_AJAX' ) || $this->use_mapped_for_customizer()) {
+		if ( defined( 'DOING_AJAX' )) {
 			return;
 		}
 
@@ -276,15 +286,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if(  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS ) return;
 
-		$redirect_to = self::utils()->get_frontend_redirect_type();
-		$force_ssl = false;
-		if ( filter_input( INPUT_POST, 'wp_customize', FILTER_VALIDATE_BOOLEAN ) || is_customize_preview() ) {
-			if ( $this->_get_current_mapping_type( 'map_admindomain' ) == 'original' ) {
-				$redirect_to = 'original';
-				$force_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
-			}
-		}
-
 		/**
 		 * Filter if it should proceed with redirecting
 		 *
@@ -346,14 +347,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return boolean
 	 */
 	public function use_mapped_for_customizer() {
-		// See if Customizer.
-		if (is_customize_preview()) {
-			// If admin is forced to original domain, disable mapping to prevent non-matching domain errors.
- 			if ($this->_plugin->get_option('map_admindomain') === 'original' ) {
-				return false;
-			}
+		// If admin is forced to original domain, disable mapping to prevent non-matching domain errors.
+ 		if ($this->_plugin->get_option('map_admindomain') === 'original' ) {
+			return false;
 		}
-		return true;
 	}
 
 	/**
@@ -365,9 +362,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
  	 *
  	 * @return boolean
  	 */
-	public function use_ssl_for_customizer($force_ssl = true, $original_or_mapped) {
-		// See if Customizer.
-		if (is_customize_preview()) {
+	public function use_ssl_for_customizer($original_or_mapped) {
 			// If original domain.
 			if ($original_or_mapped === 'original') {
 				// If admin is SSL, return true.
@@ -393,9 +388,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 					return false;
 				}
 			}
-		}
-		// If not customizer, default to $force_ssl.
-		return $force_ssl;
 	}
 
 
@@ -422,8 +414,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$mapped_domain = self::utils()->get_mapped_domain(false, $is_front);
 		// do not redirect if there is no mapped domain
-		// Also check if customizer should use mapped or not.
-		if ( !$mapped_domain || !$this->use_mapped_for_customizer()) {
+		if ( !$mapped_domain) {
 			return;
 		}
 
@@ -440,7 +431,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		}
 
-		$force_ssl = $this->use_ssl_for_customizer($force_ssl, "mapped");
 		$protocol =  $is_front ? domain_map::utils()->get_mapped_domain_scheme( $mapped_domain ) : self::utils()->get_admin_scheme()  ;
 		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
 		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
@@ -600,13 +590,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if(  !self::utils()->is_login() && !is_admin() && self::utils()->is_original_domain()){
 
 			// Force http
-			if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1  && is_ssl() && !$this->use_ssl_for_customizer(false, "original")){
+			if(  $this->_plugin->get_option("map_force_frontend_ssl") === 1  && is_ssl() ){
 				wp_redirect( $current_url );
 				exit();
 			}
 
 			// Force https
-			if(  $this->_plugin->get_option("map_force_frontend_ssl") === 2 &&  self::utils()->is_original_domain() && !is_ssl() && $this->use_ssl_for_customizer(true, "original")){
+			if(  $this->_plugin->get_option("map_force_frontend_ssl") === 2 &&  self::utils()->is_original_domain() && !is_ssl() ){
 				wp_redirect( $current_url_secure  );
 				exit();
 			}
@@ -624,7 +614,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			/**
 			 * Force mapped domains
 			 */
-			if ( $this->use_ssl_for_customizer(domain_map::utils()->force_ssl_on_mapped_domain() === 1, 'mapped')  ){ // force https
+			if ( domain_map::utils()->force_ssl_on_mapped_domain()  ){ // force https
 				// If already SSL, prevent infinite redirects.
  				if(is_ssl()) return;
 
@@ -646,15 +636,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @uses force_ssl_login
 	 * @uses wp_redirect
 	 */
-	function force_admin_scheme(){
+	// Use SSL for admin or login?
+	function force_admin_ssl(){
 		do_action("dm_before_force_admin_schema");
 		$force_admin_schema = apply_filters("dm_force_admin_schema", true,  $this->_http->getUrl());
 
         if( $force_admin_schema && self::utils()->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || self::utils()->is_login() ) ){
-            $current_url_secure = $this->_http->getHostInfo("https") . $this->_http->getUrl();
-			wp_redirect( $current_url_secure );
+			return true;
 		}
-
+		return false;
 	}
 
 
@@ -671,10 +661,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
         /**
          * Takes care of login scheme for original domain
          */
-       $this->force_admin_scheme();
+       $this->force_admin_ssl();
 
         /**
-         * Suppress if loging is going to happen
+         * Suppress if logging is going to happen
          */
         if(  isset( $_POST['pwd'] ) )
             return;
@@ -1174,10 +1164,130 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function redirect_upfront_to_mapped_domain(){
 
-		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) )
-			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
+		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) ) {
+			return true;
+			//return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
+		} elseif (class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name")) && strpos($_SERVER['REQUEST_URI'], 'create_new')) {
+			return false;
+		}
 		else
 			return true;
+	}
+
+	/*
+	 *Master router.
+	 */
+	public function route_domain() {
+		if ($this->_determined_domain) return;
+		global $current_blog, $current_site;
+		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
+		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
+		$is_front = !self::utils()->is_login() && !is_admin();
+
+		$use_ssl = $this->use_ssl();
+		$use_mapped_domain = $this->use_mapped_domain();
+
+		// Make sure only runs once.
+		$this->_determined_domain = true;
+		// redirect if ssl or mapping not correct.
+		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
+			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
+			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
+		}
+	}
+
+	public function use_mapped_domain() {
+		// What to return.
+		$use_mapped = false;
+
+		// For single page check.
+		global $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+ 		$is_forced_single_page = ($this->is_excluded_by_id( $post_id ) || $this->is_excluded_by_request());
+
+		/*
+		 * Customizer
+		 */
+		if (is_customize_preview()) {
+			// Return true or false.
+			return $this->use_mapped_for_customizer();
+		}
+		/*
+		 *Frontend
+		 */
+		if(!self::utils()->is_login() && !is_admin()){
+			$front_type = self::utils()->get_frontend_redirect_type();
+			// If user determines mapping, return that.
+			if ($front_type === 'user') {
+				$use_mapped = domain_map::utils()->is_mapped_domain();
+			// Otherwise return front setting.
+			} else {
+				$use_mapped = ($front_type === 'original' ? false : true);
+			}
+		/*
+		 * Admin
+		 */
+		} else {
+			$admin_type = $this->_get_current_mapping_type('map_admindomain'); 
+			// If user determines mapping, return that.
+			if ($admin_type === 'user') {
+				$use_mapped = domain_map::utils()->is_mapped_domain();
+			// Otherwise return admin setting.
+			} else {
+				$use_mapped = ($admin_type === 'original' ? false : true);
+			}
+		}
+	
+		// if forced page, check that.
+		if ($is_forced_single_page) {
+			return $is_forced_single_page;
+		}
+
+		// Return result.
+		return $use_mapped;
+	}
+
+	public function use_ssl() {
+		// What to return.
+		$use_ssl = false;
+		$use_mapped = $this->use_mapped_domain();
+
+		// For single page check.
+		global $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+ 		$is_forced_single_page = ($this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request());
+
+		/*
+		 * Customizer
+		 */
+		if (is_customize_preview()) {
+			return $this->use_ssl_for_customizer();
+		}
+
+		/*
+		 * Frontend
+		 */
+		if(!self::utils()->is_login() && !is_admin()){
+			// Mapped Domain.
+			if ($use_mapped) {
+				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
+			} else {
+				// Original Domain.
+				$use_ssl = (boolean)$this->_plugin->get_option("map_force_frontend_ssl");
+			}
+		/*
+		 * Admin
+		 */
+		} else {
+			$use_ssl = $this->force_admin_ssl();
+		}
+		/*
+		 * Forced via single page.
+		 */
+		if ($is_forced_single_page) {
+			return $is_forced_single_page;
+		}
+		return $use_ssl;
 	}
 }
 
