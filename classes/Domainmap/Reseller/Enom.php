@@ -418,16 +418,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @return float The price for the TLD.
 	 */
 	protected function _get_tld_price( $tld, $period ) {
-		$params = array(
+
+		$xml = $this->_exec_command( self::COMMAND_RETAIL_PRICE, array(
 			'tld'         => $tld,
 			'ProductType' => 10,
-		);
-
-		if($this->_is_uk_tld($tld)){
-			$params['Years'] = ($period < 1) ? 1 : $period;
-		}
-		
-		$xml = $this->_exec_command( self::COMMAND_RETAIL_PRICE, $params);
+			'Years'		  => $period
+		));
 
 		$this->_log_enom_request( self::REQUEST_GET_RETAIL_PRICE, $xml );
 
@@ -449,7 +445,6 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	public function purchase() {
 		$sld = trim( filter_input( INPUT_POST, 'sld' ) );
 		$tld = trim( filter_input( INPUT_POST, 'tld' ) );
-		$period = trim( filter_input( INPUT_POST, 'period' ) );
 		$expiry = array_map( 'trim', explode( '/', filter_input( INPUT_POST, 'card_expiration' ), 2 ) );
 
 		$billing_phone = '+' . preg_replace( '/[^0-9\.]/', '', filter_input( INPUT_POST, 'billing_phone' ) );
@@ -486,8 +481,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			                                                          'RegistrantCountry'          => filter_input( INPUT_POST, 'registrant_country' ),
 			                                                          'RegistrantEmailAddress'     => filter_input( INPUT_POST, 'registrant_email' ),
 			                                                          'RegistrantPhone'            => $registrant_phone,
-			                                                          'RegistrantFax'              => $registrant_fax,
-																	  'NumYears'				   => $period
+			                                                          'RegistrantFax'              => $registrant_fax
 		                                                          ) + ( isset( $_POST['ExtendedAttributes'] ) ? (array)$_POST['ExtendedAttributes'] : array() ) );
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
@@ -989,41 +983,6 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	public function get_currency(){
 		$options = Domainmap_Plugin::instance()->get_options();
 		return isset( $options[self::RESELLER_ID]['currency'] ) ?  $options[self::RESELLER_ID]['currency'] : "USD";
-	}
-
-	/**
-	 * UK Purchase Minimum years
-	 * eNom's API requires all new .UK registrations and .UK renewals to be executed at a two-year minimum.
-	 *
-	 * @since 4.4.2.4
-	 * @param String $tld - The current tld to be purchased
-	 *
-	 * @return Boolean - true if is UK TLD
-	 */
-	private function _is_uk_tld( $tld ){
-		$tlds = array( 'uk' );
-		return in_array( $tld, $tlds );
-	}
-
-	/**
-	 * eNom's API requires all new .UK registrations and .UK renewals to be executed at a two-year minimum.
-	 * So we show a select where the user selects the years of registration/renewal
-	 *
-	 * @since 4.4.2.4
-	 * @return String - the fields
-	 */
-	public function get_additional_search_fields(){
-		?>
-		<select name="period" class="domainmapping-select-period" style="display:none">
-			<?php
-			for($i =1; $i<11; $i++){
-				?>
-				<option value="<?php echo $i; ?>"><?php echo sprintf(__('%d Years','domainmap'),$i); ?></option>
-				<?php
-			}
-			?>
-		</select>
-		<?php
 	}
 
 }

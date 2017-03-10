@@ -65,10 +65,6 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 							<option<?php selected( $tld, $predefined_tld ) ?> value="<?php echo esc_attr( $tld ) ?>">.<?php echo esc_html( $tld ) ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php 
-						//Extra form settings
-						$this->reseller->get_additional_search_fields(); 
-						?>
 					</div>
 					<input type="text" class="domainmapping-input-sufix domainmapping-input-empty" readonly disabled>
 					<button type="submit" class="button-primary button domainmapping-button"><i class="icon-search icon-white"></i> <?php _e( 'Check domain', 'domainmap' ) ?></button>

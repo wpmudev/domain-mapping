@@ -221,19 +221,7 @@
 			$('#reseller-' + $(this).val()).show();
 		});
 
-        /**
-         * Domain tld selector on change
-         * Handle any extra fields especially for enom
-         */
-        $('.domainmapping-select-domain').change(function() {
-            if($('.domainmapping-select-period').length){
-                if($(this).val() === 'uk'){
-                    $('.domainmapping-select-period').show();
-                }else{
-                    $('.domainmapping-select-period').hide();
-                }
-            }
-        });
+
 
 		$('#domainmapping-check-domain-form').submit(function() {
 			var $self = $(this),
