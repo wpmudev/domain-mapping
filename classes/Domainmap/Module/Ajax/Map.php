@@ -413,9 +413,6 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
      $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );
      if( !is_null( $current_scheme ) ){
 	    $new_schema = ( $current_scheme + 1 ) % 3;
-		if($new_schema == 0){
-			$new_schema = 1;
-		}
        $result = $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array(
            "scheme" => $new_schema ,
        ), array(
