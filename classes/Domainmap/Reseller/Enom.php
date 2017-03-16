@@ -869,8 +869,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			'EndUserIP'     => $_SERVER['REMOTE_ADDR']
 		);
 		
-		//UK required parameters
-        if (preg_match('/uk/',$tld)){
+		//Check if domain is a UK tld
+		preg_match("`(?<=\.)\w+$`", strtolower($tld), $tld_array);
+		//If its UK, we need to add the required parameters
+        if (in_array('uk', $tld_array)){
 			$enom_request['Registered_For'] = $firstname.' '.$lastname;
 			$enom_request['UK_Legal_Type'] = $firstname.' '.$lastname;
 			$enom_request['UK_Reg_Opt_Out'] = 'no';
