@@ -177,14 +177,20 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return;
 		}
 
-		$protocol = is_ssl() || $force_ssl ? 'https://' : 'http://';
+		// The correct scheme to be used.
+		$correct_scheme_raw = ($force_ssl) ? 'https' : 'http';
+		// The current scheme being used.
+		$current_scheme = (is_ssl()) ? 'https://' : 'http://';
 
 		$swapping = $this->_suppress_swapping;
 		$this->_suppress_swapping = true;
 		$url = get_option( 'siteurl' );
 		$this->_suppress_swapping = $swapping;
 
-		if ( $url && $url != untrailingslashit( $protocol . $current_blog->domain . $current_site->path ) ) {
+		// Use correct protocol.
+		$url = set_url_scheme($url, $correct_scheme_raw);
+
+		if ( $url && $url != untrailingslashit( $current_scheme . $current_blog->domain . $current_site->path ) ) {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a{$current_blog->path}", "/", "/a{$_SERVER['REQUEST_URI']}" );
 
@@ -225,9 +231,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				$this->redirect_to_mapped_domain( $force_ssl, $is_front );
 				break;
 			case 'original':
-				if ( defined( 'DOMAIN_MAPPING' ) ) {
+				//if ( defined( 'DOMAIN_MAPPING' ) ) {
 					$this->redirect_to_orig_domain( $force_ssl );
-				}
+				//}
 				break;
 		}
 	}
@@ -1175,7 +1181,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/*
-	 *Master router.
+	 * Master router.
 	 */
 	public function route_domain() {
 		if ($this->_determined_domain) return;
@@ -1261,7 +1267,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		 * Customizer
 		 */
 		if (is_customize_preview()) {
-			return $this->use_ssl_for_customizer();
+			return $this->use_ssl_for_customizer($use_mapped ? 'mapped' : 'original');
 		}
 
 		/*

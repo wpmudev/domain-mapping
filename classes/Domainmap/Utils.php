@@ -238,6 +238,10 @@ class Domainmap_Utils{
 
         if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
             $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
+			// If mapped domain is not set to any scheme, return current scheme.
+			if ($force_ssl_on_mapped_domain === 2) {
+				$force_ssl_on_mapped_domain = is_ssl();
+			}
         }else{
 
             if( !isset( self::$_schemes[ $domain  ] ) ){
