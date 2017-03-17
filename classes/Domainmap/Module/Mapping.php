@@ -156,6 +156,129 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
         $this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
 	}
 
+	/*
+	 * Master router.
+	 *
+	 * Every page goes through this router.
+	 */
+	public function route_domain() {
+		global $current_blog, $current_site;
+
+		// Safety check to make sure this only runs once.
+		if ($this->_determined_domain) return;
+
+		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
+		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
+		// Is front end.
+		$is_front = !self::utils()->is_login() && !is_admin();
+
+		// Should SSL be used according to settings.
+		$use_ssl = $this->use_ssl();
+		// Should the mapped domain be used according to settings.
+		$use_mapped_domain = $this->use_mapped_domain();
+
+		// Make sure only runs once.
+		$this->_determined_domain = true;
+		// redirect if ssl or mapping not correct.
+		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
+			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
+			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
+		}
+	}
+
+	public function use_mapped_domain() {
+		// What to return.
+		$use_mapped = false;
+
+		// For single page check.
+		global $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+ 		$is_forced_single_page = ($this->is_excluded_by_id( $post_id ) || $this->is_excluded_by_request());
+
+		/*
+		 * Customizer
+		 */
+		if (is_customize_preview()) {
+			// Return true or false.
+			return $this->use_mapped_for_customizer();
+		}
+		/*
+		 *Frontend
+		 */
+		if(!self::utils()->is_login() && !is_admin()){
+			$front_type = self::utils()->get_frontend_redirect_type();
+			// If user determines mapping, return that.
+			if ($front_type === 'user') {
+				$use_mapped = domain_map::utils()->is_mapped_domain();
+			// Otherwise return front setting.
+			} else {
+				$use_mapped = ($front_type === 'original' ? false : true);
+			}
+		/*
+		 * Admin
+		 */
+		} else {
+			$admin_type = $this->_get_current_mapping_type('map_admindomain'); 
+			// If user determines mapping, return that.
+			if ($admin_type === 'user') {
+				$use_mapped = domain_map::utils()->is_mapped_domain();
+			// Otherwise return admin setting.
+			} else {
+				$use_mapped = ($admin_type === 'original' ? false : true);
+			}
+		}
+	
+		// if forced page, check that.
+		if ($is_forced_single_page) {
+			return $is_forced_single_page;
+		}
+
+		// Return result.
+		return $use_mapped;
+	}
+
+	public function use_ssl() {
+		// What to return.
+		$use_ssl = false;
+		$use_mapped = $this->use_mapped_domain();
+
+		// For single page check.
+		global $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+ 		$is_forced_single_page = ($this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request());
+
+		/*
+		 * Customizer
+		 */
+		if (is_customize_preview()) {
+			return $this->use_ssl_for_customizer($use_mapped ? 'mapped' : 'original');
+		}
+
+		/*
+		 * Frontend
+		 */
+		if(!self::utils()->is_login() && !is_admin()){
+			// Mapped Domain.
+			if ($use_mapped) {
+				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
+			} else {
+				// Original Domain.
+				$use_ssl = (boolean)$this->_plugin->get_option("map_force_frontend_ssl");
+			}
+		/*
+		 * Admin
+		 */
+		} else {
+			$use_ssl = $this->force_admin_ssl();
+		}
+		/*
+		 * Forced via single page.
+		 */
+		if ($is_forced_single_page) {
+			return $is_forced_single_page;
+		}
+		return $use_ssl;
+	}
 
 
 	/**
@@ -194,7 +317,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			// strip out any subdirectory blog names
 			$request = str_replace( "/a{$current_blog->path}", "/", "/a{$_SERVER['REQUEST_URI']}" );
 
-			if ( $request != $_SERVER['REQUEST_URI'] ) {
+			// If stripped out blog string does not equal rest of request.
+			if ($request !== $_SERVER['REQUEST_URI']) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $url . $request, true, 301 );
 			} else {
@@ -551,10 +675,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return self::utils()->unswap_url( $url, $blog_id, $include_path );
 	}
 
-
-
-
-
 	/**
 	 * Forces ssl in different areas of the site based on user choice
 	 *
@@ -647,7 +767,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		do_action("dm_before_force_admin_schema");
 		$force_admin_schema = apply_filters("dm_force_admin_schema", true,  $this->_http->getUrl());
 
-        if( $force_admin_schema && self::utils()->is_original_domain() && !is_ssl() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || self::utils()->is_login() ) ){
+        if( $force_admin_schema && self::utils()->is_original_domain() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || self::utils()->is_login() ) ){
 			return true;
 		}
 		return false;
@@ -1180,120 +1300,5 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return true;
 	}
 
-	/*
-	 * Master router.
-	 */
-	public function route_domain() {
-		if ($this->_determined_domain) return;
-		global $current_blog, $current_site;
-		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
-		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
-		$is_front = !self::utils()->is_login() && !is_admin();
-
-		$use_ssl = $this->use_ssl();
-		$use_mapped_domain = $this->use_mapped_domain();
-
-		// Make sure only runs once.
-		$this->_determined_domain = true;
-		// redirect if ssl or mapping not correct.
-		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
-			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
-			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
-		}
-	}
-
-	public function use_mapped_domain() {
-		// What to return.
-		$use_mapped = false;
-
-		// For single page check.
-		global $post;
-		$post_id = isset( $post ) ? $post->ID : null;
- 		$is_forced_single_page = ($this->is_excluded_by_id( $post_id ) || $this->is_excluded_by_request());
-
-		/*
-		 * Customizer
-		 */
-		if (is_customize_preview()) {
-			// Return true or false.
-			return $this->use_mapped_for_customizer();
-		}
-		/*
-		 *Frontend
-		 */
-		if(!self::utils()->is_login() && !is_admin()){
-			$front_type = self::utils()->get_frontend_redirect_type();
-			// If user determines mapping, return that.
-			if ($front_type === 'user') {
-				$use_mapped = domain_map::utils()->is_mapped_domain();
-			// Otherwise return front setting.
-			} else {
-				$use_mapped = ($front_type === 'original' ? false : true);
-			}
-		/*
-		 * Admin
-		 */
-		} else {
-			$admin_type = $this->_get_current_mapping_type('map_admindomain'); 
-			// If user determines mapping, return that.
-			if ($admin_type === 'user') {
-				$use_mapped = domain_map::utils()->is_mapped_domain();
-			// Otherwise return admin setting.
-			} else {
-				$use_mapped = ($admin_type === 'original' ? false : true);
-			}
-		}
-	
-		// if forced page, check that.
-		if ($is_forced_single_page) {
-			return $is_forced_single_page;
-		}
-
-		// Return result.
-		return $use_mapped;
-	}
-
-	public function use_ssl() {
-		// What to return.
-		$use_ssl = false;
-		$use_mapped = $this->use_mapped_domain();
-
-		// For single page check.
-		global $post;
-		$post_id = isset( $post ) ? $post->ID : null;
- 		$is_forced_single_page = ($this->is_ssl_forced_by_id( $post_id ) || $this->is_ssl_forced_by_request());
-
-		/*
-		 * Customizer
-		 */
-		if (is_customize_preview()) {
-			return $this->use_ssl_for_customizer($use_mapped ? 'mapped' : 'original');
-		}
-
-		/*
-		 * Frontend
-		 */
-		if(!self::utils()->is_login() && !is_admin()){
-			// Mapped Domain.
-			if ($use_mapped) {
-				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
-			} else {
-				// Original Domain.
-				$use_ssl = (boolean)$this->_plugin->get_option("map_force_frontend_ssl");
-			}
-		/*
-		 * Admin
-		 */
-		} else {
-			$use_ssl = $this->force_admin_ssl();
-		}
-		/*
-		 * Forced via single page.
-		 */
-		if ($is_forced_single_page) {
-			return $is_forced_single_page;
-		}
-		return $use_ssl;
-	}
 }
 
