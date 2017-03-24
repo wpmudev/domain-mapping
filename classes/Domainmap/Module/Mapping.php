@@ -119,7 +119,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		//$this->_add_action( 'login_init',              'force_login_scheme', 12 );
 		//$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		//$this->_add_action( 'login_init',              'redirect_login_area' );
-        $this->_add_action( 'login_init',              'allow_crosslogin' );
+        //$this->_add_action( 'login_init',              'allow_crosslogin' );
 
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
@@ -150,10 +150,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
 
 
-		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
-		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
+		//$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
+		//$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
 
-        $this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
+        //$this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
 	}
 
 	/*
@@ -165,7 +165,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		global $current_blog, $current_site;
 
 		// Safety check to make sure this only runs once.
-		if ($this->_determined_domain) return;
+		if ($this->_determined_domain || $this->bypass_mapping()) return;
 
 		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
 		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
@@ -186,6 +186,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 	}
 
+	public function bypass_mapping() {
+		if (  filter_input( INPUT_GET, 'dm' ) ===  self::BYPASS
+			|| filter_input( INPUT_GET, 'action' ) === "logout"
+			|| ( domain_map::utils()->is_login() &&  isset( $_POST['pwd'] ))
+ 			|| filter_input( INPUT_GET, 'action' ) === 'postpass'
+		) return true;
+		return false;
+	}
+
 	public function use_mapped_domain() {
 		// What to return.
 		$use_mapped = false;
@@ -203,7 +212,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return $this->use_mapped_for_customizer();
 		}
 		/*
-		 *Frontend
+		 * Frontend
 		 */
 		if(!self::utils()->is_login() && !is_admin()){
 			$front_type = self::utils()->get_frontend_redirect_type();
@@ -214,17 +223,24 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			} else {
 				$use_mapped = ($front_type === 'original' ? false : true);
 			}
-		/*
-		 * Admin
-		 */
 		} else {
-			$admin_type = $this->_get_current_mapping_type('map_admindomain'); 
-			// If user determines mapping, return that.
-			if ($admin_type === 'user') {
-				$use_mapped = domain_map::utils()->is_mapped_domain();
-			// Otherwise return admin setting.
+			/*
+ 			 * Login.
+ 			 */
+			if (self::utils()->is_login()) {
+				$use_mapped = ($this->_plugin->get_option( 'map_logindomain' ) === 'original' ? false : true);
 			} else {
-				$use_mapped = ($admin_type === 'original' ? false : true);
+				/*
+				 * Admin
+				 */
+				$admin_type = $this->_get_current_mapping_type('map_admindomain'); 
+				// If user determines mapping, return that.
+				if ($admin_type === 'user') {
+					$use_mapped = domain_map::utils()->is_mapped_domain();
+				// Otherwise return admin setting.
+				} else {
+					$use_mapped = ($admin_type === 'original' ? false : true);
+				}
 			}
 		}
 	
@@ -269,7 +285,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		 * Admin
 		 */
 		} else {
-			$use_ssl = $this->force_admin_ssl();
+			// Mapped Admin Domain.
+			if ($use_mapped) {
+				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
+			} else {
+				// Original  Admin Domain.
+				$use_ssl = $this->force_admin_ssl();
+			}
 		}
 		/*
 		 * Forced via single page.
@@ -277,7 +299,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ($is_forced_single_page) {
 			return $is_forced_single_page;
 		}
-		return $use_ssl;
+		return (boolean)$use_ssl;
 	}
 
 
@@ -324,6 +346,64 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			} else {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $url . $_SERVER['REQUEST_URI'], true, 301 );
+			}
+			exit;
+		}
+	}
+
+	/**
+	 * Redirects to mapped domain.
+	 *
+	 * @since 4.0.3
+	 *
+	 * @param bool $force_ssl
+	 * @param bool $is_front is it related to frontend
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function redirect_to_mapped_domain( $force_ssl = false, $is_front = true ) {
+		global $current_blog, $current_site;
+
+		/**
+		 * do not redirect if headers were sent or site is not permitted to use domain mapping
+		 */
+		if ( headers_sent() || !$this->_plugin->is_site_permitted()  ) {
+			return;
+		}
+
+		$mapped_domain = self::utils()->get_mapped_domain(false, $is_front);
+		// do not redirect if there is no mapped domain
+		if ( !$mapped_domain) {
+			return;
+		}
+
+
+		$map_check_health = $this->_plugin->get_option("map_check_domain_health");
+
+		if( $map_check_health ){
+			// Don't map if mapped domain is not healthy
+			$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
+
+			if( $health !== "1"){
+				if( !$this->set_valid_transient($mapped_domain)  ) return true;
+			}
+
+		}
+
+		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
+		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
+		$mapped_url = untrailingslashit( set_url_scheme( "http://" . $mapped_domain . $current_site->path,  $force_ssl ? 'https' :  'http') );
+
+		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
+			// strip out any subdirectory blog names
+			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
+			if ( $request != $_SERVER['REQUEST_URI'] ) {
+				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
+				header( "Location: " . $mapped_url . $request, true, 301 );
+			} else {
+				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
+				header( "Location: " . $mapped_url . $_SERVER['REQUEST_URI'], true, 301 );
 			}
 			exit;
 		}
@@ -521,67 +601,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 
-	/**
-	 * Redirects to mapped domain.
-	 *
-	 * @since 4.0.3
-	 *
-	 * @param bool $force_ssl
-	 * @param bool $is_front is it related to frontend
-	 * @access public
-	 *
-	 * @return void
-	 */
-	public function redirect_to_mapped_domain( $force_ssl = false, $is_front = true ) {
-		global $current_blog, $current_site;
-
-		/**
-		 * do not redirect if headers were sent or site is not permitted to use domain mapping
-		 */
-		if ( headers_sent() || !$this->_plugin->is_site_permitted()  ) {
-			return;
-		}
-
-		$mapped_domain = self::utils()->get_mapped_domain(false, $is_front);
-		// do not redirect if there is no mapped domain
-		if ( !$mapped_domain) {
-			return;
-		}
-
-
-		$map_check_health = $this->_plugin->get_option("map_check_domain_health");
-
-		if( $map_check_health ){
-			// Don't map if mapped domain is not healthy
-			$health =  get_site_transient( "domainmapping-{$mapped_domain}-health" );
-
-			if( $health !== "1"){
-				if( !$this->set_valid_transient($mapped_domain)  ) return true;
-			}
-
-		}
-
-		$protocol =  $is_front ? domain_map::utils()->get_mapped_domain_scheme( $mapped_domain ) : self::utils()->get_admin_scheme()  ;
-		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
-		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
-		$mapped_url = untrailingslashit( set_url_scheme( "http://" . $mapped_domain . $current_site->path,  $force_ssl ? 'https' :  $protocol) );
-
-		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
-			// strip out any subdirectory blog names
-			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
-			if ( $request != $_SERVER['REQUEST_URI'] ) {
-				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
-				header( "Location: " . $mapped_url . $request, true, 301 );
-			} else {
-				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
-				header( "Location: " . $mapped_url . $_SERVER['REQUEST_URI'], true, 301 );
-			}
-			exit;
-		}
-	}
-
-
-
+	
 
 
 
