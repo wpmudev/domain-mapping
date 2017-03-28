@@ -109,9 +109,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
 		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
+		// Backend routing.
 		$this->_add_action('admin_init', 'route_domain');
-		$this->_add_action('login_redirect', 'route_domain');
+		// Frontend routing.
 		$this->_add_action('template_redirect', 'route_domain', 10);
+
 		//$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
 		//$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
 		//$this->_add_action( 'template_redirect',       'force_schema', 12 );
@@ -150,10 +152,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
 
 
-		//$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
-		//$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
+		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
+		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
 
-        //$this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
+		$this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
 	}
 
 	/*
@@ -183,7 +185,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
 			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
 			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
-		}
+		}	
 	}
 
 	public function bypass_mapping() {
@@ -214,7 +216,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		/*
 		 * Frontend
 		 */
-		if(!self::utils()->is_login() && !is_admin()){
+		if (!self::utils()->is_login() && !is_admin()){
 			$front_type = self::utils()->get_frontend_redirect_type();
 			// If user determines mapping, return that.
 			if ($front_type === 'user') {
