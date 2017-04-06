@@ -552,17 +552,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	/**
-	 * Find what settings are used and return correct customizer URL.
+	 * Find what settings are used and return correct customizer mapping.
 	 *
 	 * @since 4.3
 	 *
 	 * @return boolean
 	 */
 	public function use_mapped_for_customizer() {
+		// If admin is set to user mapping, use that.
+ 		if ($this->_plugin->get_option('map_admindomain') === 'user' ) {
+			return domain_map::utils()->is_mapped_domain();
+		}
 		// If admin is forced to original domain, disable mapping to prevent non-matching domain errors.
  		if ($this->_plugin->get_option('map_admindomain') === 'original' ) {
 			return false;
 		}
+		// Otherwise use mapped.
+		return true;
 	}
 
 	/**
