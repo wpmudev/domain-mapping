@@ -121,7 +121,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		//$this->_add_action( 'login_init',              'force_login_scheme', 12 );
 		//$this->_add_action( 'admin_init',              'redirect_admin_area' );
 		//$this->_add_action( 'login_init',              'redirect_login_area' );
-        //$this->_add_action( 'login_init',              'allow_crosslogin' );
+		//$this->_add_action( 'login_init',              'allow_crosslogin' );
 
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
@@ -437,6 +437,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				$this->redirect_to_mapped_domain( $force_ssl, $is_front );
 				break;
 			case 'original':
+				// The below if condition causes unhandled conditions. Commented out.
 				//if ( defined( 'DOMAIN_MAPPING' ) ) {
 					$this->redirect_to_orig_domain( $force_ssl );
 				//}
@@ -795,41 +796,41 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		do_action("dm_before_force_admin_schema");
 		$force_admin_schema = apply_filters("dm_force_admin_schema", true,  $this->_http->getUrl());
 
-        if( $force_admin_schema && self::utils()->is_original_domain() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || self::utils()->is_login() ) ){
+		if( $force_admin_schema && self::utils()->is_original_domain() && $this->_plugin->get_option("map_force_admin_ssl") && ( is_admin() || self::utils()->is_login() ) ){
 			return true;
 		}
 		return false;
 	}
 
 
-    /**
-     * Forces scheme in admin|login of original domain
-     *
-     * @since 4.2
-     *
-     * @uses force_ssl_admin
-     * @uses force_ssl_login
-     * @uses wp_redirect
-     */
-    function force_login_scheme(){
-        /**
-         * Takes care of login scheme for original domain
-         */
-       $this->force_admin_ssl();
+	/**
+	 * Forces scheme in admin|login of original domain
+	 *
+	 * @since 4.2
+	 *
+	 * @uses force_ssl_admin
+	 * @uses force_ssl_login
+	 * @uses wp_redirect
+	 */
+	function force_login_scheme(){
+		/**
+		 * Takes care of login scheme for original domain
+		 */
+	   $this->force_admin_ssl();
 
-        /**
-         * Suppress if logging is going to happen
-         */
-        if(  isset( $_POST['pwd'] ) )
-            return;
+		/**
+		 * Suppress if logging is going to happen
+		 */
+		if(  isset( $_POST['pwd'] ) )
+			return;
 
-        $mapped_domain_scheme = domain_map::utils()->get_mapped_domain_scheme();
+		$mapped_domain_scheme = domain_map::utils()->get_mapped_domain_scheme();
 
-        if(  domain_map::utils()->is_mapped_domain() &&  $mapped_domain_scheme && $this->_http->currentScheme() !== $mapped_domain_scheme ){
-            $redirect_to = ( domain_map::utils()->force_ssl_on_mapped_domain() == 1 ?  $this->_http->getHostInfo($mapped_domain_scheme) : $this->_http->getHostInfo($mapped_domain_scheme) )  . $this->_http->getUrl();
-            wp_redirect( $redirect_to );
-        }
-    }
+		if(  domain_map::utils()->is_mapped_domain() &&  $mapped_domain_scheme && $this->_http->currentScheme() !== $mapped_domain_scheme ){
+			$redirect_to = ( domain_map::utils()->force_ssl_on_mapped_domain() == 1 ?  $this->_http->getHostInfo($mapped_domain_scheme) : $this->_http->getHostInfo($mapped_domain_scheme) )  . $this->_http->getUrl();
+			wp_redirect( $redirect_to );
+		}
+	}
 
 	/**
 	 * Removes mapping record from db when a site is deleted
@@ -1192,11 +1193,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$scheme = null;
 		if( self::utils()->is_admin_url( $redirect_to ) ){
-            if( self::utils()->is_original_domain( $redirect_to ) ){
-                $scheme = self::$_force_admin_ssl ? "https" : "http";
-            }else{
-                $scheme = self::utils()->get_mapped_domain_scheme();
-            }
+			if( self::utils()->is_original_domain( $redirect_to ) ){
+				$scheme = self::$_force_admin_ssl ? "https" : "http";
+			}else{
+				$scheme = self::utils()->get_mapped_domain_scheme();
+			}
 
 		}else{
 			$parsed = parse_url( $redirect_to );
@@ -1239,7 +1240,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if( $path === "wp-login.php" ){
 
 			if( $admin_mapping  == "mapped" ){
-                $scheme =  self::utils()->get_mapped_domain_scheme( $url );
+				$scheme =  self::utils()->get_mapped_domain_scheme( $url );
 				return $scheme ?  set_url_scheme( $this->swap_mapped_url($url, $path, $scheme, $blog_id, false), $scheme ) : $this->swap_mapped_url($url, $path, $scheme, $blog_id, false);
 			}
 
@@ -1248,47 +1249,47 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			}
 		}
 
-        $scheme = self::utils()->is_mapped_domain( $url ) ? self::utils()->get_mapped_domain_scheme( $url ) : $scheme;
+		$scheme = self::utils()->is_mapped_domain( $url ) ? self::utils()->get_mapped_domain_scheme( $url ) : $scheme;
 
-        return $scheme ?  set_url_scheme( $url, $scheme ) : $url ;
+		return $scheme ?  set_url_scheme( $url, $scheme ) : $url ;
 	}
 
-    /**
-     * Allows login from mapped domain to the original domain and vise versa by bypassing testcookie nag
-     *
-     * @since 4.4.0.7
-     *
-     */
-    function allow_crosslogin(){
-        if( isset( $_POST['testcookie'] ) &&  empty( $_COOKIE[ TEST_COOKIE ] ) )
-            unset( $_POST['testcookie'] );
-    }
+	/**
+	 * Allows login from mapped domain to the original domain and vise versa by bypassing testcookie nag
+	 *
+	 * @since 4.4.0.7
+	 *
+	 */
+	function allow_crosslogin(){
+		if( isset( $_POST['testcookie'] ) &&  empty( $_COOKIE[ TEST_COOKIE ] ) )
+			unset( $_POST['testcookie'] );
+	}
 
 
-    /**
-     * Toggles mapping to $toggle_value based on the provided $blog_id or $domain
-     *
-     * @uses dm_toggle_mapping
-     *
-     * @param int $blog_id
-     * @param string $domain
-     * @param int $toggle_value 1|0
-     * @return false|int
-     *
-     * @since 4.4.0.8
-     */
-    function toggle_mapping($toggle_value = 0, $blog_id = null, $domain = null ){
+	/**
+	 * Toggles mapping to $toggle_value based on the provided $blog_id or $domain
+	 *
+	 * @uses dm_toggle_mapping
+	 *
+	 * @param int $blog_id
+	 * @param string $domain
+	 * @param int $toggle_value 1|0
+	 * @return false|int
+	 *
+	 * @since 4.4.0.8
+	 */
+	function toggle_mapping($toggle_value = 0, $blog_id = null, $domain = null ){
 
-        if( !empty( $blog_id ) ){
-            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "blog_id" => $blog_id ) );
-        }
+		if( !empty( $blog_id ) ){
+			return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "blog_id" => $blog_id ) );
+		}
 
-        if( !empty( $blog_id ) ){
-            return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "domain" => $domain ) );
-        }
+		if( !empty( $blog_id ) ){
+			return $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array( "active" => $toggle_value ), array( "domain" => $domain ) );
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 
 	/**
