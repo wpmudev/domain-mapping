@@ -45,7 +45,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM, 'render_registration_form' );
 		$this->_add_ajax_action( Domainmap_Plugin::ACTION_SHOW_REGISTRATION_FORM, 'redirect_to_login_form', false, true );
-		$this->_add_ajax_action( Domainmap_Reseller_WHMCS::ACTION_REGISTER_CLIENT, 'whmcs_register_client', true, false );
 	}
 
 	/**
@@ -121,11 +120,6 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 			exit;
 		}
 
-        if( get_class($reseller) === "Domainmap_Reseller_WHMCS" ){
-            call_user_func(array($reseller, 'render_registration_form'));
-            wp_die();
-        }
-
 		define( 'IFRAME_REQUEST', true );
 
 		// enqueue scripts
@@ -142,75 +136,5 @@ class Domainmap_Module_Ajax_Register extends Domainmap_Module_Ajax {
 		wp_die();
 	}
 
-    private function _validate_whmcs_registration(){
-
-    }
-    function whmcs_register_client(){
-        $data = $_POST['data'];
-        $errors = new WP_Error();
-        parse_str($data);
-        $tld = $_POST['tld'];
-        $sld = $_POST['sld'];
-        /**
-         * Validate
-         */
-        if( !is_email( $account_email ) ){
-            $errors->add("email", __('Invalid email address', domain_map::Text_Domain));
-        }
-
-        if( $account_password !== $account_password_confirm ){
-            $errors->add("password", __('Passwords don\'t match', domain_map::Text_Domain));
-        }
-
-        if( empty($account_password) ||  empty($account_password_confirm) ){
-            $errors->add("password", __('Please provide a valid password', domain_map::Text_Domain));
-        }
-
-        $object = Domainmap_Reseller_WHMCS::exec_command(Domainmap_Reseller_WHMCS::COMMAND_REGISTER_CLIENT, array(
-            "firstname" => $registrant_first_name,
-            "lastname" => $registrant_last_name,
-            "companyname" => $registrant_organization,
-            "email" => $account_email,
-            "address1" => $registrant_address1,
-            "city" => $registrant_city,
-            "state" => $registrant_state,
-            "postcode" => $registrant_zip,
-            "country" => $registrant_country,
-            "phonenumber" => $registrant_phone,
-            "password2" => $account_password,
-            "securityqid" => $account_question_type,
-            "securityqans" => $account_question_answer
-        ));
-
-        if( count($errors->errors) > 0 ){
-            wp_send_json_error( $errors->get_error_messages() );
-        }
-        if( !is_wp_error($object) ){
-            $client_id_transient = sprintf( 'domainmap-%s-%s', get_current_user_id(), "whmcs_client_id" );
-            set_site_transient( $client_id_transient, $object->clientid, HOUR_IN_SECONDS  );
-            /**
-             * @var $whmcs Domainmap_Reseller_WHMCS
-             */
-            $whmcs = $this->_plugin->get_reseller();
-
-            wp_send_json_success( array(
-                "html" =>  $whmcs->render_purchase_form( array(
-                    "tld" => $tld,
-                    "sld" => $sld,
-                    "domain" => $sld . "." . $tld
-                ) ),
-                "clientid" =>  $object->clientid,
-                "result" => $object->result
-            ) );
-
-        }else{
-            wp_send_json_error( array(
-                "message" => __('Error registering client account.', domain_map::Text_Domain),
-                "errors" =>   $object->get_error_message()
-            ) );
-        }
-
-        wp_die();
-    }
-
+    
 }

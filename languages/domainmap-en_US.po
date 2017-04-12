@@ -1,22 +1,22 @@
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: Domain Mapping\n"
-"POT-Creation-Date: 2016-04-26 17:51+0430\n"
-"PO-Revision-Date: 2016-04-26 17:55+0430\n"
+"POT-Creation-Date: 2017-04-13 00:12+0300\n"
+"PO-Revision-Date: 2017-04-13 00:13+0300\n"
+"Last-Translator: \n"
 "Language-Team: WPMUDEV <info@wpmudev.org>\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.7\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.9\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: domain-mapping.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"Last-Translator: \n"
-"Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
@@ -46,55 +46,30 @@ msgid "Multiple domains are not allowed."
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Map.php:227
-#: classes/Domainmap/Module/Ajax/Purchase.php:109
+#: classes/Domainmap/Module/Ajax/Purchase.php:107
 msgid "Domain name is invalid."
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Map.php:229
-#: classes/Domainmap/Module/Ajax/Purchase.php:111
+#: classes/Domainmap/Module/Ajax/Purchase.php:109
 msgid "Domain name is prohibited."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:105
+#: classes/Domainmap/Module/Ajax/Purchase.php:103
 msgid "is not available to purchase"
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:328
-msgid "Session Expired, please login again"
-msgstr ""
-
-#: classes/Domainmap/Module/Ajax/Purchase.php:358
-msgid "Error ordering the domain"
-msgstr ""
-
-#: classes/Domainmap/Module/Ajax/Register.php:108
+#: classes/Domainmap/Module/Ajax/Register.php:107
 msgid "The reseller doesn't support account registration."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Register.php:158
-msgid "Invalid email address"
-msgstr ""
-
-#: classes/Domainmap/Module/Ajax/Register.php:162
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:110
-msgid "Passwords don't match"
-msgstr ""
-
-#: classes/Domainmap/Module/Ajax/Register.php:166
-msgid "Please provide a valid password"
-msgstr ""
-
-#: classes/Domainmap/Module/Ajax/Register.php:208
-msgid "Error registering client account."
-msgstr ""
-
-#: classes/Domainmap/Module/Cdsso.php:183
+#: classes/Domainmap/Module/Cdsso.php:186
 msgid ""
 "You have logged in successfully. You will be redirected to desired page "
 "during next 5 seconds."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:565
+#: classes/Domainmap/Module/Cdsso.php:573
 msgid "Incorrect or out of date login key"
 msgstr ""
 
@@ -132,7 +107,7 @@ msgstr ""
 msgid "Reseller API log"
 msgstr ""
 
-#: classes/Domainmap/Module/Pages.php:417
+#: classes/Domainmap/Module/Pages.php:425
 #: classes/Domainmap/Table/Reseller/Log.php:116
 msgid "Delete"
 msgstr ""
@@ -258,8 +233,8 @@ msgstr ""
 #: classes/Domainmap/Render/Network/Options.php:87
 #, php-format
 msgid ""
-"You use old version of %s file. Please, replace that file with new version "
-"which is located by following path: %s."
+"You are using an old version of %s file. Please, replace that file with a "
+"new version which is located by following path: %s."
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:99
@@ -503,8 +478,6 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:74
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:69
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:66
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:61
 msgid "Cancel"
 msgstr ""
 
@@ -555,7 +528,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:140
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:218
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:183
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:159
 msgid "Address:"
 msgstr ""
 
@@ -566,7 +538,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:146
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:230
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:195
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:169
 msgid "City:"
 msgstr ""
 
@@ -577,7 +548,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:152
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:236
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:201
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:178
 msgid "Zip/Postal Code:"
 msgstr ""
 
@@ -590,7 +560,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:158
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:242
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:207
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:187
 msgid "State/Province:"
 msgstr ""
 
@@ -603,7 +572,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:164
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:248
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:213
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:196
 msgid "Country:"
 msgstr ""
 
@@ -614,7 +582,6 @@ msgstr ""
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:175
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:265
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:230
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:210
 msgid "Phone:"
 msgstr ""
 
@@ -627,37 +594,31 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:191
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:156
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:127
 msgid "Registrant Information"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:194
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:159
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:130
 msgid "First Name:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:196
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:161
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:132
 msgid "Enter registrant first name. The maximum length is 60 characters."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:200
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:165
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:139
 msgid "Last Name:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:202
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:167
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:141
 msgid "Enter registrant last name. The maximum length is 60 characters."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:206
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:171
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:149
 msgid "Organization Name:"
 msgstr ""
 
@@ -678,7 +639,6 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:220
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:185
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:161
 msgid "Enter registrant address. The maximum length is 60 characters."
 msgstr ""
 
@@ -696,13 +656,11 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:232
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:197
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:171
 msgid "Enter registrant city. The maximum length is 60 characters."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:238
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:203
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:180
 msgid ""
 "Enter registrant zip or postal code. The maximum length is 16 characters."
 msgstr ""
@@ -718,7 +676,6 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:259
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:224
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:85
 msgid "Email:"
 msgstr ""
 
@@ -764,7 +721,6 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:70
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:62
 msgid "Register account"
 msgstr ""
 
@@ -805,7 +761,6 @@ msgid "What is your favorite book?"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:103
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:82
 msgid "Account Information"
 msgstr ""
 
@@ -821,25 +776,20 @@ msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:112
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:99
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:94
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:113
 msgid "Password:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:114
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:96
 msgid ""
 "Permitted characters are letters, numbers, hyphen, and underscore. The "
 "maximum length is 20 characters."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:118
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:103
 msgid "Confirm Password:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:120
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:105
 msgid ""
 "Confirm your password by entering it again. Permitted characters and maximum "
 "length are the same."
@@ -875,7 +825,6 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:173
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:151
 msgid ""
 "Enter registrant organization name. The maximum length is 60 characters."
 msgstr ""
@@ -887,19 +836,16 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:209
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:189
 msgid ""
 "Enter registrant state or province, this field is optional. The maximum "
 "length is 60 characters."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:220
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:203
 msgid "Select registrant country, this field is optional."
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Register.php:232
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:212
 msgid ""
 "Enter registrant phone number. Required format is +CountryCode.PhoneNumber, "
 "where CountryCode and PhoneNumber use only numeric characters. The maximum "
@@ -934,7 +880,6 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:73
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:72
 msgid "Account credentials:"
 msgstr ""
 
@@ -955,7 +900,6 @@ msgid "Account id:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:113
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:208
 msgid "Select payment gateway:"
 msgstr ""
 
@@ -1005,163 +949,6 @@ msgid ""
 "server, then it is strongly recommended to enable SSL certificate "
 "verification (for communications between eNom and your server) for security "
 "reasons."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:45
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:67
-msgid "Order domain"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:53
-#, php-format
-msgid ""
-"You are about to order domain name %s for the selected period. Please, "
-"confirm the period below and click on order button."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:99
-msgid "Domain Period:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:102
-#, php-format
-msgid "%s Year - %s%s"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Purchase.php:125
-msgid "Payment method:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:44
-msgid "Register new WHMCS client"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:49
-msgid ""
-"You are about to register for a new WHMCS client account. Please, fill in "
-"the form below and click on the register button. Pay attention that all "
-"fields marked with a red asterisk are required and must be filled with "
-"appropriate information."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:87
-msgid ""
-"Email address to contact you about your domain name account which will be "
-"used to login to your account as well. The maximum length is 128 characters."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:89
-msgid "Email can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:98
-msgid "Password can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:107
-msgid "Please enter password confirmation"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:134
-msgid "First name can't be empty"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:143
-msgid "Last name can't be empty"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:153
-msgid "Organization can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:163
-msgid "Address can't be empty"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:173
-msgid "City can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:182
-msgid "Please enter zip/postal code"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:191
-msgid "State can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:205
-msgid "Country can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Register.php:214
-msgid "Phone number can't be blank"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:49
-msgid ""
-"Keep in mind that to start using WHMCS API you have to white list and "
-"authorize your IP address. Go to \"My Account\" > General Settings > "
-"Security tab and add your IP to the list under \"API IP Access Restriction\""
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:52
-msgid "Signup for a WHMCS account."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:53
-msgid "Register new WHMCS account"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:76
-msgid ""
-"Maybe: Warning you haven't entered any API credentials, the purchase domain "
-"tab will not show till you've successfully saved your API credentials"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:82
-msgid ""
-"Looks like your credentials are invalid. Please, check the errors sent by "
-"WHMCS server:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:96
-msgid "WHMCS URL:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:105
-msgid "Username:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:145
-msgid "Define domain pricing:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:152
-msgid "TLD"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:157
-#, php-format
-msgid "<span class='dm_year_count'>%d</span> Year(s)"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:225
-msgid ""
-"Please make sure you have correctly entered your login credentials and save "
-"again to retrieve your payment methods."
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:240
-msgid "Client registration:"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:244
-msgid "Enable client registration"
-msgstr ""
-
-#: classes/Domainmap/Render/Reseller/WHMCS/Settings.php:254
-msgid "Currency:"
 msgstr ""
 
 #: classes/Domainmap/Render/Site/Map.php:53
@@ -1336,16 +1123,15 @@ msgstr ""
 msgid "Purchase this domain."
 msgstr ""
 
-#: classes/Domainmap/Reseller.php:388 classes/Domainmap/Reseller/WHMCS.php:581
+#: classes/Domainmap/Reseller.php:388
 msgid "is available to purchase for"
 msgstr ""
 
-#: classes/Domainmap/Reseller.php:391 classes/Domainmap/Reseller/WHMCS.php:584
+#: classes/Domainmap/Reseller.php:391
 msgid "per year"
 msgstr ""
 
 #: classes/Domainmap/Reseller/Enom.php:142
-#: classes/Domainmap/Reseller/WHMCS.php:745
 msgid ""
 "Unexpected error appears during request processing. Please, try again later."
 msgstr ""
@@ -1360,8 +1146,6 @@ msgstr ""
 
 #: classes/Domainmap/Reseller/Enom.php:599
 #: classes/Domainmap/Reseller/Enom.php:902
-#: classes/Domainmap/Reseller/WHMCS.php:553
-#: classes/Domainmap/Reseller/WHMCS.php:655
 msgid "Your name"
 msgstr ""
 
@@ -1378,33 +1162,6 @@ msgid ""
 "We received unexpected result from eNom server. Try to resubmit your form "
 "again and if you receive information that such login is already exists, then "
 "it means that current request was processed successfully."
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:106
-msgid "Unknown"
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:593
-msgid "Login to WHMCS with your client details: "
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:598
-msgid "Email: "
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:604
-msgid "Password: "
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:611
-msgid "Submit"
-msgstr ""
-
-#: classes/Domainmap/Reseller/WHMCS.php:617
-#, php-format
-msgid ""
-"Or <a href='%s' id='dm_whmcs_register_client'>click to signup as a new "
-"client</a>"
 msgstr ""
 
 #: classes/Domainmap/Table.php:44
@@ -1536,8 +1293,15 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: classes/class.domainmap.php:340
+#: classes/class.domainmap.php:348
 msgid "IP not set by admin yet."
+msgstr ""
+
+#: classes/class.domainmap.php:431
+#, php-format
+msgid ""
+"WHMCS is no longer supported in %s . Please check and update your <a href="
+"\"%s\">Reseller options</a>"
 msgstr ""
 
 #. Plugin URI of the plugin/theme

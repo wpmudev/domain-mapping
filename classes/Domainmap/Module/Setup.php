@@ -124,6 +124,7 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 
 	/**
 	 * Setups resellers.
+	 * 4.4.2.4 - removed support for WHMCS
 	 *
 	 * @since 4.0.0
 	 * @filter domainmapping_resellers
@@ -134,7 +135,6 @@ class Domainmap_Module_Setup extends Domainmap_Module {
 	 */
 	public function setup_resellers( $resellers ) {
 		$resellers[] = new Domainmap_Reseller_Enom();
-		$resellers[] = new Domainmap_Reseller_WHMCS();
 		return $resellers;
 	}
 
