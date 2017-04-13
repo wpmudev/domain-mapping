@@ -180,6 +180,8 @@ class domain_map {
 			add_filter( 'stylesheet_directory_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
 			add_filter( 'template_directory', array( &$this, 'domain_mapping_post_content' ), 1 );
 			add_filter( 'template_directory_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
+
+			add_action( 'customize_preview_init', array( &$this, 'init_customizer_preview' ));
 		} else {
 			// We are assuming that we are on the original domain - so if we check if we are in the admin area, we need to only map those links that
 			// point to the front end of the site
@@ -408,6 +410,46 @@ class domain_map {
 		$prefix = self::FLUSHED_REWRITE_RULES;
 
 		$wpdb->query("DELETE FROM $wpdb->sitemeta WHERE `meta_key` LIKE '$prefix%'");
+	}
+
+
+	/**
+	 * Function called after customier has loaded
+	 * We call out function to load custom headers
+	 */
+	function init_customizer_preview(){
+		add_filter( 'wp_headers', array($this, 'filter_iframe_security_headers' ), 10, 1);
+	}
+	
+	
+	/**
+	 * Allow the customizer to load the mapped domain if accessed from the main site admin menu
+	 * Only issue is the cross domain script dont work in the customier preview
+	 *
+	 * @param Array $headers
+	 *
+	 * @return Array $headers
+	 */
+	function filter_iframe_security_headers( $headers ){
+		$customize_url 		= admin_url(); //Admin url
+		$current_site_url 	= get_site_url(); //Current site url
+		
+		//parse each url
+		$customize_site_url = parse_url( $customize_url );
+		$current_site_url 	= parse_url( $current_site_url );
+
+		//Get the host from each url to allow across the iframe
+		$customize_site_url = $customize_site_url['host'];
+		$current_site_url 	= $current_site_url['host'];
+		
+		//If the customizer domain and iframe domain are not the same, we add the 2 domains.
+		//Firefox will not load if we ad the same domains
+		if ( $customize_site_url != $current_site_url ) {
+			//Add the host url for the customizr preview and the network admin site to allow iframe viewing incase customizer preview is a mapped domain
+			$headers['X-Frame-Options'] 		= 'ALLOW-FROM ' . $customize_site_url .' '.$current_site_url ;
+			$headers['Content-Security-Policy'] = 'frame-ancestors ' . $customize_site_url .' '.$current_site_url ;
+		}
+		return $headers;
 	}
 
 	/**
