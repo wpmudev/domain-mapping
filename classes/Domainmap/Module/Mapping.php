@@ -114,15 +114,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		// Frontend routing.
 		$this->_add_action('template_redirect', 'route_domain', 10);
 
-		//$this->_add_action( 'template_redirect',       'redirect_front_area', 10 );
-		//$this->_add_action( 'template_redirect',       'force_page_exclusion', 11 );
-		//$this->_add_action( 'template_redirect',       'force_schema', 12 );
-		//$this->_add_action( 'admin_init',              'force_admin_scheme', 12 );
-		//$this->_add_action( 'login_init',              'force_login_scheme', 12 );
-		//$this->_add_action( 'admin_init',              'redirect_admin_area' );
-		//$this->_add_action( 'login_init',              'redirect_login_area' );
-		//$this->_add_action( 'login_init',              'allow_crosslogin' );
-
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
 		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
@@ -139,8 +130,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$this->_add_filter( 'includes_url',       'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'content_url',        'swap_mapped_url', 10, 2 );
 			$this->_add_filter( 'plugins_url',        'swap_mapped_url', 10, 3 );
-
-
 		} elseif ( is_admin() ) {
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
@@ -150,7 +139,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
 		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
 		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
-
 
 		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
 		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
@@ -278,10 +266,20 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if(!self::utils()->is_login() && !is_admin()){
 			// Mapped Domain.
 			if ($use_mapped) {
-				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
+				// (user => false || true, http => 0, https => 1)
+				$use_ssl = (boolean)domain_map::utils()->force_ssl_on_mapped_domain();
+			// Original Domain.
 			} else {
-				// Original Domain.
-				$use_ssl = (boolean)$this->_plugin->get_option("map_force_frontend_ssl");
+				// User determines.
+				if ($this->_plugin->get_option("map_force_frontend_ssl") === 0) {
+					$use_ssl = is_ssl();
+				// Force http.
+				} elseif ($this->_plugin->get_option("map_force_frontend_ssl") === 1) {
+					$use_ssl = false;
+				// Force https.
+				} elseif ($this->_plugin->get_option("map_force_frontend_ssl") === 2) {
+					$use_ssl = true;
+				}
 			}
 		/*
 		 * Admin
@@ -289,10 +287,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		} else {
 			// Mapped Admin Domain.
 			if ($use_mapped) {
-				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain();
+				// (user => false || true, http => 0, https => 1)
+				$use_ssl = (boolean)domain_map::utils()->force_ssl_on_mapped_domain();
 			} else {
-				// Original  Admin Domain.
-				$use_ssl = $this->force_admin_ssl();
+				// Original Admin Domain.
+				// If not forced, use user preference.
+				$use_ssl = $this->force_admin_ssl() ? true : is_ssl();
 			}
 		}
 		/*
@@ -598,7 +598,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 					// If admin is SSL.
 					|| $this->_plugin->get_option("map_force_admin_ssl")
 					// If mapped domain is SSL.
-					|| domain_map::utils()->force_ssl_on_mapped_domain()
+					|| domain_map::utils()->force_ssl_on_mapped_domain() === 1
 					// If frontend is SSL.
 					|| (self::$_force_front_ssl)
 				) {
