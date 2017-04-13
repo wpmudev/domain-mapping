@@ -221,6 +221,8 @@
 			$('#reseller-' + $(this).val()).show();
 		});
 
+
+
 		$('#domainmapping-check-domain-form').submit(function() {
 			var $self = $(this),
 				domain = $.trim($self.find('.domainmapping-input-domain').val()),

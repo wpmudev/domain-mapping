@@ -40,6 +40,7 @@ class Domainmap_Render_Site_Purchase extends Domainmap_Render_Site {
 	 */
 	protected function _render_tab() {
 		$tlds = $this->reseller->get_tld_list();
+		
 		$predefined_sld = trim( filter_input( INPUT_GET, 'sld' ) );
 		$predefined_tld = trim( filter_input( INPUT_GET, 'tld' ) );
 		if ( !in_array( $predefined_tld, $tlds ) ) {

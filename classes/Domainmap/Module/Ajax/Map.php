@@ -257,7 +257,9 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 		$show_form = false;
 		$domain = strtolower( trim( filter_input( INPUT_GET, 'domain' ) ) );
         $success = false;
-		if ( self::utils()->is_domain( $domain ) ) {
+		//We need to be able to also delete domains that have been saved wrongly.
+		//Sometimes somethings can go wrong
+		//if ( self::utils()->is_domain( $domain ) ) {
             $success = $this->delete_mapped_domain( $domain );
 
 			// check if we need to show form
@@ -272,7 +274,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
              * @param int $blog_id
              */
             do_action( 'domainmapping_deleted_domain', $domain, $blog_id);
-		}
+		//}
 
         if( $success ){
             wp_send_json_success( array( 'show_form' => $show_form ) );
@@ -412,7 +414,7 @@ class Domainmap_Module_Ajax_Map extends Domainmap_Module_Ajax {
 
      $current_scheme = (int) $this->_wpdb->get_var( $this->_wpdb->prepare( "SELECT `scheme` FROM " . DOMAINMAP_TABLE_MAP .  " WHERE `domain` = %s", $domain ) );
      if( !is_null( $current_scheme ) ){
-	     $new_schema = ( $current_scheme + 1 ) % 3;
+	    $new_schema = ( $current_scheme + 1 ) % 3;
        $result = $this->_wpdb->update( DOMAINMAP_TABLE_MAP, array(
            "scheme" => $new_schema ,
        ), array(

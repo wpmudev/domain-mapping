@@ -418,10 +418,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	 * @return float The price for the TLD.
 	 */
 	protected function _get_tld_price( $tld, $period ) {
+
 		$xml = $this->_exec_command( self::COMMAND_RETAIL_PRICE, array(
 			'tld'         => $tld,
 			'ProductType' => 10,
-		) );
+			'Years'		  => $period
+		));
 
 		$this->_log_enom_request( self::REQUEST_GET_RETAIL_PRICE, $xml );
 
@@ -834,6 +836,9 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 			return false;
 		}
 
+		$firstname = $details['FIRSTNAME'];
+		$lastname = $details['LASTNAME'];
+
 		// complete checkout
 		$response = $this->_call_paypal_api( 'DoExpressCheckoutPayment', array(
 			'PAYERID'                        => $details['PAYERID'],
@@ -855,13 +860,25 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		$sld = trim( filter_input( INPUT_GET, 'sld' ) );
 		$tld = trim( filter_input( INPUT_GET, 'tld' ) );
 
-		$response = $this->_exec_command( self::COMMAND_PURCHASE, array(
+
+		$enom_request = array(
 			'sld'           => $sld,
 			'tld'           => $tld,
 			'UseDNS'        => 'default',
 			'UseCreditCard' => 'no',
-			'EndUserIP'     => $_SERVER['REMOTE_ADDR'],
-		) );
+			'EndUserIP'     => $_SERVER['REMOTE_ADDR']
+		);
+		
+		//Check if domain is a UK tld
+		preg_match("`(?<=\.)\w+$`", strtolower($tld), $tld_array);
+		//If its UK, we need to add the required parameters
+        if (in_array('uk', $tld_array)){
+			$enom_request['Registered_For'] = $firstname.' '.$lastname;
+			$enom_request['UK_Legal_Type'] = $firstname.' '.$lastname;
+			$enom_request['UK_Reg_Opt_Out'] = 'no';
+		}
+
+		$response = $this->_exec_command( self::COMMAND_PURCHASE, $enom_request);
 
 		$this->_log_enom_request( self::REQUEST_PURCHASE_DOMAIN, $response );
 
@@ -975,7 +992,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 	/**
 	 * Returns currenct currency code
 	 *
-	 * @sicne 4.3.1
+	 * @since 4.3.1
 	 * @return string
 	 */
 	public function get_currency(){
