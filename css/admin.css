@@ -744,49 +744,8 @@ input.domainmapping-radio {
 .domainmapping-btn{
     cursor: pointer;
 }
-#domainmapping-whmcs-header{
-    height: 60px;
-    background: url("../images/whmcs-bg.jpg") center repeat-x;
-}
-#domainmapping-whmcs-logo{
-    background: url("../images/whmcs-logo.jpg") no-repeat left center;
-    height: 60px;
-    margin-left: 10px;
-}
 
-#dm_whmcs_client_login th,
-#dm_whmcs_client_login td{
-    padding: 10px 0 0 0;
-}
-#dm_whmcs_client_login input[type="email"],
-#dm_whmcs_client_login input[type="password"]{
-    float: left;
-    margin-left: 10px;
-    width: 445px;
-}
-#dm_whmcs_client_login button{
-    margin-left: 590px;
-    margin-top: 20px;
-}
-.dm_whmcs_tlds{
-    width: auto;
-}
-.dm_whmcs_tlds_remove_row{
-    color: red;
-    background:none;
-    border: none;
-    cursor: pointer;
-}
-.dm_whmcs_tlds_remove_col{
-    float: right;
-    color: red;
-    background:none;
-    border: none;
-    cursor: pointer;
-}
-#whmcs-client-registration-label{
 
-}
 .domainmapping-map-toggle-scheme{
     float: left;
     text-decoration: none;

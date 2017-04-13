@@ -405,6 +405,14 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				$page->basedomain = $this->_wpdb->get_var( "SELECT option_value FROM {$this->_wpdb->options} WHERE option_name = 'siteurl'" );
 				break;
 			case 'reseller-options':
+
+				//Check if user got here from the admin notification
+				$dismiss = strtolower( trim( filter_input( INPUT_GET, 'dismiss', FILTER_DEFAULT ) ) );
+				if ( $dismiss ){
+					
+					update_option( 'domainmapping_hide_notification', true );
+				}
+
 				$page = new Domainmap_Render_Network_Resellers( $tabs, $activetab, $nonce_action, $options );
 				$page->resellers = $this->_plugin->get_resellers();
 				break;
@@ -458,7 +466,4 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		// enqueue styles
 		wp_enqueue_style( 'domainmapping-admin' );
 	}
-
-
-
 }

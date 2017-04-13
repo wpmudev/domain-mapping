@@ -164,29 +164,35 @@ class domain_map {
 
 		if ( defined( 'DOMAIN_MAPPING' ) ) {
 			// filter the content with any original urls and change them to the mapped urls
-			add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
+			add_filter( 'the_content', array( &$this, 'domain_mapping_post_content' ) );
 			// Jump in just before header output to change base_url - until a neater method can be found
-			add_filter( 'print_head_scripts', array(&$this, 'reset_script_url'), 1, 1);
+			add_filter( 'print_head_scripts', array( &$this, 'reset_script_url' ), 1, 1);
 
-			add_filter('authenticate', array(&$this, 'authenticate'), 999, 3);
+			add_filter('authenticate', array( &$this, 'authenticate' ), 999, 3);
 
-			add_filter( 'login_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
-			add_filter( 'logout_url', array(&$this, 'domain_mapping_login_url'), 2, 100 );
-			add_filter( 'admin_url', array(&$this, 'domain_mapping_admin_url'), 3, 100 );
+			add_filter( 'login_url', array( &$this, 'domain_mapping_login_url' ), 2, 100 );
+			add_filter( 'logout_url', array( &$this, 'domain_mapping_login_url' ), 2, 100 );
+			add_filter( 'admin_url', array( &$this, 'domain_mapping_admin_url' ), 3, 100 );
 
-			add_filter( 'theme_root_uri', array(&$this, 'domain_mapping_post_content'), 1 );
-			add_filter( 'stylesheet_uri', array(&$this, 'domain_mapping_post_content'), 1 );
-			add_filter( 'stylesheet_directory', array(&$this, 'domain_mapping_post_content'), 1 );
-			add_filter( 'stylesheet_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
-			add_filter( 'template_directory', array(&$this, 'domain_mapping_post_content'), 1 );
-			add_filter( 'template_directory_uri', array(&$this, 'domain_mapping_post_content'), 1 );
+			add_filter( 'theme_root_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
+			add_filter( 'stylesheet_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
+			add_filter( 'stylesheet_directory', array( &$this, 'domain_mapping_post_content' ), 1 );
+			add_filter( 'stylesheet_directory_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
+			add_filter( 'template_directory', array( &$this, 'domain_mapping_post_content' ), 1 );
+			add_filter( 'template_directory_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
 		} else {
 			// We are assuming that we are on the original domain - so if we check if we are in the admin area, we need to only map those links that
 			// point to the front end of the site
-			if(is_admin()) {
+			if ( is_admin() ) {
 				// filter the content with any original urls and change them to the mapped urls
-				add_filter( 'the_content', array(&$this, 'domain_mapping_post_content') );
-				add_filter( 'authenticate', array(&$this, 'authenticate'), 999, 3);
+				add_filter( 'the_content', array( &$this, 'domain_mapping_post_content' ) );
+				add_filter( 'authenticate', array( &$this, 'authenticate' ), 999, 3 );
+			}
+
+			//Network Admin Notice for WHMCS
+			if ( is_network_admin() ) {
+				
+				$this->show_whmcs_warning();
 			}
 		}
 
@@ -200,7 +206,7 @@ class domain_map {
 		if ( function_exists( 'is_pro_site' ) && !empty( $this->options['map_supporteronly'] ) ) {
 			// We have a pro-site option set and the pro-site plugin exists
 			$levels = (array)get_site_option( 'psts_levels' );
-			if( !is_array( $this->options['map_supporteronly'] ) && !empty( $levels ) && $this->options['map_supporteronly'] == '1' ) {
+			if ( !is_array( $this->options['map_supporteronly'] ) && !empty( $levels ) && $this->options['map_supporteronly'] == '1' ) {
 				$keys = array_keys( $levels );
 				$this->options['map_supporteronly'] = array( $keys[0] );
 			}
@@ -255,15 +261,15 @@ class domain_map {
 				}
 			}
 		} else {
-			$domains = (array)$this->db->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->db->blogid ) );
-			$original = $this->db->get_var( "SELECT domain FROM {$this->db->blogs} WHERE blog_id = " . intval( $this->db->blogid ) );
-			$allowed_hosts = array_unique( array_merge( $allowed_hosts, $domains, array( $original ) ) );
+			$domains 		= (array)$this->db->get_col( sprintf( "SELECT domain FROM %s WHERE blog_id = %d ORDER BY id ASC", DOMAINMAP_TABLE_MAP, $this->db->blogid ) );
+			$original 		= $this->db->get_var( "SELECT domain FROM {$this->db->blogs} WHERE blog_id = " . intval( $this->db->blogid ) );
+			$allowed_hosts 	= array_unique( array_merge( $allowed_hosts, $domains, array( $original ) ) );
 		}
 
 		return $allowed_hosts;
 	}
 
-	function reset_script_url($return) {
+	function reset_script_url( $return ) {
 		global $wp_scripts;
 
 		$wp_scripts->base_url = site_url();
@@ -310,7 +316,7 @@ class domain_map {
         $url = trailingslashit( $url );
 
 		// replace all the original urls with the new ones and then return the content
-		return str_replace( array($orig_url,  self::utils()->swap_url_scheme( $orig_url ) ) , $url , $post_content );
+		return str_replace( array( $orig_url,  self::utils()->swap_url_scheme( $orig_url ) ) , $url , $post_content );
 	}
 
     /**
@@ -334,9 +340,9 @@ class domain_map {
      * @param null $mapping
      * @return array
      */
-    function get_dns_config($mapping = null) {
-        if ($mapping == null) {
-            $mapping = (object) array('domain' => 'www.example.com', 'active' => 1);
+    function get_dns_config( $mapping = null ) {
+        if ( $mapping == null ) {
+            $mapping = (object) array( 'domain' => 'www.example.com', 'active' => 1 );
         }
 
         $map_ipaddress = $this->get_option("map_ipaddress", __('IP not set by admin yet.', self::Text_Domain) );
@@ -350,7 +356,7 @@ class domain_map {
                 $records[] = array('host' => $mapping->domain, 'type' => 'A', 'target' => $record);
             }
         } else {
-            if (ip2long($map_ipaddress) > 0) {
+            if ( ip2long( $map_ipaddress ) > 0 ) {
                 $rec_type = "A";
             } else {
                 $rec_type = "CNAME";
@@ -402,6 +408,31 @@ class domain_map {
 		$prefix = self::FLUSHED_REWRITE_RULES;
 
 		$wpdb->query("DELETE FROM $wpdb->sitemeta WHERE `meta_key` LIKE '$prefix%'");
+	}
+
+	/**
+	 * WHMCS Admin warning notice
+	 * Once the link is clicked the notice will no longer appear
+	 *
+	 * @since 4.4.2.5
+	 */
+	function show_whmcs_warning(){
+
+		$show_notification = get_option( 'domainmapping_hide_notification', false );
+
+		if ( !$show_notification ) {
+			
+			$settings_url = add_query_arg( array(
+				'page' 		=> 'domainmapping_options',
+				'tab'  		=> 'reseller-options',
+				'dismiss'  	=> 'true',
+			), network_admin_url( 'settings.php', 'http' ) );
+			
+			$message      = sprintf( __( 'WHMCS is no longer supported in %s . Please check and update your <a href="%s">Reseller options</a>', 'domainmap' ), 'Domain Mapping' , $settings_url );
+			$html_message = sprintf( '<div class="notice notice-warning">%s</div>', wpautop( $message ) );
+
+			echo wp_kses_post( $html_message );
+		}
 	}
 
 
