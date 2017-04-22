@@ -1238,8 +1238,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if( !self::utils()->is_login() || is_main_site() ) return $url;
 
 		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
-//		$scheme = self::$_force_admin_ssl ? "https" : "http";
-//              This broke scheme for some urls on login page on sub domains
+		
+		$scheme = (self::$_force_admin_ssl || is_ssl() ) ? "https" : "http";
+		
 		if( $path === "wp-login.php" ){
 
 			if( $admin_mapping  == "mapped" ){
