@@ -88,36 +88,6 @@ class domain_map {
 		add_action("domainmap_plugin_deactivated", array($this, "remove_rewrite_rule_flush_trace"));
 	}
 
-	function domain_mapping_login_url( $login_url, $redirect = '' ) {
-
-		switch ( $this->options['map_logindomain'] ) {
-			case 'user':
-				break;
-			case 'mapped':
-				break;
-			case 'original':
-				// Get the mapped url using our filter
-				$mapped_url = site_url( '/' );
-				// remove the http and https parts of the url
-				$mapped_url = str_replace( array( 'https://', 'http://' ), '', $mapped_url );
-				// get the original url now with our filter removed
-				$url = trailingslashit( self::utils()->unswap_url( get_option( 'siteurl' ) ) );
-				// again remove the http and https parts of the url
-				$url = str_replace( array( 'https://', 'http://' ), '', $url );
-
-				// replace the mapped url with the original one
-				$login_url = str_replace( $mapped_url, $url, $login_url );
-
-				break;
-		}
-
-        if( self::utils()->is_original_domain( $login_url ) ){
-            return $this->options['map_force_admin_ssl'] ? set_url_scheme($login_url, "https") : $login_url;
-        }else{
-            return set_url_scheme($login_url, self::utils()->get_mapped_domain_scheme( $login_url ) );
-        }
-	}
-
 	function domain_mapping_admin_url( $admin_url, $path = '/', $_blog_id = false ) {
 		global $blog_id;
 
@@ -169,10 +139,6 @@ class domain_map {
 			add_filter( 'print_head_scripts', array( &$this, 'reset_script_url' ), 1, 1);
 
 			add_filter('authenticate', array( &$this, 'authenticate' ), 999, 3);
-
-			add_filter( 'login_url', array( &$this, 'domain_mapping_login_url' ), 2, 100 );
-			add_filter( 'logout_url', array( &$this, 'domain_mapping_login_url' ), 2, 100 );
-			add_filter( 'admin_url', array( &$this, 'domain_mapping_admin_url' ), 3, 100 );
 
 			add_filter( 'theme_root_uri', array( &$this, 'domain_mapping_post_content' ), 1 );
 			add_filter( 'stylesheet_uri', array( &$this, 'domain_mapping_post_content' ), 1 );

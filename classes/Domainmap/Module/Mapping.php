@@ -109,13 +109,27 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		self::$_force_front_ssl = $this->_plugin->get_option("map_force_frontend_ssl");
 		self::$_force_admin_ssl = $this->_plugin->get_option("map_force_admin_ssl");
 
-		// Backend routing.
+		/*
+		 * Actions.
+		 */
+		// Admin routing.
 		$this->_add_action('admin_init', 'route_domain');
+		// Login routing.
+		$this->_add_action('login_init', 'route_domain');
 		// Frontend routing.
 		$this->_add_action('template_redirect', 'route_domain', 10);
 
 		$this->_add_action( 'customize_controls_init', 'set_customizer_flag' );
 
+		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 2 );
+		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
+
+		$this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
+		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
+
+		/*
+		 * Filters.
+		 */
 		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
 		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
@@ -123,6 +137,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
+			$this->_add_filter( 'login_url', 'set_proper_login_redirect', 2, 100 );
+			$this->_add_filter( 'logout_url', 'set_proper_login_redirect', 2, 100 );
+			$this->_add_filter( 'admin_url', 'set_proper_login_redirect', 2, 100 );
+
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
@@ -135,15 +153,10 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
 		}
 
-		$this->_add_action("delete_blog", "on_delete_blog", 10, 2);
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
 		$this->_add_filter( 'customize_allowed_urls', "customizer_allowed_urls" );
 		$this->_add_filter( 'logout_url', "filter_logout_url", 10, 2 );
 
-		$this->_add_action( 'login_redirect', 'set_proper_login_redirect', 10, 3 );
-		$this->_add_action( 'site_url', 'set_login_form_action', 20, 4);
-
-		$this->_add_action("dm_toggle_mapping", "toggle_mapping", 10, 3);
 	}
 
 	/*
@@ -157,6 +170,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		// Safety check to make sure this only runs once.
 		if ($this->_determined_domain || $this->bypass_mapping()) return;
 
+		// Make sure only runs once.
+		$this->_determined_domain = true;
+
 		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
 		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
 		// Is front end.
@@ -167,8 +183,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		// Should the mapped domain be used according to settings.
 		$use_mapped_domain = $this->use_mapped_domain();
 
-		// Make sure only runs once.
-		$this->_determined_domain = true;
 		// redirect if ssl or mapping not correct.
 		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
 			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
@@ -1190,25 +1204,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	 * @return string
 	 */
-	function set_proper_login_redirect( $redirect_to, $requested_redirect_to, $user ){
+	function set_proper_login_redirect( $redirect_to, $requested_redirect_to ){
 		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
 
-		$scheme = null;
-		if( self::utils()->is_admin_url( $redirect_to ) ){
-			if( self::utils()->is_original_domain( $redirect_to ) ){
-				$scheme = self::$_force_admin_ssl ? "https" : "http";
-			}else{
-				$scheme = self::utils()->get_mapped_domain_scheme();
+		$scheme = $this->use_ssl();
+
+		if( $admin_mapping == "original"   ){
+			if (self::utils()->is_mapped_domain( $redirect_to )) {
+				return set_url_scheme( $this->unswap_mapped_url( $redirect_to, false, true ), $scheme );
 			}
-
-		}else{
-			$parsed = parse_url( $redirect_to );
-			$scheme = isset( $parsed["scheme"] ) ? $parsed["scheme"] : $scheme;
-		}
-
-
-		if( $admin_mapping == "original" && self::utils()->is_mapped_domain( $redirect_to )  ){
-			return set_url_scheme( $this->unswap_mapped_url( $redirect_to, false, true ), $scheme );
 		}
 
 		if( $admin_mapping == "mapped" && self::utils()->is_original_domain( $redirect_to ) ){
