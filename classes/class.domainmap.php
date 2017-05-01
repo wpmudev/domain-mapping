@@ -439,7 +439,7 @@ class domain_map {
 			$message      = sprintf( __( 'WHMCS is no longer supported in %s . Please check and update your <a href="%s">Reseller options</a>', 'domainmap' ), 'Domain Mapping' , $settings_url );
 			$html_message = sprintf( '<div class="notice notice-warning">%s</div>', wpautop( $message ) );
 
-			echo wp_kses_post( $html_message );
+			echo $html_message;
 		}
 	}
 
