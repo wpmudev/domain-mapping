@@ -424,23 +424,32 @@ class domain_map {
 	 *
 	 * @since 4.4.2.5
 	 */
-	function show_whmcs_warning(){
+	function show_whmcs_warning() {
 
 		$show_notification = get_option( 'domainmapping_hide_notification', false );
 
 		if ( !$show_notification ) {
 			
-			$settings_url = add_query_arg( array(
-				'page' 		=> 'domainmapping_options',
-				'tab'  		=> 'reseller-options',
-				'dismiss'  	=> 'true',
-			), network_admin_url( 'settings.php', 'http' ) );
-			
-			$message      = sprintf( __( 'WHMCS is no longer supported in %s . Please check and update your <a href="%s">Reseller options</a>', 'domainmap' ), 'Domain Mapping' , $settings_url );
-			$html_message = sprintf( '<div class="notice notice-warning">%s</div>', wpautop( $message ) );
-
-			echo $html_message;
+			add_action( 'network_admin_notices', array( &$this, 'whmcs_warning' ) );
 		}
+	}
+	
+	/**
+	 * WHMCS Admin warning notice
+	 *
+	 * @since 4.4.2.5
+	 */
+	function whmcs_warning() {
+		$settings_url = add_query_arg( array(
+			'page' 		=> 'domainmapping_options',
+			'tab'  		=> 'reseller-options',
+			'dismiss'  	=> 'true',
+		), network_admin_url( 'settings.php', 'http' ) );
+		
+		$message      = sprintf( __( 'WHMCS is no longer supported in %s . Please check and update your <a href="%s">Reseller options</a>', 'domainmap' ), 'Domain Mapping' , $settings_url );
+		$html_message = sprintf( '<div class="notice notice-warning">%s</div>', wpautop( $message ) );
+
+		echo $html_message;
 	}
 
 
