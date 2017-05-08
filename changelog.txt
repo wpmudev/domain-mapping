@@ -3,6 +3,13 @@
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
 * Added: Notification to Network admin about WHMCS
+* Fixed: Some minor typos
+* Fixed: Fatal error with newer versions of PHP
+* Fixed: Issue with logged out users on Pro Site not being redirected to mapped domain
+* Fixed: Various issues involving SSL and mismatched content
+errors when using the Customizer
+* Improved: Refactored mapping logic for easier troubleshooting mapping issues in
+development
 
 == 4.4.2.4 ==
 * Fixed: Issue when main site uses www
