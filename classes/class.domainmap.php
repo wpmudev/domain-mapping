@@ -429,8 +429,13 @@ class domain_map {
 		$show_notification = get_option( 'domainmapping_hide_notification', false );
 
 		if ( !$show_notification ) {
-			
-			add_action( 'network_admin_notices', array( &$this, 'whmcs_warning' ) );
+			//Check if user had whmcs enabled
+			$options = Domainmap_Plugin::instance()->get_options();
+			if( isset( $options['whmcs'] ) && isset( $options['whmcs']['uid'] ) ) {
+				add_action( 'network_admin_notices', array( &$this, 'whmcs_warning' ) );
+			} else {
+				update_option( 'domainmapping_hide_notification', true );
+			}
 		}
 	}
 	

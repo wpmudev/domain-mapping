@@ -870,12 +870,12 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		);
 		
 		//Check if domain is a UK tld
-		preg_match("`(?<=\.)\w+$`", strtolower($tld), $tld_array);
+		preg_match( "`(?<=\.)\w+$`", strtolower($tld), $tld_array );
 		//If its UK, we need to add the required parameters
-        if (in_array('uk', $tld_array)){
-			$enom_request['Registered_For'] = $firstname.' '.$lastname;
-			$enom_request['UK_Legal_Type'] = $firstname.' '.$lastname;
-			$enom_request['UK_Reg_Opt_Out'] = 'no';
+        if ( in_array( 'uk', $tld_array ) ){
+			$enom_request['Registered_For'] 	= $firstname.' '.$lastname;
+			$enom_request['UK_Legal_Type'] 		= $firstname.' '.$lastname;
+			$enom_request['UK_Reg_Opt_Out'] 	= 'no';
 		}
 
 		$response = $this->_exec_command( self::COMMAND_PURCHASE, $enom_request);
