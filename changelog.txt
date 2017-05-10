@@ -8,7 +8,7 @@
 * Fixed: Issue with logged out users on Pro Site not being redirected to mapped domain
 * Fixed: Various issues involving SSL and mismatched content
 * Fixed: Issue with theme customizer not working with mapped domains
-* Fixed: Issue with purchasing uk tld uing PayPal
+* Fixed: Issue with purchasing uk tld using PayPal
 errors when using the Customizer
 * Improved: Refactored mapping logic for easier troubleshooting mapping issues in
 development
