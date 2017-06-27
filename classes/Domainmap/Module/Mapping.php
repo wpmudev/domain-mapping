@@ -136,6 +136,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'admin_url', 'admin_url_scheme', 99, 3 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'login_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'logout_url', 'set_proper_login_redirect', 2, 100 );
@@ -1317,6 +1318,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		return $url;
 	}
 
+	// Override admin_url to prevent issues with relative ajaxurls, etc on some subdirectory setups.
+	function admin_url_scheme($url, $path, $orig_scheme, $blog_id = null){
+		// Admin URL.
+		$url = get_site_url($blog_id, 'wp-admin/', $this->use_ssl() ? 'https' : 'http');
+		// Add Path.
+		if ( $path && is_string( $path ) )
+			$url .= ltrim( $path, '/' );
+
+		return $url;
+	}
 
 	/**
 	 * Decide if upfront should be redirected to mapped domain
