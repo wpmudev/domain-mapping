@@ -137,10 +137,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'admin_url', 'admin_url', 99, 3 );
+		$this->_add_filter( 'rest_url', 'rest_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'login_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'logout_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'admin_url', 'set_proper_login_redirect', 2, 100 );
+			
 
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
@@ -1347,6 +1349,16 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 		else
 			return true;
+	}
+
+	function rest_url_scheme( $url, $path, $blog_id, $orig_scheme ){
+		if ( $this->_suppress_swapping || self::utils()->is_mapped_domain( $url ) ) {
+			return $url;
+		}
+		if ( $this->is_excluded_by_url( $url ) ) {
+			return apply_filters( "rest_url_scheme", $url, $path, $orig_scheme, $blog_id );
+		}
+		return self::utils()->swap_to_mapped_url( $url, $path, $orig_scheme, $blog_id, false );
 	}
 
 }
