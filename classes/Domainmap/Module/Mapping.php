@@ -188,7 +188,23 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		if ((is_ssl() !== $use_ssl) || ($use_mapped_domain !== domain_map::utils()->is_mapped_domain())) {
 			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
 			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
-		}	
+		// If user choice on front end, no need to redirect.
+		} elseif (
+			$is_front
+			&& domain_map::utils()->get_frontend_redirect_type() === 'user'
+		) {
+			return;
+		// If mapped and on frontend, make sure mapped domain is primary one.
+		} elseif (
+			$is_front
+			&& $use_mapped_domain
+			// Is the mapped domain primary?
+			&& $current_blog->domain_map
+			!== domain_map::utils()->get_mapped_domain()
+		) {
+			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
+			return $this->_redirect_to_area($redirect_to, $use_ssl, $is_front);
+		}
 	}
 
 	public function bypass_mapping() {

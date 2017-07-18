@@ -414,12 +414,14 @@ class Domainmap_Utils{
         }
 
         // if we have already found mapped domain, then return it
-        if ( isset( self::$_mapped_primary_domains[$blog_id] ) ) {
+        // Only do this if not using user setting.
+        if ( isset( self::$_mapped_primary_domains[$blog_id] ) && $this->get_frontend_redirect_type() !== 'user' ) {
             return self::$_mapped_primary_domains[$blog_id];
         }
 
         // if we have already found mapped domain, then return it
-        if ( isset( self::$_mapped_domains[$blog_id] ) ) {
+        // Only do this if not using user setting.
+        if ( isset( self::$_mapped_domains[$blog_id] ) && $this->get_frontend_redirect_type() !== 'user' ) {
             return self::$_mapped_domains[$blog_id];
         }
 
@@ -436,7 +438,7 @@ class Domainmap_Utils{
         }
 
         // save mapped domain into local cache
-        if( $is_primary )
+        if( empty($is_primary) )
             self::$_mapped_primary_domains[$blog_id] = $domain;
         else
             self::$_mapped_domains[$blog_id] = $domain;
