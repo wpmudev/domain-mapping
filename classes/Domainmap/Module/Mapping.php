@@ -134,8 +134,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
-		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
-		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'home_url',   'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'site_url',   'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'admin_url', 'admin_url', 99, 3 );
 		$this->_add_filter( 'rest_url', 'rest_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
@@ -1352,13 +1352,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	}
 
 	function rest_url_scheme( $url, $path, $blog_id, $orig_scheme ){
-		if ( $this->_suppress_swapping || self::utils()->is_mapped_domain( $url ) ) {
-			return $url;
-		}
-		if ( $this->is_excluded_by_url( $url ) ) {
-			return apply_filters( "rest_url_scheme", $url, $path, $orig_scheme, $blog_id );
-		}
-		return self::utils()->swap_to_mapped_url( $url, $path, $orig_scheme, $blog_id, false );
+
+		return self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
 	}
 
 }
