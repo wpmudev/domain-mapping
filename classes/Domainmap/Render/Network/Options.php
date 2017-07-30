@@ -263,10 +263,10 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access private
 	 */
 	private function _render_cross_autologin() {
-		$selected = isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
-		$infooter = isset( $this->map_crossautologin_infooter ) ? (int)$this->map_crossautologin_infooter : 0;
-		$async = isset( $this->map_crossautologin_async ) ? (int)$this->map_crossautologin_async : 0;
-		$options = array(
+		$selected 	= isset( $this->map_crossautologin ) ? (int)$this->map_crossautologin : 1;
+		$infooter 	= isset( $this->map_crossautologin_infooter ) ? (int)$this->map_crossautologin_infooter : 0;
+		$async 		= isset( $this->map_crossautologin_async ) ? (int)$this->map_crossautologin_async : 0;
+		$options 	= array(
 			1 => __( 'Yes', 'domainmap' ),
 			0 => __( 'No', 'domainmap' ),
 		);

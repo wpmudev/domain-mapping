@@ -599,31 +599,31 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
  	 * @return boolean
  	 */
 	public function use_ssl_for_customizer($original_or_mapped) {
-			// If original domain.
-			if ($original_or_mapped === 'original') {
-				// If admin is SSL, return true.
- 				if (is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
-					return true;
-				} else {
-					return false;
-				}
-			// If mapped domain.
-			} else if ($original_or_mapped === 'mapped') {
- 				if (
-					is_ssl()
-					|| $this->is_ssl_forced_by_request()
-					// If admin is SSL.
-					|| $this->_plugin->get_option("map_force_admin_ssl")
-					// If mapped domain is SSL.
-					|| domain_map::utils()->force_ssl_on_mapped_domain() === 1
-					// If frontend is SSL.
-					|| (self::$_force_front_ssl)
-				) {
-					return true;
-				} else {
-					return false;
-				}
+		// If original domain.
+		if ($original_or_mapped === 'original') {
+			// If admin is SSL, return true.
+			if (is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
+				return true;
+			} else {
+				return false;
 			}
+		// If mapped domain.
+		} else if ($original_or_mapped === 'mapped') {
+			if (
+				is_ssl()
+				|| $this->is_ssl_forced_by_request()
+				// If admin is SSL.
+				|| $this->_plugin->get_option("map_force_admin_ssl")
+				// If mapped domain is SSL.
+				|| domain_map::utils()->force_ssl_on_mapped_domain() === 1
+				// If frontend is SSL.
+				|| (self::$_force_front_ssl)
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 
@@ -1351,9 +1351,20 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			return true;
 	}
 
+	/**
+	 * Rest URL Scheme
+	 */
 	function rest_url_scheme( $url, $path, $blog_id, $orig_scheme ){
 
-		return self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
+		$url = self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
+
+		if ( is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
+			$url_info = parse_url( $url );
+			if( $url_info['scheme'] != 'https' ){
+				$url = str_replace( 'http://', 'https://', $url ); 
+			}
+		}
+		return $url;
 	}
 
 }
