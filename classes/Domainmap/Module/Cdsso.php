@@ -123,14 +123,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		$redirect_domain 	= parse_url( $redirect_to, PHP_URL_HOST );
 		if ( $login_domain != $redirect_domain ) {
 			$redirect_to 	= str_replace( "://{$redirect_domain}", "://{$login_domain}", $redirect_to );
-			$admin_mapping 	= $this->_plugin->get_option("map_force_admin_ssl");
-			if ( $admin_mapping ) {
-				$url = parse_url( $redirect_to );
-				if( $url['scheme'] != 'https' ){
-					$redirect_to = str_replace( 'http://', 'https://', $redirect_to ); 
-				}
-			}
-			$login_url = esc_url_raw( add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_url ) );
+			$login_url 		= esc_url_raw( add_query_arg( 'redirect_to', urlencode( $redirect_to ), $login_url ) );
 		}
 
 		return $login_url;
@@ -172,6 +165,16 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
 			if ( self::utils()->is_mapped_domain()  || self::utils()->is_subdomain() ) {
 				$interim_login = $this->_do_propagation = true;
+			}
+		}
+
+		if ( $redirect_to ) {
+			$admin_mapping 	= $this->_plugin->get_option("map_force_admin_ssl");
+			if ( $admin_mapping ) {
+				$url = parse_url( $redirect_to );
+				if( $url['scheme'] != 'https' ){
+					$redirect_to = str_replace( 'http', 'https', $redirect_to ); 
+				}
 			}
 		}
 
