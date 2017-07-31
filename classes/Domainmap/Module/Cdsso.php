@@ -167,17 +167,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 				$interim_login = $this->_do_propagation = true;
 			}
 		}
-
-		if ( $redirect_to ) {
-			$admin_mapping 	= $this->_plugin->get_option("map_force_admin_ssl");
-			if ( $admin_mapping ) {
-				$url = parse_url( $redirect_to );
-				if( $url['scheme'] != 'https' ){
-					$redirect_to = str_replace( 'http', 'https', $redirect_to ); 
-				}
-			}
-		}
-
 		return $redirect_to;
 	}
 
