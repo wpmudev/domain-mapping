@@ -1,5 +1,8 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.2.6 ==
+* Fixed: WordPress Rest URL
+
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
 * Added: Notification to Network admin about WHMCS

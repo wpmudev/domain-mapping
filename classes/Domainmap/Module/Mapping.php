@@ -134,13 +134,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
-		$this->_add_filter( 'home_url',           'home_url_scheme', 99, 4 );
-		$this->_add_filter( 'site_url',           'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'home_url',   'home_url_scheme', 99, 4 );
+		$this->_add_filter( 'site_url',   'home_url_scheme', 99, 4 );
 		$this->_add_filter( 'admin_url', 'admin_url', 99, 3 );
+		$this->_add_filter( 'rest_url', 'rest_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
 			$this->_add_filter( 'login_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'logout_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'admin_url', 'set_proper_login_redirect', 2, 100 );
+			
 
 			$this->_add_filter( 'pre_option_siteurl', 'swap_root_url' );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
@@ -613,31 +615,31 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
  	 * @return boolean
  	 */
 	public function use_ssl_for_customizer($original_or_mapped) {
-			// If original domain.
-			if ($original_or_mapped === 'original') {
-				// If admin is SSL, return true.
- 				if (is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
-					return true;
-				} else {
-					return false;
-				}
-			// If mapped domain.
-			} else if ($original_or_mapped === 'mapped') {
- 				if (
-					is_ssl()
-					|| $this->is_ssl_forced_by_request()
-					// If admin is SSL.
-					|| $this->_plugin->get_option("map_force_admin_ssl")
-					// If mapped domain is SSL.
-					|| domain_map::utils()->force_ssl_on_mapped_domain() === 1
-					// If frontend is SSL.
-					|| (self::$_force_front_ssl)
-				) {
-					return true;
-				} else {
-					return false;
-				}
+		// If original domain.
+		if ($original_or_mapped === 'original') {
+			// If admin is SSL, return true.
+			if (is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
+				return true;
+			} else {
+				return false;
 			}
+		// If mapped domain.
+		} else if ($original_or_mapped === 'mapped') {
+			if (
+				is_ssl()
+				|| $this->is_ssl_forced_by_request()
+				// If admin is SSL.
+				|| $this->_plugin->get_option("map_force_admin_ssl")
+				// If mapped domain is SSL.
+				|| domain_map::utils()->force_ssl_on_mapped_domain() === 1
+				// If frontend is SSL.
+				|| (self::$_force_front_ssl)
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 
@@ -1363,6 +1365,22 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 		else
 			return true;
+	}
+
+	/**
+	 * Rest URL Scheme
+	 */
+	function rest_url_scheme( $url, $path, $blog_id, $orig_scheme ){
+
+		$url = self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
+
+		if ( is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
+			$url_info = parse_url( $url );
+			if( $url_info['scheme'] != 'https' ){
+				$url = str_replace( 'http://', 'https://', $url ); 
+			}
+		}
+		return $url;
 	}
 
 }
