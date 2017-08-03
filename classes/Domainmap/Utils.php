@@ -86,8 +86,7 @@ class Domainmap_Utils{
      */
     private static $_schemes = array();
 
-    function __construct()
-    {
+    function __construct() {
         global $wpdb;
 
         $this->_wpdb = $wpdb;
@@ -607,4 +606,14 @@ class Domainmap_Utils{
         $name = $trace[2]['function'];
         return empty($name) ? 'global' : $name;
     }
+
+    /**
+     * Check if its a JetPack Connection
+     *
+     * @return bool
+     */
+    function is_jetpack_redirect() {
+        return (preg_match("/\/wp-admin\/admin.php\?page=jetpack/", $_SERVER['REQUEST_URI']));
+    }
+
 }

@@ -130,8 +130,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		/*
 		 * Filters.
 		 */
-		$this->_add_filter("page_link",                 'exclude_page_links', 10, 3);
-		$this->_add_filter("page_link",                 'ssl_force_page_links', 11, 3);
+		$this->_add_filter("page_link",   'exclude_page_links', 10, 3);
+		$this->_add_filter("page_link",   'ssl_force_page_links', 11, 3);
 		// URLs swapping
 		$this->_add_filter( 'unswap_url', 'unswap_mapped_url' );
 		$this->_add_filter( 'home_url',   'home_url_scheme', 99, 4 );
@@ -1341,7 +1341,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	// For example, we were getting the admin url appended to the admin url on mapped domains for some reason when the 'relative' scheme is used in core.
 	function admin_url($url, $path, $orig_scheme, $blog_id = null){
 		// Admin URL (Override scheme).
-		$url = get_site_url($blog_id, 'wp-admin/', $this->use_ssl() ? 'https' : 'http');
+		$url = get_site_url( $blog_id, 'wp-admin/', $this->use_ssl() ? 'https' : 'http' );
+		force_ssl_admin( $this->use_ssl() );
 		// Append Path.
 		if ( $path && is_string( $path ) )
 			$url .= ltrim( $path, '/' );
@@ -1372,8 +1373,17 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * Rest URL Scheme
 	 */
 	function rest_url_scheme( $url, $path, $blog_id, $orig_scheme ){
+		$current_rest_url 	= parse_url( $url );
 
-		$url = self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
+		//Get the host from each url to allow across the iframe
+		$current_page_url 	= $_SERVER['HTTP_HOST'];
+		$current_rest_url 	= $current_rest_url['host'];
+
+		if ( $current_page_url != $current_rest_url ) {
+			$url = self::utils()->unswap_url( $url );
+		} else {
+			$url = self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
+		}
 
 		if ( is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
 			$url_info = parse_url( $url );

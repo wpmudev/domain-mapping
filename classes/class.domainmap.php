@@ -155,6 +155,8 @@ class domain_map {
 				// filter the content with any original urls and change them to the mapped urls
 				add_filter( 'the_content', array( &$this, 'domain_mapping_post_content' ) );
 				add_filter( 'authenticate', array( &$this, 'authenticate' ), 999, 3 );
+
+				add_filter( 'wp_headers', array($this, 'rest_api_headers' ), 10, 1);
 			}
 
 			//Network Admin Notice for WHMCS
@@ -396,7 +398,7 @@ class domain_map {
 	 *
 	 * @return Array $headers
 	 */
-	function filter_iframe_security_headers( $headers ){
+	function filter_iframe_security_headers( $headers ) {
 		$customize_url 		= admin_url(); //Admin url
 		$current_site_url 	= get_site_url(); //Current site url
 		
@@ -415,6 +417,19 @@ class domain_map {
 			$headers['X-Frame-Options'] 		= 'ALLOW-FROM ' . $customize_site_url .' '.$current_site_url ;
 			$headers['Content-Security-Policy'] = 'frame-ancestors ' . $customize_site_url .' '.$current_site_url ;
 		}
+		return $headers;
+	}
+
+	/**
+	 * Add rest API headers
+	 * Current bug in WordPress that does not allow JetPack x-wp-nonce
+	 *
+	 * @param Array $headers
+	 *
+	 * @return Array $headers
+	 */
+	function rest_api_headers( $headers ) {
+		$headers['Access-Control-Allow-Headers'] = "x-wp-nonce";
 		return $headers;
 	}
 
