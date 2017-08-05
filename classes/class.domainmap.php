@@ -95,7 +95,6 @@ class domain_map {
 			$_blog_id = $blog_id;
 		}
 
-
 		switch ( $this->options['map_admindomain'] ) {
 			case 'user':
 				break;
@@ -126,7 +125,7 @@ class domain_map {
 				break;
 		}
 
-         return $admin_url;
+        return $admin_url;
 
 	}
 

@@ -666,6 +666,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * @return string
 	 */
 	public function swap_mapped_url( $url, $path = false, $orig_scheme = false, $blog_id = false, $consider_front_redirect_type = true ) {
+
 		// do not swap URL if customizer is running
 		if ( $this->_suppress_swapping || self::utils()->is_mapped_domain( $url ) ) {
 			return $url;
