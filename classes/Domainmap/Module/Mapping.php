@@ -1227,7 +1227,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	function set_proper_login_redirect( $redirect_to, $requested_redirect_to ){
 		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
 
-		$scheme = $this->use_ssl();
+		$scheme = $this->use_ssl() ? 'https' : 'http';
 
 		if( $admin_mapping == "original"   ){
 			if (self::utils()->is_mapped_domain( $redirect_to )) {
