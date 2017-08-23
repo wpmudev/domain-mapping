@@ -3,6 +3,9 @@
 == 4.4.2.6 ==
 * Fixed: WordPress Rest URL
 * Fixed: Force admin https URL Redirect loop
+* Fixed: Multiple Mapped domains not mapping frontend links correctly.
+* Fixed: Login issues.
+* Fixed: Prevent admin_url from being relative to fix AJAX issues with some plugins.
 
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
