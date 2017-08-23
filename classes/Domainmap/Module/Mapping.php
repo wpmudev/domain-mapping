@@ -1380,10 +1380,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$current_page_url 	= $_SERVER['HTTP_HOST'];
 		$current_rest_url 	= $current_rest_url['host'];
 
-		if ( $current_page_url != $current_rest_url ) {
+		if ( $current_page_url !== $current_rest_url ) {
 			$url = self::utils()->unswap_url( $url );
-		} else {
-			$url = self::utils()->is_mapped_domain( $url ) && "mapped" !== $this->_get_current_mapping_type( 'map_admindomain' ) ?  self::utils()->unswap_url( $url )  : $url;
 		}
 
 		if ( is_ssl() || $this->_plugin->get_option("map_force_admin_ssl")) {
