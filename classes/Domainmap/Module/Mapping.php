@@ -246,6 +246,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			} else {
 				$use_mapped = ($front_type === 'original' ? false : true);
 			}
+			/*
+ 		 	 * Upfront Editor overrides redirect.
+ 		 	 */
+			if (class_exists("Upfront")) {
+				$use_mapped = $this->redirect_upfront_to_mapped_domain($use_mapped);
+			}
 		} else {
 			/*
  			 * Login.
@@ -1356,18 +1362,21 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 * Decide if upfront should be redirected to mapped domain
 	 *
 	 * @since 4.4.2.0
+	 * @param $default bool The default to use if upfront editor is not active.
 	 * @return bool
 	 */
-	function redirect_upfront_to_mapped_domain(){
-
+	function redirect_upfront_to_mapped_domain($default){
+		// If Editor.
 		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) ) {
-			return true;
-			//return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
+			// Use whatever admin mapping is.
+			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
+		// If Builder.
 		} elseif (class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name")) && strpos($_SERVER['REQUEST_URI'], 'create_new')) {
 			return false;
 		}
+		// If no editor or builder, use default.
 		else
-			return true;
+			return $default;
 	}
 
 	/**
