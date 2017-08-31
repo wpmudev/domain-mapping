@@ -372,7 +372,8 @@ class Domainmap_Utils{
      * @return string redirect type: mapped, user, original
      */
     public function get_frontend_redirect_type() {
-        return get_option( 'domainmap_frontend_mapping', 'mapped' );
+		// Default to original for when root domain is used.
+        return get_option( 'domainmap_frontend_mapping', 'original' );
     }
 
     /**
