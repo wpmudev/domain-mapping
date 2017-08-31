@@ -6,6 +6,8 @@
 * Fixed: Multiple Mapped domains not mapping frontend links correctly.
 * Fixed: Login issues.
 * Fixed: Prevent admin_url from being relative to fix AJAX issues with some plugins.
+* Fixed: Upfront compatibility issues with not loading editor on original domain.
+* Fixed: Allow forcing SSL on root domain.
 
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
