@@ -107,7 +107,7 @@ class Domainmap_Utils{
     private function _set_mapped_domains(){
         $results = $this->_wpdb->get_results( "SELECT blog_id, domain, is_primary  FROM " . DOMAINMAP_TABLE_MAP );
         foreach( $results as $result ){
-            self::$_mapped_domains[ $result->blog_id ] = $result->domain;
+            self::$_mapped_domains[ $result->blog_id ][] = $result->domain;
             if( $result->is_primary  )
                 self::$_mapped_primary_domains[ $result->blog_id ] = $result->domain;
         }
@@ -263,7 +263,14 @@ class Domainmap_Utils{
      * @return bool
      */
     public function is_mapped_domain( $domain = null ){
-        if( !empty( $domain ) && in_array( $domain, self::$_mapped_domains )  ) return true;
+		$blog_id = get_current_blog_id();
+		// Is domain among mapped domains?
+        if (
+			!empty( $domain )
+			&& !empty(self::$_mapped_domains[$blog_id])
+			&& in_array( $domain, self::$_mapped_domains[$blog_id] )
+		) return true;
+		// Is this an original domain?
         return !$this->is_original_domain( $domain );
     }
 
@@ -408,6 +415,9 @@ class Domainmap_Utils{
      * @return string|boolean Mapped domain on success, otherwise FALSE.
      */
     public function get_mapped_domain( $blog_id = false, $consider_front_redirect_type = true ) {
+		global $current_site, $current_blog;
+		$current_scheme =  $this->_http->getIsSecureConnection() ? "https://" : 'http://';
+		$current_url = untrailingslashit(  $current_scheme . $current_blog->domain . $current_site->path );
         // use current blog id if $blog_id is empty
         if ( !$blog_id ) {
             $blog_id = get_current_blog_id();
@@ -419,10 +429,18 @@ class Domainmap_Utils{
             return self::$_mapped_primary_domains[$blog_id];
         }
 
+		// If no primary domain and current site is a mapped domain, use it.
+        if (
+			isset( self::$_mapped_domains[$blog_id] )
+			&& $this->get_frontend_redirect_type() !== 'user'
+			&& in_array($current_blog->domain, self::$_mapped_domains[$blog_id])) {
+			return $current_blog->domain;
+		}
+
         // if we have already found mapped domain, then return it
         // Only do this if not using user setting.
         if ( isset( self::$_mapped_domains[$blog_id] ) && $this->get_frontend_redirect_type() !== 'user' ) {
-            return self::$_mapped_domains[$blog_id];
+            return end(self::$_mapped_domains[$blog_id]);
         }
 
         $domain = '';

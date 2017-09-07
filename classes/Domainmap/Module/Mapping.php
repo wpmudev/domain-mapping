@@ -201,7 +201,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			$is_front
 			&& $use_mapped_domain
 			// Is the mapped domain primary?
-			&& $current_blog->domain_map
+			&& $current_blog->domain
 			!== domain_map::utils()->get_mapped_domain()
 		) {
 			$redirect_to = $use_mapped_domain ? 'mapped' : 'original';
