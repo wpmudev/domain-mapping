@@ -306,7 +306,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			// Mapped Domain.
 			if ($use_mapped) {
 				// (user => false || true, http => 0, https => 1)
-				$use_ssl = (boolean)domain_map::utils()->force_ssl_on_mapped_domain();
+				// This is specific to each mapped domain.
+				$mapped_domain = self::utils()->get_mapped_domain(false, true);
+				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain($mapped_domain, true);
 			// Original Domain.
 			} else {
 				// User determines.
@@ -327,7 +329,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			// Mapped Admin Domain.
 			if ($use_mapped) {
 				// (user => false || true, http => 0, https => 1)
-				$use_ssl = (boolean)domain_map::utils()->force_ssl_on_mapped_domain();
+				// This is specific to each mapped domain.
+				$mapped_domain = self::utils()->get_mapped_domain(false, false);
+				$use_ssl = domain_map::utils()->force_ssl_on_mapped_domain($mapped_domain, true);
 			} else {
 				// Original Admin Domain.
 				// If not forced, use user preference.
@@ -713,7 +717,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		$protocol = 'http://';
 
-		if ( domain_map::utils()->force_ssl_on_mapped_domain( $domain ) && is_ssl() ) {
+		if ( domain_map::utils()->force_ssl_on_mapped_domain( $domain, true ) && is_ssl() ) {
 			$protocol = 'https://';
 		}
 
@@ -809,7 +813,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			/**
 			 * Force mapped domains
 			 */
-			if ( domain_map::utils()->force_ssl_on_mapped_domain()  ){ // force https
+			if ( domain_map::utils()->force_ssl_on_mapped_domain("", true)  ){ // force https
 				// If already SSL, prevent infinite redirects.
  				if(is_ssl()) return;
 

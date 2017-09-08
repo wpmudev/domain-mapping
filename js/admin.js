@@ -320,7 +320,7 @@
                     current_link = current_link.replace("</del>", "");
 
 
-                    current_link.replace("https://", "http://");
+                    current_link = current_link.replace("https://", "http://");
                     if( res.data.schema === 1 ){
                         current_link = current_link.replace("http://", "https://");
                     }else if( res.data.schema === 2 ){

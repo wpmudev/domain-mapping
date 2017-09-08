@@ -224,24 +224,21 @@ class Domainmap_Utils{
      * @since 4.2.0
      *
      * @param string $domain
-     * @return bool
+     * @param bool $boolean If return value should be boolean or not (only use when is_ssl should be used for case 2 [user choice]).
+     * @return int|bool
      */
-    public function force_ssl_on_mapped_domain( $domain = "" ){
+    public function force_ssl_on_mapped_domain( $domain = "", $boolean = false){
         global $dm_mapped;
         $_parsed = parse_url( $domain, PHP_URL_HOST );
         $domain = $_parsed ? $_parsed : $domain;
         $current_domain = parse_url( $this->_http->getHostInfo(), PHP_URL_HOST );
         $domain = empty( $domain ) ? $current_domain  : $domain;
 
-        if( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
+        if ( $this->is_original_domain( $domain ) && is_object( $dm_mapped ) ) return $dm_mapped->scheme;
 
-        if( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
+        if ( is_object( $dm_mapped )  && $dm_mapped->domain === $domain ){ // use from the global dm_domain
             $force_ssl_on_mapped_domain = (int) $dm_mapped->scheme;
-			// If mapped domain is not set to any scheme, return current scheme.
-			if ($force_ssl_on_mapped_domain === 2) {
-				$force_ssl_on_mapped_domain = is_ssl();
-			}
-        }else{
+        } else {
 
             if( !isset( self::$_schemes[ $domain  ] ) ){
                 $force_ssl_on_mapped_domain = self::$_schemes[ $domain ] = (int) $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
@@ -250,6 +247,16 @@ class Domainmap_Utils{
             }
         }
 
+		// Only use boolean when is_ssl makes sense.
+		if ($boolean ) {
+			// If user choice.
+			if ($force_ssl_on_mapped_domain === 2) {
+				$force_ssl_on_mapped_domain = is_ssl();
+			} else {
+				$force_ssl_on_mapped_domain = (bool) $force_ssl_on_mapped_domain;
+			}
+		}
+	
         return apply_filters("dm_force_ssl_on_mapped_domain", $force_ssl_on_mapped_domain) ;
     }
 
