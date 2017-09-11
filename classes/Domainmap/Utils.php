@@ -610,12 +610,17 @@ class Domainmap_Utils{
         // find mapped domain
         $mapped_domain = $this->get_mapped_domain( $blog_id, $consider_front_redirect_type );
 
-        if ( !$mapped_domain || $components['host'] == $mapped_domain ) {
+        if ( !$mapped_domain || $components['host'] === $mapped_domain ) {
             return apply_filters("dm_swap_mapped_url", $url, $path, $orig_scheme, $blog_id);
         }
 
         $components['host'] = $mapped_domain;
-        $components['path'] = "/" . $path;
+
+		// Prevent breaking site assets by condition for not replacing plugins_url.
+		if ( $path !== '' && $path !== '/' && current_filter() !== 'plugins_url' && current_filter() !== 'content_url' ){
+			// Change path to mapped path.
+			$components['path'] = "/" . $path;
+		}
 
         return apply_filters("dm_swap_mapped_url", $this->build_url( $components ), $path, $orig_scheme, $blog_id);
     }
