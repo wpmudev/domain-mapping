@@ -320,7 +320,7 @@ class domain_map {
         $records = array();
         if ( strpos( $map_ipaddress, ',' ) ) {
             // Multiple CNAME not supported, so assume A
-            $_records = preg_split(',', $map_ipaddress);
+            $_records = explode(',', $map_ipaddress);
             foreach ($_records as $record) {
                 $records[] = array('host' => $mapping->domain, 'type' => 'A', 'target' => $record);
             }
