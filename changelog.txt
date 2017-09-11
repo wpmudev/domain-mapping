@@ -7,7 +7,11 @@
 * Fixed: Login issues.
 * Fixed: Prevent admin_url from being relative to fix AJAX issues with some plugins.
 * Fixed: Upfront compatibility issues with not loading editor on original domain.
-* Fixed: Allow forcing SSL on root domain.
+* Fixed: Forcing SSL on root domain not working.
+* Fixed: Warning on DNS Configuration when multiple IP addresses are used.
+* Fixed: The plugins_url was being replaced by the mapped url, breaking site assets for some users.
+* Fixed: Force SSL settings not displaying the correct value.
+* Fixed: Multiple mapped domains without primary domain used the last mapped domain.
 
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
