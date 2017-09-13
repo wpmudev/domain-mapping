@@ -270,14 +270,25 @@ class Domainmap_Utils{
      * @return bool
      */
     public function is_mapped_domain( $domain = null ){
+		global $current_blog;
 		$blog_id = get_current_blog_id();
+		// If no $domain set, get current_blog domain.
+		$domain = $domain ? $domain : $current_blog->domain;
+		// Remove any scheme.
+		$domain = preg_replace('#^http(s)?://#', '', $domain);
+
 		// Is domain among mapped domains?
         if (
 			!empty( $domain )
 			&& !empty(self::$_mapped_domains[$blog_id])
-			&& in_array( $domain, self::$_mapped_domains[$blog_id] )
+			&& (
+				// Domain is among mapped domains in the array.
+				(gettype(self::$_mapped_domains[$blog_id]) === 'array' && in_array( $domain, self::$_mapped_domains[$blog_id] ))
+				// Domain is the mapped domain string.
+				|| $domain === self::$_mapped_domains[$blog_id]
+			)
 		) return true;
-		// Is this an original domain?
+		// If still not sure, is this an original domain?
         return !$this->is_original_domain( $domain );
     }
 
