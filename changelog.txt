@@ -1,6 +1,6 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
-== 4.4.2.6 ==
+== 4.4.3 ==
 * Fixed: WordPress Rest URL
 * Fixed: Force admin https URL Redirect loop
 * Fixed: Multiple Mapped domains not mapping frontend links correctly.
