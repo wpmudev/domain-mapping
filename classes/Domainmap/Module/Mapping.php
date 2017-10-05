@@ -1371,11 +1371,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	 */
 	function redirect_upfront_to_mapped_domain($default){
 		// If Editor.
-		if( class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) ) {
+		if( class_exists("Upfront") && wp_get_theme()->parent() && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name") ) && isset( $_GET[ "editmode" ] ) ) {
 			// Use whatever admin mapping is.
 			return "mapped" === $this->_get_current_mapping_type( 'map_admindomain' );
 		// If Builder.
-		} elseif (class_exists("Upfront")  && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name")) && strpos($_SERVER['REQUEST_URI'], 'create_new')) {
+		} elseif (class_exists("Upfront") && wp_get_theme()->parent() && "upfront" ===  strtolower( wp_get_theme()->parent()->get("Name")) && strpos($_SERVER['REQUEST_URI'], 'create_new')) {
 			return false;
 		}
 		// If no editor or builder, use default.
