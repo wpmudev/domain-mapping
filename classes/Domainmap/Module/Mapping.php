@@ -116,6 +116,8 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_action('admin_init', 'route_domain');
 		// Login routing.
 		$this->_add_action('login_init', 'route_domain');
+		// Get rid of cookie warning.
+		$this->_add_action('login_init', 'allow_crosslogin');
 		// Frontend routing.
 		$this->_add_action('template_redirect', 'route_domain', 10);
 
