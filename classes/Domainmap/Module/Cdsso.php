@@ -199,7 +199,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function add_propagation_script() {
 		global $redirect_to, $user;
 
-
 		if ( !$this->_do_propagation ) {
 			return;
 		}
@@ -378,7 +377,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string
 	 */
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null){
-		global $wp_rewrite, $current_blog, $current_site;;
+		global $wp_rewrite, $current_blog, $current_site;
 
 
 
