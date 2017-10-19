@@ -141,7 +141,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$this->_add_filter( 'admin_url', 'admin_url', 99, 3 );
 		$this->_add_filter( 'rest_url', 'rest_url_scheme', 99, 4 );
 		if ( defined( 'DOMAIN_MAPPING' ) && filter_var( DOMAIN_MAPPING, FILTER_VALIDATE_BOOLEAN ) ) {
-			$this->_add_filter( 'login_url', 'set_proper_login_redirect', 2, 100 );
+			$this->_add_filter( 'login_url', 'set_proper_login_redirect_login', 3, 100 );
 			$this->_add_filter( 'logout_url', 'set_proper_login_redirect', 2, 100 );
 			$this->_add_filter( 'admin_url', 'set_proper_login_redirect', 2, 100 );
 			
@@ -1252,6 +1252,19 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 
 		return set_url_scheme( $redirect_to, $scheme );
+	}
+
+	/**
+	 * Login redirect filter
+	 * 
+	 * @param $redirect_to
+	 * @param $requested_redirect_to
+	 * @param $force_reauth
+	 * 
+	 * @see set_proper_login_redirect
+	 */
+	function set_proper_login_redirect_login( $redirect_to, $requested_redirect_to, $force_reauth ) {
+		return $this->set_proper_login_redirect( $redirect_to, $requested_redirect_to );
 	}
 
 
