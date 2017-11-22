@@ -12,6 +12,8 @@
 * Fixed: The plugins_url was being replaced by the mapped url, breaking site assets for some users.
 * Fixed: Force SSL settings not displaying the correct value.
 * Fixed: Multiple mapped domains without primary domain used the last mapped domain.
+* Fixed: Prevent incorrect cookies disabled warning when trying to login.
+* Fixed: Resolve conflict with Upfront Editor and Builder.
 
 == 4.4.2.5 ==
 * Removed: Support for WHMCS
