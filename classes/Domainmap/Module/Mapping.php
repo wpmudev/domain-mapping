@@ -259,7 +259,12 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
  			 * Login.
  			 */
 			if (self::utils()->is_login()) {
-				$use_mapped = ($this->_plugin->get_option( 'map_logindomain' ) === 'original' ? false : true);
+				// If main site, do not use mapped.
+				if (is_main_site()) {
+					$use_mapped = false;
+				} else {
+					$use_mapped = ($this->_plugin->get_option( 'map_logindomain' ) === 'original' ? false : true);
+				}
 			} else {
 				/*
 				 * Admin
@@ -270,7 +275,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 					$use_mapped = domain_map::utils()->is_mapped_domain();
 				// Otherwise return admin setting.
 				} else {
-					$use_mapped = ($admin_type === 'original' ? false : true);
+					$use_mapped = ($admin_type === 'original' || is_main_site() ? false : true);
 				}
 			}
 		}
