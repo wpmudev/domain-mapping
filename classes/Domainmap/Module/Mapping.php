@@ -1370,7 +1370,7 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 	// Override admin_url to prevent issues with relative ajaxurls, etc on some subdirectory setups.
 	// For example, we were getting the admin url appended to the admin url on mapped domains for some reason when the 'relative' scheme is used in core.
-	function admin_url($url, $path, $orig_scheme, $blog_id = null){
+	function admin_url($url, $path, $blog_id = null){
 		// Admin URL (Override scheme).
 		$url = get_site_url( $blog_id, 'wp-admin/', $this->use_ssl() ? 'https' : 'http' );
 		force_ssl_admin( $this->use_ssl() );
