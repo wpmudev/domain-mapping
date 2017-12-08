@@ -345,9 +345,9 @@ class Domainmap_Utils{
             }
         }
 
-        $is_original_domain = $domain === $this->get_original_domain()
-            || strpos($domain, "." . $this->get_original_domain())
-            || $domain === str_replace("www.", "", $this->get_original_domain() );
+        $original_domain = str_replace( "www.", "", $this->get_original_domain() );
+        $is_original_domain = $domain === $original_domain
+            || strpos($domain, "." . $original_domain );
         return apply_filters("dm_is_original_domain", $is_original_domain, $domain);
     }
 
