@@ -130,6 +130,12 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$filter = 'domainmaping_database_upgrade';
 		$option = 'domainmaping_database_version';
 
+		// check if tables are exist, if not then set db_version to false, so it's not block database upgradation.
+		$exists = $this->is_table_exists( DOMAINMAP_TABLE_MAP, true );
+		if ( !$exists ) {
+			update_site_option( $option, false );
+		}
+
 		// fetch current database version
 		$db_version = get_site_option( $option );
 		if ( $db_version === false ) {
@@ -165,6 +171,45 @@ class Domainmap_Module_System extends Domainmap_Module {
 	}
 
 	/**
+	 * Check tables for exists or not.
+	 *
+	 * @since 4.4.2.6
+	 *
+	 * @access public
+	 * @param string $table_name The current plugin version.
+	 * @param boolean $prefixed if the passed database already prefixed.
+	 * @return boolean.
+	 */
+	public function is_table_exists( $table_name, $prefixed = false ) {
+		
+		$exists = false;
+
+		// Add the prefix if already not prefixed
+		if ( !$prefixed ) {
+			$table_name = ( isset( $this->_wpdb->base_prefix ) ? $this->_wpdb->base_prefix : $this->_wpdb->prefix ) . $table_name;
+		}
+
+		if ( is_a( $this->_wpdb, 'm_wpdb' ) && isset( $this->_wpdb->dbhglobal ) ) {
+			// multi db is used, so we need to use bare functions to escape m_wpdb compatibility issues
+			$result = @mysqli_query( 'SHOW TABLES', $this->_wpdb->dbhglobal );
+			if ( $result ) {
+				while ( ( $row = @mysqli_fetch_array( $result, MYSQLI_NUM ) ) ) {
+					if ( $row[0] == $table_name ) {
+						$exists = true;
+						break;
+					}
+				}
+				@mysqli_free_result( $result );
+			}
+		} else {
+			// standard wpdb is used
+			$exists = in_array( $table_name, $this->_wpdb->get_col( 'SHOW TABLES' ) );
+		}
+
+		return $exists;
+	}
+
+	/**
 	 * Creates tables if they are not exists.
 	 *
 	 * @since 4.0.2
@@ -175,24 +220,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	 */
 	public function setup_database( $current_version ) {
 		// check if old table exists
-		$exists = false;
-		$old_table = ( isset( $this->_wpdb->base_prefix ) ? $this->_wpdb->base_prefix : $this->_wpdb->prefix ) . 'domain_map';
-		if ( is_a( $this->_wpdb, 'm_wpdb' ) && isset( $this->_wpdb->dbhglobal ) ) {
-			// multi db is used, so we need to use bare functions to escape m_wpdb compatibility issues
-			$result = @mysqli_query( 'SHOW TABLES', $this->_wpdb->dbhglobal );
-			if ( $result ) {
-				while ( ( $row = @mysqli_fetch_array( $result, MYSQLI_NUM ) ) ) {
-					if ( $row[0] == $old_table ) {
-						$exists = true;
-						break;
-					}
-				}
-				@mysqli_free_result( $result );
-			}
-		} else {
-			// standard wpdb is used
-			$exists = in_array( $old_table, $this->_wpdb->get_col( 'SHOW TABLES' ) );
-		}
+		$exists = $this->is_table_exists('domain_map');
 
 		// if old table exists, rename it
 		if ( $exists ) {
