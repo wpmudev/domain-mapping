@@ -130,8 +130,8 @@ class Domainmap_Module_System extends Domainmap_Module {
 		$filter = 'domainmaping_database_upgrade';
 		$option = 'domainmaping_database_version';
 
-		// check if tables are exist, if not then set db_version to false, so it's not block database upgradation.
-		$exists = $this->is_table_exists( DOMAINMAP_TABLE_MAP, true );
+		// Check if tables exist. If not, set db_version to false so it doesn't block database upgrade
+		$exists = $this->table_exists( DOMAINMAP_TABLE_MAP, true );
 		if ( !$exists ) {
 			update_site_option( $option, false );
 		}
@@ -171,7 +171,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	}
 
 	/**
-	 * Check tables for exists or not.
+	 * Checks if tables already exist in db or not.
 	 *
 	 * @since 4.4.2.6
 	 *
@@ -180,7 +180,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	 * @param boolean $prefixed if the passed database already prefixed.
 	 * @return boolean.
 	 */
-	public function is_table_exists( $table_name, $prefixed = false ) {
+	public function table_exists( $table_name, $prefixed = false ) {
 		
 		$exists = false;
 
@@ -210,7 +210,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	}
 
 	/**
-	 * Creates tables if they are not exists.
+	 * Creates tables if they do not exist.
 	 *
 	 * @since 4.0.2
 	 *
@@ -220,7 +220,7 @@ class Domainmap_Module_System extends Domainmap_Module {
 	 */
 	public function setup_database( $current_version ) {
 		// check if old table exists
-		$exists = $this->is_table_exists('domain_map');
+		$exists = $this->table_exists('domain_map');
 
 		// if old table exists, rename it
 		if ( $exists ) {
