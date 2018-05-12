@@ -236,6 +236,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 			// Return true or false.
 			return $this->use_mapped_for_customizer();
 		}
+
+		// If no mapped domain is set to even use.
+		if (!self::utils()->get_mapped_domain(false, false)) {
+			return false;
+		}
 		/*
 		 * Frontend
 		 */
