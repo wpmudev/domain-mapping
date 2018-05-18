@@ -241,7 +241,11 @@ class Domainmap_Utils{
         } else {
 
             if( !isset( self::$_schemes[ $domain  ] ) ){
-                $force_ssl_on_mapped_domain = self::$_schemes[ $domain ] = (int) $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+				$scheme = $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
+				if (isset($scheme)) {
+					$scheme = 2;
+				}
+                $force_ssl_on_mapped_domain = self::$_schemes[ $domain ] = (int) $scheme;
             }else{
                 $force_ssl_on_mapped_domain = self::$_schemes[ $domain ];
             }
