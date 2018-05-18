@@ -1296,9 +1296,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 
 		if( !self::utils()->is_login() || is_main_site() ) return $url;
 
-		$admin_mapping = $this->_plugin->get_option( 'map_admindomain' );
+		$admin_mapping = $this->use_mapped_domain();
 		
-		$scheme = (self::$_force_admin_ssl || is_ssl() ) ? "https" : "http";
+		$scheme = $this->use_ssl();
 		
 		if( $path === "wp-login.php" ){
 
