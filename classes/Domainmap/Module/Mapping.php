@@ -268,7 +268,11 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				if (is_main_site()) {
 					$use_mapped = false;
 				} else {
-					$use_mapped = ($this->_plugin->get_option( 'map_logindomain' ) === 'original' ? false : true);
+					if ( $this->_plugin->get_option( 'map_logindomain' ) === 'user' ) {
+						$use_mapped = domain_map::utils()->is_mapped_domain();
+					} else {
+						$use_mapped = ($this->_plugin->get_option( 'map_logindomain' ) === 'original' ? false : true);
+					}
 				}
 			} else {
 				/*
