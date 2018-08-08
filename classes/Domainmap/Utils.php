@@ -242,7 +242,7 @@ class Domainmap_Utils{
 
             if( !isset( self::$_schemes[ $domain  ] ) ){
 				$scheme = $this->_wpdb->get_var( $this->_wpdb->prepare("SELECT `scheme` FROM `" . DOMAINMAP_TABLE_MAP . "` WHERE `domain`=%s", $domain) );
-				if (isset($scheme)) {
+				if ( ! isset( $scheme ) ) {
 					$scheme = 2;
 				}
                 $force_ssl_on_mapped_domain = self::$_schemes[ $domain ] = (int) $scheme;
