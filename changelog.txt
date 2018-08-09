@@ -1,8 +1,9 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
-== 4.4.3.3 ==
+== 4.4.3.3-beta.1 ==
 * Fix: https://app.asana.com/0/211855939023775/715474321067502/f
 * Fix: https://app.asana.com/0/211855939023775/727898790527841/f
+* Fix: https://app.asana.com/0/211855939023775/735884941188565/f
 
 == 4.4.3.2 ==
 * Fix mixed content issues with SSL when logging into a subsite.
