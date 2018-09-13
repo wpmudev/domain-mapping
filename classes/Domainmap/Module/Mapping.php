@@ -95,6 +95,13 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private $_determined_domain = false;
 
 	/**
+	 * Original domain.
+	 *
+	 * @var bool|string
+	 */
+	private $_original = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.3
@@ -595,13 +602,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private function _get_current_mapping_type( $option ) {
 		$mapping = $this->_plugin->get_option( $option );
 		if ( $mapping != 'original' && $mapping != 'mapped' ) {
-			$original = $this->_wpdb->get_var( sprintf(
-				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
-				$this->_wpdb->options
-			) );
+			if ( false === $this->_original ) {
+				$this->_original = $this->_wpdb->get_var( sprintf(
+					"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
+					$this->_wpdb->options
+				) );
+			}
 
-			if ( $original ) {
-				$components = self::utils()->parse_mb_url( $original );
+			if ( $this->_original ) {
+				$components = self::utils()->parse_mb_url( $this->_original );
 				$mapping = isset( $components['host'] ) && $_SERVER['HTTP_HOST'] == $components['host']
 					? 'original'
 					: 'mapped';
