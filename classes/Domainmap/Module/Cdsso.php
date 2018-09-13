@@ -182,7 +182,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 */
 	public function get_login_message( $message ) {
 		return $this->_do_propagation
-				? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to desired page during next 5 seconds.', 'domainmap' ) . '</p>'
+				? '<p class="message">' . esc_html__( 'You have logged in successfully. You will be redirected to the desired page during the next 5 seconds.', 'domainmap' ) . '</p>'
 				: $message;
 	}
 
