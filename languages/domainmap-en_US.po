@@ -1,19 +1,24 @@
-# Copyright (C) 2018 Domain Mapping
-# This file is distributed under the same license as the Domain Mapping package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Domain Mapping 4.4.3.3-beta.2\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/domain-mapping\n"
-"POT-Creation-Date: 2018-09-13 11:57:23+00:00\n"
+"Project-Id-Version: Domain Mapping\n"
+"POT-Creation-Date: 2017-04-13 00:12+0300\n"
+"PO-Revision-Date: 2017-04-13 00:13+0300\n"
+"Last-Translator: \n"
+"Language-Team: WPMUDEV <info@wpmudev.org>\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-09-13 15:23+0300\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_US\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.9\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: domain-mapping.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
 
 #: classes/Domainmap/Module/Admin.php:74
 #: classes/Domainmap/Table/MappedDomains/Listing.php:55
@@ -41,16 +46,16 @@ msgid "Multiple domains are not allowed."
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Map.php:227
-#: classes/Domainmap/Module/Ajax/Purchase.php:106
+#: classes/Domainmap/Module/Ajax/Purchase.php:107
 msgid "Domain name is invalid."
 msgstr ""
 
 #: classes/Domainmap/Module/Ajax/Map.php:229
-#: classes/Domainmap/Module/Ajax/Purchase.php:108
+#: classes/Domainmap/Module/Ajax/Purchase.php:109
 msgid "Domain name is prohibited."
 msgstr ""
 
-#: classes/Domainmap/Module/Ajax/Purchase.php:102
+#: classes/Domainmap/Module/Ajax/Purchase.php:103
 msgid "is not available to purchase"
 msgstr ""
 
@@ -58,13 +63,13 @@ msgstr ""
 msgid "The reseller doesn't support account registration."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:185
+#: classes/Domainmap/Module/Cdsso.php:186
 msgid ""
-"You have logged in successfully. You will be redirected to the desired page "
-"during the next 5 seconds."
+"You have logged in successfully. You will be redirected to desired page "
+"during next 5 seconds."
 msgstr ""
 
-#: classes/Domainmap/Module/Cdsso.php:571
+#: classes/Domainmap/Module/Cdsso.php:573
 msgid "Incorrect or out of date login key"
 msgstr ""
 
@@ -75,7 +80,7 @@ msgid "Domain Mapping"
 msgstr ""
 
 #: classes/Domainmap/Module/Pages.php:106
-#: classes/Domainmap/Render/Site/Map.php:359
+#: classes/Domainmap/Render/Site/Map.php:351
 msgid "Map domain"
 msgstr ""
 
@@ -219,18 +224,21 @@ msgid "Options updated."
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:76
+#, php-format
 msgid ""
 "Please copy the sunrise.php from your plugin folder %s into %s.<br/>In your "
 "%s file please uncomment or add (if not available) the following code: %s"
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:87
+#, php-format
 msgid ""
 "You are using an old version of %s file. Please, replace that file with a "
 "new version which is located by following path: %s."
 msgstr ""
 
 #: classes/Domainmap/Render/Network/Options.php:99
+#, php-format
 msgid ""
 "If you've not already added %s then please do so. If you added the constant "
 "be sure to uncomment this line: %s in the %s file."
@@ -460,6 +468,7 @@ msgid "Don't use any"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Purchase.php:56
+#, php-format
 msgid ""
 "You are about to purchase domain name %s and pay %s for 1 year of usage. "
 "Please, fill in the form below and click on purchase button. Pay attention "
@@ -851,6 +860,7 @@ msgid ""
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:47
+#, php-format
 msgid ""
 "Keep in mind that to start using eNom API you have to add your server IP "
 "address in the live environment. Go to %s, click \"Launch the Support Center"
@@ -933,6 +943,7 @@ msgid "SSL Certificate Verification:"
 msgstr ""
 
 #: classes/Domainmap/Render/Reseller/Enom/Settings.php:183
+#, php-format
 msgid ""
 "If you have a list of %scertificate authorities%s installed on your web "
 "server, then it is strongly recommended to enable SSL certificate "
@@ -1020,61 +1031,57 @@ msgstr ""
 msgid "Excluded pages: "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:248
+#: classes/Domainmap/Render/Site/Map.php:244
 msgid ""
 "Pages selected here will not be mapped and can optionally force https, If "
 "you set the domain to use https, the following \"force/unforce SSL will be "
 "ignored\" "
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:250
-msgid "Pages selected here will not be mapped."
-msgstr ""
-
-#: classes/Domainmap/Render/Site/Map.php:271
+#: classes/Domainmap/Render/Site/Map.php:263
 msgid "Add page URLs below to have excluded:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:275
-#: classes/Domainmap/Render/Site/Map.php:287
+#: classes/Domainmap/Render/Site/Map.php:267
+#: classes/Domainmap/Render/Site/Map.php:279
 msgid ""
 "Please enter absolute URLs (starting with http:// or https://), URLs should "
 "be comma separated"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:283
+#: classes/Domainmap/Render/Site/Map.php:275
 msgid "Add page urls below to force https:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:290
+#: classes/Domainmap/Render/Site/Map.php:282
 msgid "Save excluded pages"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:321
+#: classes/Domainmap/Render/Site/Map.php:313
 msgid "Disabled and entered domain should be used"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:322
+#: classes/Domainmap/Render/Site/Map.php:314
 msgid "Directed to mapped (primary) domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:323
+#: classes/Domainmap/Render/Site/Map.php:315
 msgid "Directed to original domain"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:332
+#: classes/Domainmap/Render/Site/Map.php:324
 msgid "Front end redirect should be:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:347
+#: classes/Domainmap/Render/Site/Map.php:339
 msgid "Map new domain name:"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Map.php:353
+#: classes/Domainmap/Render/Site/Map.php:345
 msgid "Force none"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Purchase.php:50
+#: classes/Domainmap/Render/Site/Purchase.php:49
 msgid ""
 "If you want to buy an unique domain name and map it to your site, then you "
 "can do it on this page. Check whether desired domain name is available, and "
@@ -1083,46 +1090,13 @@ msgid ""
 "automatically."
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Purchase.php:54
+#: classes/Domainmap/Render/Site/Purchase.php:53
 #: classes/Domainmap/Reseller.php:330
 msgid "Check domain availability"
 msgstr ""
 
-#: classes/Domainmap/Render/Site/Purchase.php:70
+#: classes/Domainmap/Render/Site/Purchase.php:69
 msgid "Check domain"
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:142
-msgid ""
-"Unexpected error appears during request processing. Please, try again later."
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:247
-msgid "eNom credit card processing services"
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:251
-msgid "Pro Sites PayPal payment gateway"
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:601
-#: classes/Domainmap/Reseller/Enom.php:919
-msgid "Your name"
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:691
-msgid "Purchase this domain with PayPal Express Checkout."
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:733
-msgid "Payment for 1 year usage of the domain name."
-msgstr ""
-
-#: classes/Domainmap/Reseller/Enom.php:983
-msgid ""
-"We received unexpected result from eNom server. Try to resubmit your form "
-"again and if you receive information that such login is already exists, then "
-"it means that current request was processed successfully."
 msgstr ""
 
 #: classes/Domainmap/Reseller.php:329
@@ -1157,6 +1131,43 @@ msgstr ""
 msgid "per year"
 msgstr ""
 
+#: classes/Domainmap/Reseller/Enom.php:142
+msgid ""
+"Unexpected error appears during request processing. Please, try again later."
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:247
+msgid "eNom credit card processing services"
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:251
+msgid "Pro Sites PayPal payment gateway"
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:599
+#: classes/Domainmap/Reseller/Enom.php:902
+msgid "Your name"
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:689
+msgid "Purchase this domain with PayPal Express Checkout."
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:731
+msgid "Payment for 1 year usage of the domain name."
+msgstr ""
+
+#: classes/Domainmap/Reseller/Enom.php:966
+msgid ""
+"We received unexpected result from eNom server. Try to resubmit your form "
+"again and if you receive information that such login is already exists, then "
+"it means that current request was processed successfully."
+msgstr ""
+
+#: classes/Domainmap/Table.php:44
+msgid "Search"
+msgstr ""
+
 #: classes/Domainmap/Table/ExcludedPages/Listing.php:53
 #: classes/Domainmap/Table/ExcludedPages/Listing.php:235
 msgid "Search pages"
@@ -1183,6 +1194,7 @@ msgid "ssl forced"
 msgstr ""
 
 #: classes/Domainmap/Table/ExcludedPages/Listing.php:283
+#, php-format
 msgid "1 item"
 msgid_plural "%s items"
 msgstr[0] ""
@@ -1281,15 +1293,12 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: classes/Domainmap/Table.php:44
-msgid "Search"
-msgstr ""
-
-#: classes/class.domainmap.php:317
+#: classes/class.domainmap.php:348
 msgid "IP not set by admin yet."
 msgstr ""
 
-#: classes/class.domainmap.php:468
+#: classes/class.domainmap.php:431
+#, php-format
 msgid ""
 "WHMCS is no longer supported in %s . Please check and update your <a href="
 "\"%s\">Reseller options</a>"
