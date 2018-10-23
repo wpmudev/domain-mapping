@@ -81,7 +81,7 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 
 		$this->_add_action( 'login_form_login', 'set_auth_script_for_login' );
 		$this->_add_action( 'login_footer', 'add_propagation_script' );
-		$this->_add_filter( 'logout_redirect", "logout_user_from_everywhere' );
+		$this->_add_filter( 'logout_redirect', 'logout_user_from_everywhere' );
 
 		if( !$this->_async ){
 			$this->_add_action( 'plugins_loaded', 'authorize_user' );
