@@ -243,7 +243,8 @@ class Domainmap_Render_Site_Map extends Domainmap_Render_Site {
 			<span class="description">
 				<?php
 				// Change wording depending upon permissions to force SSL on pages.
-				if (!empty(Domainmap_Plugin::instance()->get_option("map_allow_forced_pages", true))) {
+				$allow_forced_pages = Domainmap_Plugin::instance()->get_option("map_allow_forced_pages", true);
+				if (!empty($allow_forced_pages)) {
 					_e('Pages selected here will not be mapped and can optionally force https, If you set the domain to use https, the following "force/unforce SSL will be ignored" ', domain_map::Text_Domain); 
 				} else {
 					_e('Pages selected here will not be mapped.', domain_map::Text_Domain); 

@@ -679,7 +679,7 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 						<input type="hidden" name="nonce" value="%s">
 						<input type="hidden" name="sld" value="%s">
 						<input type="hidden" name="tld" value="%s">
-						<button type="submit" class="domainmapping-transparent-button"><img src="http://www.paypalobjects.com/%s/i/btn/btn_buynow_LG.gif" alt="%s"></button>
+						<button type="submit" class="domainmapping-transparent-button"><img src="https://www.paypalobjects.com/%s/i/btn/btn_buynow_LG.gif" alt="%s"></button>
 					</form>
 					',
 					admin_url( 'admin-ajax.php' ),

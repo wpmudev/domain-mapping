@@ -1,5 +1,18 @@
 * Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
+== 4.4.3.3 ==
+* Fixed: Use original domain for admin section doesn't work for login
+* Fixed: http/https mapping redirect is not respected
+* Fixed: Enom PayPal Checkout Image is called via HTTP
+* Fixed: Reduce query workload for getting original domain
+
+== 4.4.3.2 ==
+* Fix mixed content issues with SSL when logging into a subsite.
+
+== 4.4.3.1 ==
+* Fixed: Prevent mapping defaulting to original when redirection has not yet
+been set.
+
 == 4.4.3 ==
 * Fixed: WordPress Rest URL
 * Fixed: Force admin https URL Redirect loop
