@@ -205,6 +205,14 @@ class Domainmap_Module_System extends Domainmap_Module {
 			// standard wpdb is used
 			$exists = in_array( $table_name, $this->_wpdb->get_col( 'SHOW TABLES' ) );
 		}
+		
+		if ( ! $exists ) {
+		    global $wpdb;
+
+		    if ( $wpdb->get_var( $wpdb->prepare("SHOW TABLES LIKE '%s'", $table_name ) ) == $table_name ) {
+		        $exists = true;
+		    }
+		}
 
 		return $exists;
 	}
