@@ -134,6 +134,8 @@ class domain_map {
 		if ( defined( 'DOMAIN_MAPPING' ) ) {
 			// filter the content with any original urls and change them to the mapped urls
 			add_filter( 'the_content', array( &$this, 'domain_mapping_post_content' ) );
+			// filter the wpml links with any original urls and change them to the mapped urls
+			add_filter( 'wpml_ls_html', array( &$this, 'domain_mapping_post_content' ) );
 			// Jump in just before header output to change base_url - until a neater method can be found
 			add_filter( 'print_head_scripts', array( &$this, 'reset_script_url' ), 1, 1);
 
