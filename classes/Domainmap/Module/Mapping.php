@@ -163,6 +163,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		} elseif ( is_admin() ) {
 			$this->_add_filter( 'home_url',           'swap_mapped_url', 10, 4 );
 			$this->_add_filter( 'pre_option_home',    'swap_root_url' );
+			// Fix For WPML -> Languages -> language url format -> different language in directories
+			$this->_add_filter( 'wpml_url_converter_get_abs_home', 'swap_mapped_url' );
+			$this->_add_filter( 'wpml_url_converter_get_abs_home', 'swap_root_url' );
 		}
 
 		$this->_add_filter("preview_post_link", "post_preview_link_from_original_domain_to_mapped_domain", 10, 2);
