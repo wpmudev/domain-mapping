@@ -199,7 +199,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	public function add_propagation_script() {
 		global $redirect_to, $user;
 
-		if ( !$this->_do_propagation ) {
+		$do_propagation = apply_filters( 'dm_do_propagation', $this->_do_propagation );
+
+		if ( !$do_propagation ) {
 			return;
 		}
 
