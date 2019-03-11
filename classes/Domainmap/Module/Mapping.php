@@ -677,11 +677,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		}
 	}
 
-
-	
-
-
-
 	/**
 	 * Swaps URL from original to mapped one.
 	 *
