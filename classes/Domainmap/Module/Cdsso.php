@@ -164,7 +164,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string The income redirection URL.
 	 */
 	public function set_interim_login( $redirect_to, $requested_redirect_to, $user ) {
-
 		global $interim_login;
 
 		if ( is_a( $user, 'WP_User' ) && get_current_blog_id() != 1 ) {
@@ -254,7 +253,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @access public
 	 */
 	public function add_auth_script() {
-
 		if ( is_user_logged_in()
 		     || 1 === get_current_blog_id()
 		     || filter_input( INPUT_GET, self::ACTION_KEY ) == self::ACTION_AUTHORIZE_USER
@@ -391,16 +389,26 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @return string
 	 */
 	private function _get_sso_endpoint_url( $subsite = false, $domain = null ) {
-		global $wp_rewrite, $current_blog, $current_site;
+		global $wp_rewrite, $current_blog;
 
-
+		// If requested for a sub site.
 		if ( $subsite ) {
-			$domain         = is_null( $domain ) ? $current_blog->domain : $domain;
+			// Get current domain if not given.
+			$domain = is_null( $domain ) ? $current_blog->domain : $domain;
+			// Check mapped domain scheme.
 			$subsite_scheme = self::utils()->get_mapped_domain_scheme( $domain );
-			$url            = trailingslashit( set_url_scheme( "http://" . $domain, $subsite_scheme ) );
+			// Get url with trailing slash.
+			$url = trailingslashit( set_url_scheme( "http://" . $domain, $subsite_scheme ) );
 		} else {
-			$admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : "http";
-			$url          = trailingslashit( set_url_scheme( network_home_url( "/" ), $admin_scheme ) );
+			// Ok, get the main site SSO url.
+			$admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : false;
+			// If scheme is set.
+			if ( $admin_scheme ) {
+				$url = trailingslashit( set_url_scheme( network_home_url( "/" ), $admin_scheme ) );
+			} else {
+				// Else, get network home url.
+				$url = trailingslashit( network_home_url() );
+			}
 		}
 
 		return $wp_rewrite->using_permalinks() ? $url . self::SSO_ENDPOINT . "/" . time() . "/" : $url . "?" . self::SSO_ENDPOINT . "=" . time();
@@ -413,7 +421,6 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 	 * @since 4.3.1
 	 */
 	function dispatch_ajax_request() {
-
 		global $wp_query;
 
 		if ( ! isset( $wp_query->query_vars[ self::SSO_ENDPOINT ] ) ) {
@@ -552,11 +559,10 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 		var where = document.getElementsByTagName('script')[0];
 		where.parentNode.insertBefore(iframe, where);
 		var doc = iframe.contentWindow.document;
-		doc.open().write('
-		<body onload="'+
-								'var js = document.createElement(\'script\');'+
-								'js.src = \''+ url +'\';'+
-								'document.body.appendChild(js);">');
+		doc.open().write( '<body onload="'+
+									'var js = document.createElement(\'script\');'+
+									'js.src = \''+ url +'\';'+
+									'document.body.appendChild(js);">');
 		doc.close();
 
 		}(parent.top.window));
