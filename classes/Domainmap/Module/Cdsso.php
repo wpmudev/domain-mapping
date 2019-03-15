@@ -400,9 +400,9 @@ class Domainmap_Module_Cdsso extends Domainmap_Module {
 			// Get url with trailing slash.
 			$url = trailingslashit( set_url_scheme( "http://" . $domain, $subsite_scheme ) );
 		} else {
-			// Ok, get the main site SSO url.
+			// Check if ssl is forced.
 			$admin_scheme = self::utils()->get_admin_scheme() ? self::utils()->get_admin_scheme() : false;
-			// If scheme is set.
+			// If forced, we should use that.
 			if ( $admin_scheme ) {
 				$url = trailingslashit( set_url_scheme( network_home_url( "/" ), $admin_scheme ) );
 			} else {
