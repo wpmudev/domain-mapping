@@ -52,7 +52,7 @@ class domain_map {
 	 * @since 4.3.1
 	 * @param string FLUSHED_REWRITE_RULES
 	 */
-	const FLUSHED_REWRITE_RULES = 'domainmap-flushed-rules-4_4_2_0';
+	const FLUSHED_REWRITE_RULES = 'domainmap-flushed-rules-4_4_3_4';
 
     /**
      * Key to cache force ssl state
