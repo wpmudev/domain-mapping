@@ -1,4 +1,8 @@
-* Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
+== 4.4.3.4 ==
+* Added: New filter dm_do_propagation to skip propagation script.
+* Improved: Repair logout_redirect filter syntax.
+* Improved: Avoid using deprecated create_function function.
+* Fixed: Cross domain url was generated based on force ssl settings.
 
 == 4.4.3.3 ==
 * Fixed: Use original domain for admin section doesn't work for login
@@ -233,6 +237,7 @@ development
 * Added dm_home_url() to retrieve home url with original domain when in ssl connection
 * Added dm_site_url() to retrieve site url with original domain when in ssl connection
 * Fixed wording for error notifications while adding a new domain
+* Speed up DNS A record detection on network settings and allow disabling it via DM_SKIP_DNS_CHECK define
 
 == 4.1.2.1 ==
 
