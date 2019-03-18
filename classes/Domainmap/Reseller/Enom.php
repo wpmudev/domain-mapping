@@ -96,7 +96,13 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		$sslverify = !isset( $options[self::RESELLER_ID]['sslverification'] ) || $options[self::RESELLER_ID]['sslverification'] == 1;
-		$response = wp_remote_get( $endpoint . http_build_query( $args ), array( 'sslverify' => $sslverify ) );
+		$response  = wp_remote_get(
+			$endpoint . http_build_query( $args ),
+			array(
+				'sslverify' => $sslverify,
+				'timeout'   => 120,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
