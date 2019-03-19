@@ -341,7 +341,7 @@
     $("input[name='map_crossautologin']").on("change", function(){
 
         var $this = $(this),
-            $child_list = $(".domainmapping-child-list-crossautologin");
+            $child_list = $(".domainmapping-child-list-crossautologin, .domainmapping-info-crossautologin-ssl");
         if( $this.val() === "1"){
             $child_list.slideDown();
         }else{

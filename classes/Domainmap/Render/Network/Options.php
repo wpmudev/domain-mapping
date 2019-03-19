@@ -293,6 +293,11 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 				<?php _e( "Load Cross-domain autologin asynchronously", 'domainmap' ) ?><br>
 			</label>
 		</div>
+		<?php if ( ! is_ssl() ) : ?>
+			<div class="domainmapping-info domainmapping-info-crossautologin-ssl <?php echo $selected ? '' : 'domainmapping-child-list-hidden' ?>">
+				<p><?php printf( __( 'When a subsite is on %1$shttps%2$s, the main site should also be on %1$shttps%2$s. Otherwise Cross-domain will not work due to the browser restrictions.', 'domainmap' ), '<strong>', '</strong>' ); ?></p>
+			</div>
+		<?php endif; ?>
 	<?php
 	}
 
