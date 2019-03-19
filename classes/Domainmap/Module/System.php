@@ -205,11 +205,13 @@ class Domainmap_Module_System extends Domainmap_Module {
 			// standard wpdb is used
 			$exists = in_array( $table_name, $this->_wpdb->get_col( 'SHOW TABLES' ) );
 		}
-		
+
+		// In case we still couldn't find, try normal query.
 		if ( ! $exists ) {
 		    global $wpdb;
 
-		    if ( $wpdb->get_var( $wpdb->prepare("SHOW TABLES LIKE '%s'", $table_name ) ) == $table_name ) {
+			// Check if a matching table found.
+		    if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE '%s'", $table_name ) ) == $table_name ) {
 		        $exists = true;
 		    }
 		}
