@@ -44,6 +44,9 @@ if ( defined( 'COOKIE_DOMAIN' ) ) {
 // Get the current domain.
 $using_domain = strtolower( preg_replace( "/^www\./", "", $_SERVER['HTTP_HOST'] ) );
 
+// Set cookie domain.
+define( 'COOKIE_DOMAIN', $_SERVER['HTTP_HOST'] );
+
 $s_e = $wpdb->suppress_errors();
 
 // Check for the domain with and without the www. prefix
@@ -54,9 +57,6 @@ $wpdb->suppress_errors( $s_e );
 
 // If not empty, continue.
 if ( ! empty( $mapped ) ) {
-	// Set cookie domain for mapped sites only.
-	define( 'COOKIE_DOMAIN', $_SERVER['HTTP_HOST'] );
-
     // Set to globals.
     $GLOBALS['dm_mapped'] = $mapped;
 
