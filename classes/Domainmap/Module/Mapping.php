@@ -464,12 +464,15 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 		$mapped_url = untrailingslashit( set_url_scheme( "http://" . $mapped_domain . $current_site->path,  $force_ssl ? 'https' :  'http') );
 
 		if ( strtolower( $mapped_url ) != strtolower( $current_url ) ) {
-			// strip out any subdirectory blog names
-			$request = str_replace( "/a" . $current_blog->path, "/", "/a" . $_SERVER['REQUEST_URI'] );
+			// Decode url and replace the redirect link to mapped.
+			$request = str_replace( $current_url, $mapped_url, urldecode( $_SERVER['REQUEST_URI'] ) );
+			// Strip out any subdirectory blog names.
+			$request = str_replace( $current_blog->path, '/', $request );
 			if ( $request != $_SERVER['REQUEST_URI'] ) {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $request, true, 301 );
 			} else {
+				error_log('url second : ' . $mapped_url . $_SERVER['REQUEST_URI']);
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $_SERVER['REQUEST_URI'], true, 301 );
 			}
