@@ -475,7 +475,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $request, true, 301 );
 			} else {
-				error_log('url second : ' . $mapped_url . $_SERVER['REQUEST_URI']);
 				header( "HTTP/1.1 301 Moved Permanently", true, 301 );
 				header( "Location: " . $mapped_url . $_SERVER['REQUEST_URI'], true, 301 );
 			}
