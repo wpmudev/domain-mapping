@@ -73,7 +73,7 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 		if ( !file_exists( WP_CONTENT_DIR . '/sunrise.php' ) ) {
 			echo '<div class="domainmapping-info domainmapping-info-error">';
 			printf(
-				__( 'Please copy the sunrise.php from your plugin folder %s into %s.<br/>In your %s file please uncomment or add (if not available) the following code: %s', 'domainmap' ),
+				__( 'Please move the sunrise.php from your plugin folder %s into %s.<br/>In your %s file please uncomment or add (if not available) the following code: %s', 'domainmap' ),
 				'<b>'.DOMAINMAP_ABSPATH.'/sunrise.php</b>',
 				'<b>' . WP_CONTENT_DIR . '/sunrise.php</b>',
 				'<b>' . ABSPATH . 'wp-config.php</b>',
