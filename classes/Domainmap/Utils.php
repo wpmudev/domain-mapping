@@ -653,4 +653,46 @@ class Domainmap_Utils{
         return empty($name) ? 'global' : $name;
     }
 
+	/**
+	 * Get server IP address from DNS.
+	 *
+	 * This will fallback to $_SERVER vars if we get
+	 * a local IP address from DNS.
+	 *
+	 * @param string $domain Domain for DNS check.
+	 * @param bool $force_dns_check Should force even if DNS check is disabled.
+	 *
+	 * @since 4.4.3.4
+	 *
+	 * @return array
+	 */
+    public function get_dns_ips( $domain, $force_dns_check = true ) {
+	    $ips = array();
+
+	    // Basic checks.
+	    if ( empty( $domain ) || ( defined( 'DM_SKIP_DNS_CHECK' ) && ! $force_dns_check ) ) {
+		    return $ips;
+	    }
+
+	    // Get DNS records.
+	    if ( function_exists( 'dns_get_record' ) ) {
+		    $host = parse_url( $domain, PHP_URL_HOST );
+		    $dns = @dns_get_record( $host, DNS_A );
+		    if ( is_array( $dns ) ) {
+			    $ips = wp_list_pluck( $dns, 'ip' );
+		    }
+	    }
+
+	    // In case we have localhost IP address, try to get the real IP using server vars.
+	    if ( count( $ips ) === 1 && '127.0.1.1' == $ips[0] && ! empty( $_SERVER['SERVER_ADDR'] ) ) {
+		    // Filter IP address.
+		    $ip = filter_var( $_SERVER['SERVER_ADDR'], FILTER_VALIDATE_IP );
+		    // Consider only if valid.
+		    if ( ! empty( $ip ) ) {
+			    $ips[0] = $ip;
+		    }
+	    }
+
+	    return $ips;
+    }
 }

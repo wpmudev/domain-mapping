@@ -526,14 +526,10 @@ class Domainmap_Reseller_Enom extends Domainmap_Reseller {
 		}
 
 		// looks like server ip addresses are not set, then try to read it automatically
-		if ( empty( $ips ) && function_exists( 'dns_get_record' ) ) {
+		if ( empty( $ips ) ) {
 			// fetch unchanged domain name from database, because get_option function could return mapped domain name
 			$basedomain = parse_url( $wpdb->get_var( "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'siteurl'" ), PHP_URL_HOST );
-			// fetch domain DNS A records
-			$dns = @dns_get_record( $basedomain, DNS_A );
-			if ( is_array( $dns ) ) {
-				$ips = wp_list_pluck( $dns, 'ip' );
-			}
+			$ips = domain_map::utils()->get_dns_ips( $basedomain );
 		}
 
 		// if we have an ip address to populate DNS record, then try to detect if we use shared or dedicated hosting

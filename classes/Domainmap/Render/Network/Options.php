@@ -167,14 +167,8 @@ class Domainmap_Render_Network_Options extends Domainmap_Render_Network {
 	 * @access private
 	 */
 	private function _render_domain_configuration() {
-		$ips = false;
-		if ( function_exists( 'dns_get_record' ) && !empty( $this->basedomain ) && !defined( 'DM_SKIP_DNS_CHECK' ) ) {
-			$host = parse_url( $this->basedomain, PHP_URL_HOST );
-			$dns = @dns_get_record( $host, DNS_A );
-			if ( is_array( $dns ) ) {
-				$ips = wp_list_pluck( $dns, 'ip' );
-			}
-		}
+		// Get the IP address.
+		$ips = domain_map::utils()->get_dns_ips( $this->basedomain, false );
 
 		?><h4 class="domainmapping-block-header"><?php _e( 'Domain mapping configuration', 'domainmap' ) ?></h4>
 		<p>
