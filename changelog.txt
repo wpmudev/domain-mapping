@@ -1,8 +1,25 @@
 == 4.4.3.4 ==
 * Added: New filter dm_do_propagation to skip propagation script.
+* Added: New notice about SSL requirement for SSO.
 * Improved: Repair logout_redirect filter syntax.
 * Improved: Avoid using deprecated create_function function.
+* Improved: Avoid duplicate DB queries.
+* Improved: Update sunrise.php message.
 * Fixed: Cross domain url was generated based on force ssl settings.
+* Fixed: Wrong IP address in WPMUDEV hosting.
+* Fixed: DB error when Multi DB is active.
+* Fixed: Warnings on PHP 7.2.
+* Fixed: Wrong redirect url when adminitstration mapping is set to mapped domain.
+* Fixed: Enom registration is not working.
+* Fixed: Jetpack sitemap error on mapped domain.
+* Fixed: Cross Domain login on subdirectory multisite was not working.
+* Fixed: HTTPS was always forced.
+* Fixed: Divi builder was not loading.
+* Fixed: Conflict with Beaver Builder.
+* Fixed: Broken customize link.
+* Fixed: WPML language links for the mapped domain is wrong in WPML admin area.
+* Fixed: When logging into original domain, user is redirected to mapped frontend.
+* Fixed: Mapped domains show as invalid, although they appear to be working.
 
 == 4.4.3.3 ==
 * Fixed: Use original domain for admin section doesn't work for login
