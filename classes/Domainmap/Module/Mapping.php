@@ -95,13 +95,6 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private $_determined_domain = false;
 
 	/**
-	 * Original domain.
-	 *
-	 * @var bool|string
-	 */
-	private $_original = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 4.0.3
