@@ -701,29 +701,29 @@ class Domainmap_Utils{
 	 *
 	 * @return bool|null|string
 	 */
-    public function get_original_siteurl( $blog_id = false ) {
-	    // If no blog id is passed, then take current one
-	    if ( ! $blog_id ) {
-		    $blog_id = get_current_blog_id();
-	    }
+	public function get_original_siteurl( $blog_id = false ) {
+		// If no blog id is passed, then take current one
+		if ( ! $blog_id ) {
+			$blog_id = get_current_blog_id();
+		}
 
-	    // Check if we have already found original domain for the blog.
-	    if ( ! isset( $blog_id, self::$_original_domains ) ) {
-		    // Get the site url.
-		    $site_url = $this->_wpdb->get_var( $this->_wpdb->prepare(
-			    "SELECT option_value FROM %s WHERE option_name = 'siteurl'",
-			    $this->_wpdb->options
-		    ) );
+		// Check if we have already found original domain for the blog.
+		if ( ! isset( $blog_id, self::$_original_domains ) ) {
+			// Get the site url.
+			$site_url = $this->_wpdb->get_var( $this->_wpdb->prepare(
+				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
+				$this->_wpdb->options
+			) );
 
-		    // If a value found, store the value and return.
-		    if ( ! empty( $site_url ) ) {
-			    // Store to cache.
-			    self::$_original_domains[ $blog_id ] = $site_url;
+			// If a value found, store the value and return.
+			if ( ! empty( $site_url ) ) {
+				// Store to cache.
+				self::$_original_domains[ $blog_id ] = $site_url;
 
-			    return $site_url;
-		    }
-	    }
+				return $site_url;
+			}
+		}
 
-	    return false;
-    }
+		return false;
+	}
 }
