@@ -607,15 +607,9 @@ class Domainmap_Module_Mapping extends Domainmap_Module {
 	private function _get_current_mapping_type( $option ) {
 		$mapping = $this->_plugin->get_option( $option );
 		if ( $mapping != 'original' && $mapping != 'mapped' ) {
-			if ( false === $this->_original ) {
-				$this->_original = $this->_wpdb->get_var( sprintf(
-					"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
-					$this->_wpdb->options
-				) );
-			}
-
-			if ( $this->_original ) {
-				$components = self::utils()->parse_mb_url( $this->_original );
+			$original_url = domain_map::utils()->get_original_siteurl();
+			if ( $original_url ) {
+				$components = self::utils()->parse_mb_url( $original_url );
 				$mapping = isset( $components['host'] ) && $_SERVER['HTTP_HOST'] == $components['host']
 					? 'original'
 					: 'mapped';

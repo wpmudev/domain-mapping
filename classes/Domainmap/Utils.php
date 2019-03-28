@@ -566,21 +566,14 @@ class Domainmap_Utils{
             $blog_id = get_current_blog_id();
         }
 
-        // check if we have already found original domain for the blog
-        if ( !array_key_exists( $blog_id, self::$_original_domains ) ) {
-            self::$_original_domains[$blog_id] = $this->_wpdb->get_var( sprintf(
-                "SELECT option_value FROM %s WHERE option_name = 'siteurl'",
-                $this->_wpdb->options
-            ) );
-        }
+        $site_url = self::get_original_siteurl( $blog_id );
 
-        if ( empty( self::$_original_domains[$blog_id] ) ) {
+        if ( empty( $site_url ) ) {
             return $url;
         }
 
         $url_components = $this->parse_mb_url( $url );
-        $orig_components = $this->parse_mb_url( self::$_original_domains[$blog_id] );
-
+        $orig_components = $this->parse_mb_url( $site_url );
 
         $url_components['host'] = $orig_components['host'];
 
@@ -694,5 +687,43 @@ class Domainmap_Utils{
 	    }
 
 	    return $ips;
+    }
+
+	/**
+	 * Get original domain from siteurl value.
+	 *
+	 * Get current site's siteurl as original domain
+	 * value. We can get from cache.
+	 *
+	 * @param bool|int $blog_id Optional (current blog id by default).
+	 *
+	 * @since 4.4.3.4
+	 *
+	 * @return bool|null|string
+	 */
+    public function get_original_siteurl( $blog_id = false ) {
+	    // If no blog id is passed, then take current one
+	    if ( ! $blog_id ) {
+		    $blog_id = get_current_blog_id();
+	    }
+
+	    // Check if we have already found original domain for the blog.
+	    if ( ! isset( $blog_id, self::$_original_domains ) ) {
+		    // Get the site url.
+		    $site_url = $this->_wpdb->get_var( $this->_wpdb->prepare(
+			    "SELECT option_value FROM %s WHERE option_name = 'siteurl'",
+			    $this->_wpdb->options
+		    ) );
+
+		    // If a value found, store the value and return.
+		    if ( ! empty( $site_url ) ) {
+			    // Store to cache.
+			    self::$_original_domains[ $blog_id ] = $site_url;
+
+			    return $site_url;
+		    }
+	    }
+
+	    return false;
     }
 }
