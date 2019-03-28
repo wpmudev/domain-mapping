@@ -708,9 +708,11 @@ class Domainmap_Utils{
 		}
 
 		// Check if we have already found original domain for the blog.
-		if ( ! isset( $blog_id, self::$_original_domains ) ) {
+		if ( isset( self::$_original_domains[ $blog_id ] ) ) {
+			return self::$_original_domains[ $blog_id ];
+		} else {
 			// Get the site url.
-			$site_url = $this->_wpdb->get_var( $this->_wpdb->prepare(
+			$site_url = $this->_wpdb->get_var( sprintf(
 				"SELECT option_value FROM %s WHERE option_name = 'siteurl'",
 				$this->_wpdb->options
 			) );
