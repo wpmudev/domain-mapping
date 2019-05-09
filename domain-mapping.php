@@ -37,12 +37,6 @@ if ( !is_multisite() || class_exists( 'Domainmap_Plugin', false ) ) {
 // UnComment the line below to allow multiple domain mappings per blog
 //define('DOMAINMAPPING_ALLOWMULTI', true);
 
-// WPMUDev Dashboard Notices
-//load dashboard notice
-global $wpmudev_notices;
-$wpmudev_notices[] = array( 'id'=> 99,'name'=> 'Domain Mapping', 'screens' => array( 'tools_page_domainmapping', 'settings_page_domainmapping_options-network' ) );
-require_once 'extra/wpmudev-dash-notification.php';
-
 // main domain mapping class
 require_once 'inc/DM_Currencies.php';
 require_once 'classes/class.domainmap.php';

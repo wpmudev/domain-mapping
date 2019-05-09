@@ -58,24 +58,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	}
 
 	/**
-	 * Register admin page WPMUDev Dashboard notiecs array.
-	 *
-	 * @since 4.1.1
-	 *
-	 * @access private
-	 * @global array $wpmudev_notices WPMUDev dashboard notices array.
-	 */
-	private function _register_wpmudev_notices() {
-		global $wpmudev_notices;
-
-		$wpmudev_notices[] = array(
-			'id'      => 99,
-			'name'    => 'Domain Mapping plugin',
-			'screens' => array( is_network_admin() ? "{$this->_admin_page}-network" : $this->_admin_page ),
-		);
-	}
-
-	/**
 	 * Registers site options page in admin menu.
 	 *
 	 * @since 4.0.0
@@ -88,7 +70,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 		if ( $blog_id > 1 && $this->_plugin->is_site_permitted() ) {
 			$title = __( 'Domain Mapping', 'domainmap' );
 			$this->_admin_page = add_management_page( $title, $title, 'manage_options', 'domainmapping', array( $this, 'render_site_options_page' ) );
-			$this->_register_wpmudev_notices();
 		}
 	}
 
@@ -161,7 +142,6 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 	public function add_network_options_page() {
 		$title = __( 'Domain Mapping', 'domainmap' );
 		$this->_admin_page = add_submenu_page( 'settings.php', $title, $title, 'manage_network_options', 'domainmapping_options', array( $this, 'render_network_options_page' ) );
-		$this->_register_wpmudev_notices();
 	}
 
 	/**
@@ -407,7 +387,7 @@ class Domainmap_Module_Pages extends Domainmap_Module {
 				//Check if user got here from the admin notification
 				$dismiss = strtolower( trim( filter_input( INPUT_GET, 'dismiss', FILTER_DEFAULT ) ) );
 				if ( $dismiss ){
-					
+
 					update_option( 'domainmapping_hide_notification', true );
 				}
 
