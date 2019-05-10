@@ -37,8 +37,6 @@ Save big on SSL certification with mapping control over individual URLs. Get th
 
 ## Usage Instructions
 
-### To Get Started:
-
 ### Getting Set Up
 
 So first and foremost, download the plugin to your computer and then unzip it. Inside, you will see the following files: 
@@ -172,19 +170,19 @@ To add a domain name to your admin area is easy, but keep something in mind here
 
 ![Domain Mapping - Tools Domain Mapping menu](https://premium.wpmudev.org/wp-content/uploads/2009/09/Domain-Mapping-4.2.0.6-Tools-Domain-Mapping-menu.png)
 
-Under the first tab, you can add the domain to be mapped to your sub site. Once you click add then that's all you need to do from WordPress. [caption id="attachment_845501" align="alignnone" width="559"]
+Under the first tab, you can add the domain to be mapped to your sub site. Once you click add then that's all you need to do from WordPress. 
 
 ![Enter the domain to be mapped to the sub site.](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-settings-site-map.png)
 
 Enter the domain to be mapped to the sub site.
 
- If you have enabled _Verify domain availability_ in your network settings as described above, and the domain entered here is not valid for some reason, an alert like this will pop up: [caption id="attachment_845497" align="alignnone" width="559"]
+ If you have enabled _Verify domain availability_ in your network settings as described above, and the domain entered here is not valid for some reason, an alert like this will pop up: 
 
 ![Domain name verification alert.](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-mapping-options-availabilitymessage.png)
 
 Domain name verification alert.
 
- If you have enabled domain purchasing in your network settings, clicking the second tab (Purchase domain) will enable your users to select and purchase their preferred domain name from you, right in the admin of their site. How cool is that? [caption id="attachment_845503" align="alignnone" width="559"]
+ If you have enabled domain purchasing in your network settings, clicking the second tab (Purchase domain) will enable your users to select and purchase their preferred domain name from you, right in the admin of their site. How cool is that? 
 
 ![Purchase a domain name right from wp-admin!](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-settings-site-purchase.png)
 
@@ -196,15 +194,15 @@ Purchase a domain name right from the dashboard!
 
 ### A Record & CNAME
 
-If you or your end user wishes to map a sub domain to the blog within your multisite install then you can set up a CNAME For the purpose of these instructions we will assume you are doing this through cPanel, however if you are using a different panel or managing the DNS with the domain name registrar then the principle is just the same, the method of adding it might be a little different. If you cannot manage your own DNS then you would need to discuss this with whomever is currently managing it. Even people on cPanel might not have access to the Simple and Advanced DNS options, this depends on your hosting provider. If you point your name servers to your host then it can be managed by your host or your cPanel. Again if you don't have access, then ask your host. **CNAMEs** are used for sub domain mapping. i.e. you want to map blog.userdomain.com to usersite.yourdomain.com **A Records** are for mapping TLDs aka Top Level Domains. i.e. userdomain.com mapped into usersite.yourdomain.com First we will handle a CNAME: We will do this through Advanced DNS, so click on that. [caption id="attachment_845505" align="alignnone" width="559"]![Select Advanced DNS in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-dns.png)
+If you or your end user wishes to map a sub domain to the blog within your multisite install then you can set up a CNAME For the purpose of these instructions we will assume you are doing this through cPanel, however if you are using a different panel or managing the DNS with the domain name registrar then the principle is just the same, the method of adding it might be a little different. If you cannot manage your own DNS then you would need to discuss this with whomever is currently managing it. Even people on cPanel might not have access to the Simple and Advanced DNS options, this depends on your hosting provider. If you point your name servers to your host then it can be managed by your host or your cPanel. Again if you don't have access, then ask your host. **CNAMEs** are used for sub domain mapping. i.e. you want to map blog.userdomain.com to usersite.yourdomain.com **A Records** are for mapping TLDs aka Top Level Domains. i.e. userdomain.com mapped into usersite.yourdomain.com First we will handle a CNAME: We will do this through Advanced DNS, so click on that. ![Select Advanced DNS in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-dns.png)
 
 Select Advanced DNS in cPanel
 
- Select the domain from which you would like to enter a CNAME. Now fill in the form. :-) [caption id="attachment_845507" align="alignnone" width="559"]![Adding a CNAME in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-cname.png)
+ Select the domain from which you would like to enter a CNAME. Now fill in the form. :-) ![Adding a CNAME in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-cname.png)
 
 Adding a CNAME in cPanel
 
- _Name:_ the sub domain to be mapped. So subdomain.example.com _TTL:_ You can set this to 14400\. If you know what you are doing then please feel free to adjust this. _Type:_ CNAME of course ;-) _CNAME:_ Where it is going to, in the example above, we use usersite.yourdomain.com Easy Peasy huh! For _A Record - Top Level Domains_ we go through the same process, except you will most likely already have the A record set (unless in instances where the domain is registered but not pointed anywhere). [caption id="attachment_845509" align="alignnone" width="559"]![Adding an A Record in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-arecord.png)
+ _Name:_ the sub domain to be mapped. So subdomain.example.com _TTL:_ You can set this to 14400\. If you know what you are doing then please feel free to adjust this. _Type:_ CNAME of course ;-) _CNAME:_ Where it is going to, in the example above, we use usersite.yourdomain.com Easy Peasy huh! For _A Record - Top Level Domains_ we go through the same process, except you will most likely already have the A record set (unless in instances where the domain is registered but not pointed anywhere). ![Adding an A Record in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-arecord.png)
 
 Adding an A Record in cPanel
 
@@ -220,11 +218,13 @@ Yeah there are, you can also use _Addon Domains_ and _Parked Domains_. They must
 
 ### Addon Vs Parked
 
-There really is not much difference. If you want an extra FTP account then use Addon domains. Really you shouldn't be handing FTP accounts out due to security concerns, so there isn't much need for this. And all FTP is usually done through your main FTP account. Parked domains simply does as it states, it parks the domain onto a folder or redirect. Again this will vary from control panel to control panel. [caption id="attachment_845511" align="alignnone" width="559"]![Parking a domain in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-park.png)
+There really is not much difference. If you want an extra FTP account then use Addon domains. Really you shouldn't be handing FTP accounts out due to security concerns, so there isn't much need for this. And all FTP is usually done through your main FTP account. Parked domains simply does as it states, it parks the domain onto a folder or redirect. Again this will vary from control panel to control panel. 
+
+![Parking a domain in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-park.png)
 
 Parking a domain in cPanel
 
- [caption id="attachment_845512" align="alignnone" width="559"]![Creating an Addon Domain in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-addon.png)
+ ![Creating an Addon Domain in cPanel](https://premium.wpmudev.org/wp-content/uploads/2013/10/domain-mapping-4000-cpanel-addon.png)
 
 Creating an Addon Domain in cPanel
 
