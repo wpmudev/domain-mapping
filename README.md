@@ -10,7 +10,8 @@ Translation files can be found at https://github.com/wpmudev/translations
 
 As one of the most requested features for Multisite, Domain Mapping has quickly become an essential plugin for every network.
 
-![domain-mapping-735x470](https://premium.wpmudev.org/wp-content/uploads/2009/09/domain-mapping-735x470.jpg) Cut the bulk and display beautiful, memorable URLs across an entire Multisite network.
+![domain-mapping-735x470](https://premium.wpmudev.org/wp-content/uploads/2009/09/domain-mapping-735x470.jpg) 
+Cut the bulk and display beautiful, memorable URLs across an entire Multisite network.
 
 
 ### Simple Setup, Smart Configuration
@@ -24,8 +25,7 @@ Become a reseller and open new streams of income. Let users search, buy and map
 ![enom-integration-735x470](https://premium.wpmudev.org/wp-content/uploads/2009/09/enom-integration-735x470.jpg) 
 Sell domain names right inside your WordPress Multisite dashboard.
 
-![image]
-(https://premium.wpmudev.org/wp-content/uploads/2009/09/plugin735x4701.jpg)
+![image](https://premium.wpmudev.org/wp-content/uploads/2009/09/plugin735x4701.jpg)
 Domain Mapping even works with networkwide passwords and global shopping carts.
 
 ### Stand Out Performance
